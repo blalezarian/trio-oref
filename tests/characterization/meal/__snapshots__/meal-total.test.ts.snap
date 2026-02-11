@@ -1,0 +1,201 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`meal/total (recentCarbs) characterization tests > bad maxCOB > handles non-number maxCOB without crashing 1`] = `
+{
+  "allDeviations": [
+    5,
+    5,
+    5,
+  ],
+  "bwCarbs": 0,
+  "bwFound": false,
+  "carbs": 40,
+  "currentDeviation": 5,
+  "journalCarbs": 0,
+  "lastCarbTime": 1736940600000,
+  "maxDeviation": 5,
+  "mealCOB": 34,
+  "minDeviation": 5,
+  "nsCarbs": 40,
+  "slopeFromMaxDeviation": -0,
+  "slopeFromMinDeviation": 0,
+}
+`;
+
+exports[`meal/total (recentCarbs) characterization tests > bad maxMealAbsorptionTime > falls back to 6h when maxMealAbsorptionTime is not a number 1`] = `
+{
+  "allDeviations": [
+    5,
+    5,
+    5,
+  ],
+  "bwCarbs": 0,
+  "bwFound": false,
+  "carbs": 30,
+  "currentDeviation": 5,
+  "journalCarbs": 0,
+  "lastCarbTime": 1736940600000,
+  "maxDeviation": 5,
+  "mealCOB": 24,
+  "minDeviation": 5,
+  "nsCarbs": 30,
+  "slopeFromMaxDeviation": -0,
+  "slopeFromMinDeviation": 0,
+}
+`;
+
+exports[`meal/total (recentCarbs) characterization tests > maxCOB enforcement > caps mealCOB at profile.maxCOB value 1`] = `
+{
+  "allDeviations": [
+    5,
+    5,
+    5,
+  ],
+  "bwCarbs": 0,
+  "bwFound": false,
+  "carbs": 200,
+  "currentDeviation": 5,
+  "journalCarbs": 0,
+  "lastCarbTime": 1736941800000,
+  "maxDeviation": 5,
+  "mealCOB": 5,
+  "minDeviation": 5,
+  "nsCarbs": 200,
+  "slopeFromMaxDeviation": -0,
+  "slopeFromMinDeviation": 0,
+}
+`;
+
+exports[`meal/total (recentCarbs) characterization tests > multiple carb treatments > sums carbs from multiple treatments properly 1`] = `
+{
+  "allDeviations": [
+    5,
+    5,
+    5,
+  ],
+  "bwCarbs": 0,
+  "bwFound": false,
+  "carbs": 60,
+  "currentDeviation": 5,
+  "journalCarbs": 0,
+  "lastCarbTime": 1736940600000,
+  "maxDeviation": 5,
+  "mealCOB": 54,
+  "minDeviation": 5,
+  "nsCarbs": 60,
+  "slopeFromMaxDeviation": -0,
+  "slopeFromMinDeviation": 0,
+}
+`;
+
+exports[`meal/total (recentCarbs) characterization tests > no treatments > returns zero carbs and zero COB when treatments array is empty 1`] = `
+{
+  "allDeviations": [
+    0,
+    0,
+    0,
+  ],
+  "bwCarbs": 0,
+  "bwFound": false,
+  "carbs": 0,
+  "currentDeviation": 0,
+  "journalCarbs": 0,
+  "lastCarbTime": 0,
+  "maxDeviation": 0,
+  "mealCOB": 0,
+  "minDeviation": 0,
+  "nsCarbs": 0,
+  "slopeFromMaxDeviation": 0,
+  "slopeFromMinDeviation": 0,
+}
+`;
+
+exports[`meal/total (recentCarbs) characterization tests > null treatments > returns empty object when treatments is null 1`] = `{}`;
+
+exports[`meal/total (recentCarbs) characterization tests > single bwCarb treatment > counts bwCarbs and sets bwFound to true 1`] = `
+{
+  "allDeviations": [
+    5,
+    5,
+    5,
+  ],
+  "bwCarbs": 30,
+  "bwFound": true,
+  "carbs": 30,
+  "currentDeviation": 5,
+  "journalCarbs": 0,
+  "lastCarbTime": 1736940600000,
+  "maxDeviation": 5,
+  "mealCOB": 24,
+  "minDeviation": 5,
+  "nsCarbs": 0,
+  "slopeFromMaxDeviation": -0,
+  "slopeFromMinDeviation": 0,
+}
+`;
+
+exports[`meal/total (recentCarbs) characterization tests > single journalCarb treatment > counts journalCarbs from a journal entry 1`] = `
+{
+  "allDeviations": [
+    5,
+    5,
+    5,
+  ],
+  "bwCarbs": 0,
+  "bwFound": false,
+  "carbs": 20,
+  "currentDeviation": 5,
+  "journalCarbs": 20,
+  "lastCarbTime": 1736939700000,
+  "maxDeviation": 5,
+  "mealCOB": 14,
+  "minDeviation": 5,
+  "nsCarbs": 0,
+  "slopeFromMaxDeviation": -0,
+  "slopeFromMinDeviation": 0,
+}
+`;
+
+exports[`meal/total (recentCarbs) characterization tests > single nsCarb treatment within window > counts nsCarbs from a treatment within the absorption window 1`] = `
+{
+  "allDeviations": [
+    5,
+    5,
+    5,
+  ],
+  "bwCarbs": 0,
+  "bwFound": false,
+  "carbs": 45,
+  "currentDeviation": 5,
+  "journalCarbs": 0,
+  "lastCarbTime": 1736940600000,
+  "maxDeviation": 5,
+  "mealCOB": 39,
+  "minDeviation": 5,
+  "nsCarbs": 45,
+  "slopeFromMaxDeviation": -0,
+  "slopeFromMinDeviation": 0,
+}
+`;
+
+exports[`meal/total (recentCarbs) characterization tests > treatment outside maxMealAbsorptionTime window > does not count treatment that is older than maxMealAbsorptionTime 1`] = `
+{
+  "allDeviations": [
+    0,
+    0,
+    0,
+  ],
+  "bwCarbs": 0,
+  "bwFound": false,
+  "carbs": 0,
+  "currentDeviation": 0,
+  "journalCarbs": 0,
+  "lastCarbTime": 0,
+  "maxDeviation": 0,
+  "mealCOB": 0,
+  "minDeviation": 0,
+  "nsCarbs": 0,
+  "slopeFromMaxDeviation": 0,
+  "slopeFromMinDeviation": 0,
+}
+`;

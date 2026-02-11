@@ -1,0 +1,128 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`determine-basal/cob (detectCarbAbsorption) characterization tests > BG below 39 skipped > glucose entries below 39 are skipped in the bucketing loop 1`] = `
+{
+  "allDeviations": [],
+  "carbsAbsorbed": 4,
+  "currentDeviation": 0,
+  "maxDeviation": 0,
+  "minDeviation": 999,
+  "slopeFromMaxDeviation": 0,
+  "slopeFromMinDeviation": 999,
+}
+`;
+
+exports[`determine-basal/cob (detectCarbAbsorption) characterization tests > ciTime filtering > only considers last ~45min of data when ciTime is set 1`] = `
+{
+  "allDeviations": [
+    2,
+    2,
+    2,
+    2,
+    2,
+    2,
+  ],
+  "carbsAbsorbed": 12,
+  "currentDeviation": 2,
+  "maxDeviation": 2,
+  "minDeviation": 2,
+  "slopeFromMaxDeviation": -0,
+  "slopeFromMinDeviation": 0,
+}
+`;
+
+exports[`determine-basal/cob (detectCarbAbsorption) characterization tests > display_time field compatibility > uses display_time instead of dateString for timestamps 1`] = `
+{
+  "allDeviations": [],
+  "carbsAbsorbed": 6,
+  "currentDeviation": 0,
+  "maxDeviation": 0,
+  "minDeviation": 999,
+  "slopeFromMaxDeviation": 0,
+  "slopeFromMinDeviation": 999,
+}
+`;
+
+exports[`determine-basal/cob (detectCarbAbsorption) characterization tests > empty glucose data edge case > handles minimal glucose data gracefully 1`] = `
+{
+  "allDeviations": [],
+  "carbsAbsorbed": 0,
+  "currentDeviation": undefined,
+  "maxDeviation": 0,
+  "minDeviation": 999,
+  "slopeFromMaxDeviation": 0,
+  "slopeFromMinDeviation": 999,
+}
+`;
+
+exports[`determine-basal/cob (detectCarbAbsorption) characterization tests > falling BG > glucose falling produces negative deviations 1`] = `
+{
+  "allDeviations": [],
+  "carbsAbsorbed": 6,
+  "currentDeviation": -8,
+  "maxDeviation": 0,
+  "minDeviation": 999,
+  "slopeFromMaxDeviation": 0,
+  "slopeFromMinDeviation": 999,
+}
+`;
+
+exports[`determine-basal/cob (detectCarbAbsorption) characterization tests > first glucose entry below 39 > sets lastbgi to -1 when first glucose entry is below 39 1`] = `
+{
+  "allDeviations": [],
+  "carbsAbsorbed": 4,
+  "currentDeviation": -15,
+  "maxDeviation": 0,
+  "minDeviation": 999,
+  "slopeFromMaxDeviation": 0,
+  "slopeFromMinDeviation": 999,
+}
+`;
+
+exports[`determine-basal/cob (detectCarbAbsorption) characterization tests > gap interpolation > glucose entries more than 8 minutes apart triggers interpolation 1`] = `
+{
+  "allDeviations": [],
+  "carbsAbsorbed": 8,
+  "currentDeviation": 5,
+  "maxDeviation": 0,
+  "minDeviation": 999,
+  "slopeFromMaxDeviation": 0,
+  "slopeFromMinDeviation": 999,
+}
+`;
+
+exports[`determine-basal/cob (detectCarbAbsorption) characterization tests > rising BG after meal > glucose rising 5-10 mg/dL per 5min after meal produces positive deviations and carbsAbsorbed 1`] = `
+{
+  "allDeviations": [],
+  "carbsAbsorbed": 6,
+  "currentDeviation": 8,
+  "maxDeviation": 0,
+  "minDeviation": 999,
+  "slopeFromMaxDeviation": 0,
+  "slopeFromMinDeviation": 999,
+}
+`;
+
+exports[`determine-basal/cob (detectCarbAbsorption) characterization tests > sgv field compatibility > uses sgv field when glucose is not present 1`] = `
+{
+  "allDeviations": [],
+  "carbsAbsorbed": 6,
+  "currentDeviation": 0,
+  "maxDeviation": 0,
+  "minDeviation": 999,
+  "slopeFromMaxDeviation": 0,
+  "slopeFromMinDeviation": 999,
+}
+`;
+
+exports[`determine-basal/cob (detectCarbAbsorption) characterization tests > steady BG, no meal > flat glucose with meal in the past produces minimal deviations and near-zero carbsAbsorbed 1`] = `
+{
+  "allDeviations": [],
+  "carbsAbsorbed": 6,
+  "currentDeviation": 0,
+  "maxDeviation": 0,
+  "minDeviation": 999,
+  "slopeFromMaxDeviation": 0,
+  "slopeFromMinDeviation": 999,
+}
+`;

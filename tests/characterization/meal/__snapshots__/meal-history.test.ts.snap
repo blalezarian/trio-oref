@@ -1,0 +1,382 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`meal/history (findMealInputs) characterization tests > carbHistory processing > 1. single carb entry from NS produces { timestamp, carbs, nsCarbs } 1`] = `
+[
+  {
+    "carbs": 45,
+    "nsCarbs": 45,
+    "timestamp": "2025-01-15T11:30:00.000Z",
+  },
+]
+`;
+
+exports[`meal/history (findMealInputs) characterization tests > carbHistory processing > 2. multiple carb entries at different times 1`] = `
+[
+  {
+    "carbs": 30,
+    "nsCarbs": 30,
+    "timestamp": "2025-01-15T11:00:00.000Z",
+  },
+  {
+    "carbs": 45,
+    "nsCarbs": 45,
+    "timestamp": "2025-01-15T11:30:00.000Z",
+  },
+  {
+    "carbs": 15,
+    "nsCarbs": 15,
+    "timestamp": "2025-01-15T11:50:00.000Z",
+  },
+]
+`;
+
+exports[`meal/history (findMealInputs) characterization tests > carbHistory processing > 3. carb entry without carbs field is skipped 1`] = `[]`;
+
+exports[`meal/history (findMealInputs) characterization tests > carbHistory processing > 4. carb entry without created_at is skipped 1`] = `[]`;
+
+exports[`meal/history (findMealInputs) characterization tests > carbHistory processing > 5. duplicate carb entries with same timestamp are deduped 1`] = `
+[
+  {
+    "carbs": 45,
+    "nsCarbs": 45,
+    "timestamp": "2025-01-15T11:30:00.000Z",
+  },
+]
+`;
+
+exports[`meal/history (findMealInputs) characterization tests > complex realistic scenario > 26. full realistic pump history with multiple event types 1`] = `
+[
+  {
+    "carbs": 60,
+    "nsCarbs": 60,
+    "timestamp": "2025-01-15T09:00:00.000Z",
+  },
+  {
+    "bolus": 5,
+    "timestamp": "2025-01-15T09:00:00.000Z",
+  },
+  {
+    "bolus": 1.5,
+    "carbs": 20,
+    "nsCarbs": 20,
+    "timestamp": "2025-01-15T09:30:00.000Z",
+  },
+  {
+    "carbs": 40,
+    "nsCarbs": 40,
+    "timestamp": "2025-01-15T10:00:00.000Z",
+  },
+  {
+    "carbs": 25,
+    "nsCarbs": 25,
+    "timestamp": "2025-01-15T10:30:00.000Z",
+  },
+  {
+    "bolus": 2.5,
+    "timestamp": "2025-01-15T10:30:00.000Z",
+  },
+  {
+    "carbs": 12,
+    "journalCarbs": 12,
+    "timestamp": "2025-01-15T10:45:00.000Z",
+  },
+  {
+    "bolus": 1,
+    "timestamp": "2025-01-15T11:00:00.000Z",
+  },
+  {
+    "bwCarbs": 30,
+    "carbs": 30,
+    "timestamp": "2025-01-15T11:00:00.000Z",
+  },
+  {
+    "carbs": 10,
+    "nsCarbs": 10,
+    "timestamp": "2025-01-15T11:15:00.000Z",
+  },
+  {
+    "carbs": 15,
+    "nsCarbs": 15,
+    "timestamp": "2025-01-15T11:30:00.000Z",
+  },
+  {
+    "carbs": 8,
+    "nsCarbs": 8,
+    "timestamp": "2025-01-15T11:45:00.000Z",
+  },
+]
+`;
+
+exports[`meal/history (findMealInputs) characterization tests > deduplication - 2-second tolerance window > 22. timestamp within 2s window (1s apart) is treated as duplicate 1`] = `
+[
+  {
+    "carbs": 45,
+    "nsCarbs": 45,
+    "timestamp": "2025-01-15T11:30:00.000Z",
+  },
+]
+`;
+
+exports[`meal/history (findMealInputs) characterization tests > deduplication - 2-second tolerance window > 23. timestamp outside 2s window (exactly 2s apart) is NOT a duplicate 1`] = `
+[
+  {
+    "carbs": 45,
+    "nsCarbs": 45,
+    "timestamp": "2025-01-15T11:30:00.000Z",
+  },
+  {
+    "carbs": 30,
+    "nsCarbs": 30,
+    "timestamp": "2025-01-15T11:30:02.000Z",
+  },
+]
+`;
+
+exports[`meal/history (findMealInputs) characterization tests > deduplication - 2-second tolerance window > timestamp 1999ms apart is still treated as duplicate 1`] = `
+[
+  {
+    "carbs": 45,
+    "nsCarbs": 45,
+    "timestamp": "2025-01-15T11:30:00.000Z",
+  },
+]
+`;
+
+exports[`meal/history (findMealInputs) characterization tests > deduplication - 2-second tolerance window > timestamp 2001ms apart is NOT a duplicate 1`] = `
+[
+  {
+    "carbs": 45,
+    "nsCarbs": 45,
+    "timestamp": "2025-01-15T11:30:00.000Z",
+  },
+  {
+    "carbs": 30,
+    "nsCarbs": 30,
+    "timestamp": "2025-01-15T11:30:02.001Z",
+  },
+]
+`;
+
+exports[`meal/history (findMealInputs) characterization tests > edge cases > 24. empty history and carbs returns empty array 1`] = `[]`;
+
+exports[`meal/history (findMealInputs) characterization tests > edge cases > 25. mixed sources: NS carbs + pump boluses + BolusWizard entries 1`] = `
+[
+  {
+    "carbs": 50,
+    "nsCarbs": 50,
+    "timestamp": "2025-01-15T11:00:00.000Z",
+  },
+  {
+    "carbs": 35,
+    "nsCarbs": 35,
+    "timestamp": "2025-01-15T11:15:00.000Z",
+  },
+  {
+    "bolus": 4,
+    "timestamp": "2025-01-15T11:30:00.000Z",
+  },
+  {
+    "bwCarbs": 60,
+    "carbs": 60,
+    "timestamp": "2025-01-15T11:30:00.000Z",
+  },
+  {
+    "carbs": 20,
+    "nsCarbs": 20,
+    "timestamp": "2025-01-15T11:45:00.000Z",
+  },
+]
+`;
+
+exports[`meal/history (findMealInputs) characterization tests > edge cases > Bolus without timestamp is skipped 1`] = `[]`;
+
+exports[`meal/history (findMealInputs) characterization tests > edge cases > BolusWizard without timestamp is skipped 1`] = `[]`;
+
+exports[`meal/history (findMealInputs) characterization tests > edge cases > JournalEntryMealMarker without timestamp is skipped 1`] = `[]`;
+
+exports[`meal/history (findMealInputs) characterization tests > edge cases > NS Care Portal entry without created_at is skipped 1`] = `
+[
+  {
+    "bolus": undefined,
+    "carbs": 50,
+    "nsCarbs": 50,
+    "timestamp": undefined,
+  },
+]
+`;
+
+exports[`meal/history (findMealInputs) characterization tests > edge cases > cross-source dedup: NS carb and NS Care Portal at same timestamp 1`] = `
+[
+  {
+    "carbs": 45,
+    "nsCarbs": 45,
+    "timestamp": "2025-01-15T11:40:00.000Z",
+  },
+]
+`;
+
+exports[`meal/history (findMealInputs) characterization tests > edge cases > generic carbs>0 entry uses created_at for output timestamp but timestamp for dedup 1`] = `
+[
+  {
+    "bolus": 1,
+    "carbs": 25,
+    "nsCarbs": 25,
+    "timestamp": "2025-01-15T11:40:00.000Z",
+  },
+]
+`;
+
+exports[`meal/history (findMealInputs) characterization tests > edge cases > xdrip entry uses created_at for output timestamp but timestamp for dedup 1`] = `
+[
+  {
+    "bolus": 2.5,
+    "carbs": 30,
+    "nsCarbs": 30,
+    "timestamp": "2025-01-15T11:40:00.000Z",
+  },
+]
+`;
+
+exports[`meal/history (findMealInputs) characterization tests > pumpHistory - Bolus type > 6. Bolus with amount produces { timestamp, bolus } 1`] = `
+[
+  {
+    "bolus": 3.5,
+    "timestamp": "2025-01-15T11:40:00.000Z",
+  },
+]
+`;
+
+exports[`meal/history (findMealInputs) characterization tests > pumpHistory - Bolus type > 7. duplicate boluses at same time are deduped 1`] = `
+[
+  {
+    "bolus": 3.5,
+    "timestamp": "2025-01-15T11:40:00.000Z",
+  },
+]
+`;
+
+exports[`meal/history (findMealInputs) characterization tests > pumpHistory - BolusWizard > 8. BolusWizard with matching Bolus at same timestamp produces { timestamp, carbs, bwCarbs } 1`] = `
+[
+  {
+    "bolus": 2,
+    "timestamp": "2025-01-15T11:35:00.000Z",
+  },
+  {
+    "bwCarbs": 40,
+    "carbs": 40,
+    "timestamp": "2025-01-15T11:35:00.000Z",
+  },
+]
+`;
+
+exports[`meal/history (findMealInputs) characterization tests > pumpHistory - BolusWizard > 9. BolusWizard WITHOUT matching Bolus is skipped (logged as error) 1`] = `[]`;
+
+exports[`meal/history (findMealInputs) characterization tests > pumpHistory - BolusWizard > 10. BolusWizard with carb_input: 0 is skipped (different error message) 1`] = `[]`;
+
+exports[`meal/history (findMealInputs) characterization tests > pumpHistory - BolusWizard > 11. BolusWizard with carbs already present at that timestamp is deduped 1`] = `
+[
+  {
+    "carbs": 40,
+    "nsCarbs": 40,
+    "timestamp": "2025-01-15T11:35:00.000Z",
+  },
+  {
+    "bolus": 2,
+    "timestamp": "2025-01-15T11:35:00.000Z",
+  },
+]
+`;
+
+exports[`meal/history (findMealInputs) characterization tests > pumpHistory - JournalEntryMealMarker > 20. JournalEntryMealMarker with carb_input > 0 produces { timestamp, carbs, journalCarbs } 1`] = `
+[
+  {
+    "carbs": 20,
+    "journalCarbs": 20,
+    "timestamp": "2025-01-15T11:50:00.000Z",
+  },
+]
+`;
+
+exports[`meal/history (findMealInputs) characterization tests > pumpHistory - JournalEntryMealMarker > 21. JournalEntryMealMarker with carb_input: 0 is skipped 1`] = `[]`;
+
+exports[`meal/history (findMealInputs) characterization tests > pumpHistory - Nightscout Care Portal > 12. Meal Bolus with created_at and carbs 1`] = `
+[
+  {
+    "carbs": 50,
+    "nsCarbs": 50,
+    "timestamp": "2025-01-15T11:45:00.000Z",
+  },
+]
+`;
+
+exports[`meal/history (findMealInputs) characterization tests > pumpHistory - Nightscout Care Portal > 13. Correction Bolus with created_at and carbs 1`] = `
+[
+  {
+    "carbs": 20,
+    "nsCarbs": 20,
+    "timestamp": "2025-01-15T11:45:00.000Z",
+  },
+]
+`;
+
+exports[`meal/history (findMealInputs) characterization tests > pumpHistory - Nightscout Care Portal > 14. Snack Bolus with created_at and carbs 1`] = `
+[
+  {
+    "carbs": 10,
+    "nsCarbs": 10,
+    "timestamp": "2025-01-15T11:45:00.000Z",
+  },
+]
+`;
+
+exports[`meal/history (findMealInputs) characterization tests > pumpHistory - Nightscout Care Portal > 15. Bolus Wizard (NS version) with created_at and carbs 1`] = `
+[
+  {
+    "carbs": 35,
+    "nsCarbs": 35,
+    "timestamp": "2025-01-15T11:45:00.000Z",
+  },
+]
+`;
+
+exports[`meal/history (findMealInputs) characterization tests > pumpHistory - Nightscout Care Portal > 16. Carb Correction with created_at and carbs 1`] = `
+[
+  {
+    "carbs": 15,
+    "nsCarbs": 15,
+    "timestamp": "2025-01-15T11:45:00.000Z",
+  },
+]
+`;
+
+exports[`meal/history (findMealInputs) characterization tests > pumpHistory - Nightscout Care Portal > 17. duplicate NS entries are deduped 1`] = `
+[
+  {
+    "carbs": 50,
+    "nsCarbs": 50,
+    "timestamp": "2025-01-15T11:45:00.000Z",
+  },
+]
+`;
+
+exports[`meal/history (findMealInputs) characterization tests > pumpHistory - generic carbs > 0 > 19. generic entry with carbs > 0 and created_at produces { timestamp, carbs, nsCarbs, bolus } 1`] = `
+[
+  {
+    "bolus": 1.5,
+    "carbs": 25,
+    "nsCarbs": 25,
+    "timestamp": "2025-01-15T11:40:00.000Z",
+  },
+]
+`;
+
+exports[`meal/history (findMealInputs) characterization tests > pumpHistory - xdrip > 18. xdrip entry with carbs, insulin, created_at produces { timestamp, carbs, nsCarbs, bolus } 1`] = `
+[
+  {
+    "bolus": 2.5,
+    "carbs": 30,
+    "nsCarbs": 30,
+    "timestamp": "2025-01-15T11:40:00.000Z",
+  },
+]
+`;
