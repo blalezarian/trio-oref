@@ -7,6 +7,22 @@ export default defineConfig({
     include: ['tests/characterization/**/*.test.ts'],
     testTimeout: 30000,
     snapshotSerializers: [],
+    coverage: {
+      provider: 'v8',
+      include: [
+        'lib/determine-basal/determine-basal.js',
+        'lib/determine-basal/cob.js',
+        'lib/determine-basal/autosens.js',
+        'lib/iob/**/*.js',
+        'lib/meal/**/*.js',
+        'lib/profile/**/*.js',
+        'lib/glucose-get-last.js',
+        'lib/basal-set-temp.js',
+        'lib/round-basal.js',
+      ],
+      reporter: ['text', 'text-summary', 'html'],
+      reportsDirectory: 'coverage',
+    },
   },
   resolve: {
     alias: {

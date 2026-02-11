@@ -8,6 +8,7 @@
     "test:char:watch": "vitest",
     "test:char:update": "vitest run --update",
     "test:all": "make test && vitest run",
+    "test:coverage": "vitest run --coverage",
     "typecheck": "tsc --noEmit",
     "global-install": "npm install && sudo npm link && sudo npm link oref0 && sudo npm install -g && npm install -g"
   },
@@ -118,6 +119,7 @@
   "devDependencies": {
     "@types/lodash": "^4.17.23",
     "@types/node": "^25.2.3",
+    "@vitest/coverage-v8": "^4.0.18",
     "copy-rename-webpack-plugin": "^1.0.2-alpha.0",
     "coveralls": "^3.0.3",
     "istanbul": "^0.4.5",
