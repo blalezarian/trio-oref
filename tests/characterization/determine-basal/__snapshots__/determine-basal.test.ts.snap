@@ -1,0 +1,2164 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`determine-basal characterization tests > autosens > High sensitivity (ratio=0.8) — less insulin needed 1`] = `
+{
+  "BGI": -0,
+  "COB": 0,
+  "CR": 10,
+  "IOB": 0,
+  "ISF": 50,
+  "bg": 150,
+  "current_target": 110,
+  "deliverAt": "[DELIVER_AT]",
+  "deviation": 0,
+  "duration": 30,
+  "eventualBG": 150,
+  "expectedDelta": -1.7,
+  "insulinForManualBolus": 0.8,
+  "insulinReq": 0.8,
+  "manualBolusErrorString": 0,
+  "minDelta": 0,
+  "minGuardBG": undefined,
+  "minPredBG": undefined,
+  "predBGs": {
+    "IOB": [
+      150,
+    ],
+    "ZT": [
+      150,
+    ],
+  },
+  "rate": 2.3,
+  "reason": "Autosens ratio: 0.8, ISF: 40→50, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 150, Middleware: undefined; Eventual BG 150 >= 110, no temp, setting 2.3U/hr. ",
+  "reservoir": 100,
+  "sensitivityRatio": 0.8,
+  "target_bg": 110,
+  "temp": "absolute",
+  "threshold": 75,
+  "tick": "+0",
+}
+`;
+
+exports[`determine-basal characterization tests > autosens > Insulin resistance (ratio=1.2) — more insulin needed 1`] = `
+{
+  "BGI": -0,
+  "COB": 0,
+  "CR": 10,
+  "IOB": 0,
+  "ISF": 33,
+  "bg": 150,
+  "current_target": 110,
+  "deliverAt": "[DELIVER_AT]",
+  "deviation": 0,
+  "duration": 30,
+  "eventualBG": 150,
+  "expectedDelta": -1.7,
+  "insulinForManualBolus": 1.2,
+  "insulinReq": 1.2,
+  "manualBolusErrorString": 0,
+  "minDelta": 0,
+  "minGuardBG": undefined,
+  "minPredBG": undefined,
+  "predBGs": {
+    "IOB": [
+      150,
+    ],
+    "ZT": [
+      150,
+    ],
+  },
+  "rate": 3.5,
+  "reason": "Autosens ratio: 1.2, ISF: 40→33, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 150, Middleware: undefined; Eventual BG 150 >= 110, no temp, setting 3.5U/hr. ",
+  "reservoir": 100,
+  "sensitivityRatio": 1.2,
+  "target_bg": 110,
+  "temp": "absolute",
+  "threshold": 75,
+  "tick": "+0",
+}
+`;
+
+exports[`determine-basal characterization tests > cgm-error > CGM calibrating (BG=5) 1`] = `
+{
+  "reason": "CGM data is unchanged (5+0) for 5m w/ 0 mg/dL ~15m change & 0 mg/dL ~45m change. Temp 0 <= current basal 0.9U/hr; doing nothing. ",
+}
+`;
+
+exports[`determine-basal characterization tests > cgm-error > CGM data unchanged (flat deltas) 1`] = `
+{
+  "BGI": -0,
+  "COB": 0,
+  "CR": 10,
+  "IOB": 0,
+  "ISF": 40,
+  "bg": 120,
+  "current_target": 110,
+  "deliverAt": "[DELIVER_AT]",
+  "deviation": 0,
+  "duration": 30,
+  "eventualBG": 120,
+  "expectedDelta": -0.4,
+  "insulinForManualBolus": 0.25,
+  "insulinReq": 0.25,
+  "manualBolusErrorString": 0,
+  "minDelta": 0,
+  "minGuardBG": undefined,
+  "minPredBG": undefined,
+  "predBGs": {
+    "IOB": [
+      120,
+    ],
+    "ZT": [
+      120,
+    ],
+  },
+  "rate": 1.4,
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 120, Middleware: undefined; Eventual BG 120 >= 110, no temp, setting 1.4U/hr. ",
+  "reservoir": 100,
+  "sensitivityRatio": 1,
+  "target_bg": 110,
+  "temp": "absolute",
+  "threshold": 75,
+  "tick": "+0",
+}
+`;
+
+exports[`determine-basal characterization tests > cgm-error > CGM error state (BG=38) 1`] = `
+{
+  "reason": "CGM data is unchanged (38+0) for 5m w/ 0 mg/dL ~15m change & 0 mg/dL ~45m change. Temp 0 <= current basal 0.9U/hr; doing nothing. ",
+}
+`;
+
+exports[`determine-basal characterization tests > cgm-error > High CGM noise (noise=3) 1`] = `
+{
+  "deliverAt": "[DELIVER_AT]",
+  "duration": 30,
+  "rate": 0.9,
+  "reason": "CGM data is unchanged (120+0) for 5m w/ 0 mg/dL ~15m change & 0 mg/dL ~45m change. Replacing high temp basal of 2 with neutral temp of 0.9",
+  "temp": "absolute",
+}
+`;
+
+exports[`determine-basal characterization tests > cgm-error > Stale CGM data (15 min old) 1`] = `
+{
+  "reason": "If current system time Wed Jan 15 2025 04:00:00 GMT-0800 (Pacific Standard Time) is correct, then BG data is too old. The last BG data was read 15m ago at Wed Jan 15 2025 03:45:00 GMT-0800 (Pacific Standard Time). Temp 0 <= current basal 0.9U/hr; doing nothing. ",
+}
+`;
+
+exports[`determine-basal characterization tests > dynamic-isf > Dynamic ISF disabled by equal autosens min/max 1`] = `
+{
+  "BGI": -0,
+  "COB": 0,
+  "CR": 10,
+  "IOB": 0,
+  "ISF": 40,
+  "bg": 200,
+  "current_target": 110,
+  "deliverAt": "[DELIVER_AT]",
+  "deviation": 0,
+  "duration": 30,
+  "eventualBG": 200,
+  "expectedDelta": -3.7,
+  "insulinForManualBolus": 2.25,
+  "insulinReq": 2.25,
+  "manualBolusErrorString": 0,
+  "minDelta": 0,
+  "minGuardBG": undefined,
+  "minPredBG": undefined,
+  "predBGs": {
+    "IOB": [
+      200,
+    ],
+    "ZT": [
+      200,
+    ],
+  },
+  "rate": 3.5,
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 200, Middleware: undefined; Eventual BG 200 >= 110, adj. req. rate: 5.4 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
+  "reservoir": 100,
+  "sensitivityRatio": 1,
+  "target_bg": 110,
+  "temp": "absolute",
+  "threshold": 75,
+  "tick": "+0",
+}
+`;
+
+exports[`determine-basal characterization tests > dynamic-isf > Dynamic ISF logarithmic — high BG 1`] = `
+{
+  "BGI": -0,
+  "COB": 0,
+  "CR": 10,
+  "IOB": 0,
+  "ISF": 37,
+  "bg": 200,
+  "current_target": 110,
+  "deliverAt": "[DELIVER_AT]",
+  "deviation": 0,
+  "duration": 30,
+  "eventualBG": 200,
+  "expectedDelta": -3.7,
+  "insulinForManualBolus": 2.45,
+  "insulinReq": 2.45,
+  "manualBolusErrorString": 0,
+  "minDelta": 0,
+  "minGuardBG": undefined,
+  "minPredBG": undefined,
+  "predBGs": {
+    "IOB": [
+      200,
+    ],
+    "ZT": [
+      200,
+    ],
+  },
+  "rate": 3.5,
+  "reason": "Autosens ratio: 1.09, ISF: 40→37, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 200, Dynamic ISF: On, Logarithmic formula, AF: 0.8, Middleware: undefined; Eventual BG 200 >= 110, adj. req. rate: 5.8 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
+  "reservoir": 100,
+  "sensitivityRatio": 1.0908,
+  "target_bg": 110,
+  "temp": "absolute",
+  "threshold": 75,
+  "tick": "+0",
+}
+`;
+
+exports[`determine-basal characterization tests > dynamic-isf > Dynamic ISF logarithmic — in-range BG 1`] = `
+{
+  "BGI": -0,
+  "COB": 0,
+  "CR": 10,
+  "IOB": 0,
+  "ISF": 51,
+  "bg": 110,
+  "current_target": 110,
+  "deliverAt": "[DELIVER_AT]",
+  "deviation": 0,
+  "duration": 30,
+  "eventualBG": 110,
+  "expectedDelta": 0,
+  "insulinForManualBolus": 0,
+  "insulinReq": 0,
+  "manualBolusErrorString": 0,
+  "minDelta": 0,
+  "minGuardBG": undefined,
+  "minPredBG": undefined,
+  "predBGs": {
+    "IOB": [
+      110,
+    ],
+    "ZT": [
+      110,
+    ],
+  },
+  "rate": 0.9,
+  "reason": "Autosens ratio: 0.78, ISF: 40→51, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 110, Dynamic ISF: On, Logarithmic formula, AF: 0.8, Middleware: undefined; Eventual BG 110 >= 110, 0m@0.00 > 2 * insulinReq. Setting temp basal of 0.9U/hr. . Setting neutral temp basal of 0.9U/hr",
+  "reservoir": 100,
+  "sensitivityRatio": 0.7812,
+  "target_bg": 110,
+  "temp": "absolute",
+  "threshold": 75,
+  "tick": "+0",
+}
+`;
+
+exports[`determine-basal characterization tests > dynamic-isf > Dynamic ISF sigmoid — high BG 1`] = `
+{
+  "BGI": -0,
+  "COB": 0,
+  "CR": 10,
+  "IOB": 0,
+  "ISF": 34,
+  "bg": 200,
+  "current_target": 110,
+  "deliverAt": "[DELIVER_AT]",
+  "deviation": 0,
+  "duration": 30,
+  "eventualBG": 200,
+  "expectedDelta": -3.7,
+  "insulinForManualBolus": 2.64,
+  "insulinReq": 2.5,
+  "manualBolusErrorString": 0,
+  "minDelta": 0,
+  "minGuardBG": undefined,
+  "minPredBG": undefined,
+  "predBGs": {
+    "IOB": [
+      200,
+    ],
+    "ZT": [
+      200,
+    ],
+  },
+  "rate": 3.5,
+  "reason": "Autosens ratio: 1.17, ISF: 40→34, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 200, Dynamic ISF: On, Sigmoid function, AF: 0.5, Middleware: undefined; Eventual BG 200 >= 110, max_iob 2.5, max_iob 2.5, adj. req. rate: 5.9 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
+  "reservoir": 100,
+  "sensitivityRatio": 1.174,
+  "target_bg": 110,
+  "temp": "absolute",
+  "threshold": 75,
+  "tick": "+0",
+}
+`;
+
+exports[`determine-basal characterization tests > falling-bg > Fall with negative IOB 1`] = `
+{
+  "BGI": 1,
+  "COB": 0,
+  "CR": 10,
+  "IOB": -0.5,
+  "ISF": 40,
+  "bg": 100,
+  "current_target": 110,
+  "deliverAt": "[DELIVER_AT]",
+  "deviation": -18,
+  "duration": 30,
+  "eventualBG": 102,
+  "expectedDelta": 1.3,
+  "insulinForManualBolus": 0,
+  "insulinReq": 0,
+  "manualBolusErrorString": 0,
+  "minDelta": -3,
+  "minGuardBG": undefined,
+  "minPredBG": undefined,
+  "predBGs": {
+    "IOB": [
+      100,
+    ],
+    "ZT": [
+      100,
+    ],
+  },
+  "rate": 0.1,
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: -18, BGI: 1, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 100, Middleware: undefined; Eventual BG 102 < 110, setting 0.1U/hr. ",
+  "reservoir": 100,
+  "sensitivityRatio": 1,
+  "target_bg": 110,
+  "temp": "absolute",
+  "threshold": 75,
+  "tick": -3,
+}
+`;
+
+exports[`determine-basal characterization tests > falling-bg > Fast fall (-10/5m) from high 1`] = `
+{
+  "BGI": -6,
+  "COB": 0,
+  "CR": 10,
+  "IOB": 2,
+  "ISF": 40,
+  "bg": 150,
+  "current_target": 110,
+  "deliverAt": "[DELIVER_AT]",
+  "deviation": -6,
+  "duration": 60,
+  "eventualBG": 64,
+  "expectedDelta": -4.1,
+  "insulinForManualBolus": 0,
+  "insulinReq": 0,
+  "manualBolusErrorString": 0,
+  "minDelta": -10,
+  "minGuardBG": undefined,
+  "minPredBG": undefined,
+  "predBGs": {
+    "IOB": [
+      150,
+    ],
+    "ZT": [
+      150,
+    ],
+  },
+  "rate": 0,
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: -6, BGI: -6, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 150, Middleware: undefined; Eventual BG 64 < 110, setting 60m zero temp. ",
+  "reservoir": 100,
+  "sensitivityRatio": 1,
+  "target_bg": 110,
+  "temp": "absolute",
+  "threshold": 75,
+  "tick": -10,
+}
+`;
+
+exports[`determine-basal characterization tests > falling-bg > Moderate fall (-5/5m) from in-range 1`] = `
+{
+  "BGI": -0,
+  "COB": 0,
+  "CR": 10,
+  "IOB": 0,
+  "ISF": 40,
+  "bg": 105,
+  "current_target": 110,
+  "deliverAt": "[DELIVER_AT]",
+  "deviation": -24,
+  "duration": 30,
+  "eventualBG": 81,
+  "expectedDelta": 1.2,
+  "insulinForManualBolus": 0,
+  "insulinReq": 0,
+  "manualBolusErrorString": 0,
+  "minDelta": -5,
+  "minGuardBG": undefined,
+  "minPredBG": undefined,
+  "predBGs": {
+    "IOB": [
+      105,
+    ],
+    "ZT": [
+      105,
+    ],
+  },
+  "rate": 0,
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: -24, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 105, Middleware: undefined; Eventual BG 81 < 110",
+  "reservoir": 100,
+  "sensitivityRatio": 1,
+  "target_bg": 110,
+  "temp": "absolute",
+  "threshold": 75,
+  "tick": -5,
+}
+`;
+
+exports[`determine-basal characterization tests > falling-bg > Slow fall (-2/5m) from in-range 1`] = `
+{
+  "BGI": -0,
+  "COB": 0,
+  "CR": 10,
+  "IOB": 0,
+  "ISF": 40,
+  "bg": 110,
+  "current_target": 110,
+  "deliverAt": "[DELIVER_AT]",
+  "deviation": -9,
+  "duration": 30,
+  "eventualBG": 101,
+  "expectedDelta": 0.4,
+  "insulinForManualBolus": 0,
+  "insulinReq": 0,
+  "manualBolusErrorString": 0,
+  "minDelta": -2,
+  "minGuardBG": undefined,
+  "minPredBG": undefined,
+  "predBGs": {
+    "IOB": [
+      110,
+    ],
+    "ZT": [
+      110,
+    ],
+  },
+  "rate": 0,
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: -9, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 110, Middleware: undefined; Eventual BG 101 < 110",
+  "reservoir": 100,
+  "sensitivityRatio": 1,
+  "target_bg": 110,
+  "temp": "absolute",
+  "threshold": 75,
+  "tick": -2,
+}
+`;
+
+exports[`determine-basal characterization tests > high-bg > High BG (180), no IOB — should high temp 1`] = `
+{
+  "BGI": -0,
+  "COB": 0,
+  "CR": 10,
+  "IOB": 0,
+  "ISF": 40,
+  "bg": 180,
+  "current_target": 110,
+  "deliverAt": "[DELIVER_AT]",
+  "deviation": 0,
+  "duration": 30,
+  "eventualBG": 180,
+  "expectedDelta": -2.9,
+  "insulinForManualBolus": 1.75,
+  "insulinReq": 1.75,
+  "manualBolusErrorString": 0,
+  "minDelta": 0,
+  "minGuardBG": undefined,
+  "minPredBG": undefined,
+  "predBGs": {
+    "IOB": [
+      180,
+    ],
+    "ZT": [
+      180,
+    ],
+  },
+  "rate": 3.5,
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 180, Middleware: undefined; Eventual BG 180 >= 110, adj. req. rate: 4.4 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
+  "reservoir": 100,
+  "sensitivityRatio": 1,
+  "target_bg": 110,
+  "temp": "absolute",
+  "threshold": 75,
+  "tick": "+0",
+}
+`;
+
+exports[`determine-basal characterization tests > high-bg > High BG (180), with IOB already covering 1`] = `
+{
+  "BGI": -4,
+  "COB": 0,
+  "CR": 10,
+  "IOB": 2,
+  "ISF": 40,
+  "bg": 180,
+  "current_target": 110,
+  "deliverAt": "[DELIVER_AT]",
+  "deviation": 24,
+  "duration": 30,
+  "eventualBG": 124,
+  "expectedDelta": -4.6,
+  "insulinForManualBolus": 0.35,
+  "insulinReq": 0.35,
+  "manualBolusErrorString": 0,
+  "minDelta": 0,
+  "minGuardBG": undefined,
+  "minPredBG": undefined,
+  "predBGs": {
+    "IOB": [
+      180,
+    ],
+    "ZT": [
+      180,
+    ],
+  },
+  "rate": 1.6,
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 24, BGI: -4, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 180, Middleware: undefined; Eventual BG 124 >= 110, no temp, setting 1.6U/hr. ",
+  "reservoir": 100,
+  "sensitivityRatio": 1,
+  "target_bg": 110,
+  "temp": "absolute",
+  "threshold": 75,
+  "tick": "+0",
+}
+`;
+
+exports[`determine-basal characterization tests > high-bg > High BG (200), rising fast 1`] = `
+{
+  "BGI": -0,
+  "COB": 0,
+  "CR": 10,
+  "IOB": 0,
+  "ISF": 40,
+  "bg": 200,
+  "current_target": 110,
+  "deliverAt": "[DELIVER_AT]",
+  "deviation": 60,
+  "duration": 30,
+  "eventualBG": 260,
+  "expectedDelta": -6.2,
+  "insulinForManualBolus": 3.75,
+  "insulinReq": 2.5,
+  "manualBolusErrorString": 0,
+  "minDelta": 10,
+  "minGuardBG": undefined,
+  "minPredBG": undefined,
+  "predBGs": {
+    "IOB": [
+      200,
+    ],
+    "ZT": [
+      200,
+    ],
+  },
+  "rate": 3.5,
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 60, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 200, Middleware: undefined; Eventual BG 260 >= 110, max_iob 2.5, max_iob 2.5, adj. req. rate: 5.9 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
+  "reservoir": 100,
+  "sensitivityRatio": 1,
+  "target_bg": 110,
+  "temp": "absolute",
+  "threshold": 75,
+  "tick": "+10",
+}
+`;
+
+exports[`determine-basal characterization tests > high-bg > High BG (250), no IOB 1`] = `
+{
+  "BGI": -0,
+  "COB": 0,
+  "CR": 10,
+  "IOB": 0,
+  "ISF": 40,
+  "bg": 250,
+  "current_target": 110,
+  "deliverAt": "[DELIVER_AT]",
+  "deviation": 30,
+  "duration": 30,
+  "eventualBG": 280,
+  "expectedDelta": -7.1,
+  "insulinForManualBolus": 4.25,
+  "insulinReq": 2.5,
+  "manualBolusErrorString": 0,
+  "minDelta": 5,
+  "minGuardBG": undefined,
+  "minPredBG": undefined,
+  "predBGs": {
+    "IOB": [
+      250,
+    ],
+    "ZT": [
+      250,
+    ],
+  },
+  "rate": 3.5,
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 30, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 250, Middleware: undefined; Eventual BG 280 >= 110, max_iob 2.5, max_iob 2.5, adj. req. rate: 5.9 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
+  "reservoir": 100,
+  "sensitivityRatio": 1,
+  "target_bg": 110,
+  "temp": "absolute",
+  "threshold": 75,
+  "tick": "+5",
+}
+`;
+
+exports[`determine-basal characterization tests > high-bg > High BG, already has high temp running 1`] = `
+{
+  "deliverAt": "[DELIVER_AT]",
+  "duration": 0,
+  "rate": 0,
+  "reason": "Warning: currenttemp running but lastTemp from pumphistory ended 28949040m ago; canceling temp",
+  "temp": "absolute",
+}
+`;
+
+exports[`determine-basal characterization tests > high-bg > Slightly above range (130), no IOB 1`] = `
+{
+  "BGI": -0,
+  "COB": 0,
+  "CR": 10,
+  "IOB": 0,
+  "ISF": 40,
+  "bg": 130,
+  "current_target": 110,
+  "deliverAt": "[DELIVER_AT]",
+  "deviation": 0,
+  "duration": 30,
+  "eventualBG": 130,
+  "expectedDelta": -0.8,
+  "insulinForManualBolus": 0.5,
+  "insulinReq": 0.5,
+  "manualBolusErrorString": 0,
+  "minDelta": 0,
+  "minGuardBG": undefined,
+  "minPredBG": undefined,
+  "predBGs": {
+    "IOB": [
+      130,
+    ],
+    "ZT": [
+      130,
+    ],
+  },
+  "rate": 1.9,
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 130, Middleware: undefined; Eventual BG 130 >= 110, no temp, setting 1.9U/hr. ",
+  "reservoir": 100,
+  "sensitivityRatio": 1,
+  "target_bg": 110,
+  "temp": "absolute",
+  "threshold": 75,
+  "tick": "+0",
+}
+`;
+
+exports[`determine-basal characterization tests > high-bg > Very high BG (350), no IOB 1`] = `
+{
+  "BGI": -0,
+  "COB": 0,
+  "CR": 10,
+  "IOB": 0,
+  "ISF": 40,
+  "bg": 350,
+  "current_target": 110,
+  "deliverAt": "[DELIVER_AT]",
+  "deviation": 0,
+  "duration": 30,
+  "eventualBG": 350,
+  "expectedDelta": -10,
+  "insulinForManualBolus": 6,
+  "insulinReq": 2.5,
+  "manualBolusErrorString": 0,
+  "minDelta": 0,
+  "minGuardBG": undefined,
+  "minPredBG": undefined,
+  "predBGs": {
+    "IOB": [
+      350,
+    ],
+    "ZT": [
+      350,
+    ],
+  },
+  "rate": 3.5,
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 350, Middleware: undefined; Eventual BG 350 >= 110, max_iob 2.5, max_iob 2.5, adj. req. rate: 5.9 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
+  "reservoir": 100,
+  "sensitivityRatio": 1,
+  "target_bg": 110,
+  "temp": "absolute",
+  "threshold": 75,
+  "tick": "+0",
+}
+`;
+
+exports[`determine-basal characterization tests > low-bg > BG at threshold (80), falling 1`] = `
+{
+  "BGI": -0,
+  "COB": 0,
+  "CR": 10,
+  "IOB": 0,
+  "ISF": 40,
+  "bg": 80,
+  "current_target": 110,
+  "deliverAt": "[DELIVER_AT]",
+  "deviation": -18,
+  "duration": 60,
+  "eventualBG": 62,
+  "expectedDelta": 2,
+  "insulinForManualBolus": 0,
+  "insulinReq": 0,
+  "manualBolusErrorString": 0,
+  "minDelta": -3,
+  "minGuardBG": undefined,
+  "minPredBG": undefined,
+  "predBGs": {
+    "IOB": [
+      80,
+    ],
+    "ZT": [
+      80,
+    ],
+  },
+  "rate": 0,
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: -18, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 80, Middleware: undefined; Eventual BG 62 < 110, setting 60m zero temp. ",
+  "reservoir": 100,
+  "sensitivityRatio": 1,
+  "target_bg": 110,
+  "temp": "absolute",
+  "threshold": 75,
+  "tick": -3,
+}
+`;
+
+exports[`determine-basal characterization tests > low-bg > Low BG with zero temp already running (not extending) 1`] = `
+{
+  "deliverAt": "[DELIVER_AT]",
+  "duration": 0,
+  "rate": 0,
+  "reason": "Warning: currenttemp running but lastTemp from pumphistory ended 28949040m ago; canceling temp",
+  "temp": "absolute",
+}
+`;
+
+exports[`determine-basal characterization tests > low-bg > Low BG, falling, no IOB — should zero temp 1`] = `
+{
+  "BGI": -0,
+  "COB": 0,
+  "CR": 10,
+  "IOB": 0,
+  "ISF": 40,
+  "bg": 75,
+  "current_target": 110,
+  "deliverAt": "[DELIVER_AT]",
+  "deviation": -30,
+  "duration": 60,
+  "eventualBG": 45,
+  "expectedDelta": 2.7,
+  "insulinForManualBolus": 0,
+  "insulinReq": 0,
+  "manualBolusErrorString": 0,
+  "minDelta": -5,
+  "minGuardBG": undefined,
+  "minPredBG": undefined,
+  "predBGs": {
+    "IOB": [
+      75,
+    ],
+    "ZT": [
+      75,
+    ],
+  },
+  "rate": 0,
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: -30, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 75, Middleware: undefined; Eventual BG 45 < 110, setting 60m zero temp. ",
+  "reservoir": 100,
+  "sensitivityRatio": 1,
+  "target_bg": 110,
+  "temp": "absolute",
+  "threshold": 75,
+  "tick": -5,
+}
+`;
+
+exports[`determine-basal characterization tests > low-bg > Low BG, falling, with IOB — should zero temp 1`] = `
+{
+  "BGI": -2,
+  "COB": 0,
+  "CR": 10,
+  "IOB": 1,
+  "ISF": 40,
+  "bg": 75,
+  "current_target": 110,
+  "deliverAt": "[DELIVER_AT]",
+  "deviation": 6,
+  "duration": 120,
+  "eventualBG": 41,
+  "expectedDelta": 0.9,
+  "insulinForManualBolus": 0,
+  "insulinReq": 0,
+  "manualBolusErrorString": 0,
+  "minDelta": -1,
+  "minGuardBG": undefined,
+  "minPredBG": undefined,
+  "predBGs": {
+    "IOB": [
+      75,
+    ],
+    "ZT": [
+      75,
+    ],
+  },
+  "rate": 0,
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 6, BGI: -2, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 75, Middleware: undefined; Eventual BG 41 < 110, setting 120m zero temp. ",
+  "reservoir": 100,
+  "sensitivityRatio": 1,
+  "target_bg": 110,
+  "temp": "absolute",
+  "threshold": 75,
+  "tick": -1,
+}
+`;
+
+exports[`determine-basal characterization tests > low-bg > Low BG, rising slower than BGI — should zero temp 1`] = `
+{
+  "BGI": 2,
+  "COB": 0,
+  "CR": 10,
+  "IOB": -0.5,
+  "ISF": 40,
+  "bg": 75,
+  "current_target": 110,
+  "deliverAt": "[DELIVER_AT]",
+  "deviation": -6,
+  "duration": 30,
+  "eventualBG": 89,
+  "expectedDelta": 2.9,
+  "insulinForManualBolus": 0,
+  "insulinReq": 0,
+  "manualBolusErrorString": 0,
+  "minDelta": 1,
+  "minGuardBG": undefined,
+  "minPredBG": undefined,
+  "predBGs": {
+    "IOB": [
+      75,
+    ],
+    "ZT": [
+      75,
+    ],
+  },
+  "rate": 0,
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: -6, BGI: 2, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 75, Middleware: undefined; Eventual BG 89 < 110, setting 30m zero temp. ",
+  "reservoir": 100,
+  "sensitivityRatio": 1,
+  "target_bg": 110,
+  "temp": "absolute",
+  "threshold": 75,
+  "tick": "+1",
+}
+`;
+
+exports[`determine-basal characterization tests > low-bg > Low BG, rising, no IOB — should set current basal 1`] = `
+{
+  "BGI": -0,
+  "COB": 0,
+  "CR": 10,
+  "IOB": 0,
+  "ISF": 40,
+  "bg": 75,
+  "current_target": 110,
+  "deliverAt": "[DELIVER_AT]",
+  "deviation": 36,
+  "duration": 30,
+  "eventualBG": 111,
+  "expectedDelta": -0,
+  "insulinForManualBolus": 0.03,
+  "insulinReq": 0.03,
+  "manualBolusErrorString": 0,
+  "minDelta": 6,
+  "minGuardBG": undefined,
+  "minPredBG": undefined,
+  "predBGs": {
+    "IOB": [
+      75,
+    ],
+    "ZT": [
+      75,
+    ],
+  },
+  "rate": 0.95,
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 36, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 75, Middleware: undefined; Eventual BG 111 >= 110, no temp, setting 0.95U/hr. ",
+  "reservoir": 100,
+  "sensitivityRatio": 1,
+  "target_bg": 110,
+  "temp": "absolute",
+  "threshold": 75,
+  "tick": "+6",
+}
+`;
+
+exports[`determine-basal characterization tests > low-bg > Very low BG (55) — should zero temp 1`] = `
+{
+  "BGI": -0,
+  "COB": 0,
+  "CR": 10,
+  "IOB": 0,
+  "ISF": 40,
+  "bg": 55,
+  "carbsReq": 5,
+  "current_target": 110,
+  "deliverAt": "[DELIVER_AT]",
+  "deviation": -18,
+  "duration": 30,
+  "eventualBG": 37,
+  "expectedDelta": 3,
+  "insulinForManualBolus": -1.82,
+  "insulinReq": 0,
+  "manualBolusErrorString": 0,
+  "minDelta": -3,
+  "minGuardBG": undefined,
+  "minPredBG": undefined,
+  "predBGs": {
+    "IOB": [
+      55,
+    ],
+    "ZT": [
+      55,
+    ],
+  },
+  "rate": 0,
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: -18, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 55, Middleware: undefined; 5 add'l carbs req w/in 0m; minGuardBG 999<75",
+  "reservoir": 100,
+  "sensitivityRatio": 1,
+  "target_bg": 110,
+  "temp": "absolute",
+  "threshold": 75,
+  "tick": -3,
+}
+`;
+
+exports[`determine-basal characterization tests > post-meal > Early meal absorption — high COB, rising BG 1`] = `
+{
+  "BGI": -0,
+  "COB": 40,
+  "CR": 10,
+  "IOB": 0,
+  "ISF": 40,
+  "bg": 140,
+  "current_target": 110,
+  "deliverAt": "[DELIVER_AT]",
+  "deviation": 42,
+  "duration": 30,
+  "eventualBG": 182,
+  "expectedDelta": -3,
+  "insulinForManualBolus": 1.8,
+  "insulinReq": 1.8,
+  "manualBolusErrorString": 0,
+  "minDelta": 7,
+  "minGuardBG": undefined,
+  "minPredBG": undefined,
+  "predBGs": {
+    "COB": [
+      140,
+    ],
+    "IOB": [
+      140,
+    ],
+    "ZT": [
+      140,
+    ],
+  },
+  "rate": 3.5,
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 40, Dev: 42, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 140, COBpredBG 140, Middleware: undefined; Eventual BG 182 >= 110, adj. req. rate: 4.5 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
+  "reservoir": 100,
+  "sensitivityRatio": 1,
+  "target_bg": 110,
+  "temp": "absolute",
+  "threshold": 75,
+  "tick": "+8",
+}
+`;
+
+exports[`determine-basal characterization tests > post-meal > Large meal (90g) early absorption 1`] = `
+{
+  "BGI": -0,
+  "COB": 75,
+  "CR": 10,
+  "IOB": 0,
+  "ISF": 40,
+  "bg": 160,
+  "current_target": 110,
+  "deliverAt": "[DELIVER_AT]",
+  "deviation": 60,
+  "duration": 30,
+  "eventualBG": 220,
+  "expectedDelta": -4.6,
+  "insulinForManualBolus": 2.75,
+  "insulinReq": 2.5,
+  "manualBolusErrorString": 0,
+  "minDelta": 10,
+  "minGuardBG": undefined,
+  "minPredBG": undefined,
+  "predBGs": {
+    "COB": [
+      160,
+    ],
+    "IOB": [
+      160,
+    ],
+    "ZT": [
+      160,
+    ],
+  },
+  "rate": 3.5,
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 75, Dev: 60, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 160, COBpredBG 160, Middleware: undefined; Eventual BG 220 >= 110, max_iob 2.5, max_iob 2.5, adj. req. rate: 5.9 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
+  "reservoir": 100,
+  "sensitivityRatio": 1,
+  "target_bg": 110,
+  "temp": "absolute",
+  "threshold": 75,
+  "tick": "+12",
+}
+`;
+
+exports[`determine-basal characterization tests > post-meal > Late meal absorption — low COB, BG coming down 1`] = `
+{
+  "BGI": -0,
+  "COB": 8,
+  "CR": 10,
+  "IOB": 0,
+  "ISF": 40,
+  "bg": 145,
+  "current_target": 110,
+  "deliverAt": "[DELIVER_AT]",
+  "deviation": 12,
+  "duration": 30,
+  "eventualBG": 157,
+  "expectedDelta": -2,
+  "insulinForManualBolus": 1.18,
+  "insulinReq": 1.18,
+  "manualBolusErrorString": 0,
+  "minDelta": -2,
+  "minGuardBG": undefined,
+  "minPredBG": undefined,
+  "predBGs": {
+    "COB": [
+      145,
+    ],
+    "IOB": [
+      145,
+    ],
+    "ZT": [
+      145,
+    ],
+  },
+  "rate": 3.25,
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 8, Dev: 12, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 145, COBpredBG 145, Middleware: undefined; Eventual BG 157 >= 110, no temp, setting 3.25U/hr. ",
+  "reservoir": 100,
+  "sensitivityRatio": 1,
+  "target_bg": 110,
+  "temp": "absolute",
+  "threshold": 75,
+  "tick": -2,
+}
+`;
+
+exports[`determine-basal characterization tests > post-meal > Peak meal absorption — high COB, BG still rising 1`] = `
+{
+  "BGI": -0,
+  "COB": 25,
+  "CR": 10,
+  "IOB": 0,
+  "ISF": 40,
+  "bg": 170,
+  "current_target": 110,
+  "deliverAt": "[DELIVER_AT]",
+  "deviation": 30,
+  "duration": 30,
+  "eventualBG": 200,
+  "expectedDelta": -3.7,
+  "insulinForManualBolus": 2.25,
+  "insulinReq": 2.25,
+  "manualBolusErrorString": 0,
+  "minDelta": 5,
+  "minGuardBG": undefined,
+  "minPredBG": undefined,
+  "predBGs": {
+    "COB": [
+      170,
+    ],
+    "IOB": [
+      170,
+    ],
+    "ZT": [
+      170,
+    ],
+  },
+  "rate": 3.5,
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 25, Dev: 30, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 170, COBpredBG 170, Middleware: undefined; Eventual BG 200 >= 110, adj. req. rate: 5.4 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
+  "reservoir": 100,
+  "sensitivityRatio": 1,
+  "target_bg": 110,
+  "temp": "absolute",
+  "threshold": 75,
+  "tick": "+5",
+}
+`;
+
+exports[`determine-basal characterization tests > rising-bg > Fast rise (+10/5m) from in-range 1`] = `
+{
+  "BGI": -0,
+  "COB": 0,
+  "CR": 10,
+  "IOB": 0,
+  "ISF": 40,
+  "bg": 130,
+  "current_target": 110,
+  "deliverAt": "[DELIVER_AT]",
+  "deviation": 54,
+  "duration": 30,
+  "eventualBG": 184,
+  "expectedDelta": -3.1,
+  "insulinForManualBolus": 1.85,
+  "insulinReq": 1.85,
+  "manualBolusErrorString": 0,
+  "minDelta": 9,
+  "minGuardBG": undefined,
+  "minPredBG": undefined,
+  "predBGs": {
+    "IOB": [
+      130,
+    ],
+    "ZT": [
+      130,
+    ],
+  },
+  "rate": 3.5,
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 54, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 130, Middleware: undefined; Eventual BG 184 >= 110, adj. req. rate: 4.6 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
+  "reservoir": 100,
+  "sensitivityRatio": 1,
+  "target_bg": 110,
+  "temp": "absolute",
+  "threshold": 75,
+  "tick": "+10",
+}
+`;
+
+exports[`determine-basal characterization tests > rising-bg > Moderate rise (+5/5m) from in-range 1`] = `
+{
+  "BGI": -0,
+  "COB": 0,
+  "CR": 10,
+  "IOB": 0,
+  "ISF": 40,
+  "bg": 125,
+  "current_target": 110,
+  "deliverAt": "[DELIVER_AT]",
+  "deviation": 30,
+  "duration": 30,
+  "eventualBG": 155,
+  "expectedDelta": -1.9,
+  "insulinForManualBolus": 1.13,
+  "insulinReq": 1.13,
+  "manualBolusErrorString": 0,
+  "minDelta": 5,
+  "minGuardBG": undefined,
+  "minPredBG": undefined,
+  "predBGs": {
+    "IOB": [
+      125,
+    ],
+    "ZT": [
+      125,
+    ],
+  },
+  "rate": 3.15,
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 30, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 125, Middleware: undefined; Eventual BG 155 >= 110, no temp, setting 3.15U/hr. ",
+  "reservoir": 100,
+  "sensitivityRatio": 1,
+  "target_bg": 110,
+  "temp": "absolute",
+  "threshold": 75,
+  "tick": "+5",
+}
+`;
+
+exports[`determine-basal characterization tests > rising-bg > Rise with existing IOB 1`] = `
+{
+  "BGI": -3,
+  "COB": 0,
+  "CR": 10,
+  "IOB": 1.5,
+  "ISF": 40,
+  "bg": 130,
+  "current_target": 110,
+  "deliverAt": "[DELIVER_AT]",
+  "deviation": 48,
+  "duration": 30,
+  "eventualBG": 118,
+  "expectedDelta": -3.3,
+  "insulinForManualBolus": 0.2,
+  "insulinReq": 0.2,
+  "manualBolusErrorString": 0,
+  "minDelta": 5,
+  "minGuardBG": undefined,
+  "minPredBG": undefined,
+  "predBGs": {
+    "IOB": [
+      130,
+    ],
+    "ZT": [
+      130,
+    ],
+  },
+  "rate": 1.3,
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 48, BGI: -3, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 130, Middleware: undefined; Eventual BG 118 >= 110, no temp, setting 1.3U/hr. ",
+  "reservoir": 100,
+  "sensitivityRatio": 1,
+  "target_bg": 110,
+  "temp": "absolute",
+  "threshold": 75,
+  "tick": "+5",
+}
+`;
+
+exports[`determine-basal characterization tests > rising-bg > Slow rise (+2/5m) from in-range 1`] = `
+{
+  "BGI": -0,
+  "COB": 0,
+  "CR": 10,
+  "IOB": 0,
+  "ISF": 40,
+  "bg": 120,
+  "current_target": 110,
+  "deliverAt": "[DELIVER_AT]",
+  "deviation": 12,
+  "duration": 30,
+  "eventualBG": 132,
+  "expectedDelta": -0.9,
+  "insulinForManualBolus": 0.55,
+  "insulinReq": 0.55,
+  "manualBolusErrorString": 0,
+  "minDelta": 2,
+  "minGuardBG": undefined,
+  "minPredBG": undefined,
+  "predBGs": {
+    "IOB": [
+      120,
+    ],
+    "ZT": [
+      120,
+    ],
+  },
+  "rate": 2,
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 12, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 120, Middleware: undefined; Eventual BG 132 >= 110, no temp, setting 2U/hr. ",
+  "reservoir": 100,
+  "sensitivityRatio": 1,
+  "target_bg": 110,
+  "temp": "absolute",
+  "threshold": 75,
+  "tick": "+2",
+}
+`;
+
+exports[`determine-basal characterization tests > smb > SMB at max IOB — should not SMB 1`] = `
+{
+  "BGI": -5,
+  "COB": 0,
+  "CR": 10,
+  "IOB": 2.5,
+  "ISF": 40,
+  "bg": 180,
+  "current_target": 110,
+  "deliverAt": "[DELIVER_AT]",
+  "deviation": 60,
+  "duration": 30,
+  "eventualBG": 140,
+  "expectedDelta": -6.2,
+  "insulinForManualBolus": 0.75,
+  "insulinReq": 0,
+  "manualBolusErrorString": 0,
+  "minDelta": 5,
+  "minGuardBG": undefined,
+  "minPredBG": undefined,
+  "predBGs": {
+    "IOB": [
+      180,
+    ],
+    "ZT": [
+      180,
+    ],
+  },
+  "rate": 0.9,
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 60, BGI: -5, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 180, Middleware: undefined; Eventual BG 140 >= 110, max_iob 2.5, max_iob 2.5,  insulinReq 0. 0m@0.00 > 2 * insulinReq. Setting temp basal of 0.9U/hr. . Setting neutral temp basal of 0.9U/hr",
+  "reservoir": 100,
+  "sensitivityRatio": 1,
+  "target_bg": 110,
+  "temp": "absolute",
+  "threshold": 75,
+  "tick": "+5",
+}
+`;
+
+exports[`determine-basal characterization tests > smb > SMB blocked by high temp target 1`] = `
+{
+  "BGI": -0,
+  "COB": 0,
+  "CR": 10,
+  "IOB": 0,
+  "ISF": 40,
+  "bg": 130,
+  "current_target": 120,
+  "deliverAt": "[DELIVER_AT]",
+  "deviation": 12,
+  "duration": 30,
+  "eventualBG": 142,
+  "expectedDelta": -0.9,
+  "insulinForManualBolus": 0.55,
+  "insulinReq": 0.55,
+  "manualBolusErrorString": 0,
+  "minDelta": 2,
+  "minGuardBG": undefined,
+  "minPredBG": undefined,
+  "predBGs": {
+    "IOB": [
+      130,
+    ],
+    "ZT": [
+      130,
+    ],
+  },
+  "rate": 2,
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 12, BGI: 0, CR: 10, Target: 120, minPredBG 999, minGuardBG 999, IOBpredBG 130, Middleware: undefined; Eventual BG 142 >= 120, no temp, setting 2U/hr. ",
+  "reservoir": 100,
+  "sensitivityRatio": 1,
+  "target_bg": 120,
+  "temp": "absolute",
+  "threshold": 80,
+  "tick": "+2",
+}
+`;
+
+exports[`determine-basal characterization tests > smb > SMB disabled (microBolusAllowed=false), high BG 1`] = `
+{
+  "BGI": -0,
+  "COB": 0,
+  "CR": 10,
+  "IOB": 0,
+  "ISF": 40,
+  "bg": 180,
+  "current_target": 110,
+  "deliverAt": "[DELIVER_AT]",
+  "deviation": 30,
+  "duration": 30,
+  "eventualBG": 210,
+  "expectedDelta": -4.2,
+  "insulinForManualBolus": 2.5,
+  "insulinReq": 2.5,
+  "manualBolusErrorString": 0,
+  "minDelta": 5,
+  "minGuardBG": undefined,
+  "minPredBG": undefined,
+  "predBGs": {
+    "IOB": [
+      180,
+    ],
+    "ZT": [
+      180,
+    ],
+  },
+  "rate": 3.5,
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 30, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 180, Middleware: undefined; Eventual BG 210 >= 110, adj. req. rate: 5.9 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
+  "reservoir": 100,
+  "sensitivityRatio": 1,
+  "target_bg": 110,
+  "temp": "absolute",
+  "threshold": 75,
+  "tick": "+5",
+}
+`;
+
+exports[`determine-basal characterization tests > smb > SMB enabled always, high BG, no IOB 1`] = `
+{
+  "BGI": -0,
+  "COB": 0,
+  "CR": 10,
+  "IOB": 0,
+  "ISF": 40,
+  "bg": 180,
+  "current_target": 110,
+  "deliverAt": "[DELIVER_AT]",
+  "deviation": 12,
+  "duration": 30,
+  "eventualBG": 192,
+  "expectedDelta": -3.4,
+  "insulinForManualBolus": 2.05,
+  "insulinReq": 2.05,
+  "manualBolusErrorString": 0,
+  "minDelta": 2,
+  "minGuardBG": undefined,
+  "minPredBG": undefined,
+  "predBGs": {
+    "IOB": [
+      180,
+    ],
+    "ZT": [
+      180,
+    ],
+  },
+  "rate": 3.5,
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 12, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 180, Middleware: undefined; Eventual BG 192 >= 110,  insulinReq 2.05; maxBolus 0.5. Microbolusing 0.5U. adj. req. rate: 5 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
+  "reservoir": 100,
+  "sensitivityRatio": 1,
+  "target_bg": 110,
+  "temp": "absolute",
+  "threshold": 75,
+  "tick": "+2",
+  "units": 0.5,
+}
+`;
+
+exports[`determine-basal characterization tests > smb > SMB with COB enabled, meal active 1`] = `
+{
+  "BGI": -1,
+  "COB": 30,
+  "CR": 10,
+  "IOB": 0.5,
+  "ISF": 40,
+  "bg": 160,
+  "current_target": 110,
+  "deliverAt": "[DELIVER_AT]",
+  "deviation": 36,
+  "duration": 30,
+  "eventualBG": 176,
+  "expectedDelta": -3.7,
+  "insulinForManualBolus": 1.65,
+  "insulinReq": 1.65,
+  "manualBolusErrorString": 0,
+  "minDelta": 5,
+  "minGuardBG": undefined,
+  "minPredBG": undefined,
+  "predBGs": {
+    "COB": [
+      160,
+    ],
+    "IOB": [
+      160,
+    ],
+    "ZT": [
+      160,
+    ],
+  },
+  "rate": 3.5,
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 30, Dev: 36, BGI: -1, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 160, COBpredBG 160, Middleware: undefined; Eventual BG 176 >= 110,  insulinReq 1.65; maxBolus 0.5. Microbolusing 0.5U. adj. req. rate: 4.2 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
+  "reservoir": 100,
+  "sensitivityRatio": 1,
+  "target_bg": 110,
+  "temp": "absolute",
+  "threshold": 75,
+  "tick": "+5",
+  "units": 0.5,
+}
+`;
+
+exports[`determine-basal characterization tests > smb > SMB with high BG target enabled 1`] = `
+{
+  "BGI": -0,
+  "COB": 0,
+  "CR": 10,
+  "IOB": 0,
+  "ISF": 40,
+  "bg": 160,
+  "current_target": 110,
+  "deliverAt": "[DELIVER_AT]",
+  "deviation": 0,
+  "duration": 30,
+  "eventualBG": 160,
+  "expectedDelta": -2.1,
+  "insulinForManualBolus": 1.25,
+  "insulinReq": 1.25,
+  "manualBolusErrorString": 0,
+  "minDelta": 0,
+  "minGuardBG": undefined,
+  "minPredBG": undefined,
+  "predBGs": {
+    "IOB": [
+      160,
+    ],
+    "ZT": [
+      160,
+    ],
+  },
+  "rate": 3.4,
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 160, Middleware: undefined; Eventual BG 160 >= 110,  insulinReq 1.25; maxBolus 0.5. Microbolusing 0.5U. no temp, setting 3.4U/hr. ",
+  "reservoir": 100,
+  "sensitivityRatio": 1,
+  "target_bg": 110,
+  "temp": "absolute",
+  "threshold": 75,
+  "tick": "+0",
+  "units": 0.5,
+}
+`;
+
+exports[`determine-basal characterization tests > smb > SMB with temp target — low TT enables SMB 1`] = `
+{
+  "BGI": -0,
+  "COB": 0,
+  "CR": 10,
+  "IOB": 0,
+  "ISF": 40,
+  "bg": 130,
+  "current_target": 80,
+  "deliverAt": "[DELIVER_AT]",
+  "deviation": 12,
+  "duration": 30,
+  "eventualBG": 142,
+  "expectedDelta": -2.6,
+  "insulinForManualBolus": 1.55,
+  "insulinReq": 1.55,
+  "manualBolusErrorString": 0,
+  "minDelta": 2,
+  "minGuardBG": undefined,
+  "minPredBG": undefined,
+  "predBGs": {
+    "IOB": [
+      130,
+    ],
+    "ZT": [
+      130,
+    ],
+  },
+  "rate": 3.5,
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 12, BGI: 0, CR: 10, Target: 80, minPredBG 999, minGuardBG 999, IOBpredBG 130, Middleware: undefined; Eventual BG 142 >= 80,  insulinReq 1.55; maxBolus 0.5. Microbolusing 0.5U. adj. req. rate: 4 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
+  "reservoir": 100,
+  "sensitivityRatio": 1,
+  "target_bg": 80,
+  "temp": "absolute",
+  "threshold": 60,
+  "tick": "+2",
+  "units": 0.5,
+}
+`;
+
+exports[`determine-basal characterization tests > steady-state > In range, no IOB, high temp running — should cancel 1`] = `
+{
+  "deliverAt": "[DELIVER_AT]",
+  "duration": 0,
+  "rate": 0,
+  "reason": "Warning: currenttemp running but lastTemp from pumphistory ended 28949040m ago; canceling temp",
+  "temp": "absolute",
+}
+`;
+
+exports[`determine-basal characterization tests > steady-state > In range, no IOB, no temp running 1`] = `
+{
+  "BGI": -0,
+  "COB": 0,
+  "CR": 10,
+  "IOB": 0,
+  "ISF": 40,
+  "bg": 115,
+  "current_target": 110,
+  "deliverAt": "[DELIVER_AT]",
+  "deviation": 0,
+  "duration": 30,
+  "eventualBG": 115,
+  "expectedDelta": -0.2,
+  "insulinForManualBolus": 0.13,
+  "insulinReq": 0.13,
+  "manualBolusErrorString": 0,
+  "minDelta": 0,
+  "minGuardBG": undefined,
+  "minPredBG": undefined,
+  "predBGs": {
+    "IOB": [
+      115,
+    ],
+    "ZT": [
+      115,
+    ],
+  },
+  "rate": 1.15,
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 115, Middleware: undefined; Eventual BG 115 >= 110, no temp, setting 1.15U/hr. ",
+  "reservoir": 100,
+  "sensitivityRatio": 1,
+  "target_bg": 110,
+  "temp": "absolute",
+  "threshold": 75,
+  "tick": "+0",
+}
+`;
+
+exports[`determine-basal characterization tests > steady-state > In range, no IOB, zero temp running 1`] = `
+{
+  "deliverAt": "[DELIVER_AT]",
+  "duration": 0,
+  "rate": 0,
+  "reason": "Warning: currenttemp running but lastTemp from pumphistory ended 28949040m ago; canceling temp",
+  "temp": "absolute",
+}
+`;
+
+exports[`determine-basal characterization tests > steady-state > In range, small negative IOB 1`] = `
+{
+  "BGI": 1,
+  "COB": 0,
+  "CR": 10,
+  "IOB": -0.3,
+  "ISF": 40,
+  "bg": 115,
+  "current_target": 110,
+  "deliverAt": "[DELIVER_AT]",
+  "deviation": -4,
+  "duration": 30,
+  "eventualBG": 123,
+  "expectedDelta": 0.1,
+  "insulinForManualBolus": 0.33,
+  "insulinReq": 0,
+  "manualBolusErrorString": 0,
+  "minDelta": 0,
+  "minGuardBG": undefined,
+  "minPredBG": undefined,
+  "predBGs": {
+    "IOB": [
+      115,
+    ],
+    "ZT": [
+      115,
+    ],
+  },
+  "rate": 0.9,
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: -4, BGI: 1, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 115, Middleware: undefined; Eventual BG 123 > 110 but Min. Delta 0.00 < Exp. Delta 0; setting current basal of 0.9 as temp. . Setting neutral temp basal of 0.9U/hr",
+  "reservoir": 100,
+  "sensitivityRatio": 1,
+  "target_bg": 110,
+  "temp": "absolute",
+  "threshold": 75,
+  "tick": "+0",
+}
+`;
+
+exports[`determine-basal characterization tests > steady-state > In range, small positive IOB 1`] = `
+{
+  "BGI": -1,
+  "COB": 0,
+  "CR": 10,
+  "IOB": 0.5,
+  "ISF": 40,
+  "bg": 115,
+  "current_target": 110,
+  "deliverAt": "[DELIVER_AT]",
+  "deviation": 6,
+  "duration": 30,
+  "eventualBG": 101,
+  "expectedDelta": -0.6,
+  "insulinForManualBolus": 0,
+  "insulinReq": 0,
+  "manualBolusErrorString": 0,
+  "minDelta": 0,
+  "minGuardBG": undefined,
+  "minPredBG": undefined,
+  "predBGs": {
+    "IOB": [
+      115,
+    ],
+    "ZT": [
+      115,
+    ],
+  },
+  "rate": 0,
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 6, BGI: -1, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 115, Middleware: undefined; Eventual BG 101 < 110, setting 30m zero temp. ",
+  "reservoir": 100,
+  "sensitivityRatio": 1,
+  "target_bg": 110,
+  "temp": "absolute",
+  "threshold": 75,
+  "tick": "+0",
+}
+`;
+
+exports[`determine-basal characterization tests > tdd-basal > TDD-adjusted basal — higher recent TDD 1`] = `
+{
+  "BGI": -0,
+  "COB": 0,
+  "CR": 10,
+  "IOB": 0,
+  "ISF": 37,
+  "bg": 130,
+  "current_target": 110,
+  "deliverAt": "[DELIVER_AT]",
+  "deviation": 0,
+  "duration": 30,
+  "eventualBG": 130,
+  "expectedDelta": -0.8,
+  "insulinForManualBolus": 0.54,
+  "insulinReq": 0.54,
+  "manualBolusErrorString": 0,
+  "minDelta": 0,
+  "minGuardBG": undefined,
+  "minPredBG": undefined,
+  "predBGs": {
+    "IOB": [
+      130,
+    ],
+    "ZT": [
+      130,
+    ],
+  },
+  "rate": 2.2,
+  "reason": "Autosens ratio: 1.08, ISF: 40→37, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 130, Dynamic ISF: On, Logarithmic formula, AF: 0.8, Basal ratio: 1.2, Middleware: undefined; Eventual BG 130 >= 110, no temp, setting 2.2U/hr. ",
+  "reservoir": 100,
+  "sensitivityRatio": 1.0782,
+  "target_bg": 110,
+  "temp": "absolute",
+  "threshold": 75,
+  "tick": "+0",
+}
+`;
+
+exports[`determine-basal characterization tests > tdd-basal > TDD-adjusted basal — lower recent TDD 1`] = `
+{
+  "BGI": -0,
+  "COB": 0,
+  "CR": 10,
+  "IOB": 0,
+  "ISF": 57,
+  "bg": 130,
+  "current_target": 110,
+  "deliverAt": "[DELIVER_AT]",
+  "deviation": 0,
+  "duration": 30,
+  "eventualBG": 130,
+  "expectedDelta": -0.8,
+  "insulinForManualBolus": 0.35,
+  "insulinReq": 0.35,
+  "manualBolusErrorString": 0,
+  "minDelta": 0,
+  "minGuardBG": undefined,
+  "minPredBG": undefined,
+  "predBGs": {
+    "IOB": [
+      130,
+    ],
+    "ZT": [
+      130,
+    ],
+  },
+  "rate": 1.4,
+  "reason": "Autosens ratio: 0.7, ISF: 40→57, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 130, Dynamic ISF: On, Logarithmic formula, Autosens/Dynamic Limit: 0.7 (0.65), AF: 0.8, Basal ratio: 0.75, Middleware: undefined; Eventual BG 130 >= 110, no temp, setting 1.4U/hr. ",
+  "reservoir": 100,
+  "sensitivityRatio": 0.7,
+  "target_bg": 110,
+  "temp": "absolute",
+  "threshold": 75,
+  "tick": "+0",
+}
+`;
+
+exports[`determine-basal characterization tests > temp-target > High temp target (150) — exercise raises sensitivity 1`] = `
+{
+  "BGI": -0,
+  "COB": 0,
+  "CR": 10,
+  "IOB": 0,
+  "ISF": 73,
+  "bg": 130,
+  "current_target": 150,
+  "deliverAt": "[DELIVER_AT]",
+  "deviation": 0,
+  "duration": 30,
+  "eventualBG": 130,
+  "expectedDelta": 0.8,
+  "insulinForManualBolus": 0,
+  "insulinReq": 0,
+  "manualBolusErrorString": 0,
+  "minDelta": 0,
+  "minGuardBG": undefined,
+  "minPredBG": undefined,
+  "predBGs": {
+    "IOB": [
+      130,
+    ],
+    "ZT": [
+      130,
+    ],
+  },
+  "rate": 0,
+  "reason": "Autosens ratio: 0.55, ISF: 40→73, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 150, minPredBG 999, minGuardBG 999, IOBpredBG 130, Middleware: undefined; Eventual BG 130 < 150, setting 30m zero temp. ",
+  "reservoir": 100,
+  "sensitivityRatio": 0.55,
+  "target_bg": 150,
+  "temp": "absolute",
+  "threshold": 95,
+  "tick": "+0",
+}
+`;
+
+exports[`determine-basal characterization tests > temp-target > Low temp target (80) — exercise mode 1`] = `
+{
+  "BGI": -0,
+  "COB": 0,
+  "CR": 10,
+  "IOB": 0,
+  "ISF": 40,
+  "bg": 120,
+  "current_target": 80,
+  "deliverAt": "[DELIVER_AT]",
+  "deviation": 0,
+  "duration": 30,
+  "eventualBG": 120,
+  "expectedDelta": -1.7,
+  "insulinForManualBolus": 1,
+  "insulinReq": 1,
+  "manualBolusErrorString": 0,
+  "minDelta": 0,
+  "minGuardBG": undefined,
+  "minPredBG": undefined,
+  "predBGs": {
+    "IOB": [
+      120,
+    ],
+    "ZT": [
+      120,
+    ],
+  },
+  "rate": 2.9,
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 80, minPredBG 999, minGuardBG 999, IOBpredBG 120, Middleware: undefined; Eventual BG 120 >= 80, no temp, setting 2.9U/hr. ",
+  "reservoir": 100,
+  "sensitivityRatio": 1,
+  "target_bg": 80,
+  "temp": "absolute",
+  "threshold": 60,
+  "tick": "+0",
+}
+`;
+
+exports[`determine-basal characterization tests > trio-override > Override active — 80% (less aggressive) 1`] = `
+{
+  "BGI": -0,
+  "COB": 0,
+  "CR": 12.5,
+  "IOB": 0,
+  "ISF": 50,
+  "bg": 150,
+  "current_target": 110,
+  "deliverAt": "[DELIVER_AT]",
+  "deviation": 0,
+  "duration": 30,
+  "eventualBG": 150,
+  "expectedDelta": -1.7,
+  "insulinForManualBolus": 0.8,
+  "insulinReq": 0.8,
+  "manualBolusErrorString": 0,
+  "minDelta": 0,
+  "minGuardBG": undefined,
+  "minPredBG": undefined,
+  "predBGs": {
+    "IOB": [
+      150,
+    ],
+    "ZT": [
+      150,
+    ],
+  },
+  "rate": 2.3,
+  "reason": "Autosens ratio: 1, ISF: 50→50, COB: 0, Dev: 0, BGI: 0, CR: 12.5, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 150, Middleware: undefined; Eventual BG 150 >= 110, no temp, setting 2.3U/hr. ",
+  "reservoir": 100,
+  "sensitivityRatio": 1,
+  "target_bg": 110,
+  "temp": "absolute",
+  "threshold": 75,
+  "tick": "+0",
+}
+`;
+
+exports[`determine-basal characterization tests > trio-override > Override active — 120% (more aggressive) 1`] = `
+{
+  "BGI": -0,
+  "COB": 0,
+  "CR": 8.3,
+  "IOB": 0,
+  "ISF": 33,
+  "bg": 150,
+  "current_target": 110,
+  "deliverAt": "[DELIVER_AT]",
+  "deviation": 0,
+  "duration": 30,
+  "eventualBG": 150,
+  "expectedDelta": -1.7,
+  "insulinForManualBolus": 1.2,
+  "insulinReq": 1.2,
+  "manualBolusErrorString": 0,
+  "minDelta": 0,
+  "minGuardBG": undefined,
+  "minPredBG": undefined,
+  "predBGs": {
+    "IOB": [
+      150,
+    ],
+    "ZT": [
+      150,
+    ],
+  },
+  "rate": 3.5,
+  "reason": "Autosens ratio: 1, ISF: 33→33, COB: 0, Dev: 0, BGI: 0, CR: 8.3, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 150, Middleware: undefined; Eventual BG 150 >= 110, no temp, setting 3.5U/hr. ",
+  "reservoir": 100,
+  "sensitivityRatio": 1,
+  "target_bg": 110,
+  "temp": "absolute",
+  "threshold": 75,
+  "tick": "+0",
+}
+`;
+
+exports[`determine-basal characterization tests > trio-override > Override with custom target (100) 1`] = `
+{
+  "BGI": -0,
+  "COB": 0,
+  "CR": 10,
+  "IOB": 0,
+  "ISF": 40,
+  "bg": 150,
+  "current_target": 100,
+  "deliverAt": "[DELIVER_AT]",
+  "deviation": 0,
+  "duration": 30,
+  "eventualBG": 150,
+  "expectedDelta": -2.1,
+  "insulinForManualBolus": 1.25,
+  "insulinReq": 1.25,
+  "manualBolusErrorString": 0,
+  "minDelta": 0,
+  "minGuardBG": undefined,
+  "minPredBG": undefined,
+  "predBGs": {
+    "IOB": [
+      150,
+    ],
+    "ZT": [
+      150,
+    ],
+  },
+  "rate": 3.4,
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 100, minPredBG 999, minGuardBG 999, IOBpredBG 150, Middleware: undefined; Eventual BG 150 >= 100, no temp, setting 3.4U/hr. ",
+  "reservoir": 100,
+  "sensitivityRatio": 1,
+  "target_bg": 100,
+  "temp": "absolute",
+  "threshold": 70,
+  "tick": "+0",
+}
+`;
+
+exports[`determine-basal characterization tests > trio-override > SMBs disabled by override 1`] = `
+{
+  "BGI": -0,
+  "COB": 0,
+  "CR": 10,
+  "IOB": 0,
+  "ISF": 40,
+  "bg": 180,
+  "current_target": 110,
+  "deliverAt": "[DELIVER_AT]",
+  "deviation": 30,
+  "duration": 30,
+  "eventualBG": 210,
+  "expectedDelta": -4.2,
+  "insulinForManualBolus": 2.5,
+  "insulinReq": 2.5,
+  "manualBolusErrorString": 0,
+  "minDelta": 5,
+  "minGuardBG": undefined,
+  "minPredBG": undefined,
+  "predBGs": {
+    "IOB": [
+      180,
+    ],
+    "ZT": [
+      180,
+    ],
+  },
+  "rate": 3.5,
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 30, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 180, Middleware: undefined; Eventual BG 210 >= 110, adj. req. rate: 5.9 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
+  "reservoir": 100,
+  "sensitivityRatio": 1,
+  "target_bg": 110,
+  "temp": "absolute",
+  "threshold": 75,
+  "tick": "+5",
+}
+`;
+
+exports[`determine-basal characterization tests > uam > UAM — BG rising fast, already has IOB 1`] = `
+{
+  "BGI": -3,
+  "COB": 0,
+  "CR": 10,
+  "IOB": 1.5,
+  "ISF": 40,
+  "bg": 170,
+  "current_target": 110,
+  "deliverAt": "[DELIVER_AT]",
+  "deviation": 78,
+  "duration": 30,
+  "eventualBG": 188,
+  "expectedDelta": -6.2,
+  "insulinForManualBolus": 1.95,
+  "insulinReq": 1,
+  "manualBolusErrorString": 0,
+  "minDelta": 10,
+  "minGuardBG": undefined,
+  "minPredBG": undefined,
+  "predBGs": {
+    "IOB": [
+      170,
+    ],
+    "UAM": [
+      170,
+    ],
+    "ZT": [
+      170,
+    ],
+  },
+  "rate": 2.9,
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 78, BGI: -3, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 170, UAMpredBG 170, Middleware: undefined; Eventual BG 188 >= 110, max_iob 2.5, max_iob 2.5,  insulinReq 1; maxBolus 0.5. Microbolusing 0.5U. no temp, setting 2.9U/hr. ",
+  "reservoir": 100,
+  "sensitivityRatio": 1,
+  "target_bg": 110,
+  "temp": "absolute",
+  "threshold": 75,
+  "tick": "+12",
+  "units": 0.5,
+}
+`;
+
+exports[`determine-basal characterization tests > uam > UAM — rising BG with no carbs entered 1`] = `
+{
+  "BGI": -0,
+  "COB": 0,
+  "CR": 10,
+  "IOB": 0,
+  "ISF": 40,
+  "bg": 150,
+  "current_target": 110,
+  "deliverAt": "[DELIVER_AT]",
+  "deviation": 42,
+  "duration": 30,
+  "eventualBG": 192,
+  "expectedDelta": -3.4,
+  "insulinForManualBolus": 2.05,
+  "insulinReq": 2.05,
+  "manualBolusErrorString": 0,
+  "minDelta": 7,
+  "minGuardBG": undefined,
+  "minPredBG": undefined,
+  "predBGs": {
+    "IOB": [
+      150,
+    ],
+    "UAM": [
+      150,
+    ],
+    "ZT": [
+      150,
+    ],
+  },
+  "rate": 3.5,
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 42, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 150, UAMpredBG 150, Middleware: undefined; Eventual BG 192 >= 110,  insulinReq 2.05; maxBolus 0.5. Microbolusing 0.5U. adj. req. rate: 5 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
+  "reservoir": 100,
+  "sensitivityRatio": 1,
+  "target_bg": 110,
+  "temp": "absolute",
+  "threshold": 75,
+  "tick": "+8",
+  "units": 0.5,
+}
+`;
+
+exports[`determine-basal characterization tests > zero-temp > BG predicted to go low — should zero temp 1`] = `
+{
+  "BGI": -5,
+  "COB": 0,
+  "CR": 10,
+  "IOB": 2,
+  "ISF": 40,
+  "bg": 100,
+  "current_target": 110,
+  "deliverAt": "[DELIVER_AT]",
+  "deviation": 12,
+  "duration": 120,
+  "eventualBG": 32,
+  "expectedDelta": -1.7,
+  "insulinForManualBolus": 0,
+  "insulinReq": 0,
+  "manualBolusErrorString": 0,
+  "minDelta": -3,
+  "minGuardBG": undefined,
+  "minPredBG": undefined,
+  "predBGs": {
+    "IOB": [
+      100,
+    ],
+    "ZT": [
+      100,
+    ],
+  },
+  "rate": 0,
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 12, BGI: -5, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 100, Middleware: undefined; Eventual BG 32 < 110, setting 120m zero temp. ",
+  "reservoir": 100,
+  "sensitivityRatio": 1,
+  "target_bg": 110,
+  "temp": "absolute",
+  "threshold": 75,
+  "tick": -3,
+}
+`;
+
+exports[`determine-basal characterization tests > zero-temp > Eventual BG well below target with high IOB 1`] = `
+{
+  "BGI": -6,
+  "COB": 0,
+  "CR": 10,
+  "IOB": 3,
+  "ISF": 40,
+  "bg": 110,
+  "current_target": 110,
+  "deliverAt": "[DELIVER_AT]",
+  "deviation": 30,
+  "duration": 120,
+  "eventualBG": 20,
+  "expectedDelta": -2.2,
+  "insulinForManualBolus": 0,
+  "insulinReq": 0,
+  "manualBolusErrorString": 0,
+  "minDelta": -1,
+  "minGuardBG": undefined,
+  "minPredBG": undefined,
+  "predBGs": {
+    "IOB": [
+      110,
+    ],
+    "ZT": [
+      110,
+    ],
+  },
+  "rate": 0,
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 30, BGI: -6, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 110, Middleware: undefined; Eventual BG 20 < 110, setting 120m zero temp. ",
+  "reservoir": 100,
+  "sensitivityRatio": 1,
+  "target_bg": 110,
+  "temp": "absolute",
+  "threshold": 75,
+  "tick": -1,
+}
+`;
