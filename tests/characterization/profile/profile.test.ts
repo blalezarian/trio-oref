@@ -6,10 +6,13 @@
  */
 
 import { createRequire } from 'node:module';
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 const require = createRequire(import.meta.url);
 const profileModule = require('../../../lib/profile/index');
+
+// Pin clock to 12:00 UTC so basalLookup (which calls new Date()) is deterministic
+const FIXED_TIME = new Date('2025-01-15T12:00:00.000Z');
 
 function makeInputs(overrides: Record<string, unknown> = {}) {
   return {
@@ -40,6 +43,15 @@ function makeInputs(overrides: Record<string, unknown> = {}) {
 }
 
 describe('profile characterization tests', () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+    vi.setSystemTime(FIXED_TIME);
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   describe('defaults', () => {
     it('returns full default profile', () => {
       expect(profileModule.defaults()).toMatchSnapshot();

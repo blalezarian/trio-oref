@@ -35,3 +35,4 @@ bin/__pycache__
 
 bash-unit-test-temp
 
+.local/
