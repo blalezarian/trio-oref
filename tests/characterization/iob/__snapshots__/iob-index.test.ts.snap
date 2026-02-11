@@ -1,0 +1,426 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`iob/index (generate) characterization tests > Nightscout/Care Portal treatments > Correction Bolus from Care Portal > care portal correction 1`] = `
+[
+  {
+    "activity": 0.009,
+    "basaliob": 0,
+    "bolusinsulin": 1.5,
+    "bolusiob": 1.146,
+    "iob": 1.146,
+    "iobWithZeroTemp": {
+      "activity": 0.009,
+      "basaliob": 0,
+      "bolusinsulin": 1.5,
+      "bolusiob": 1.146,
+      "iob": 1.146,
+      "netbasalinsulin": 0,
+      "time": "[TIME+0m]",
+    },
+    "lastBolusTime": 1736938800000,
+    "lastTemp": {
+      "date": 0,
+    },
+    "netbasalinsulin": 0,
+    "time": "[TIME+0m]",
+  },
+]
+`;
+
+exports[`iob/index (generate) characterization tests > Nightscout/Care Portal treatments > Meal Bolus from Care Portal > care portal meal bolus 1`] = `
+[
+  {
+    "activity": 0.0132,
+    "basaliob": 0,
+    "bolusinsulin": 3,
+    "bolusiob": 2.775,
+    "iob": 2.775,
+    "iobWithZeroTemp": {
+      "activity": 0.0132,
+      "basaliob": 0,
+      "bolusinsulin": 3,
+      "bolusiob": 2.775,
+      "iob": 2.775,
+      "netbasalinsulin": 0,
+      "time": "[TIME+0m]",
+    },
+    "lastBolusTime": 1736940600000,
+    "lastTemp": {
+      "date": 0,
+    },
+    "netbasalinsulin": 0,
+    "time": "[TIME+0m]",
+  },
+]
+`;
+
+exports[`iob/index (generate) characterization tests > bolus history > single 1U bolus 1h ago > current IOB 1`] = `
+[
+  {
+    "activity": 0.006,
+    "basaliob": 0,
+    "bolusinsulin": 1,
+    "bolusiob": 0.764,
+    "iob": 0.764,
+    "iobWithZeroTemp": {
+      "activity": 0.006,
+      "basaliob": 0,
+      "bolusinsulin": 1,
+      "bolusiob": 0.764,
+      "iob": 0.764,
+      "netbasalinsulin": 0,
+      "time": "[TIME+0m]",
+    },
+    "lastBolusTime": 1736938800000,
+    "lastTemp": {
+      "date": 0,
+    },
+    "netbasalinsulin": 0,
+    "time": "[TIME+0m]",
+  },
+]
+`;
+
+exports[`iob/index (generate) characterization tests > bolus history > single 1U bolus past DIA (6h ago) > current IOB should be 0 1`] = `
+[
+  {
+    "activity": 0,
+    "basaliob": 0,
+    "bolusinsulin": 0,
+    "bolusiob": 0,
+    "iob": 0,
+    "iobWithZeroTemp": {
+      "activity": 0,
+      "basaliob": 0,
+      "bolusinsulin": 0,
+      "bolusiob": 0,
+      "iob": 0,
+      "netbasalinsulin": 0,
+      "time": "[TIME+0m]",
+    },
+    "lastBolusTime": 1736920800000,
+    "lastTemp": {
+      "date": 0,
+    },
+    "netbasalinsulin": 0,
+    "time": "[TIME+0m]",
+  },
+]
+`;
+
+exports[`iob/index (generate) characterization tests > bolus history > single 2U bolus just given > first entry (t=0) 1`] = `
+[
+  {
+    "activity": 0,
+    "basaliob": 0,
+    "bolusinsulin": 2,
+    "bolusiob": 2,
+    "iob": 2,
+    "iobWithZeroTemp": {
+      "activity": 0,
+      "basaliob": 0,
+      "bolusinsulin": 2,
+      "bolusiob": 2,
+      "iob": 2,
+      "netbasalinsulin": 0,
+      "time": "[TIME+0m]",
+    },
+    "lastBolusTime": 1736942400000,
+    "lastTemp": {
+      "date": 0,
+    },
+    "netbasalinsulin": 0,
+    "time": "[TIME+0m]",
+  },
+]
+`;
+
+exports[`iob/index (generate) characterization tests > bolus history > single 2U bolus just given > last entry (t=4h) 1`] = `
+[
+  {
+    "activity": 0.0027,
+    "basaliob": 0,
+    "bolusinsulin": 2,
+    "bolusiob": 0.079,
+    "iob": 0.079,
+    "iobWithZeroTemp": {
+      "activity": -0.0133,
+      "basaliob": -1.877,
+      "bolusinsulin": 2,
+      "bolusiob": 0.079,
+      "iob": -1.798,
+      "netbasalinsulin": -3.95,
+      "time": "[TIME+0m]",
+    },
+    "netbasalinsulin": 0,
+    "time": "[TIME+0m]",
+  },
+]
+`;
+
+exports[`iob/index (generate) characterization tests > bolus history > two boluses: 2U now + 1U 30m ago > current IOB 1`] = `
+[
+  {
+    "activity": 0.0044,
+    "basaliob": 0,
+    "bolusinsulin": 3,
+    "bolusiob": 2.925,
+    "iob": 2.925,
+    "iobWithZeroTemp": {
+      "activity": 0.0044,
+      "basaliob": 0,
+      "bolusinsulin": 3,
+      "bolusiob": 2.925,
+      "iob": 2.925,
+      "netbasalinsulin": 0,
+      "time": "[TIME+0m]",
+    },
+    "lastBolusTime": 1736942400000,
+    "lastTemp": {
+      "date": 0,
+    },
+    "netbasalinsulin": 0,
+    "time": "[TIME+0m]",
+  },
+]
+`;
+
+exports[`iob/index (generate) characterization tests > different insulin curves > bilinear DIA=3: 1U bolus now > bilinear t=0 1`] = `
+[
+  {
+    "activity": 0,
+    "basaliob": 0,
+    "bolusinsulin": 1,
+    "bolusiob": 1,
+    "iob": 1,
+    "iobWithZeroTemp": {
+      "activity": 0,
+      "basaliob": 0,
+      "bolusinsulin": 1,
+      "bolusiob": 1,
+      "iob": 1,
+      "netbasalinsulin": 0,
+      "time": "[TIME+0m]",
+    },
+    "lastBolusTime": 1736942400000,
+    "lastTemp": {
+      "date": 0,
+    },
+    "netbasalinsulin": 0,
+    "time": "[TIME+0m]",
+  },
+]
+`;
+
+exports[`iob/index (generate) characterization tests > different insulin curves > ultra-rapid DIA=5: 1U bolus now > ultra-rapid t=0 1`] = `
+[
+  {
+    "activity": 0,
+    "basaliob": 0,
+    "bolusinsulin": 1,
+    "bolusiob": 1,
+    "iob": 1,
+    "iobWithZeroTemp": {
+      "activity": 0,
+      "basaliob": 0,
+      "bolusinsulin": 1,
+      "bolusiob": 1,
+      "iob": 1,
+      "netbasalinsulin": 0,
+      "time": "[TIME+0m]",
+    },
+    "lastBolusTime": 1736942400000,
+    "lastTemp": {
+      "date": 0,
+    },
+    "netbasalinsulin": 0,
+    "time": "[TIME+0m]",
+  },
+]
+`;
+
+exports[`iob/index (generate) characterization tests > mixed bolus + temp basal history > 1U bolus + high temp 30m ago > current IOB combined 1`] = `
+[
+  {
+    "activity": 0.0071,
+    "basaliob": 0.42,
+    "bolusinsulin": 1,
+    "bolusiob": 0.925,
+    "iob": 1.345,
+    "iobWithZeroTemp": {
+      "activity": 0.0071,
+      "basaliob": 0.42,
+      "bolusinsulin": 1,
+      "bolusiob": 0.925,
+      "iob": 1.345,
+      "netbasalinsulin": 0.5,
+      "time": "[TIME+0m]",
+    },
+    "lastBolusTime": 1736940600000,
+    "lastTemp": {
+      "date": 1736938800000,
+      "duration": 30,
+      "rate": 2,
+      "started_at": "[STARTED_AT]",
+      "timestamp": "2025-01-15T11:00:00.000Z",
+    },
+    "netbasalinsulin": 0.5,
+    "time": "[TIME+0m]",
+  },
+]
+`;
+
+exports[`iob/index (generate) characterization tests > pump suspend handling > suspend during temp basal with suspend_zeros_iob > IOB with suspend 1`] = `
+[
+  {
+    "activity": 0.0002,
+    "basaliob": -0.021,
+    "bolusinsulin": 0,
+    "bolusiob": 0,
+    "iob": -0.021,
+    "iobWithZeroTemp": {
+      "activity": 0.0002,
+      "basaliob": -0.021,
+      "bolusinsulin": 0,
+      "bolusiob": 0,
+      "iob": -0.021,
+      "netbasalinsulin": 0,
+      "time": "[TIME+0m]",
+    },
+    "lastBolusTime": 0,
+    "lastTemp": {
+      "date": 1736938800000,
+      "duration": 15,
+      "rate": 2,
+      "started_at": "[STARTED_AT]",
+      "timestamp": "2025-01-15T11:00:00.000Z",
+    },
+    "netbasalinsulin": 0,
+    "time": "[TIME+0m]",
+  },
+]
+`;
+
+exports[`iob/index (generate) characterization tests > temp basal history > high temp basal (2 U/hr) for 30m ending now > current IOB from temp 1`] = `
+[
+  {
+    "activity": 0.0014,
+    "basaliob": 0.485,
+    "bolusinsulin": 0,
+    "bolusiob": 0,
+    "iob": 0.485,
+    "iobWithZeroTemp": {
+      "activity": 0.0014,
+      "basaliob": 0.485,
+      "bolusinsulin": 0,
+      "bolusiob": 0,
+      "iob": 0.485,
+      "netbasalinsulin": 0.5,
+      "time": "[TIME+0m]",
+    },
+    "lastBolusTime": 0,
+    "lastTemp": {
+      "date": 1736940600000,
+      "duration": 30,
+      "rate": 2,
+      "started_at": "[STARTED_AT]",
+      "timestamp": "2025-01-15T11:30:00.000Z",
+    },
+    "netbasalinsulin": 0.5,
+    "time": "[TIME+0m]",
+  },
+]
+`;
+
+exports[`iob/index (generate) characterization tests > temp basal history > low temp basal (below profile) produces negative IOB > negative IOB from low temp 1`] = `
+[
+  {
+    "activity": -0.0012,
+    "basaliob": -0.436,
+    "bolusinsulin": 0,
+    "bolusiob": 0,
+    "iob": -0.436,
+    "iobWithZeroTemp": {
+      "activity": -0.0012,
+      "basaliob": -0.436,
+      "bolusinsulin": 0,
+      "bolusiob": 0,
+      "iob": -0.436,
+      "netbasalinsulin": -0.45,
+      "time": "[TIME+0m]",
+    },
+    "lastBolusTime": 0,
+    "lastTemp": {
+      "date": 1736940600000,
+      "duration": 30,
+      "rate": 0.1,
+      "started_at": "[STARTED_AT]",
+      "timestamp": "2025-01-15T11:30:00.000Z",
+    },
+    "netbasalinsulin": -0.45,
+    "time": "[TIME+0m]",
+  },
+]
+`;
+
+exports[`iob/index (generate) characterization tests > temp basal history > two consecutive temp basals > current IOB from two temps 1`] = `
+[
+  {
+    "activity": 0.0041,
+    "basaliob": 0.905,
+    "bolusinsulin": 0,
+    "bolusiob": 0,
+    "iob": 0.905,
+    "iobWithZeroTemp": {
+      "activity": 0.0041,
+      "basaliob": 0.905,
+      "bolusinsulin": 0,
+      "bolusiob": 0,
+      "iob": 0.905,
+      "netbasalinsulin": 1,
+      "time": "[TIME+0m]",
+    },
+    "lastBolusTime": 0,
+    "lastTemp": {
+      "date": 1736940600000,
+      "duration": 30,
+      "rate": 2,
+      "started_at": "[STARTED_AT]",
+      "timestamp": "2025-01-15T11:30:00.000Z",
+    },
+    "netbasalinsulin": 1,
+    "time": "[TIME+0m]",
+  },
+]
+`;
+
+exports[`iob/index (generate) characterization tests > temp basal history > zero temp for 30m ending now (negative IOB) > current IOB from zero temp 1`] = `
+[
+  {
+    "activity": -0.0014,
+    "basaliob": -0.485,
+    "bolusinsulin": 0,
+    "bolusiob": 0,
+    "iob": -0.485,
+    "iobWithZeroTemp": {
+      "activity": -0.0014,
+      "basaliob": -0.485,
+      "bolusinsulin": 0,
+      "bolusiob": 0,
+      "iob": -0.485,
+      "netbasalinsulin": -0.5,
+      "time": "[TIME+0m]",
+    },
+    "lastBolusTime": 0,
+    "lastTemp": {
+      "date": 1736940600000,
+      "duration": 30,
+      "rate": 0,
+      "started_at": "[STARTED_AT]",
+      "timestamp": "2025-01-15T11:30:00.000Z",
+    },
+    "netbasalinsulin": -0.5,
+    "time": "[TIME+0m]",
+  },
+]
+`;
