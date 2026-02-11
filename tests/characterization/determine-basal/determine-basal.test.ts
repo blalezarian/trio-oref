@@ -2109,4 +2109,186 @@ describe('determine-basal branch coverage tests', () => {
     });
     expect(normalizeOutput(output)).toMatchSnapshot();
   });
+
+  // =========================================================================
+  // DEEP BRANCH COVERAGE — targeting specific uncovered V8 branches
+  // =========================================================================
+
+  // Line 1513: smbMinutesSetting becomes undefined when override sets it
+  // via trio_custom_variables.smbMinutes being undefined
+  it('smbMinutesSetting undefined via override — defaults to 30m (line 1513)', () => {
+    const trio = defaultTrioCustomVariables({
+      useOverride: true,
+      advancedSettings: true,
+      uamMinutes: 30,
+    });
+    // Delete smbMinutes so the override assignment sets smbMinutesSetting = undefined
+    delete (trio as any).smbMinutes;
+    const output = callDetermineBasal({
+      glucose_status: defaultGlucoseStatus({
+        glucose: 180,
+        delta: 3,
+        short_avgdelta: 3,
+        long_avgdelta: 2,
+        date: FIXED_DATE - 60_000,
+      }),
+      microBolusAllowed: true,
+      profile: defaultProfile({
+        enableSMB_always: true,
+        maxSMBBasalMinutes: 30,
+        maxUAMSMBBasalMinutes: 30,
+      }),
+      trio_custom_variables: trio,
+    });
+    expect(normalizeOutput(output)).toMatchSnapshot();
+  });
+
+  // Line 1513 variant: insulinReq > maxBolus within smbMinutesSetting undefined path
+  it('smbMinutesSetting undefined with high insulinReq — SMB limited by maxBolus (line 1517)', () => {
+    const trio = defaultTrioCustomVariables({
+      useOverride: true,
+      advancedSettings: true,
+      uamMinutes: 30,
+    });
+    delete (trio as any).smbMinutes;
+    const output = callDetermineBasal({
+      glucose_status: defaultGlucoseStatus({
+        glucose: 250,
+        delta: 8,
+        short_avgdelta: 8,
+        long_avgdelta: 6,
+        date: FIXED_DATE - 60_000,
+      }),
+      microBolusAllowed: true,
+      iob_data: defaultIOBData({ iob: 0.5, activity: 0.005 }),
+      profile: defaultProfile({
+        enableSMB_always: true,
+        maxSMBBasalMinutes: 30,
+        maxUAMSMBBasalMinutes: 30,
+        max_iob: 10,
+      }),
+      trio_custom_variables: trio,
+    });
+    expect(normalizeOutput(output)).toMatchSnapshot();
+  });
+
+  // Line 1563-1564: durationReq <= 0 in SMB path (with iobArray so predictions work)
+  it('SMB with iobArray where durationReq <= 0 (line 1563)', () => {
+    // Need worstCaseInsulinReq < 0: smbTarget < (naive_eventualBG + minIOBPredBG)/2
+    // With bg=130, iob=0.2, sens=40: naive_eventualBG = 130-8 = 122
+    // With iobArray where IOB is low, minIOBPredBG stays high
+    const iobArr = [];
+    const now = FIXED_DATE;
+    for (let i = 0; i < 48; i++) {
+      const t = i * 5;
+      const fraction = Math.max(0, 1 - t / (5 * 60));
+      iobArr.push({
+        iob: +(0.2 * fraction).toFixed(3),
+        activity: +(0.002 * fraction).toFixed(5),
+        basaliob: 0, bolusiob: 0, netbasalinsulin: 0, bolusinsulin: 0,
+        time: new Date(now + t * 60000),
+        iobWithZeroTemp: {
+          iob: +(0.2 * fraction * 0.8).toFixed(3),
+          activity: +(0.002 * fraction * 0.8).toFixed(5),
+          basaliob: 0, bolusiob: 0, netbasalinsulin: 0, bolusinsulin: 0,
+          time: new Date(now + t * 60000),
+        },
+      });
+    }
+    const output = callDetermineBasal({
+      glucose_status: defaultGlucoseStatus({
+        glucose: 130,
+        delta: 1,
+        short_avgdelta: 1,
+        long_avgdelta: 1,
+        date: FIXED_DATE - 60_000,
+      }),
+      microBolusAllowed: true,
+      iob_data: iobArr as any,
+      iob_data_raw: true,
+      profile: defaultProfile({
+        enableSMB_always: true,
+        max_iob: 5,
+      }),
+    });
+    expect(normalizeOutput(output)).toMatchSnapshot();
+  });
+
+  // Line 1566-1568: durationReq >= 30 in SMB path
+  it('SMB with iobArray where durationReq >= 30 — rounds and caps (line 1566)', () => {
+    // Need large worstCaseInsulinReq: smbTarget >> (naive_eventualBG + minIOBPredBG)/2
+    // High IOB causing predictions to drop significantly
+    const iobArr = [];
+    const now = FIXED_DATE;
+    for (let i = 0; i < 48; i++) {
+      const t = i * 5;
+      const fraction = Math.max(0, 1 - t / (5 * 60));
+      iobArr.push({
+        iob: +(5.0 * fraction).toFixed(3),
+        activity: +(0.05 * fraction).toFixed(5),
+        basaliob: 0, bolusiob: 0, netbasalinsulin: 0, bolusinsulin: 0,
+        time: new Date(now + t * 60000),
+        iobWithZeroTemp: {
+          iob: +(5.0 * fraction * 0.3).toFixed(3),
+          activity: +(0.05 * fraction * 0.3).toFixed(5),
+          basaliob: 0, bolusiob: 0, netbasalinsulin: 0, bolusinsulin: 0,
+          time: new Date(now + t * 60000),
+        },
+      });
+    }
+    const output = callDetermineBasal({
+      glucose_status: defaultGlucoseStatus({
+        glucose: 200,
+        delta: 5,
+        short_avgdelta: 5,
+        long_avgdelta: 4,
+        date: FIXED_DATE - 60_000,
+      }),
+      microBolusAllowed: true,
+      iob_data: iobArr as any,
+      iob_data_raw: true,
+      profile: defaultProfile({
+        enableSMB_always: true,
+        max_iob: 10,
+      }),
+    });
+    expect(normalizeOutput(output)).toMatchSnapshot();
+  });
+
+  // Line 1638: required temp > existing temp — set new temp
+  // Need: eventualBG >= max_bg, iob <= max_iob, rate > currenttemp.rate, currenttemp.duration > 5
+  it('high BG with low existing temp — replaces with higher temp (line 1638)', () => {
+    const output = callDetermineBasal({
+      glucose_status: defaultGlucoseStatus({
+        glucose: 200,
+        delta: 3,
+        short_avgdelta: 3,
+        long_avgdelta: 2,
+        date: FIXED_DATE - 60_000,
+      }),
+      currenttemp: defaultCurrentTemp({
+        rate: 0.5,  // Low rate that will be less than required
+        duration: 10,
+      }),
+    });
+    expect(normalizeOutput(output)).toMatchSnapshot();
+  });
+
+  // Lines 1388-1397: manualBolusErrorString paths in minDelta < expectedDelta
+  // Analysis shows: manualBolusErrorString=3 (L1389-1390) requires minDelta >= 0 AND
+  // expectedDelta > 0 AND minDelta < expectedDelta. Since expectedDelta = bgi + (target-eventual)/24
+  // and bgi is always negative when insulin is active, expectedDelta > 0 requires eventualBG <<
+  // target, which contradicts eventualBG >= min_bg. This path is unreachable with realistic params.
+  // manualBolusErrorString=5 (L1395-1396) requires minDelta >= 0 AND expectedDelta <= 0, which
+  // combined with minDelta < expectedDelta gives 0 <= minDelta < expectedDelta <= 0, a contradiction.
+  // Both paths are dead code.
+
+  // Lines 1302-1305: naive_eventualBG < 40 in rising+!carbsReq path
+  // Requires the conflicting constraints of !carbsReq (carbsReq rounds to 0) while
+  // naive_eventualBG < 40 (which makes bgUndershoot large, forcing carbsReq nonzero).
+  // Effectively dead code.
+
+  // Line 66-69: startTime == endTime && currentHour == startTime
+  // Dead code: currentHour is `new Date(time.getHours())` (a Date object),
+  // and `Date == number` uses string coercion via ToPrimitive("default") which always fails.
 });
