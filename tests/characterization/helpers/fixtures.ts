@@ -111,6 +111,9 @@ function fixture(
 const FIXED_TIME = '2025-01-15T12:00:00.000Z';
 const FIXED_DATE = new Date(FIXED_TIME).getTime();
 
+// Local hour for FIXED_TIME (timezone-aware for SMB scheduling tests)
+const FIXED_LOCAL_HOUR = new Date(FIXED_TIME).getHours();
+
 export function generateAllFixtures(): FixtureSpec[] {
   return [
     // =====================================================================
@@ -1667,6 +1670,970 @@ export function generateAllFixtures(): FixtureSpec[] {
         bwFound: true,
       },
       rawIobData: makeIobArray(0.3, 0.003, 5, FIXED_DATE),
+    }),
+
+    // =====================================================================
+    // CATEGORY: SMB scheduling — lines 57-68 (smbIsScheduledOff paths)
+    // NOTE: enable_smb uses time.getHours() which returns LOCAL hour.
+    //       FIXED_LOCAL_HOUR is computed dynamically for timezone portability.
+    // =====================================================================
+    // Lines 57-59: startTime < endTime, current hour is in [start, end)
+    fixture('SMB scheduled off — start < end, current hour in range', 'smb-schedule', {
+      currentTime: FIXED_TIME,
+      glucose_status: { glucose: 180, delta: 3, short_avgdelta: 3, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
+      profile: { enableSMB_always: true },
+      microBolusAllowed: true,
+      // start = localHour - 2, end = localHour + 2 => localHour in [start, end)
+      trio_custom_variables: {
+        smbIsScheduledOff: true,
+        start: (FIXED_LOCAL_HOUR - 2 + 24) % 24,
+        end: (FIXED_LOCAL_HOUR + 2) % 24,
+      },
+      rawIobData: makeIobArray(0.5, 0.005, 5, FIXED_DATE),
+    }),
+
+    // Lines 60-62: startTime > endTime (wraps midnight), current hour in range
+    fixture('SMB scheduled off — start > end (wraps midnight), current hour in range', 'smb-schedule', {
+      currentTime: FIXED_TIME,
+      glucose_status: { glucose: 180, delta: 3, short_avgdelta: 3, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
+      profile: { enableSMB_always: true },
+      microBolusAllowed: true,
+      // Wrapping window: start = localHour + 20 (mod 24), end = localHour + 4 (mod 24)
+      // Since start > end (wraps), localHour >= start || localHour < end
+      // localHour >= start? localHour >= (localHour+20)%24. If localHour=4: start=0, end=8 => 0 < 8 NOT > (bad).
+      // Better: start = localHour - 1 + 24) % 24, end = (localHour - 3 + 24) % 24
+      // For localHour=4: start=3, end=1 => 3 > 1 => wrap. 4 >= 3? Yes => disabled.
+      trio_custom_variables: {
+        smbIsScheduledOff: true,
+        start: (FIXED_LOCAL_HOUR - 1 + 24) % 24,
+        end: (FIXED_LOCAL_HOUR - 3 + 24) % 24,
+      },
+      rawIobData: makeIobArray(0.5, 0.005, 5, FIXED_DATE),
+    }),
+
+    // Lines 66-68: startTime == endTime && currentHour == startTime
+    fixture('SMB scheduled off — start == end == currentHour', 'smb-schedule', {
+      currentTime: FIXED_TIME,
+      glucose_status: { glucose: 180, delta: 3, short_avgdelta: 3, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
+      profile: { enableSMB_always: true },
+      microBolusAllowed: true,
+      trio_custom_variables: {
+        smbIsScheduledOff: true,
+        start: FIXED_LOCAL_HOUR,
+        end: FIXED_LOCAL_HOUR,
+      },
+      rawIobData: makeIobArray(0.5, 0.005, 5, FIXED_DATE),
+    }),
+
+    // Lines 60-62: startTime > endTime, currentHour < startTime BUT currentHour < endTime
+    // Need to exercise the `currentHour < endTime` part of the OR (when `currentHour >= startTime` is false)
+    fixture('SMB scheduled off — start > end, currentHour < start but < end', 'smb-schedule', {
+      currentTime: FIXED_TIME,
+      glucose_status: { glucose: 180, delta: 3, short_avgdelta: 3, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
+      profile: { enableSMB_always: true },
+      microBolusAllowed: true,
+      // Need start > end, localHour < start, localHour < end
+      // E.g. localHour=4: start=6, end=5 => 6>5 yes. 4>=6? no. 4<5? yes => disabled
+      trio_custom_variables: {
+        smbIsScheduledOff: true,
+        start: (FIXED_LOCAL_HOUR + 2) % 24,
+        end: (FIXED_LOCAL_HOUR + 1) % 24,
+      },
+      rawIobData: makeIobArray(0.5, 0.005, 5, FIXED_DATE),
+    }),
+
+    // SMB scheduled off but current hour is OUTSIDE the window — should allow SMB
+    fixture('SMB scheduled off — current hour outside window, SMB allowed', 'smb-schedule', {
+      currentTime: FIXED_TIME,
+      glucose_status: { glucose: 180, delta: 3, short_avgdelta: 3, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
+      profile: { enableSMB_always: true },
+      microBolusAllowed: true,
+      trio_custom_variables: {
+        smbIsScheduledOff: true,
+        start: (FIXED_LOCAL_HOUR + 3) % 24,
+        end: (FIXED_LOCAL_HOUR + 6) % 24,
+      },
+      rawIobData: makeIobArray(0.5, 0.005, 5, FIXED_DATE),
+    }),
+
+    // =====================================================================
+    // CATEGORY: SMB disabled fallthrough — line 136
+    // =====================================================================
+    fixture('SMB disabled — no enableSMB preference active', 'smb-disabled-fallthrough', {
+      currentTime: FIXED_TIME,
+      glucose_status: { glucose: 180, delta: 3, short_avgdelta: 3, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
+      profile: {
+        enableSMB_always: false,
+        enableSMB_with_COB: false,
+        enableSMB_after_carbs: false,
+        enableSMB_with_temptarget: false,
+        enableSMB_high_bg: false,
+      },
+      microBolusAllowed: true,
+      rawIobData: makeIobArray(0.5, 0.005, 5, FIXED_DATE),
+    }),
+
+    // =====================================================================
+    // CATEGORY: Low TT sensitivity edge case — lines 517-518
+    // c * (c + target_bg - normalTarget) <= 0 => sensitivityRatio = autosens_max
+    // =====================================================================
+    fixture('Low TT — c*(c+target_bg-normalTarget) <= 0, use autosens_max', 'low-tt-edge', {
+      currentTime: FIXED_TIME,
+      glucose_status: { glucose: 120, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
+      profile: {
+        temptargetSet: true, min_bg: 50, max_bg: 50,
+        low_temptarget_lowers_sensitivity: true,
+        // half_basal_exercise_target = 60 => c = 60 - 100 = -40
+        // c + target_bg - normalTarget = -40 + 50 - 100 = -90
+        // c * (c + target_bg - normalTarget) = (-40)*(-90) = 3600 > 0 — not what we want
+        // Need c <= 0 and (c + target_bg - normalTarget) >= 0 OR vice versa
+        // c = halfBasalTarget - normalTarget. If halfBasalTarget = 80, c = -20
+        // c + target_bg - normalTarget = -20 + 50 - 100 = -70 => product = (-20)*(-70) = 1400 > 0
+        // Need c positive and (c+target_bg-normalTarget) negative or c=0
+        // c = halfBasalTarget - 100. If halfBasalTarget=100, c=0 => product = 0 <= 0 YES!
+        half_basal_exercise_target: 100,
+        autosens_max: 1.3,
+      },
+    }),
+
+    // =====================================================================
+    // CATEGORY: Dynamic ISF with low TT boost — lines 540-546
+    // Need: temptargetSet, target_bg < normalTarget, dynISFenabled, BG >= target_bg
+    // AND sensitivityRatio < newRatio
+    // =====================================================================
+    fixture('Dynamic ISF with low TT — ratio boosted by normalTarget/target_bg', 'dynisf-low-tt-boost', {
+      currentTime: FIXED_TIME,
+      // BG=140, target_bg=80 (low TT), normalTarget=100
+      // Need dynISFenabled: useNewFormula=true + TDD > 0 + autosens_min != autosens_max
+      // Also need sensitivityRatio < newRatio (the dISF-computed ratio)
+      // sensitivityRatio from the low_temptarget_lowers_sensitivity block will be computed first
+      // Then if sensitivityRatio < newRatio, we boost
+      glucose_status: { glucose: 140, delta: 3, short_avgdelta: 3, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
+      profile: {
+        temptargetSet: true, min_bg: 80, max_bg: 80,
+        low_temptarget_lowers_sensitivity: true,
+        half_basal_exercise_target: 160,
+        useNewFormula: true,
+        autosens_min: 0.5, autosens_max: 2.5,
+        enableSMB_always: true,
+      },
+      preferences: { useNewFormula: true, adjustmentFactor: 1.5, sigmoid: false },
+      trio_custom_variables: { currentTDD: 50, weightedAverage: 50, average_total_data: 50 },
+      microBolusAllowed: true,
+      rawIobData: makeIobArray(0.3, 0.003, 5, FIXED_DATE),
+    }),
+
+    // =====================================================================
+    // CATEGORY: TDD-adjusted basal unchanged — line 567
+    // Need: dynISFenabled && tddAdjBasal && tdd24h_14d_Ratio == 1 (basal unchanged)
+    // =====================================================================
+    fixture('TDD-adjusted basal — ratio 1.0, basal unchanged', 'tdd-basal-unchanged', {
+      currentTime: FIXED_TIME,
+      glucose_status: { glucose: 150, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
+      profile: { tddAdjBasal: true, useNewFormula: true, autosens_min: 0.7, autosens_max: 1.2 },
+      preferences: { useNewFormula: true },
+      // weightedAverage / average_total_data = 40/40 = 1.0 => tdd24h_14d_Ratio = 1
+      // basal = current_basal * 1.0 * 1 = 0.9 => unchanged
+      trio_custom_variables: { currentTDD: 40, weightedAverage: 40, average_total_data: 40 },
+    }),
+
+    // =====================================================================
+    // CATEGORY: sensitivity_raises_target, target_bg unchanged — lines 583-584
+    // Need: sensitivity_raises_target=true, ratio<1, but math yields same target_bg
+    // target_bg=80, ratio=0.8 => new_target_bg = round((80-60)/0.8)+60 = round(25)+60 = 85
+    // That changes it. Need a case where it doesn't: target_bg = round((target_bg-60)/ratio)+60
+    // With target_bg=80, ratio=1.0 => unchanged, but ratio<1 is required.
+    // Actually need: max(80, round((target_bg-60)/ratio)+60) == target_bg
+    // If target_bg=80 and ratio close to 1: round((80-60)/0.99)+60 = round(20.2)+60 = 80 => unchanged!
+    // But autosens_data ratio is typically limited to e.g. 0.7-1.2
+    // Actually, let's use a target that is already at the floor: 80
+    // round((80-60)/0.95)+60 = round(21.05)+60 = 81 => changed to 81
+    // round((80-60)/1.0)+60 = 80 => same but ratio not < 1
+    // We need the final target to equal new_target_bg after max(80,...) clamping
+    // If new_target_bg computes to e.g. 79, max(80,79)=80 => unchanged from target_bg=80!
+    // round((80-60)/0.97)+60 = round(20.6)+60 = 81 => changed
+    // round((80-60)/0.96)+60 = round(20.8)+60 = 81 => changed
+    // round((80-60)/0.9)+60 = round(22.2)+60 = 82 => changed
+    // Actually need Math.max(80, new_target_bg) == target_bg. If target_bg > 80:
+    // target_bg = 60, but we can't go below 80. So if raw new_target_bg < 80, it gets clamped to 80.
+    // But target_bg starts at, say, 80. If new_target_bg < 80, max(80, new_target_bg) = 80 = target_bg. YES.
+    // Need: round((80-60)/ratio)+60 < 80 => round(20/ratio) < 20 => 20/ratio < 20.5 => ratio > 20/20.5 ≈ 0.976
+    // So ratio = 0.98: round((80-60)/0.98)+60 = round(20.408)+60 = 80 => same! Perfect.
+    // But 0.98 is not achievable easily with autosens. Let me use a manual ratio.
+    // =====================================================================
+    fixture('Sensitivity raises target — target_bg unchanged due to floor', 'sens-target-unchanged', {
+      currentTime: FIXED_TIME,
+      glucose_status: { glucose: 120, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
+      profile: {
+        sensitivity_raises_target: true,
+        min_bg: 80, max_bg: 80,
+      },
+      // ratio=0.98 => new_target_bg = round((80-60)/0.98)+60 = round(20.408)+60 = 80 => unchanged
+      autosens_data: { ratio: 0.98 },
+    }),
+
+    // =====================================================================
+    // CATEGORY: Override target log with double arrow — lines 595-596
+    // Need: overrideTarget != 0 && != 6 && != target_bg, AND target_bg != profileTarget
+    // This happens when: override sets a target, then autosens/sensitivity modifies it further
+    // =====================================================================
+    fixture('Override target + sensitivity adjustment — triple arrow log', 'override-target-double-arrow', {
+      currentTime: FIXED_TIME,
+      glucose_status: { glucose: 150, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
+      profile: {
+        min_bg: 110, max_bg: 120,
+        sensitivity_raises_target: true,
+        temptargetSet: false,
+      },
+      // overrideTarget=100 => profileTarget becomes 100 (in determine_basal, profileTarget = overrideTarget)
+      // Then sensitivity_raises_target with ratio<1 adjusts target_bg further
+      // target_bg starts at 100, then new_target_bg = round((100-60)/ratio)+60
+      // ratio=0.8 => round(50)+60 = 110 => target_bg=110
+      // overrideTarget=100, profileTarget=100 (overridden), target_bg=110
+      // But we need profileTarget != target_bg AND overrideTarget != target_bg
+      // profileTarget = overrideTarget = 100 (since useOverride && not temptargetSet)
+      // target_bg = 110 after sensitivity adjustment
+      // So profileTarget=100, overrideTarget=100, target_bg=110
+      // Condition: overrideTarget !== 0 && overrideTarget !== 6 && overrideTarget !== target_bg
+      // 100 !== 0, 100 !== 6, 100 !== 110 => TRUE => double arrow
+      trio_custom_variables: {
+        useOverride: true, overridePercentage: 100, isfAndCr: false,
+        overrideTarget: 100, duration: 0,
+      },
+      autosens_data: { ratio: 0.8 },
+    }),
+
+    // =====================================================================
+    // CATEGORY: meal_data.reason == "Could not parse clock data" — line 1249
+    // =====================================================================
+    fixture('Meal data with clock parse error — carbsReq unknown', 'clock-parse-error', {
+      currentTime: FIXED_TIME,
+      glucose_status: { glucose: 85, delta: -2, short_avgdelta: -2, long_avgdelta: -1, date: FIXED_DATE - 60_000 },
+      iob_data: { iob: 1.5, activity: 0.015 },
+      profile: { carbsReqThreshold: 1 },
+      meal_data: {
+        carbs: 0, nsCarbs: 0, bwCarbs: 0, journalCarbs: 0,
+        mealCOB: 0, currentDeviation: -2, maxDeviation: 5, minDeviation: -5,
+        slopeFromMaxDeviation: -0.5, slopeFromMinDeviation: 0,
+        allDeviations: [-2, 0, 3, 5, 3],
+        bwFound: false,
+        reason: 'Could not parse clock data',
+      } as any,
+    }),
+
+    // =====================================================================
+    // CATEGORY: eventualBG < min_bg, minDelta > 0 > expectedDelta, naive_eventualBG < 40 — lines 1300-1304
+    // CRITICAL: bg must be >= threshold (= min_bg = 110) to avoid LGS return at lines 1261-1281
+    // Need: eventualBG < min_bg, minDelta > expectedDelta, minDelta > 0, !carbsReq, naive_eventualBG < 40
+    // =====================================================================
+    fixture('EventualBG < min_bg, rising but naive_eventualBG < 40 — set 30m zero', 'eventual-bg-low-naive', {
+      currentTime: FIXED_TIME,
+      // bg=115 >= threshold(110), so LGS is skipped
+      // iob=5.2, naive = 115 - 5.2*40 = -93 < 40
+      // bgi = -0.052*40*5 = -10.4
+      // delta=2, short_avgdelta=1.5 => minDelta = 1.5
+      // deviation = round(6*(1.5-(-10.4))) = round(71.4) = 71
+      // eventualBG = -93 + 71 = -22 < 110 YES
+      // expectedDelta = round(-10.4+(110-(-22))/24,1) = round(-4.9,1) = -4.9
+      // minDelta(1.5) > expectedDelta(-4.9) YES, minDelta > 0 YES
+      // carbsReq = round((110-(-93)-144)/400) = round(59/400) = 0 => !carbsReq = true
+      glucose_status: { glucose: 115, delta: 2, short_avgdelta: 1.5, long_avgdelta: 1, date: FIXED_DATE - 60_000 },
+      iob_data: { iob: 5.2, activity: 0.052 },
+    }),
+
+    // =====================================================================
+    // CATEGORY: eventualBG < min_bg, rising, delta > minDelta — lines 1306-1307
+    // Need: bg >= 110, eventualBG < 110, minDelta > expectedDelta > 0, delta > minDelta, naive >= 40
+    // =====================================================================
+    fixture('EventualBG < min_bg, rising, delta > minDelta — set basal temp', 'eventual-bg-low-delta-gt-mindelta', {
+      currentTime: FIXED_TIME,
+      // bg=115, iob=1.3 => naive = 115-52 = 63 >= 40
+      // bgi = -0.013*40*5 = -2.6
+      // delta=3, short_avgdelta=2 => minDelta=2
+      // deviation = round(6*(2-(-2.6))) = 28
+      // eventualBG = 63+28 = 91 < 110
+      // expectedDelta = round(-2.6+(110-91)/24,1) = -1.8
+      // minDelta(2) > expectedDelta(-1.8) YES, > 0 YES
+      // carbsReq = round((110-63-144)/400) = 0 => !carbsReq = true
+      // delta(3) > minDelta(2) YES => line 1306
+      glucose_status: { glucose: 115, delta: 3, short_avgdelta: 2, long_avgdelta: 1, date: FIXED_DATE - 60_000 },
+      iob_data: { iob: 1.3, activity: 0.013 },
+    }),
+
+    // Lines 1308-1309: delta <= minDelta (short_avgdelta >= delta)
+    fixture('EventualBG < min_bg, rising, delta <= minDelta — set basal temp', 'eventual-bg-low-delta-le-mindelta', {
+      currentTime: FIXED_TIME,
+      // Same as above but delta=2, short_avgdelta=3 => minDelta=2 => delta NOT > minDelta => else
+      glucose_status: { glucose: 115, delta: 2, short_avgdelta: 3, long_avgdelta: 1, date: FIXED_DATE - 60_000 },
+      iob_data: { iob: 1.3, activity: 0.013 },
+    }),
+
+    // Lines 1311-1313: matching temp (currenttemp.rate ~ basal)
+    fixture('EventualBG < min_bg, rising, temp matches basal — return', 'eventual-bg-low-temp-match', {
+      currentTime: FIXED_TIME,
+      // Same BG scenario as delta-gt-mindelta, with matching temp
+      glucose_status: { glucose: 115, delta: 3, short_avgdelta: 2, long_avgdelta: 1, date: FIXED_DATE - 60_000 },
+      iob_data: {
+        iob: 1.3, activity: 0.013,
+        lastTemp: { rate: 0.9, duration: 30, date: FIXED_DATE - 5 * 60_000 },
+      },
+      currenttemp: { duration: 25, rate: 0.9 }, // matches basal of 0.9
+    }),
+
+    // =====================================================================
+    // CATEGORY: eventualBG < min_bg, falling, insulinScheduled < minInsulinReq - basal*0.3 — line 1345
+    // CRITICAL: bg must be >= 110 to avoid LGS
+    // =====================================================================
+    fixture('EventualBG < min_bg, falling, insulinScheduled much less than needed', 'eventual-bg-low-insched-low', {
+      currentTime: FIXED_TIME,
+      // bg=112, iob=0.15, delta=-0.5, short_avgdelta=-0.5, long_avgdelta=-0.3
+      // naive = 112 - 6 = 106. bgi = -0.3.
+      // deviation fallback chain: 6*(-0.5-(-0.3))=-1.2<0 => long_avgdelta: 6*(-0.3-(-0.3))=0
+      // eventualBG = 106+0 = 106 < 110 YES
+      // insulinReq = 2*min(0,(106-110)/40) = -0.2
+      // naiveInsulinReq = min(0,(106-110)/40) = -0.1
+      // rate = 0.9+2*(-0.2) = 0.5
+      // With currenttemp={duration:35, rate:0}: insulinScheduled = 35*(0-0.9)/60 = -0.525
+      // minInsulinReq = min(-0.2,-0.1) = -0.2
+      // -0.525 < -0.2 - 0.27 = -0.47? YES => line 1345
+      glucose_status: { glucose: 112, delta: -0.5, short_avgdelta: -0.5, long_avgdelta: -0.3, date: FIXED_DATE - 60_000 },
+      iob_data: {
+        iob: 0.15, activity: 0.0015,
+        lastTemp: { rate: 0, duration: 35, date: FIXED_DATE - 5 * 60_000 },
+      },
+      currenttemp: { duration: 35, rate: 0 },
+    }),
+
+    // Lines 1349: existing temp, currenttemp.duration > 5, rate >= currenttemp.rate*0.8
+    fixture('EventualBG < min_bg, falling, temp ~< required rate — keep temp', 'eventual-bg-low-keep-temp', {
+      currentTime: FIXED_TIME,
+      // bg=112, iob=0.1, delta=-0.5, short_avgdelta=-0.5, long_avgdelta=-0.3
+      // naive = 112-4 = 108, bgi = -0.2
+      // deviation: 6*(-0.5-(-0.2)) = -1.8 < 0 => use minAvgDelta=-0.5 => -1.8 still <0
+      //           => use long_avgdelta: 6*(-0.3-(-0.2)) = -0.6 still <0
+      // eventualBG = 108 + (-0.6) = 107.4 < 110 YES
+      // expectedDelta = round(-0.2+(110-107.4)/24,1) = round(-0.092,1) = -0.1
+      // minDelta(-0.5) > expectedDelta(-0.1)? NO => skip first branch
+      // insulinReq = 2*min(0, (107.4-110)/40) = 2*(-0.065) = -0.13
+      // rate = 0.9 + 2*(-0.13) = 0.64 => round_basal => 0.65
+      // currenttemp: {duration: 20, rate: 0.7}, lastTemp matching
+      // insulinScheduled = 20*(0.7-0.9)/60 = -0.0667
+      // naiveInsulinReq = min(0, (108-110)/40) = -0.05
+      // minInsulinReq = min(-0.13, -0.05) = -0.13
+      // -0.0667 < -0.13 - 0.27 = -0.4? NO => skip 1345
+      // 1349: currenttemp.rate=0.7 defined, duration(20)>5, rate(0.65) >= 0.7*0.8=0.56? YES => line 1349!
+      glucose_status: { glucose: 112, delta: -0.5, short_avgdelta: -0.5, long_avgdelta: -0.3, date: FIXED_DATE - 60_000 },
+      iob_data: {
+        iob: 0.1, activity: 0.001,
+        lastTemp: { rate: 0.7, duration: 30, date: FIXED_DATE - 5 * 60_000 },
+      },
+      currenttemp: { duration: 20, rate: 0.7 },
+    }),
+
+    // Lines 1359-1360: rate <= 0 with durationReq < 0 => set to 0
+    fixture('EventualBG < min_bg, falling fast, durationReq < 0 (clamped to 0)', 'eventual-bg-low-duration-neg', {
+      currentTime: FIXED_TIME,
+      // bg=115, iob=0, activity=0 => naive = 115 > 110
+      // bgi = 0, delta=-8, short_avgdelta=-8, long_avgdelta=-6
+      // deviation: all fallbacks negative => 6*(-6-0) = -36
+      // eventualBG = 115+(-36) = 79 < 110 YES
+      // insulinReq = 2*min(0,(79-110)/40) = -1.55
+      // rate = 0.9+2*(-1.55) = -2.2 <= 0 YES
+      // insulinScheduled = 0 (no temp). minInsulinReq = -1.55. 0 < -1.82? NO => skip 1345
+      // bgUndershoot = 110-115 = -5 => worstCaseInsulinReq = -0.125
+      // durationReq = round(60*(-0.125)/0.9) = -8 < 0 => line 1360
+      glucose_status: { glucose: 115, delta: -8, short_avgdelta: -8, long_avgdelta: -6, date: FIXED_DATE - 60_000 },
+      iob_data: { iob: 0, activity: 0 },
+    }),
+
+    // =====================================================================
+    // CATEGORY: minDelta < expectedDelta without SMB — lines 1403-1416
+    // =====================================================================
+    // Lines 1403-1405: delta < minDelta (impossible since minDelta = min(delta, short_avgdelta))
+    // Actually: glucose_status.delta < minDelta is possible when short_avgdelta > delta
+    // Wait: minDelta = min(delta, short_avgdelta). So minDelta <= delta always.
+    // Line 1404: glucose_status.delta < minDelta => delta < min(delta, short_avgdelta) => impossible!
+    // Hmm, but maybe there's some rounding? Actually no, delta IS glucose_status.delta
+    // So line 1404 is unreachable. The else (line 1406-1407) always executes.
+    // Let me check: line 1404 says `if (glucose_status.delta < minDelta)` where minDelta = min(glucose_status.delta, glucose_status.short_avgdelta)
+    // This can never be true. So line 1405 is unreachable. Only lines 1406-1407 can execute.
+    // Lines 1409-1411: currenttemp.duration > 15 && basal matches currenttemp.rate => keep
+    fixture('minDelta < expectedDelta, no SMB, temp matches basal — keep', 'mindelta-no-smb-temp-match', {
+      currentTime: FIXED_TIME,
+      glucose_status: { glucose: 130, delta: -4, short_avgdelta: -3, long_avgdelta: -2, date: FIXED_DATE - 60_000 },
+      currenttemp: { duration: 25, rate: 0.9 }, // matches basal
+      // Provide matching lastTemp so the temp mismatch check at line 682-688 doesn't cancel
+      iob_data: {
+        iob: 0, activity: 0,
+        lastTemp: { rate: 0.9, duration: 30, date: FIXED_DATE - 5 * 60_000 },
+      },
+    }),
+
+    // Lines 1412-1414: no matching temp — set basal as temp
+    fixture('minDelta < expectedDelta, no SMB, no matching temp — set basal', 'mindelta-no-smb-set-basal', {
+      currentTime: FIXED_TIME,
+      glucose_status: { glucose: 130, delta: -4, short_avgdelta: -3, long_avgdelta: -2, date: FIXED_DATE - 60_000 },
+      // No temp running (default duration=0)
+    }),
+
+    // =====================================================================
+    // CATEGORY: In-range with no SMB — lines 1429-1437
+    // =====================================================================
+    // Lines 1431-1433: matching temp
+    fixture('In range, no SMB, temp matches basal — keep running', 'in-range-no-smb-temp', {
+      currentTime: FIXED_TIME,
+      glucose_status: { glucose: 115, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
+      currenttemp: { duration: 25, rate: 0.9 },
+      iob_data: {
+        iob: 0, activity: 0,
+        lastTemp: { rate: 0.9, duration: 30, date: FIXED_DATE - 5 * 60_000 },
+      },
+    }),
+
+    // Line 1435: no matching temp
+    fixture('In range, no SMB, no matching temp — set basal', 'in-range-no-smb-set-basal', {
+      currentTime: FIXED_TIME,
+      glucose_status: { glucose: 115, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
+      // No temp running
+    }),
+
+    // =====================================================================
+    // CATEGORY: IOB > max_iob — lines 1449-1451
+    // =====================================================================
+    // Line 1451: matching temp (already have 'IOB > max_iob with temp ~= basal')
+    // Let's also add: IOB > max_iob, no matching temp (line 1455)
+    fixture('IOB > max_iob, no temp running — set basal as temp', 'iob-over-max-no-temp', {
+      currentTime: FIXED_TIME,
+      glucose_status: { glucose: 200, delta: 5, short_avgdelta: 5, long_avgdelta: 3, date: FIXED_DATE - 60_000 },
+      profile: { max_iob: 2.0 },
+      iob_data: { iob: 2.5, activity: 0.025 },
+      // No temp running (duration=0)
+    }),
+
+    // IOB > max_iob with matching temp (~= basal) — line 1451
+    fixture('IOB > max_iob, temp matches basal — keep running', 'iob-over-max-temp-match', {
+      currentTime: FIXED_TIME,
+      glucose_status: { glucose: 200, delta: 5, short_avgdelta: 5, long_avgdelta: 3, date: FIXED_DATE - 60_000 },
+      profile: { max_iob: 2.0 },
+      iob_data: {
+        iob: 2.5, activity: 0.025,
+        lastTemp: { rate: 0.9, duration: 30, date: FIXED_DATE - 5 * 60_000 },
+      },
+      currenttemp: { duration: 25, rate: 0.9 }, // matches basal
+    }),
+
+    // =====================================================================
+    // CATEGORY: SMB — smbMinutesSetting undefined — lines 1513-1519
+    // Need: profile.maxSMBBasalMinutes is undefined
+    // The existing fixture 'SMB path — smbMinutesSetting undefined' should cover this,
+    // but let's verify by making maxSMBBasalMinutes explicitly deleted
+    // =====================================================================
+    fixture('SMB — maxSMBBasalMinutes not in profile (undefined path)', 'smb-minutes-undefined', {
+      currentTime: FIXED_TIME,
+      glucose_status: { glucose: 200, delta: 5, short_avgdelta: 4, long_avgdelta: 3, date: FIXED_DATE - 60_000 },
+      profile: {
+        enableSMB_always: true,
+        enableUAM: true,
+        // Explicitly set to undefined to trigger the typeof check
+        maxSMBBasalMinutes: undefined as any,
+      },
+      microBolusAllowed: true,
+      rawIobData: makeIobArray(0.5, 0.005, 5, FIXED_DATE),
+    }),
+
+    // =====================================================================
+    // CATEGORY: SMB — uamMinutesSetting falsy (0) — lines 1525-1527
+    // Need: IOB > mealInsulinReq, uamMinutesSetting = 0 (falsy)
+    // =====================================================================
+    fixture('SMB — maxUAMSMBBasalMinutes=0, IOB > mealInsulinReq', 'smb-uam-minutes-zero', {
+      currentTime: FIXED_TIME,
+      glucose_status: { glucose: 200, delta: 5, short_avgdelta: 4, long_avgdelta: 3, date: FIXED_DATE - 60_000 },
+      profile: {
+        enableSMB_always: true,
+        enableUAM: true,
+        maxSMBBasalMinutes: 30,
+        maxUAMSMBBasalMinutes: 0,
+      },
+      microBolusAllowed: true,
+      // IOB > mealInsulinReq (which is mealCOB/carbRatio = 0/10 = 0)
+      rawIobData: makeIobArray(1.5, 0.015, 5, FIXED_DATE),
+    }),
+
+    // =====================================================================
+    // CATEGORY: SMB durationReq <= 0 — line 1563
+    // Need: insulinReq > 0 but microBolus < bolusIncrement => durationReq = 0
+    // Then durationReq <= 0 => line 1563-1564
+    // =====================================================================
+    fixture('SMB — durationReq <= 0 (insulinReq tiny, microBolus < increment)', 'smb-duration-zero', {
+      currentTime: FIXED_TIME,
+      // Just barely above target
+      glucose_status: { glucose: 121, delta: 0.2, short_avgdelta: 0.2, long_avgdelta: 0.2, date: FIXED_DATE - 60_000 },
+      profile: { enableSMB_always: true, bolus_increment: 0.1 },
+      microBolusAllowed: true,
+      rawIobData: makeIobArray(0.05, 0.0005, 5, FIXED_DATE),
+    }),
+
+    // =====================================================================
+    // CATEGORY: SMB durationReq >= 30 — line 1566
+    // High BG scenario with large insulinReq => durationReq >= 30
+    // =====================================================================
+    fixture('SMB — durationReq >= 30, long zero temp', 'smb-duration-long', {
+      currentTime: FIXED_TIME,
+      glucose_status: { glucose: 250, delta: 5, short_avgdelta: 5, long_avgdelta: 3, date: FIXED_DATE - 60_000 },
+      profile: {
+        enableSMB_always: true,
+        enableUAM: true,
+        maxSMBBasalMinutes: 60,
+        maxUAMSMBBasalMinutes: 60,
+        max_iob: 10,
+      },
+      microBolusAllowed: true,
+      rawIobData: makeIobArray(0.5, 0.005, 5, FIXED_DATE),
+    }),
+
+    // =====================================================================
+    // CATEGORY: Required temp > existing temp — line 1638
+    // Need: high BG scenario where rate > currenttemp.rate, and currenttemp.duration > 5,
+    // and rate > currenttemp.rate so it doesn't match line 1631
+    // =====================================================================
+    fixture('High BG, required temp rate > existing temp rate — set higher temp', 'req-temp-gt-existing', {
+      currentTime: FIXED_TIME,
+      glucose_status: { glucose: 180, delta: 3, short_avgdelta: 3, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
+      currenttemp: { duration: 10, rate: 1.0 }, // low existing temp
+      iob_data: {
+        iob: 0, activity: 0,
+        lastTemp: { rate: 1.0, duration: 30, date: FIXED_DATE - 5 * 60_000 },
+      },
+    }),
+
+    // Additional fixture for line 1638 with iobArray
+    fixture('High BG with iobArray, required temp > existing — replace temp', 'req-temp-gt-existing', {
+      currentTime: FIXED_TIME,
+      glucose_status: { glucose: 200, delta: 3, short_avgdelta: 3, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
+      currenttemp: { duration: 10, rate: 1.2 },
+      rawIobData: (() => {
+        const arr = makeIobArray(0.3, 0.003, 5, FIXED_DATE);
+        (arr[0] as any).lastTemp = { rate: 1.2, duration: 30, date: FIXED_DATE - 5 * 60_000 };
+        return arr;
+      })(),
+    }),
+
+    // =====================================================================
+    // CATEGORY: ZTpredBGs rising above target — line 1009
+    // Need: ZTpredBGs that are rising and above target, so they get popped
+    // This requires specific iobArray data where zero-temp predictions rise above target
+    // High IOB scenario where the zero-temp projections eventually start rising above target
+    // =====================================================================
+    fixture('ZTpredBGs rising above target — trimmed', 'zt-pred-rising', {
+      currentTime: FIXED_TIME,
+      // Very high IOB with zero temp — zero-temp predictions may start high and then fall
+      // but we need them to RISE above target. This happens when:
+      // - BG is above target
+      // - With zero temp, predictions initially fall but then bounce back up
+      // High IOB means lots of activity reduction in zero-temp, causing BG to rise
+      glucose_status: { glucose: 160, delta: 2, short_avgdelta: 2, long_avgdelta: 1, date: FIXED_DATE - 60_000 },
+      profile: { enableSMB_always: true, enableUAM: true },
+      microBolusAllowed: true,
+      // Use a special iobArray where iobWithZeroTemp has very low IOB (simulating zero temp effect)
+      // This will make ZT predictions rise since there's less insulin counteracting BG
+      rawIobData: (() => {
+        const arr = makeIobArray(3.0, 0.03, 5, FIXED_DATE);
+        // Make the iobWithZeroTemp have very rapidly decreasing activity
+        // so ZT predictions eventually rise above target
+        for (let i = 0; i < arr.length; i++) {
+          const entry = arr[i] as any;
+          entry.iobWithZeroTemp.activity = Math.max(0, 0.03 * Math.max(0, 1 - i * 0.15));
+          entry.iobWithZeroTemp.iob = Math.max(0, 3.0 * Math.max(0, 1 - i * 0.15));
+        }
+        return arr;
+      })(),
+    }),
+
+    // =====================================================================
+    // CATEGORY: eventualBG < min_bg rising paths — WITH iobArray
+    // CRITICAL: These require iobArray so minGuardBG is properly calculated,
+    // and carbsReq becomes 0/falsy to enter line 1300.
+    // Need: eventualBG < min_bg, minDelta > expectedDelta > 0, !carbsReq,
+    //       bg >= threshold, minGuardBG >= threshold
+    // =====================================================================
+
+    // Lines 1300-1304: naive_eventualBG < 40
+    fixture('eventualBG < min_bg, rising, iobArray, naive_eventualBG < 40', 'eventual-bg-low-rising-iob', {
+      currentTime: FIXED_TIME,
+      // bg=115, high IOB so naive_eventualBG < 40
+      // iob=4.0 => naive = 115 - 4*40 = -45 < 40
+      // delta=4, short_avgdelta=3 => minDelta=3
+      // bgi = round(-0.04*40*5,2) = -8
+      // ci = round(3-(-8),1) = 11
+      // deviation = round(6*(3-(-8))) = 66
+      // eventualBG = -45 + 66 = 21 < 110 YES
+      // expectedDelta = round(-8+(110-21)/24,1) = round(-4.29,1) = -4.3
+      // minDelta(3) > expectedDelta(-4.3) YES, > 0 YES
+      glucose_status: { glucose: 115, delta: 4, short_avgdelta: 3, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
+      rawIobData: (() => {
+        const arr = makeIobArray(4.0, 0.04, 5, FIXED_DATE);
+        // Ensure minGuardBG stays above threshold by making IOBGuardBG high
+        // With high activity, predictions go down, but bg=115 and threshold~75
+        return arr;
+      })(),
+    }),
+
+    // Lines 1306-1307: delta > minDelta (rising, naive >= 40)
+    fixture('eventualBG < min_bg, rising, iobArray, delta > minDelta', 'eventual-bg-low-rising-iob', {
+      currentTime: FIXED_TIME,
+      // iob=1.5 => naive = 115 - 60 = 55 >= 40
+      // delta=5, short_avgdelta=3 => minDelta=3, delta(5) > minDelta(3) YES
+      glucose_status: { glucose: 115, delta: 5, short_avgdelta: 3, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
+      rawIobData: makeIobArray(1.5, 0.015, 5, FIXED_DATE),
+    }),
+
+    // Lines 1308-1309: delta <= minDelta (rising, naive >= 40)
+    fixture('eventualBG < min_bg, rising, iobArray, delta <= minDelta', 'eventual-bg-low-rising-iob', {
+      currentTime: FIXED_TIME,
+      // delta=3, short_avgdelta=5 => minDelta=3, delta(3) NOT > minDelta(3) => else at 1308
+      glucose_status: { glucose: 115, delta: 3, short_avgdelta: 5, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
+      rawIobData: makeIobArray(1.5, 0.015, 5, FIXED_DATE),
+    }),
+
+    // Lines 1311-1313: temp matches basal (rising, naive >= 40)
+    fixture('eventualBG < min_bg, rising, iobArray, temp matches basal', 'eventual-bg-low-rising-iob', {
+      currentTime: FIXED_TIME,
+      glucose_status: { glucose: 115, delta: 5, short_avgdelta: 3, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
+      currenttemp: { duration: 25, rate: 0.9 },
+      rawIobData: (() => {
+        const arr = makeIobArray(1.5, 0.015, 5, FIXED_DATE);
+        (arr[0] as any).lastTemp = { rate: 0.9, duration: 30, date: FIXED_DATE - 5 * 60_000 };
+        return arr;
+      })(),
+    }),
+
+    // =====================================================================
+    // CATEGORY: minDelta < expectedDelta, non-SMB paths — lines 1388-1416
+    // Need: eventualBG >= min_bg, minDelta < expectedDelta
+    // Then: !(microBolusAllowed && enableSMB) => true (non-SMB mode)
+    // Also need the manualBolusErrorString assignments at 1388-1397
+    // =====================================================================
+
+    // Lines 1388-1390: expectedDelta - minDelta >= 2, minDelta >= 0, expectedDelta > 0
+    fixture('minDelta < expectedDelta, manualBolusErrorString=3, non-SMB', 'mindelta-non-smb', {
+      currentTime: FIXED_TIME,
+      // Need: eventualBG >= min_bg, minDelta < expectedDelta
+      // BG=140, iob=0.5 => naive=120, bgi=-1
+      // delta=0, short_avgdelta=0.5 => minDelta=0
+      // deviation depends on CI calculation; with these, dev ~ 6*(0-(-1))=6
+      // eventualBG = 120+6=126 > 110 YES
+      // expectedDelta = round(-1+(110-126)/24,1) = round(-1.67,1) = -1.7
+      // Wait, we need minDelta < expectedDelta. minDelta=0, expectedDelta=-1.7
+      // 0 < -1.7? NO!
+      // Need eventualBG > target_bg so expectedDelta is positive
+      // Actually, expectedDelta depends on eventualBG vs target_bg
+      // If eventualBG > target_bg, target_delta < 0, so expectedDelta = bgi + negative
+      // Need bgi large enough to overcome the negative target_delta
+      // Actually for minDelta < expectedDelta with both positive:
+      // Need: BG slightly above target with high activity (bgi very negative)
+      // Let's try: BG=155, iob=0.2, activity=0.002, delta=0.5
+      // naive=155-8=147, bgi = -0.4
+      // minDelta = min(0.5, 1) = 0.5
+      // deviation = round(6*(0.5-(-0.4)))=5
+      // eventualBG = 147+5=152 > 110 YES
+      // expectedDelta = round(-0.4+(110-152)/24,1)=round(-2.15,1)=-2.1
+      // Still negative! Need eventualBG closer to target.
+      // With high IOB: BG=115, iob=0.1, activity=0.005, delta=0.5
+      // bgi=round(-0.005*40*5,2)=-1
+      // naive=115-4=111
+      // deviation=round(6*(0.5-(-1)))=9
+      // eventualBG=111+9=120 >= 110 YES
+      // expectedDelta=round(-1+(110-120)/24,1)=round(-1.42,1)=-1.4
+      // minDelta(0.5) < expectedDelta(-1.4)? NO! 0.5 > -1.4
+      // The problem: for eventualBG >= min_bg, expectedDelta is usually negative
+      // For minDelta < expectedDelta, we need minDelta very negative (falling fast)
+      // Let's use: delta=-4, short_avgdelta=-3
+      // minDelta = -4, expectedDelta = -1.4
+      // -4 < -1.4? YES!
+      // But we need manualBolusErrorString=3: minDelta >= 0 && expectedDelta > 0
+      // That requires both minDelta and expectedDelta positive, but minDelta < expectedDelta
+      // For expectedDelta > 0: bgi + (target-eventualBG)/24 > 0 => bgi > (eventualBG-target)/24
+      // With eventualBG = 112, target=110: bgi > 2/24 = 0.08 => bgi positive => IOB negative
+      // iob = -0.1, activity = -0.001 => bgi = round(0.001*40*5,2)=0.2
+      // naive=115-(-0.1)*40=119
+      // deviation with positive bgi: minDelta=min(0.5,1)=0.5, ci=round(0.5-0.2,1)=0.3
+      // dev=round(6*0.3)=2
+      // eventualBG=119+2=121
+      // expectedDelta=round(0.2+(110-121)/24,1)=round(-0.26,1)=-0.3
+      // Still negative since eventualBG > target.
+      // For expectedDelta > 0, we need eventualBG < target! But we need eventualBG >= min_bg
+      // eventualBG needs to be between min_bg and target_bg? But min_bg IS the target_bg (110)
+      // Actually target_bg = profileTarget which is min_bg=110
+      // So eventualBG >= min_bg means eventualBG >= 110 = target
+      // expectedDelta = bgi + (target-eventualBG)/24 = bgi + something <= 0 (since eventualBG>=target)
+      // So expectedDelta <= bgi. With bgi negative (positive IOB), expectedDelta < 0 always!
+      // With negative IOB, bgi > 0, and if eventualBG = target exactly, expectedDelta = bgi > 0
+      // But minDelta > 0 AND minDelta < expectedDelta(=bgi>0) requires minDelta < bgi
+      // This IS possible. Let's try:
+      // iob=-0.15, activity=-0.0015 => bgi=round(0.0015*40*5,2)=0.3
+      // delta=0, short_avgdelta=0.1 => minDelta=0
+      // naive=115+0.15*40=121 (negative IOB uses min(sens, sensitivity)=40)
+      // ci=round(0-0.3,1)=-0.3 => ci < 0, so dev path with negative:
+      // dev=round(6*(minAvgDelta-bgi))=round(6*(min(0.1,long)-0.3))
+      // If long_avgdelta=0.1: minAvgDelta=0.1, dev=round(6*(0.1-0.3))=-1.2 => negative
+      // dev=round(6*(long-bgi))=round(6*(0.1-0.3))=-1.2 still neg
+      // eventualBG=121+(-1.2)=119.8 => 120
+      // expectedDelta=round(0.3+(110-120)/24,1)=round(-0.12,1)=-0.1
+      // minDelta(0) < expectedDelta(-0.1)? 0 < -0.1? NO!
+      // This requires very specific tuning. Let me just use falling BG instead.
+      // For manualBolusErrorString=4: minDelta < 0, expectedDelta <= 0
+      // This is the easy case since BG falling with eventualBG > min_bg
+      glucose_status: { glucose: 130, delta: -5, short_avgdelta: -3, long_avgdelta: -2, date: FIXED_DATE - 60_000 },
+      iob_data: { iob: 0, activity: 0 },
+      rawIobData: makeIobArray(0.0, 0.0, 5, FIXED_DATE),
+    }),
+
+    // Lines 1403-1411: non-SMB, temp matches basal — keep running
+    fixture('minDelta < expectedDelta, non-SMB with iobArray, temp match', 'mindelta-non-smb', {
+      currentTime: FIXED_TIME,
+      glucose_status: { glucose: 130, delta: -5, short_avgdelta: -3, long_avgdelta: -2, date: FIXED_DATE - 60_000 },
+      currenttemp: { duration: 25, rate: 0.9 },
+      rawIobData: (() => {
+        const arr = makeIobArray(0.0, 0.0, 5, FIXED_DATE);
+        (arr[0] as any).lastTemp = { rate: 0.9, duration: 30, date: FIXED_DATE - 5 * 60_000 };
+        return arr;
+      })(),
+    }),
+
+    // Lines 1412-1414: non-SMB, no matching temp — set basal
+    fixture('minDelta < expectedDelta, non-SMB with iobArray, no temp', 'mindelta-non-smb', {
+      currentTime: FIXED_TIME,
+      glucose_status: { glucose: 130, delta: -5, short_avgdelta: -3, long_avgdelta: -2, date: FIXED_DATE - 60_000 },
+      rawIobData: makeIobArray(0.0, 0.0, 5, FIXED_DATE),
+    }),
+
+    // =====================================================================
+    // CATEGORY: In-range non-SMB paths — lines 1429-1437
+    // Need: Math.min(eventualBG, minPredBG) < max_bg
+    // AND !(microBolusAllowed && enableSMB)
+    // =====================================================================
+    fixture('In-range, non-SMB with iobArray, temp matches basal', 'in-range-non-smb-iob', {
+      currentTime: FIXED_TIME,
+      glucose_status: { glucose: 115, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
+      currenttemp: { duration: 25, rate: 0.9 },
+      rawIobData: (() => {
+        const arr = makeIobArray(0.0, 0.0, 5, FIXED_DATE);
+        (arr[0] as any).lastTemp = { rate: 0.9, duration: 30, date: FIXED_DATE - 5 * 60_000 };
+        return arr;
+      })(),
+    }),
+
+    fixture('In-range, non-SMB with iobArray, no temp', 'in-range-non-smb-iob', {
+      currentTime: FIXED_TIME,
+      glucose_status: { glucose: 115, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
+      rawIobData: makeIobArray(0.0, 0.0, 5, FIXED_DATE),
+    }),
+
+    // =====================================================================
+    // CATEGORY: SMB smbMinutesSetting undefined with iobArray
+    // Need: profile.maxSMBBasalMinutes is undefined AND iobArray for SMB path
+    // =====================================================================
+    fixture('SMB — smbMinutesSetting undefined, insulinReq > maxBolus', 'smb-minutes-undef-iob', {
+      currentTime: FIXED_TIME,
+      glucose_status: { glucose: 250, delta: 5, short_avgdelta: 5, long_avgdelta: 3, date: FIXED_DATE - 60_000 },
+      profile: {
+        enableSMB_always: true, enableUAM: true,
+        maxSMBBasalMinutes: undefined as any,
+        max_iob: 10,
+      },
+      microBolusAllowed: true,
+      rawIobData: makeIobArray(0.5, 0.005, 5, FIXED_DATE),
+    }),
+
+    // =====================================================================
+    // CATEGORY: SMB durationReq paths with iobArray
+    // =====================================================================
+    fixture('SMB — durationReq <= 0 with iobArray', 'smb-duration-iob', {
+      currentTime: FIXED_TIME,
+      // BG barely above target, tiny insulinReq => microBolus < bolusIncrement => durationReq=0
+      glucose_status: { glucose: 122, delta: 0.5, short_avgdelta: 0.5, long_avgdelta: 0.3, date: FIXED_DATE - 60_000 },
+      profile: { enableSMB_always: true, bolus_increment: 0.1 },
+      microBolusAllowed: true,
+      rawIobData: makeIobArray(0.1, 0.001, 5, FIXED_DATE),
+    }),
+
+    fixture('SMB — durationReq >= 30 with iobArray, long zero', 'smb-duration-iob', {
+      currentTime: FIXED_TIME,
+      glucose_status: { glucose: 250, delta: 8, short_avgdelta: 7, long_avgdelta: 5, date: FIXED_DATE - 60_000 },
+      profile: {
+        enableSMB_always: true, enableUAM: true,
+        maxSMBBasalMinutes: 90, maxUAMSMBBasalMinutes: 90,
+        max_iob: 10,
+      },
+      microBolusAllowed: true,
+      rawIobData: makeIobArray(0.3, 0.003, 5, FIXED_DATE),
+    }),
+
+    // =====================================================================
+    // CATEGORY: High-temp end paths with iobArray — lines 1615-1638
+    // =====================================================================
+    fixture('High BG, rate > maxSafeBasal with iobArray', 'high-temp-end-iob', {
+      currentTime: FIXED_TIME,
+      glucose_status: { glucose: 300, delta: 5, short_avgdelta: 5, long_avgdelta: 3, date: FIXED_DATE - 60_000 },
+      profile: { max_basal: 2.0, max_daily_basal: 1.0 },
+      rawIobData: makeIobArray(0.3, 0.003, 5, FIXED_DATE),
+    }),
+
+    fixture('High BG, existing temp delivers > 2x insulinReq with iobArray', 'high-temp-end-iob', {
+      currentTime: FIXED_TIME,
+      glucose_status: { glucose: 130, delta: 0.5, short_avgdelta: 0.5, long_avgdelta: 0.5, date: FIXED_DATE - 60_000 },
+      currenttemp: { duration: 25, rate: 3.0 },
+      rawIobData: (() => {
+        const arr = makeIobArray(0.2, 0.002, 5, FIXED_DATE);
+        (arr[0] as any).lastTemp = { rate: 3.0, duration: 30, date: FIXED_DATE - 5 * 60_000 };
+        return arr;
+      })(),
+    }),
+
+    fixture('High BG, no temp running with iobArray', 'high-temp-end-iob', {
+      currentTime: FIXED_TIME,
+      glucose_status: { glucose: 170, delta: 2, short_avgdelta: 2, long_avgdelta: 1, date: FIXED_DATE - 60_000 },
+      rawIobData: makeIobArray(0.3, 0.003, 5, FIXED_DATE),
+    }),
+
+    fixture('High BG, existing temp >= required with iobArray — keep', 'high-temp-end-iob', {
+      currentTime: FIXED_TIME,
+      glucose_status: { glucose: 140, delta: 1, short_avgdelta: 1, long_avgdelta: 0.5, date: FIXED_DATE - 60_000 },
+      currenttemp: { duration: 20, rate: 2.5 },
+      rawIobData: (() => {
+        const arr = makeIobArray(0.2, 0.002, 5, FIXED_DATE);
+        (arr[0] as any).lastTemp = { rate: 2.5, duration: 30, date: FIXED_DATE - 5 * 60_000 };
+        return arr;
+      })(),
+    }),
+
+    fixture('High BG, existing temp < required with iobArray — increase', 'high-temp-end-iob', {
+      currentTime: FIXED_TIME,
+      glucose_status: { glucose: 200, delta: 3, short_avgdelta: 3, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
+      currenttemp: { duration: 10, rate: 1.2 },
+      rawIobData: (() => {
+        const arr = makeIobArray(0.3, 0.003, 5, FIXED_DATE);
+        (arr[0] as any).lastTemp = { rate: 1.2, duration: 30, date: FIXED_DATE - 5 * 60_000 };
+        return arr;
+      })(),
+    }),
+
+    // =====================================================================
+    // CATEGORY: Deep prediction loop branches
+    // Many uncovered else-arms in lines 800-1000 are in the prediction inner loop.
+    // These need specific iobArray setups where prediction values cross thresholds.
+    // =====================================================================
+
+    // Cover: ci > maxCI (line 802)
+    fixture('Carb impact exceeds maxCI — capped', 'prediction-deep', {
+      currentTime: FIXED_TIME,
+      glucose_status: { glucose: 160, delta: 15, short_avgdelta: 12, long_avgdelta: 8, date: FIXED_DATE - 60_000 },
+      meal_data: {
+        carbs: 80, nsCarbs: 80, bwCarbs: 0, journalCarbs: 0,
+        mealCOB: 70, currentDeviation: 25, maxDeviation: 25, minDeviation: 0,
+        slopeFromMaxDeviation: 0, slopeFromMinDeviation: 0,
+        allDeviations: [25, 20, 15, 8, 0], lastCarbTime: FIXED_DATE - 15 * 60_000,
+        bwFound: false,
+      },
+      rawIobData: makeIobArray(0.5, 0.005, 5, FIXED_DATE),
+    }),
+
+    // Cover: IOBpredBGs rising and falling patterns (lines 940-1000)
+    fixture('Prediction loop with very high IOB — IOBpredBGs hit floor', 'prediction-deep', {
+      currentTime: FIXED_TIME,
+      glucose_status: { glucose: 100, delta: -5, short_avgdelta: -4, long_avgdelta: -3, date: FIXED_DATE - 60_000 },
+      rawIobData: makeIobArray(5.0, 0.05, 5, FIXED_DATE),
+    }),
+
+    // Cover: UAM predictions with high deviation (lines 960-989)
+    fixture('UAM predictions with high positive deviation', 'prediction-deep', {
+      currentTime: FIXED_TIME,
+      glucose_status: { glucose: 180, delta: 10, short_avgdelta: 8, long_avgdelta: 5, date: FIXED_DATE - 60_000 },
+      profile: { enableUAM: true, enableSMB_always: true },
+      microBolusAllowed: true,
+      meal_data: {
+        carbs: 0, nsCarbs: 0, bwCarbs: 0, journalCarbs: 0,
+        mealCOB: 0, currentDeviation: 18, maxDeviation: 20, minDeviation: 2,
+        slopeFromMaxDeviation: -0.5, slopeFromMinDeviation: 0.2,
+        allDeviations: [18, 20, 18, 12, 5], bwFound: false,
+      },
+      rawIobData: makeIobArray(1.0, 0.01, 5, FIXED_DATE),
+    }),
+
+    // Cover: COBpredBGs with large COB that exceeds min and falls (lines 1014-1027)
+    fixture('COB predictions crossing min_bg — large meal falling', 'prediction-deep', {
+      currentTime: FIXED_TIME,
+      glucose_status: { glucose: 110, delta: -3, short_avgdelta: -2, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
+      profile: { enableUAM: true },
+      meal_data: {
+        carbs: 100, nsCarbs: 100, bwCarbs: 0, journalCarbs: 0,
+        mealCOB: 80, currentDeviation: -5, maxDeviation: 15, minDeviation: -8,
+        slopeFromMaxDeviation: -2.0, slopeFromMinDeviation: 0.5,
+        allDeviations: [-5, 0, 5, 15, 12], lastCarbTime: FIXED_DATE - 60 * 60_000,
+        bwFound: false,
+      },
+      iob_data: { iob: 2.0, activity: 0.02 },
+      rawIobData: makeIobArray(2.0, 0.02, 5, FIXED_DATE),
+    }),
+
+    // Cover prediction paths where all predictions stay near target (flat lines)
+    fixture('Flat predictions — all pred values near target', 'prediction-deep', {
+      currentTime: FIXED_TIME,
+      glucose_status: { glucose: 115, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
+      profile: { enableUAM: true, enableSMB_always: true },
+      microBolusAllowed: true,
+      rawIobData: makeIobArray(0.01, 0.0001, 5, FIXED_DATE),
+    }),
+
+    // Cover: minZTGuardBG < threshold path (line 1091) and related blending
+    fixture('Zero-temp predictions drop below threshold — blend minZTUAMPredBG', 'prediction-deep', {
+      currentTime: FIXED_TIME,
+      glucose_status: { glucose: 120, delta: -2, short_avgdelta: -1, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
+      profile: { enableUAM: true, enableSMB_always: true },
+      microBolusAllowed: true,
+      rawIobData: (() => {
+        const arr = makeIobArray(2.5, 0.025, 5, FIXED_DATE);
+        // Make zeroTemp activity high enough to push ZT predictions below threshold
+        for (let i = 0; i < arr.length; i++) {
+          const entry = arr[i] as any;
+          entry.iobWithZeroTemp.activity = 0.025 * Math.max(0, 1 - i * 0.05);
+          entry.iobWithZeroTemp.iob = 2.5 * Math.max(0, 1 - i * 0.05);
+        }
+        return arr;
+      })(),
+    }),
+
+    // Cover: minZTGuardBG between threshold and target (line 1094) — blendPct path
+    fixture('ZT guard between threshold and target — blended prediction', 'prediction-deep', {
+      currentTime: FIXED_TIME,
+      glucose_status: { glucose: 130, delta: -1, short_avgdelta: -0.5, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
+      profile: { enableUAM: true, enableSMB_always: true },
+      microBolusAllowed: true,
+      rawIobData: (() => {
+        const arr = makeIobArray(1.5, 0.015, 5, FIXED_DATE);
+        // Moderate zeroTemp IOB to place minZTGuardBG between threshold and target
+        for (let i = 0; i < arr.length; i++) {
+          const entry = arr[i] as any;
+          entry.iobWithZeroTemp.activity = 0.015 * Math.max(0, 1 - i * 0.06);
+          entry.iobWithZeroTemp.iob = 1.5 * Math.max(0, 1 - i * 0.06);
+        }
+        return arr;
+      })(),
+    }),
+
+    // Cover: various allDeviations paths for slopeFromDeviations calculation
+    fixture('allDeviations with mixed positive/negative — slope refinement', 'prediction-deep', {
+      currentTime: FIXED_TIME,
+      glucose_status: { glucose: 150, delta: 3, short_avgdelta: 2, long_avgdelta: 1, date: FIXED_DATE - 60_000 },
+      profile: { enableUAM: true, enableSMB_always: true },
+      microBolusAllowed: true,
+      meal_data: {
+        carbs: 0, nsCarbs: 0, bwCarbs: 0, journalCarbs: 0,
+        mealCOB: 0, currentDeviation: 8, maxDeviation: 15, minDeviation: -3,
+        slopeFromMaxDeviation: -1.5, slopeFromMinDeviation: 1.0,
+        allDeviations: [8, 12, 15, 10, -3], bwFound: false,
+      },
+      rawIobData: makeIobArray(0.8, 0.008, 5, FIXED_DATE),
     }),
   ];
 }

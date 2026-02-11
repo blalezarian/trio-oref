@@ -1,5 +1,27 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`meal/total (recentCarbs) characterization tests > NaN myMealCOB safety path > logs error when myMealCOB is NaN due to undefined carb_ratio 1`] = `
+{
+  "allDeviations": [
+    5,
+    5,
+    5,
+  ],
+  "bwCarbs": 0,
+  "bwFound": false,
+  "carbs": 30,
+  "currentDeviation": 5,
+  "journalCarbs": 0,
+  "lastCarbTime": 1736941500000,
+  "maxDeviation": 5,
+  "mealCOB": 0,
+  "minDeviation": 5,
+  "nsCarbs": 30,
+  "slopeFromMaxDeviation": -0,
+  "slopeFromMinDeviation": 0,
+}
+`;
+
 exports[`meal/total (recentCarbs) characterization tests > bad maxCOB > handles non-number maxCOB without crashing 1`] = `
 {
   "allDeviations": [
@@ -39,6 +61,103 @@ exports[`meal/total (recentCarbs) characterization tests > bad maxMealAbsorption
   "mealCOB": 24,
   "minDeviation": 5,
   "nsCarbs": 30,
+  "slopeFromMaxDeviation": -0,
+  "slopeFromMinDeviation": 0,
+}
+`;
+
+exports[`meal/total (recentCarbs) characterization tests > carbsToRemove logic with multiple treatments > removes carbs from older bwCarbs treatment 1`] = `
+{
+  "allDeviations": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+  ],
+  "bwCarbs": 0,
+  "bwFound": true,
+  "carbs": 80,
+  "currentDeviation": 0,
+  "journalCarbs": 0,
+  "lastCarbTime": 1736942100000,
+  "maxDeviation": 0,
+  "mealCOB": 80,
+  "minDeviation": 0,
+  "nsCarbs": 80,
+  "slopeFromMaxDeviation": 0,
+  "slopeFromMinDeviation": 0,
+}
+`;
+
+exports[`meal/total (recentCarbs) characterization tests > carbsToRemove logic with multiple treatments > removes carbs from older journalCarbs treatment 1`] = `
+{
+  "allDeviations": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+  ],
+  "bwCarbs": 0,
+  "bwFound": false,
+  "carbs": 80,
+  "currentDeviation": 0,
+  "journalCarbs": 0,
+  "lastCarbTime": 1736942100000,
+  "maxDeviation": 0,
+  "mealCOB": 80,
+  "minDeviation": 0,
+  "nsCarbs": 80,
+  "slopeFromMaxDeviation": 0,
+  "slopeFromMinDeviation": 0,
+}
+`;
+
+exports[`meal/total (recentCarbs) characterization tests > carbsToRemove logic with multiple treatments > removes carbs from older nsCarbs treatment when myMealCOB decreases 1`] = `
+{
+  "allDeviations": [
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+  ],
+  "bwCarbs": 0,
+  "bwFound": false,
+  "carbs": 80,
+  "currentDeviation": 0,
+  "journalCarbs": 0,
+  "lastCarbTime": 1736942100000,
+  "maxDeviation": 0,
+  "mealCOB": 80,
+  "minDeviation": 0,
+  "nsCarbs": 80,
+  "slopeFromMaxDeviation": 0,
+  "slopeFromMinDeviation": 0,
+}
+`;
+
+exports[`meal/total (recentCarbs) characterization tests > future treatment > does not count treatment with timestamp in the future 1`] = `
+{
+  "allDeviations": [
+    5,
+    5,
+    5,
+  ],
+  "bwCarbs": 0,
+  "bwFound": false,
+  "carbs": 0,
+  "currentDeviation": 5,
+  "journalCarbs": 0,
+  "lastCarbTime": 0,
+  "maxDeviation": 5,
+  "mealCOB": 0,
+  "minDeviation": 5,
+  "nsCarbs": 0,
   "slopeFromMaxDeviation": -0,
   "slopeFromMinDeviation": 0,
 }
@@ -197,5 +316,45 @@ exports[`meal/total (recentCarbs) characterization tests > treatment outside max
   "nsCarbs": 0,
   "slopeFromMaxDeviation": 0,
   "slopeFromMinDeviation": 0,
+}
+`;
+
+exports[`meal/total (recentCarbs) characterization tests > unclassified carbs > logs error for treatment with carbs but no nsCarbs/bwCarbs/journalCarbs 1`] = `
+{
+  "allDeviations": [
+    5,
+    5,
+    5,
+  ],
+  "bwCarbs": 0,
+  "bwFound": false,
+  "carbs": 25,
+  "currentDeviation": 5,
+  "journalCarbs": 0,
+  "lastCarbTime": 1736940600000,
+  "maxDeviation": 5,
+  "mealCOB": 19,
+  "minDeviation": 5,
+  "nsCarbs": 0,
+  "slopeFromMaxDeviation": -0,
+  "slopeFromMinDeviation": 0,
+}
+`;
+
+exports[`meal/total (recentCarbs) characterization tests > zombie-carb safety: null/undefined deviations > sets mealCOB to 0 when glucose data is too sparse for deviation calculation 1`] = `
+{
+  "allDeviations": [],
+  "bwCarbs": 0,
+  "bwFound": false,
+  "carbs": 50,
+  "currentDeviation": NaN,
+  "journalCarbs": 0,
+  "lastCarbTime": 1736940600000,
+  "maxDeviation": 0,
+  "mealCOB": 0,
+  "minDeviation": 999,
+  "nsCarbs": 50,
+  "slopeFromMaxDeviation": 0,
+  "slopeFromMinDeviation": 999,
 }
 `;

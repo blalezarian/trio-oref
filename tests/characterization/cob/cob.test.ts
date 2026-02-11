@@ -225,4 +225,122 @@ describe('determine-basal/cob (detectCarbAbsorption) characterization tests', ()
       expect(result).toMatchSnapshot();
     });
   });
+
+  // -------------------------------------------------------------------------
+  // Glucose entry without display_time or dateString (line 47)
+  // -------------------------------------------------------------------------
+  describe('glucose entry without display_time or dateString', () => {
+    it('logs error when BG entry has neither display_time nor dateString', () => {
+      // First entry needs dateString for bucketed_data[0], but second entry has neither
+      const data = [
+        { glucose: 120, dateString: new Date(NOW).toISOString() },
+        { glucose: 115 },  // no display_time or dateString => line 47
+        { glucose: 110, dateString: new Date(NOW - 2 * 5 * 60_000).toISOString() },
+        { glucose: 105, dateString: new Date(NOW - 3 * 5 * 60_000).toISOString() },
+        { glucose: 100, dateString: new Date(NOW - 4 * 5 * 60_000).toISOString() },
+        { glucose: 95, dateString: new Date(NOW - 5 * 5 * 60_000).toISOString() },
+        { glucose: 90, dateString: new Date(NOW - 6 * 5 * 60_000).toISOString() },
+      ];
+      const inputs = makeInputs(data, 60);
+      const result = detectCarbAbsorption(inputs);
+      expect(result).toMatchSnapshot();
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  // ciTime filter: hoursAgo < 0 (line 65)
+  // Glucose entries more recent than ciTime are skipped
+  // -------------------------------------------------------------------------
+  describe('ciTime filter: entries more recent than ciTime skipped', () => {
+    it('skips BG entries that are after ciTime (hoursAgo < 0)', () => {
+      // Set ciTime to 15 minutes ago; glucose entries span from now to 30m ago
+      // Entries at NOW, NOW-5m, NOW-10m will be more recent than ciTime (NOW-15m) => hoursAgo < 0
+      const ciTime = NOW - 15 * 60_000;
+      const glucose = makeGlucoseData(150, [2, 2, 2, 2, 2, 2]);
+      const inputs = makeInputs(glucose, 60, { ciTime });
+      const result = detectCarbAbsorption(inputs);
+      expect(result).toMatchSnapshot();
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  // lastbgTime from glucose_data[lastbgi].display_time (line 71)
+  // This path is taken when bucketed_data[last] has no display_time
+  // but glucose_data[lastbgi] does have display_time.
+  // -------------------------------------------------------------------------
+  describe('lastbgTime from glucose_data[lastbgi].display_time', () => {
+    it('uses display_time from glucose_data when bucketed_data lacks display_time', () => {
+      // Create glucose data where:
+      // First entry has dateString (goes into bucketed_data[0])
+      // After gap interpolation, bucketed_data entries won't have display_time
+      // Second entry has display_time (so glucose_data[lastbgi] has display_time)
+      const data = [
+        { glucose: 150, dateString: new Date(NOW).toISOString() },
+        // 15-min gap triggers interpolation; lastbgi=0 has dateString, no display_time
+        // After interpolation, bucketed_data[last] won't have display_time
+        // Next entry with display_time:
+        { glucose: 140, display_time: new Date(NOW - 3 * 5 * 60_000).toISOString() },
+        { glucose: 135, display_time: new Date(NOW - 4 * 5 * 60_000).toISOString() },
+        { glucose: 130, display_time: new Date(NOW - 5 * 5 * 60_000).toISOString() },
+        { glucose: 125, display_time: new Date(NOW - 6 * 5 * 60_000).toISOString() },
+        { glucose: 120, display_time: new Date(NOW - 7 * 5 * 60_000).toISOString() },
+        { glucose: 115, display_time: new Date(NOW - 8 * 5 * 60_000).toISOString() },
+      ];
+      const inputs = makeInputs(data, 60);
+      const result = detectCarbAbsorption(inputs);
+      expect(result).toMatchSnapshot();
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  // bucketed BG < 39 in deviation loop (line 129)
+  // -------------------------------------------------------------------------
+  describe('bucketed BG below 39 in deviation loop', () => {
+    it('skips deviation calculation when bucketed BG or BG+3 is below 39', () => {
+      // Create data where glucose drops to < 39 at the +3 position
+      // Need at least 7 entries for bucketed_data.length-3 to have loop iterations
+      const data = [
+        { glucose: 120, dateString: new Date(NOW).toISOString() },
+        { glucose: 100, dateString: new Date(NOW - 5 * 60_000).toISOString() },
+        { glucose: 80, dateString: new Date(NOW - 10 * 60_000).toISOString() },
+        { glucose: 35, dateString: new Date(NOW - 15 * 60_000).toISOString() }, // < 39 at i+3
+        { glucose: 30, dateString: new Date(NOW - 20 * 60_000).toISOString() },
+        { glucose: 25, dateString: new Date(NOW - 25 * 60_000).toISOString() },
+        { glucose: 20, dateString: new Date(NOW - 30 * 60_000).toISOString() },
+      ];
+      const inputs = makeInputs(data, 60);
+      const result = detectCarbAbsorption(inputs);
+      expect(result).toMatchSnapshot();
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  // ciTime > bgTime at i===0 (line 155 true branch)
+  // -------------------------------------------------------------------------
+  describe('ciTime strictly greater than bgTime at i===0', () => {
+    it('pushes currentDeviation to allDeviations when ciTime > bgTime at first iteration', () => {
+      // Set ciTime to slightly in the future of the newest glucose entry
+      const ciTime = NOW + 1 * 60_000; // 1 minute after newest BG
+      const glucose = makeGlucoseData(150, [3, 3, 3, 3, 3, 3]);
+      const inputs = makeInputs(glucose, 60, { ciTime });
+      const result = detectCarbAbsorption(inputs);
+      expect(result).toMatchSnapshot();
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  // Large currentDeviation / 2 > min_5m_carbimpact (line 159 true branch)
+  // -------------------------------------------------------------------------
+  describe('large currentDeviation exceeds min_5m_carbimpact', () => {
+    it('hits the large deviation path when BG is rising rapidly', () => {
+      // Very rapidly rising BG: each 5-min interval has +20 mg/dL delta
+      // avgDelta = (bg - bg[i+3])/3 = ~20
+      // bgi from no IOB is ~0
+      // currentDeviation = 20 - 0 = 20; 20/2 = 10 > 8 (min_5m_carbimpact)
+      const glucose = makeGlucoseData(200, [20, 20, 20, 20, 20, 20]);
+      const inputs = makeInputs(glucose, 30, { ciTime: NOW + 60_000 });
+      const result = detectCarbAbsorption(inputs);
+      expect(result).toMatchSnapshot();
+    });
+  });
 });

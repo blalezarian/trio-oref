@@ -12,6 +12,30 @@ exports[`determine-basal/cob (detectCarbAbsorption) characterization tests > BG 
 }
 `;
 
+exports[`determine-basal/cob (detectCarbAbsorption) characterization tests > bucketed BG below 39 in deviation loop > skips deviation calculation when bucketed BG or BG+3 is below 39 1`] = `
+{
+  "allDeviations": [],
+  "carbsAbsorbed": 0,
+  "currentDeviation": undefined,
+  "maxDeviation": 0,
+  "minDeviation": 999,
+  "slopeFromMaxDeviation": 0,
+  "slopeFromMinDeviation": 999,
+}
+`;
+
+exports[`determine-basal/cob (detectCarbAbsorption) characterization tests > ciTime filter: entries more recent than ciTime skipped > skips BG entries that are after ciTime (hoursAgo < 0) 1`] = `
+{
+  "allDeviations": [],
+  "carbsAbsorbed": 4,
+  "currentDeviation": 2.67,
+  "maxDeviation": 0,
+  "minDeviation": 999,
+  "slopeFromMaxDeviation": 0,
+  "slopeFromMinDeviation": 999,
+}
+`;
+
 exports[`determine-basal/cob (detectCarbAbsorption) characterization tests > ciTime filtering > only considers last ~45min of data when ciTime is set 1`] = `
 {
   "allDeviations": [
@@ -26,6 +50,22 @@ exports[`determine-basal/cob (detectCarbAbsorption) characterization tests > ciT
   "currentDeviation": 2,
   "maxDeviation": 2,
   "minDeviation": 2,
+  "slopeFromMaxDeviation": -0,
+  "slopeFromMinDeviation": 0,
+}
+`;
+
+exports[`determine-basal/cob (detectCarbAbsorption) characterization tests > ciTime strictly greater than bgTime at i===0 > pushes currentDeviation to allDeviations when ciTime > bgTime at first iteration 1`] = `
+{
+  "allDeviations": [
+    3,
+    3,
+    3,
+  ],
+  "carbsAbsorbed": 6,
+  "currentDeviation": 3,
+  "maxDeviation": 3,
+  "minDeviation": 3,
   "slopeFromMaxDeviation": -0,
   "slopeFromMinDeviation": 0,
 }
@@ -80,6 +120,46 @@ exports[`determine-basal/cob (detectCarbAbsorption) characterization tests > fir
 `;
 
 exports[`determine-basal/cob (detectCarbAbsorption) characterization tests > gap interpolation > glucose entries more than 8 minutes apart triggers interpolation 1`] = `
+{
+  "allDeviations": [],
+  "carbsAbsorbed": 8,
+  "currentDeviation": 5,
+  "maxDeviation": 0,
+  "minDeviation": 999,
+  "slopeFromMaxDeviation": 0,
+  "slopeFromMinDeviation": 999,
+}
+`;
+
+exports[`determine-basal/cob (detectCarbAbsorption) characterization tests > glucose entry without display_time or dateString > logs error when BG entry has neither display_time nor dateString 1`] = `
+{
+  "allDeviations": [],
+  "carbsAbsorbed": 4,
+  "currentDeviation": 5.83,
+  "maxDeviation": 0,
+  "minDeviation": 999,
+  "slopeFromMaxDeviation": 0,
+  "slopeFromMinDeviation": 999,
+}
+`;
+
+exports[`determine-basal/cob (detectCarbAbsorption) characterization tests > large currentDeviation exceeds min_5m_carbimpact > hits the large deviation path when BG is rising rapidly 1`] = `
+{
+  "allDeviations": [
+    20,
+    20,
+    20,
+  ],
+  "carbsAbsorbed": 15,
+  "currentDeviation": 20,
+  "maxDeviation": 20,
+  "minDeviation": 20,
+  "slopeFromMaxDeviation": -0,
+  "slopeFromMinDeviation": 0,
+}
+`;
+
+exports[`determine-basal/cob (detectCarbAbsorption) characterization tests > lastbgTime from glucose_data[lastbgi].display_time > uses display_time from glucose_data when bucketed_data lacks display_time 1`] = `
 {
   "allDeviations": [],
   "carbsAbsorbed": 8,

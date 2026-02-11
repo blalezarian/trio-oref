@@ -20,7 +20,7 @@ export default defineConfig({
         'lib/basal-set-temp.js',
         'lib/round-basal.js',
       ],
-      reporter: ['text', 'text-summary', 'html'],
+      reporter: ['text', 'text-summary', 'html', 'json'],
       reportsDirectory: 'coverage',
     },
   },

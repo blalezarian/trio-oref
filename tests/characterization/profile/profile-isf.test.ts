@@ -29,9 +29,12 @@ describe('profile/isf (isfLookup) characterization tests', () => {
   });
 
   function getIsfLookup() {
-    // Fresh require each time to avoid cached lastResult
-    const req = createRequire(import.meta.url);
-    return req('../../../lib/profile/isf');
+    // Clear Node's native require cache for the isf module
+    // so the module-level lastResult variable is reset
+    const nativeRequire = createRequire(import.meta.url);
+    const resolved = nativeRequire.resolve('../../../lib/profile/isf');
+    delete nativeRequire.cache[resolved];
+    return nativeRequire('../../../lib/profile/isf');
   }
 
   // -------------------------------------------------------------------------
@@ -180,6 +183,68 @@ describe('profile/isf (isfLookup) characterization tests', () => {
           { offset: 960, sensitivity: 35 },
           { offset: 0, sensitivity: 50 },
           { offset: 480, sensitivity: 40 },
+        ],
+      };
+      const result = isfLookup(isf_data, new Date(FIXED_TIME));
+      expect(result).toMatchSnapshot();
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  // Loop match in first entry (line 33: nowMinutes >= offset && < nextOffset)
+  // -------------------------------------------------------------------------
+  describe('loop match at first entry', () => {
+    it('matches the first entry when time is before the second offset', () => {
+      const isfLookup = getIsfLookup();
+      // Time is 02:00 UTC = 120 min, offsets at 0 and 480
+      // 120 >= 0 && 120 < 480 => match at first entry
+      const isf_data = {
+        sensitivities: [
+          { offset: 0, sensitivity: 55 },
+          { offset: 480, sensitivity: 40 },
+        ],
+      };
+      const result = isfLookup(isf_data, new Date('2025-01-15T02:00:00.000Z'));
+      expect(result).toMatchSnapshot();
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  // Many entries to exercise loop iterations with no match until later
+  // -------------------------------------------------------------------------
+  describe('multiple entries with match at third entry', () => {
+    it('iterates through entries and matches the third offset window', () => {
+      const isfLookup = getIsfLookup();
+      // 5 entries: 0, 360, 720, 1080, 1320
+      // Time: 18:30 UTC = 1110 min => 1110 >= 1080 && 1110 < 1320 => match at entry[3]
+      const isf_data = {
+        sensitivities: [
+          { offset: 0, sensitivity: 60 },
+          { offset: 360, sensitivity: 50 },
+          { offset: 720, sensitivity: 45 },
+          { offset: 1080, sensitivity: 38 },
+          { offset: 1320, sensitivity: 42 },
+        ],
+      };
+      const result = isfLookup(isf_data, new Date('2025-01-15T18:30:00.000Z'));
+      expect(result).toMatchSnapshot();
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  // Two-entry schedule: match middle entry in the loop (line 33 true branch)
+  // -------------------------------------------------------------------------
+  describe('two-entry schedule match in loop', () => {
+    it('matches in the for loop when nowMinutes falls in a middle window', () => {
+      const isfLookup = getIsfLookup();
+      // 4 entries: at 06:00 (360 min), time is 12:00 (720 min)
+      // 720 >= 360 && 720 < 960 => match at index 1
+      const isf_data = {
+        sensitivities: [
+          { offset: 0, sensitivity: 60 },
+          { offset: 360, sensitivity: 45 },
+          { offset: 960, sensitivity: 30 },
+          { offset: 1200, sensitivity: 25 },
         ],
       };
       const result = isfLookup(isf_data, new Date(FIXED_TIME));

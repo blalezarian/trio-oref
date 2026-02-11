@@ -767,4 +767,261 @@ describe('iob/history (calcTempTreatments) characterization tests', () => {
       expect(normalizeResults(result)).toMatchSnapshot();
     });
   });
+
+  // -------------------------------------------------------------------------
+  // Bolus in the future (line 286): started_at > now
+  // -------------------------------------------------------------------------
+  describe('bolus in the future', () => {
+    it('ignores a Bolus event with a timestamp in the future', () => {
+      const futureTs = new Date(NOW + 30 * 60_000).toISOString();
+      const inputs = makeInputs([
+        { _type: 'Bolus', amount: 3, timestamp: futureTs },
+        { _type: 'Bolus', amount: 1, timestamp: ts(30) },
+      ]);
+      const result = calcTempTreatments(inputs);
+      expect(normalizeResults(result)).toMatchSnapshot();
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  // splitAroundSuspends: suspendedPrior with event entirely before resume (line 94-95)
+  // -------------------------------------------------------------------------
+  describe('splitAroundSuspends: event entirely before first resume', () => {
+    it('zeros duration when event ends before first resume with suspend_zeros_iob', () => {
+      // suspendedPrior: resume at 120m ago, no preceding suspend
+      // TempBasal from 180m ago for 30m => ends at 150m ago, which is before resume at 120m ago
+      const inputs = makeInputs(
+        [
+          { _type: 'TempBasalDuration', 'duration (min)': 30, timestamp: ts(180) },
+          { _type: 'TempBasal', rate: 2, timestamp: ts(180) },
+          { _type: 'PumpResume', timestamp: ts(120) },
+        ],
+        { suspend_zeros_iob: true },
+      );
+      const result = calcTempTreatments(inputs);
+      expect(normalizeResults(result)).toMatchSnapshot();
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  // splitAroundSuspends: currentlySuspended with event starting after last suspend (line 105-106)
+  // -------------------------------------------------------------------------
+  describe('splitAroundSuspends: event starting after last suspend', () => {
+    it('zeros duration when event starts after last suspend time', () => {
+      // PumpSuspend at 60m ago, no resume => currentlySuspended
+      // TempBasal at 30m ago (starts AFTER suspend) => duration set to 0
+      const inputs = makeInputs(
+        [
+          { _type: 'TempBasalDuration', 'duration (min)': 20, timestamp: ts(30) },
+          { _type: 'TempBasal', rate: 2, timestamp: ts(30) },
+          { _type: 'PumpSuspend', timestamp: ts(60) },
+        ],
+        { suspend_zeros_iob: true },
+      );
+      const result = calcTempTreatments(inputs);
+      expect(normalizeResults(result)).toMatchSnapshot();
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  // splitAroundSuspends: currentlySuspended with event starting before last suspend (line 107-108)
+  // -------------------------------------------------------------------------
+  describe('splitAroundSuspends: event straddling last suspend', () => {
+    it('trims duration when event starts before last suspend but extends past it', () => {
+      // PumpSuspend at 30m ago, no resume => currentlySuspended
+      // TempBasal from 60m ago for 60m => starts before, ends after suspend
+      // Also need a resume before the suspend so firstResumeTime is set
+      const inputs = makeInputs(
+        [
+          { _type: 'TempBasalDuration', 'duration (min)': 60, timestamp: ts(60) },
+          { _type: 'TempBasal', rate: 2, timestamp: ts(60) },
+          { _type: 'PumpResume', timestamp: ts(90) },
+          { _type: 'PumpSuspend', timestamp: ts(30) },
+        ],
+        { suspend_zeros_iob: true },
+      );
+      const result = calcTempTreatments(inputs);
+      expect(normalizeResults(result)).toMatchSnapshot();
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  // Mismatched suspend/resume: suspendedPrior && !currentlySuspended with mismatch (line 246-247)
+  // -------------------------------------------------------------------------
+  describe('mismatch: suspendedPrior && !currentlySuspended with wrong counts', () => {
+    it('logs mismatch when suspendedPrior and resumes-1 != suspends', () => {
+      // 2 resumes, 2 suspends; suspendedPrior because first resume < first suspend
+      // For suspendedPrior && !currentlySuspended: (resumes.length-1) !== suspends.length
+      // Need: resumes-1 != suspends, so 3 resumes, 1 suspend
+      const inputs = makeInputs(
+        [
+          { _type: 'PumpResume', timestamp: ts(120) },  // first resume (earliest)
+          { _type: 'PumpSuspend', timestamp: ts(90) },
+          { _type: 'PumpResume', timestamp: ts(60) },
+          { _type: 'PumpResume', timestamp: ts(30) },  // extra resume
+        ],
+        { suspend_zeros_iob: false },
+      );
+      const result = calcTempTreatments(inputs);
+      expect(normalizeResults(result)).toMatchSnapshot();
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  // Mismatched: !suspendedPrior && currentlySuspended with wrong counts (line 248-249)
+  // -------------------------------------------------------------------------
+  describe('mismatch: !suspendedPrior && currentlySuspended with wrong counts', () => {
+    it('logs mismatch when currentlySuspended and resumes != suspends-1', () => {
+      // Need: !suspendedPrior (first suspend before first resume or no resumes)
+      // currentlySuspended (last suspend has no matching resume)
+      // resumes != (suspends-1)
+      // 3 suspends, 0 resumes => currentlySuspended at first suspend, resumes(0) != suspends-1(2)
+      const inputs = makeInputs(
+        [
+          { _type: 'PumpSuspend', timestamp: ts(90) },
+          { _type: 'PumpSuspend', timestamp: ts(60) },
+          { _type: 'PumpSuspend', timestamp: ts(30) },
+        ],
+        { suspend_zeros_iob: false },
+      );
+      const result = calcTempTreatments(inputs);
+      expect(normalizeResults(result)).toMatchSnapshot();
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  // Mismatched: suspendedPrior && currentlySuspended with wrong counts (line 250-251)
+  // -------------------------------------------------------------------------
+  describe('mismatch: suspendedPrior && currentlySuspended with wrong counts', () => {
+    it('logs mismatch when both suspendedPrior and currentlySuspended with mismatch', () => {
+      // suspendedPrior: first resume < first suspend
+      // currentlySuspended: last suspend has no resume after it
+      // resumes != suspends (mismatch)
+      // 1 resume at 120m, 2 suspends at 90m and 30m => resume(1) != suspends(2)
+      // First resume at 120m < first suspend at 30m (sorted: 30, 90)
+      // Actually suspends are sorted by date: ts(90) < ts(30) in millis => sorted [ts(90), ts(30)]
+      // Resume at 120m, so resume date = NOW-120m. Suspend dates: NOW-90m, NOW-30m
+      // resume(NOW-120m) < suspend(NOW-90m)? Yes => suspendedPrior
+      // After matching: suspend at NOW-90m matches resume... no, resume is BEFORE suspend
+      // Let me re-think: resumes sorted by date = [120m ago]. suspends sorted by date = [90m ago, 30m ago]
+      // suspendedPrior: resume[0].date < suspend[0].date => (NOW-120m) < (NOW-90m) => yes
+      // Matching: for suspend[0] (90m ago), find resume with date > suspend date: resume[0] date=NOW-120m < NOW-90m, no match
+      // j=1 >= resumes.length(1) => currentlySuspended=true, lastSuspendTime = ts(90)
+      // resumes(1) != suspends(2) => mismatch logged at line 250
+      const inputs = makeInputs(
+        [
+          { _type: 'PumpResume', timestamp: ts(120) },
+          { _type: 'PumpSuspend', timestamp: ts(90) },
+          { _type: 'PumpSuspend', timestamp: ts(30) },
+        ],
+        { suspend_zeros_iob: false },
+      );
+      const result = calcTempTreatments(inputs);
+      expect(normalizeResults(result)).toMatchSnapshot();
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  // splitTimespan: short event crossing a basal profile boundary (lines 28-31)
+  // duration <= 30 but crosses a splitter point
+  // -------------------------------------------------------------------------
+  describe('splitTimespan: short event crossing basal boundary', () => {
+    it('splits a short temp basal at a basal profile change point', () => {
+      // Temp basal of 20min starting at 11:50 UTC, basal change at 12:00 (720 min)
+      // startMinutes=710, endMinutes=730, splitter.minutes=720
+      // startMinutes(710) < 720 && endMinutes(730) > 720 => split
+      // duration(20) <= 30 => else branch at line 28
+      const inputs = makeInputs(
+        [
+          { _type: 'TempBasalDuration', 'duration (min)': 20, timestamp: '2025-01-15T11:50:00.000Z' },
+          { _type: 'TempBasal', rate: 2, timestamp: '2025-01-15T11:50:00.000Z' },
+        ],
+        {
+          basalprofile: [
+            { i: 0, start: '00:00:00', rate: 0.8, minutes: 0 },
+            { i: 1, start: '12:00:00', rate: 1.2, minutes: 720 },
+          ],
+          current_basal: 1.2,
+        },
+      );
+      const result = calcTempTreatments(inputs);
+      expect(normalizeResults(result)).toMatchSnapshot();
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  // splitTimespan: event crossing midnight (line 30: endMinutes > 1440)
+  // -------------------------------------------------------------------------
+  describe('splitTimespan: event crossing midnight', () => {
+    it('splits a short temp basal that crosses midnight', () => {
+      // Temp basal of 20min starting at 23:50 UTC (1430 min mark)
+      // endMinutes = 1430 + 20 = 1450 > 1440 => midnight crossing
+      // Need a splitter at minutes < (1450-1440)=10, e.g., at minute 0
+      const inputs = makeInputs(
+        [
+          { _type: 'TempBasalDuration', 'duration (min)': 20, timestamp: '2025-01-15T23:50:00.000Z' },
+          { _type: 'TempBasal', rate: 2, timestamp: '2025-01-15T23:50:00.000Z' },
+        ],
+        {
+          basalprofile: [
+            { i: 0, start: '00:00:00', rate: 0.8, minutes: 0 },
+            { i: 1, start: '12:00:00', rate: 1.2, minutes: 720 },
+          ],
+          current_basal: 0.8,
+        },
+      );
+      const result = calcTempTreatments(inputs);
+      expect(normalizeResults(result)).toMatchSnapshot();
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  // AndroidAPS cancel TBR with null duration splice (line 389-390)
+  // Need two overlapping temp basals where the second has duration === null
+  // -------------------------------------------------------------------------
+  describe('overlapping temp basals with null duration splice', () => {
+    it('splices a temp with null duration when it overlaps the previous', () => {
+      // First temp at 60m ago, duration 60m (overlaps next)
+      // Second temp at 30m ago, duration null (AndroidAPS cancel TBR)
+      const inputs = makeInputs([
+        { _type: 'TempBasalDuration', 'duration (min)': 60, timestamp: ts(60) },
+        { _type: 'TempBasal', rate: 2, timestamp: ts(60) },
+        {
+          eventType: 'Temp Basal',
+          rate: 0,
+          duration: null,
+          timestamp: ts(30),
+        },
+      ]);
+      const result = calcTempTreatments(inputs);
+      expect(normalizeResults(result)).toMatchSnapshot();
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  // Truncation of extra suspends (line 254-257)
+  // -------------------------------------------------------------------------
+  describe('extra suspends truncated', () => {
+    it('truncates extra suspends beyond matched ones', () => {
+      // 3 suspends, 1 resume => first suspend matches resume, second suspend causes
+      // currentlySuspended, third is extra and gets truncated
+      // Suspend at 90m, Resume at 60m, Suspend at 30m, Suspend at 10m
+      // Sorted suspends: [90m, 30m, 10m], Resume: [60m]
+      // i=0: suspend[0]=90m, find resume > 90m date => resume[0]=60m ago, date=NOW-60m > NOW-90m? yes => break at j=0
+      // pumpSuspends[0].duration = (NOW-60m - (NOW-90m))/60/1000 = 30
+      // i=1: suspend[1]=30m, find resume: j=0 resume=60m ago, NOW-60m > NOW-30m? no, j=1 >= length => currentlySuspended
+      // At line 254: i=1 < (3-1)=2 => splice extra suspends from index 2
+      const inputs = makeInputs(
+        [
+          { _type: 'PumpSuspend', timestamp: ts(90) },
+          { _type: 'PumpResume', timestamp: ts(60) },
+          { _type: 'PumpSuspend', timestamp: ts(30) },
+          { _type: 'PumpSuspend', timestamp: ts(10) },
+        ],
+        { suspend_zeros_iob: false },
+      );
+      const result = calcTempTreatments(inputs);
+      expect(normalizeResults(result)).toMatchSnapshot();
+    });
+  });
 });

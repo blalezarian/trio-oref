@@ -263,4 +263,160 @@ describe('meal/total (recentCarbs) characterization tests', () => {
       expect(result).toMatchSnapshot();
     });
   });
+
+  // -------------------------------------------------------------------------
+  // Unclassified carbs (line 73-74): carbs >= 1 but no nsCarbs/bwCarbs/journalCarbs
+  // -------------------------------------------------------------------------
+  describe('unclassified carbs', () => {
+    it('logs error for treatment with carbs but no nsCarbs/bwCarbs/journalCarbs', () => {
+      const opts = makeOpts(
+        [
+          {
+            timestamp: ts(30),
+            carbs: 25,
+            // No nsCarbs, bwCarbs, or journalCarbs => unclassified path
+          },
+        ],
+        { glucose: risingGlucose() },
+      );
+      const result = recentCarbs(opts, TIME);
+      expect(result).toMatchSnapshot();
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  // carbsToRemove path (lines 87-94): myMealCOB < mealCOB triggers removal
+  // When iterating treatments newest-to-oldest, if a subsequent (older) treatment
+  // results in lower myMealCOB than the current max, carbsToRemove fires.
+  // Use extended glucose data (many 5-min readings) so calcMealCOB can compute
+  // significant absorption for older treatments.
+  // -------------------------------------------------------------------------
+  describe('carbsToRemove logic with multiple treatments', () => {
+    /** Generate extended glucose data: 60 readings (5 hours) of steady BG */
+    function extendedGlucose(bg = 130) {
+      const data: Array<{ glucose: number; dateString: string }> = [];
+      for (let i = 0; i < 60; i++) {
+        data.push({
+          glucose: bg,
+          dateString: new Date(NOW - i * 5 * 60_000).toISOString(),
+        });
+      }
+      return data;
+    }
+
+    it('removes carbs from older nsCarbs treatment when myMealCOB decreases', () => {
+      // Recent treatment (5m ago) with 80g => high mealCOB (little absorption)
+      // Older treatment (240m ago) with 20g => total 100g, but heavy absorption
+      // over 4 hours makes myMealCOB < mealCOB
+      const opts = makeOpts(
+        [
+          { timestamp: ts(5), carbs: 80, nsCarbs: 80 },
+          { timestamp: ts(240), carbs: 20, nsCarbs: 20 },
+        ],
+        { glucose: extendedGlucose() },
+      );
+      const result = recentCarbs(opts, TIME);
+      expect(result).toMatchSnapshot();
+    });
+
+    it('removes carbs from older bwCarbs treatment', () => {
+      const opts = makeOpts(
+        [
+          { timestamp: ts(5), carbs: 80, nsCarbs: 80 },
+          { timestamp: ts(240), carbs: 20, bwCarbs: 20 },
+        ],
+        { glucose: extendedGlucose() },
+      );
+      const result = recentCarbs(opts, TIME);
+      expect(result).toMatchSnapshot();
+    });
+
+    it('removes carbs from older journalCarbs treatment', () => {
+      const opts = makeOpts(
+        [
+          { timestamp: ts(5), carbs: 80, nsCarbs: 80 },
+          { timestamp: ts(240), carbs: 20, journalCarbs: 20 },
+        ],
+        { glucose: extendedGlucose() },
+      );
+      const result = recentCarbs(opts, TIME);
+      expect(result).toMatchSnapshot();
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  // currentDeviation null/undefined (lines 128-131) and maxDeviation null/undefined (lines 133-136)
+  // When glucose_data has too few entries for cob.js to compute deviations,
+  // currentDeviation and maxDeviation come back as undefined.
+  // -------------------------------------------------------------------------
+  describe('zombie-carb safety: null/undefined deviations', () => {
+    it('sets mealCOB to 0 when glucose data is too sparse for deviation calculation', () => {
+      // Provide only 3 glucose readings: bucketed_data will be short,
+      // and the deviation loop (bucketed_data.length-3) won't iterate,
+      // leaving currentDeviation undefined
+      const sparseGlucose = [
+        { glucose: 120, dateString: new Date(NOW).toISOString() },
+        { glucose: 120, dateString: new Date(NOW - 5 * 60_000).toISOString() },
+        { glucose: 120, dateString: new Date(NOW - 10 * 60_000).toISOString() },
+      ];
+      const opts = makeOpts(
+        [
+          {
+            timestamp: ts(30),
+            carbs: 50,
+            nsCarbs: 50,
+          },
+        ],
+        { glucose: sparseGlucose },
+      );
+      const result = recentCarbs(opts, TIME);
+      expect(result).toMatchSnapshot();
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  // NaN myMealCOB (line 84-85): when carbsAbsorbed is NaN because
+  // profile.carb_ratio is undefined, making absorbed = NaN.
+  // This triggers the typeof(myMealCOB) !== 'number' || isNaN safety check.
+  // -------------------------------------------------------------------------
+  describe('NaN myMealCOB safety path', () => {
+    it('logs error when myMealCOB is NaN due to undefined carb_ratio', () => {
+      const opts = makeOpts(
+        [
+          {
+            timestamp: ts(15),
+            carbs: 30,
+            nsCarbs: 30,
+          },
+        ],
+        {
+          profile: { carb_ratio: undefined as unknown },
+          glucose: risingGlucose(),
+        },
+      );
+      const result = recentCarbs(opts, TIME);
+      expect(result).toMatchSnapshot();
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  // Treatment in the future (treatmentTime > now) - should be skipped
+  // -------------------------------------------------------------------------
+  describe('future treatment', () => {
+    it('does not count treatment with timestamp in the future', () => {
+      const futureTime = new Date(NOW + 30 * 60_000).toISOString();
+      const opts = makeOpts(
+        [
+          {
+            timestamp: futureTime,
+            carbs: 50,
+            nsCarbs: 50,
+          },
+        ],
+        { glucose: risingGlucose() },
+      );
+      const result = recentCarbs(opts, TIME);
+      expect(result).toMatchSnapshot();
+    });
+  });
 });

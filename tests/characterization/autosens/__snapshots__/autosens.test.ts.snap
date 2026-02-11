@@ -1,5 +1,54 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`determine-basal/autosens (detectSensitivity) characterization tests > BG time error paths > entry without dateString, display_time, or xDrip_started_at logs error and continues 1`] = `
+{
+  "newisf": 40,
+  "ratio": 1,
+}
+`;
+
+exports[`determine-basal/autosens (detectSensitivity) characterization tests > BG time error paths > lastbgTime falls back to bucketed_data[0].display_time when previous entry has no dateString 1`] = `
+{
+  "newisf": 40,
+  "ratio": 1,
+}
+`;
+
+exports[`determine-basal/autosens (detectSensitivity) characterization tests > BG time error paths > previous entry has no time fields and no xDrip_started_at triggers last BG time error 1`] = `
+{
+  "newisf": 40,
+  "ratio": 1,
+}
+`;
+
+exports[`determine-basal/autosens (detectSensitivity) characterization tests > BG time error paths > previous entry without dateString, display_time triggers lastbgTime error path 1`] = `
+{
+  "newisf": 40,
+  "ratio": 1,
+}
+`;
+
+exports[`determine-basal/autosens (detectSensitivity) characterization tests > CSF to non-meal transition > transition from csf (meal absorption) to non-meal logs closing paren 1`] = `
+{
+  "newisf": 40,
+  "ratio": 1,
+}
+`;
+
+exports[`determine-basal/autosens (detectSensitivity) characterization tests > UAM detection and state transitions > UAM end transition (type uam -> non-meal) logs closing paren 1`] = `
+{
+  "newisf": 40,
+  "ratio": 1,
+}
+`;
+
+exports[`determine-basal/autosens (detectSensitivity) characterization tests > UAM detection and state transitions > high IOB in non-retrospective mode triggers UAM exclusion with state transitions 1`] = `
+{
+  "newisf": 40,
+  "ratio": 1,
+}
+`;
+
 exports[`determine-basal/autosens (detectSensitivity) characterization tests > UAM exclusion > UAM detected in non-retrospective mode: deviations excluded 1`] = `
 {
   "newisf": 40,
@@ -28,6 +77,20 @@ exports[`determine-basal/autosens (detectSensitivity) characterization tests > c
 }
 `;
 
+exports[`determine-basal/autosens (detectSensitivity) characterization tests > deviation zero path > deviation exactly 0 in non-meal context writes = sign 1`] = `
+{
+  "newisf": 40,
+  "ratio": 1,
+}
+`;
+
+exports[`determine-basal/autosens (detectSensitivity) characterization tests > deviations overflow and shift > more than lookback deviations triggers shift to keep only recent data 1`] = `
+{
+  "newisf": 40,
+  "ratio": 1,
+}
+`;
+
 exports[`determine-basal/autosens (detectSensitivity) characterization tests > exercise mode / temp targets > exercise_mode with high temp target adds negative deviations 1`] = `
 {
   "newisf": 40,
@@ -36,6 +99,13 @@ exports[`determine-basal/autosens (detectSensitivity) characterization tests > e
 `;
 
 exports[`determine-basal/autosens (detectSensitivity) characterization tests > exercise mode / temp targets > temp target with duration 0 (cancelled) returns 0 from tempTargetRunning 1`] = `
+{
+  "newisf": 40,
+  "ratio": 1,
+}
+`;
+
+exports[`determine-basal/autosens (detectSensitivity) characterization tests > glucose bucketing with close timestamps > entries within 2 minutes are averaged into the same bucket 1`] = `
 {
   "newisf": 40,
   "ratio": 1,
@@ -70,6 +140,34 @@ exports[`determine-basal/autosens (detectSensitivity) characterization tests > g
 }
 `;
 
+exports[`determine-basal/autosens (detectSensitivity) characterization tests > history entries without _type > history entry without _type property is skipped in rewind search 1`] = `
+{
+  "newisf": 40,
+  "ratio": 1,
+}
+`;
+
+exports[`determine-basal/autosens (detectSensitivity) characterization tests > invalid BG values in bucketed data > NaN glucose in bucketed data is skipped with ! marker 1`] = `
+{
+  "newisf": 40,
+  "ratio": 1,
+}
+`;
+
+exports[`determine-basal/autosens (detectSensitivity) characterization tests > invalid BG values in bucketed data > glucose below 40 in bucketed data is skipped 1`] = `
+{
+  "newisf": 40,
+  "ratio": 1,
+}
+`;
+
+exports[`determine-basal/autosens (detectSensitivity) characterization tests > invalid BG values in bucketed data > glucose value of 0 (falsy) is skipped 1`] = `
+{
+  "newisf": 40,
+  "ratio": 1,
+}
+`;
+
 exports[`determine-basal/autosens (detectSensitivity) characterization tests > lookback and padding > custom deviations lookback of 48 (4h) 1`] = `
 {
   "newisf": 40,
@@ -84,10 +182,73 @@ exports[`determine-basal/autosens (detectSensitivity) characterization tests > l
 }
 `;
 
+exports[`determine-basal/autosens (detectSensitivity) characterization tests > meal COB tracking and absorption > absorbed is falsy (zero) when ci and deviation are both zero 1`] = `
+{
+  "newisf": 40,
+  "ratio": 1,
+}
+`;
+
+exports[`determine-basal/autosens (detectSensitivity) characterization tests > meal COB tracking and absorption > meal with negative deviation sets absorbing=0 and mealCarbs=0 when COB<0.5 1`] = `
+{
+  "newisf": 40,
+  "ratio": 1,
+}
+`;
+
+exports[`determine-basal/autosens (detectSensitivity) characterization tests > meal COB tracking and absorption > multiple meals with COB absorption, including mealStartCounter > 60 path 1`] = `
+{
+  "newisf": 40,
+  "ratio": 1,
+}
+`;
+
+exports[`determine-basal/autosens (detectSensitivity) characterization tests > meal COB tracking and absorption > treatment is removed when older than oldest bucketed glucose 1`] = `
+{
+  "newisf": 40,
+  "ratio": 1,
+}
+`;
+
+exports[`determine-basal/autosens (detectSensitivity) characterization tests > meal absorption with mealStartCounter > 60 > tiny carb entry with high min_5m_carbimpact depletes COB quickly while mealStartCounter starts at 999 1`] = `
+{
+  "newisf": 40,
+  "ratio": 1,
+}
+`;
+
 exports[`determine-basal/autosens (detectSensitivity) characterization tests > meal exclusion > carbs present: meal deviations are excluded from autosens 1`] = `
 {
   "newisf": 57,
   "ratio": 0.7,
+}
+`;
+
+exports[`determine-basal/autosens (detectSensitivity) characterization tests > meal removal when treatment is older than BG > meals older than oldest bucketed glucose are spliced out 1`] = `
+{
+  "newisf": 40,
+  "ratio": 1,
+}
+`;
+
+exports[`determine-basal/autosens (detectSensitivity) characterization tests > meal removal with empty bucketed data > bucketed_data[0] undefined triggers continue in meal removal loop 1`] = `
+{
+  "newisf": 40,
+  "ratio": 1,
+}
+`;
+
+exports[`determine-basal/autosens (detectSensitivity) characterization tests > meals sorting > multiple carb entries are sorted by timestamp 1`] = `
+{
+  "newisf": 40,
+  "ratio": 1,
+}
+`;
+
+exports[`determine-basal/autosens (detectSensitivity) characterization tests > missing glucose field in bucketed data > entry with undefined glucose after bucketing logs error and continues 1`] = `
+{
+  "newisf": 40,
+  "ratio": 1,
 }
 `;
 
@@ -127,6 +288,41 @@ exports[`determine-basal/autosens (detectSensitivity) characterization tests > s
 `;
 
 exports[`determine-basal/autosens (detectSensitivity) characterization tests > site change / Rewind handling > rewind_resets_autosens without Rewind event falls through to 24h default 1`] = `
+{
+  "newisf": 40,
+  "ratio": 1,
+}
+`;
+
+exports[`determine-basal/autosens (detectSensitivity) characterization tests > tempTargetRunning duration 0 cancel path > single duration-0 cancel temp target that matches BG time range 1`] = `
+{
+  "newisf": 40,
+  "ratio": 1,
+}
+`;
+
+exports[`determine-basal/autosens (detectSensitivity) characterization tests > tempTargetRunning paths > active high temp target (> 100) adds negative deviations 1`] = `
+{
+  "newisf": 40,
+  "ratio": 1,
+}
+`;
+
+exports[`determine-basal/autosens (detectSensitivity) characterization tests > tempTargetRunning paths > expired temp target does not affect deviations 1`] = `
+{
+  "newisf": 40,
+  "ratio": 1,
+}
+`;
+
+exports[`determine-basal/autosens (detectSensitivity) characterization tests > tempTargetRunning paths > non-sortable temptargets_data triggers catch block gracefully 1`] = `
+{
+  "newisf": 40,
+  "ratio": 1,
+}
+`;
+
+exports[`determine-basal/autosens (detectSensitivity) characterization tests > tempTargetRunning paths > temp target with duration 0 cancels earlier active target 1`] = `
 {
   "newisf": 40,
   "ratio": 1,

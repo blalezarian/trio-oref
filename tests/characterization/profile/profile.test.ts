@@ -250,5 +250,43 @@ describe('profile characterization tests', () => {
       const result = profileModule(makeInputs(), customOpts);
       expect(result).toMatchSnapshot();
     });
+
+    // -----------------------------------------------------------------------
+    // displayedDefaults() — covers lines 84-117
+    // -----------------------------------------------------------------------
+    it('returns displayedDefaults subset of default profile', () => {
+      const result = profileModule.displayedDefaults();
+      expect(result).toMatchSnapshot();
+    });
+
+    // -----------------------------------------------------------------------
+    // current_basal === 0 guard (line 153-155)
+    // Need a basal schedule where basalLookup returns exactly 0 at noon
+    // (last entry non-zero so basalLookup doesn't bail, but noon entry rate=0)
+    // -----------------------------------------------------------------------
+    it('returns -1 when current_basal is exactly 0 from basalLookup', () => {
+      const result = profileModule(makeInputs({
+        basals: [
+          { minutes: 0, rate: 0 },       // midnight to noon: rate 0
+          { minutes: 720, rate: 0 },      // noon to 6pm: rate 0
+          { minutes: 1080, rate: 0.5 },   // 6pm onwards: rate 0.5 (non-zero so basalLookup doesn't bail)
+        ],
+      }));
+      expect(result).toMatchSnapshot();
+    });
+
+    // -----------------------------------------------------------------------
+    // ISF < 5 guard (line 184-186)
+    // Need to pass through basal checks first, then fail at ISF check.
+    // Must avoid ISF cache issues by using a fresh sensitivity value.
+    // -----------------------------------------------------------------------
+    it('returns -1 when ISF is less than 5 (with valid basals)', () => {
+      const result = profileModule(makeInputs({
+        isf: {
+          sensitivities: [{ offset: 0, sensitivity: 2 }],
+        },
+      }));
+      expect(result).toMatchSnapshot();
+    });
   });
 });
