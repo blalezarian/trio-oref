@@ -1,0 +1,59 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`round-basal characterization tests > edge cases > handles negative basal gracefully 1`] = `-0.5`;
+
+exports[`round-basal characterization tests > edge cases > handles very large basal 1`] = `35.6`;
+
+exports[`round-basal characterization tests > edge cases > handles very small basal 1`] = `0`;
+
+exports[`round-basal characterization tests > edge cases > rounds 0 to 0 1`] = `0`;
+
+exports[`round-basal characterization tests > edge cases > rounds 0.999 with < 1 range logic 1`] = `1`;
+
+exports[`round-basal characterization tests > edge cases > rounds 9.99 with 1-10 range logic 1`] = `10`;
+
+exports[`round-basal characterization tests > edge cases > rounds exactly 1.0 with 1-10 range logic 1`] = `1`;
+
+exports[`round-basal characterization tests > edge cases > rounds exactly 10.0 with >= 10 range logic 1`] = `10`;
+
+exports[`round-basal characterization tests > model string matching > model ending with "22" uses default scale 20 1`] = `0.1`;
+
+exports[`round-basal characterization tests > model string matching > model ending with "23" uses scale 40 1`] = `0.125`;
+
+exports[`round-basal characterization tests > model string matching > model ending with "54" uses scale 40 1`] = `0.125`;
+
+exports[`round-basal characterization tests > model string matching > model that does not end with 23 or 54 uses default scale 20 1`] = `0.1`;
+
+exports[`round-basal characterization tests > no profile (undefined) > rounds basal < 1 with default scale (1/20 = 0.05 increments) 1`] = `0.1`;
+
+exports[`round-basal characterization tests > no profile (undefined) > rounds basal >= 10 with 0.1 increments 1`] = `12.3`;
+
+exports[`round-basal characterization tests > no profile (undefined) > rounds basal in 1-10 range with 0.05 increments 1`] = `3.1`;
+
+exports[`round-basal characterization tests > non-x23/x54 model > rounds basal < 1 with default 0.05 increments 1`] = `0.1`;
+
+exports[`round-basal characterization tests > non-x23/x54 model > rounds basal >= 10 with 0.1 increments 1`] = `12.3`;
+
+exports[`round-basal characterization tests > non-x23/x54 model > rounds basal in 1-10 range with 0.05 increments 1`] = `3.1`;
+
+exports[`round-basal characterization tests > profile without model > rounds basal < 1 with default scale when model is a number (not string) 1`] = `0.55`;
+
+exports[`round-basal characterization tests > profile without model > rounds basal < 1 with default scale when model is not set 1`] = `0.55`;
+
+exports[`round-basal characterization tests > x23 pump model > rounds 0.037 to 0.025 (nearest 0.025) 1`] = `0.025`;
+
+exports[`round-basal characterization tests > x23 pump model > rounds 0.0125 to 0.025 (nearest 0.025) 1`] = `0.025`;
+
+exports[`round-basal characterization tests > x23 pump model > rounds 0.975 correctly 1`] = `0.975`;
+
+exports[`round-basal characterization tests > x23 pump model > rounds basal < 1 with 0.025 increments (scale 40) 1`] = `0.125`;
+
+exports[`round-basal characterization tests > x23 pump model > rounds basal >= 10 with 0.1 increments (same as default) 1`] = `12.3`;
+
+exports[`round-basal characterization tests > x23 pump model > rounds basal in 1-10 range with 0.05 increments (same as default) 1`] = `3.1`;
+
+exports[`round-basal characterization tests > x54 pump model > rounds basal < 1 with 0.025 increments (scale 40) 1`] = `0.125`;
+
+exports[`round-basal characterization tests > x54 pump model > rounds basal >= 10 with 0.1 increments 1`] = `15.7`;
+
+exports[`round-basal characterization tests > x54 pump model > rounds basal in 1-10 range with 0.05 increments 1`] = `5.55`;

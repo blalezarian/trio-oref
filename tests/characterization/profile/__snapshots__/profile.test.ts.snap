@@ -57,6 +57,110 @@ exports[`profile characterization tests > defaults > returns full default profil
 }
 `;
 
+exports[`profile characterization tests > generate > generates profile without carb_ratio when carbratio is missing 1`] = `
+{
+  "A52_risk_enable": false,
+  "SMBInterval": 3,
+  "adjustmentFactor": 0.8,
+  "adjustmentFactorSigmoid": 0.5,
+  "allowSMB_with_high_temptarget": false,
+  "autosens_max": 1.2,
+  "autosens_min": 0.7,
+  "autotune_isf_adjustmentFraction": 1,
+  "basalprofile": [
+    {
+      "minutes": 0,
+      "rate": 0.8,
+    },
+    {
+      "minutes": 360,
+      "rate": 0.9,
+    },
+    {
+      "minutes": 720,
+      "rate": 1,
+    },
+    {
+      "minutes": 1080,
+      "rate": 0.85,
+    },
+  ],
+  "bg_targets": {
+    "targets": [
+      {
+        "high": 110,
+        "low": 110,
+        "max_bg": 110,
+        "min_bg": 110,
+        "offset": 0,
+      },
+    ],
+    "user_preferred_units": "mg/dL",
+  },
+  "bolus_increment": 0.1,
+  "calc_glucose_noise": false,
+  "carbsReqThreshold": 1,
+  "current_basal": 0.8,
+  "current_basal_safety_multiplier": 4,
+  "curve": "rapid-acting",
+  "dia": 5,
+  "enableEnliteBgproxy": false,
+  "enableSMB_after_carbs": false,
+  "enableSMB_always": false,
+  "enableSMB_high_bg": false,
+  "enableSMB_high_bg_target": 110,
+  "enableSMB_with_COB": false,
+  "enableSMB_with_temptarget": false,
+  "enableUAM": false,
+  "exercise_mode": false,
+  "half_basal_exercise_target": 160,
+  "high_temptarget_raises_sensitivity": false,
+  "insulinPeakTime": 75,
+  "isfProfile": {
+    "sensitivities": [
+      {
+        "offset": 0,
+        "sensitivity": 40,
+      },
+    ],
+  },
+  "low_temptarget_lowers_sensitivity": false,
+  "maxCOB": 120,
+  "maxDelta_bg_threshold": 0.2,
+  "maxMealAbsorptionTime": 6,
+  "maxSMBBasalMinutes": 30,
+  "maxUAMSMBBasalMinutes": 30,
+  "max_basal": 3.5,
+  "max_bg": 110,
+  "max_daily_basal": 1,
+  "max_daily_safety_multiplier": 3,
+  "max_iob": 0,
+  "min_5m_carbimpact": 8,
+  "min_bg": 110,
+  "noisyCGMTargetMultiplier": 1.3,
+  "offline_hotspot": false,
+  "out_units": "mg/dL",
+  "remainingCarbsCap": 90,
+  "remainingCarbsFraction": 1,
+  "resistance_lowers_target": false,
+  "rewind_resets_autosens": true,
+  "sens": 40,
+  "sensitivity_raises_target": false,
+  "sigmoid": false,
+  "skip_neutral_temps": false,
+  "smb_delivery_ratio": 0.5,
+  "suspend_zeros_iob": true,
+  "target_bg": false,
+  "tddAdjBasal": false,
+  "temptargetSet": undefined,
+  "threshold_setting": 60,
+  "unsuspend_if_no_temp": false,
+  "useCustomPeakTime": false,
+  "useNewFormula": false,
+  "weightPercentage": 0.65,
+}
+`;
+
 exports[`profile characterization tests > generate > invalid DIA (<= 1) returns -1 1`] = `-1`;
 
 exports[`profile characterization tests > generate > profile with DIA=3 1`] = `
@@ -515,6 +619,121 @@ exports[`profile characterization tests > generate > profile with mmol/L units 1
 }
 `;
 
+exports[`profile characterization tests > generate > profile with model set stores model in output 1`] = `
+{
+  "A52_risk_enable": false,
+  "SMBInterval": 3,
+  "adjustmentFactor": 0.8,
+  "adjustmentFactorSigmoid": 0.5,
+  "allowSMB_with_high_temptarget": false,
+  "autosens_max": 1.2,
+  "autosens_min": 0.7,
+  "autotune_isf_adjustmentFraction": 1,
+  "basalprofile": [
+    {
+      "minutes": 0,
+      "rate": 0.8,
+    },
+    {
+      "minutes": 360,
+      "rate": 0.9,
+    },
+    {
+      "minutes": 720,
+      "rate": 1,
+    },
+    {
+      "minutes": 1080,
+      "rate": 0.85,
+    },
+  ],
+  "bg_targets": {
+    "targets": [
+      {
+        "high": 110,
+        "low": 110,
+        "max_bg": 110,
+        "min_bg": 110,
+        "offset": 0,
+      },
+    ],
+    "user_preferred_units": "mg/dL",
+  },
+  "bolus_increment": 0.1,
+  "calc_glucose_noise": false,
+  "carb_ratio": 10,
+  "carb_ratios": {
+    "schedule": [
+      {
+        "offset": 0,
+        "ratio": 10,
+      },
+    ],
+    "units": "grams",
+  },
+  "carbsReqThreshold": 1,
+  "current_basal": 0.8,
+  "current_basal_safety_multiplier": 4,
+  "curve": "rapid-acting",
+  "dia": 5,
+  "enableEnliteBgproxy": false,
+  "enableSMB_after_carbs": false,
+  "enableSMB_always": false,
+  "enableSMB_high_bg": false,
+  "enableSMB_high_bg_target": 110,
+  "enableSMB_with_COB": false,
+  "enableSMB_with_temptarget": false,
+  "enableUAM": false,
+  "exercise_mode": false,
+  "half_basal_exercise_target": 160,
+  "high_temptarget_raises_sensitivity": false,
+  "insulinPeakTime": 75,
+  "isfProfile": {
+    "sensitivities": [
+      {
+        "offset": 0,
+        "sensitivity": 40,
+      },
+    ],
+  },
+  "low_temptarget_lowers_sensitivity": false,
+  "maxCOB": 120,
+  "maxDelta_bg_threshold": 0.2,
+  "maxMealAbsorptionTime": 6,
+  "maxSMBBasalMinutes": 30,
+  "maxUAMSMBBasalMinutes": 30,
+  "max_basal": 3.5,
+  "max_bg": 110,
+  "max_daily_basal": 1,
+  "max_daily_safety_multiplier": 3,
+  "max_iob": 0,
+  "min_5m_carbimpact": 8,
+  "min_bg": 110,
+  "model": "723",
+  "noisyCGMTargetMultiplier": 1.3,
+  "offline_hotspot": false,
+  "out_units": "mg/dL",
+  "remainingCarbsCap": 90,
+  "remainingCarbsFraction": 1,
+  "resistance_lowers_target": false,
+  "rewind_resets_autosens": true,
+  "sens": 40,
+  "sensitivity_raises_target": false,
+  "sigmoid": false,
+  "skip_neutral_temps": false,
+  "smb_delivery_ratio": 0.5,
+  "suspend_zeros_iob": true,
+  "target_bg": false,
+  "tddAdjBasal": false,
+  "temptargetSet": undefined,
+  "threshold_setting": 60,
+  "unsuspend_if_no_temp": false,
+  "useCustomPeakTime": false,
+  "useNewFormula": false,
+  "weightPercentage": 0.65,
+}
+`;
+
 exports[`profile characterization tests > generate > profile with multiple ISF entries 1`] = `
 {
   "A52_risk_enable": false,
@@ -767,6 +986,470 @@ exports[`profile characterization tests > generate > profile with multiple basal
 }
 `;
 
+exports[`profile characterization tests > generate > profile without model does not set model property 1`] = `
+{
+  "A52_risk_enable": false,
+  "SMBInterval": 3,
+  "adjustmentFactor": 0.8,
+  "adjustmentFactorSigmoid": 0.5,
+  "allowSMB_with_high_temptarget": false,
+  "autosens_max": 1.2,
+  "autosens_min": 0.7,
+  "autotune_isf_adjustmentFraction": 1,
+  "basalprofile": [
+    {
+      "minutes": 0,
+      "rate": 0.8,
+    },
+    {
+      "minutes": 360,
+      "rate": 0.9,
+    },
+    {
+      "minutes": 720,
+      "rate": 1,
+    },
+    {
+      "minutes": 1080,
+      "rate": 0.85,
+    },
+  ],
+  "bg_targets": {
+    "targets": [
+      {
+        "high": 110,
+        "low": 110,
+        "max_bg": 110,
+        "min_bg": 110,
+        "offset": 0,
+      },
+    ],
+    "user_preferred_units": "mg/dL",
+  },
+  "bolus_increment": 0.1,
+  "calc_glucose_noise": false,
+  "carb_ratio": 10,
+  "carb_ratios": {
+    "schedule": [
+      {
+        "offset": 0,
+        "ratio": 10,
+      },
+    ],
+    "units": "grams",
+  },
+  "carbsReqThreshold": 1,
+  "current_basal": 0.8,
+  "current_basal_safety_multiplier": 4,
+  "curve": "rapid-acting",
+  "dia": 5,
+  "enableEnliteBgproxy": false,
+  "enableSMB_after_carbs": false,
+  "enableSMB_always": false,
+  "enableSMB_high_bg": false,
+  "enableSMB_high_bg_target": 110,
+  "enableSMB_with_COB": false,
+  "enableSMB_with_temptarget": false,
+  "enableUAM": false,
+  "exercise_mode": false,
+  "half_basal_exercise_target": 160,
+  "high_temptarget_raises_sensitivity": false,
+  "insulinPeakTime": 75,
+  "isfProfile": {
+    "sensitivities": [
+      {
+        "offset": 0,
+        "sensitivity": 40,
+      },
+    ],
+  },
+  "low_temptarget_lowers_sensitivity": false,
+  "maxCOB": 120,
+  "maxDelta_bg_threshold": 0.2,
+  "maxMealAbsorptionTime": 6,
+  "maxSMBBasalMinutes": 30,
+  "maxUAMSMBBasalMinutes": 30,
+  "max_basal": 3.5,
+  "max_bg": 110,
+  "max_daily_basal": 1,
+  "max_daily_safety_multiplier": 3,
+  "max_iob": 0,
+  "min_5m_carbimpact": 8,
+  "min_bg": 110,
+  "noisyCGMTargetMultiplier": 1.3,
+  "offline_hotspot": false,
+  "out_units": "mg/dL",
+  "remainingCarbsCap": 90,
+  "remainingCarbsFraction": 1,
+  "resistance_lowers_target": false,
+  "rewind_resets_autosens": true,
+  "sens": 40,
+  "sensitivity_raises_target": false,
+  "sigmoid": false,
+  "skip_neutral_temps": false,
+  "smb_delivery_ratio": 0.5,
+  "suspend_zeros_iob": true,
+  "target_bg": false,
+  "tddAdjBasal": false,
+  "temptargetSet": undefined,
+  "threshold_setting": 60,
+  "unsuspend_if_no_temp": false,
+  "useCustomPeakTime": false,
+  "useNewFormula": false,
+  "weightPercentage": 0.65,
+}
+`;
+
+exports[`profile characterization tests > generate > returns -1 when ISF is < 5 1`] = `
+{
+  "A52_risk_enable": false,
+  "SMBInterval": 3,
+  "adjustmentFactor": 0.8,
+  "adjustmentFactorSigmoid": 0.5,
+  "allowSMB_with_high_temptarget": false,
+  "autosens_max": 1.2,
+  "autosens_min": 0.7,
+  "autotune_isf_adjustmentFraction": 1,
+  "basalprofile": [
+    {
+      "minutes": 0,
+      "rate": 0.8,
+    },
+    {
+      "minutes": 360,
+      "rate": 0.9,
+    },
+    {
+      "minutes": 720,
+      "rate": 1,
+    },
+    {
+      "minutes": 1080,
+      "rate": 0.85,
+    },
+  ],
+  "bg_targets": {
+    "targets": [
+      {
+        "high": 110,
+        "low": 110,
+        "max_bg": 110,
+        "min_bg": 110,
+        "offset": 0,
+      },
+    ],
+    "user_preferred_units": "mg/dL",
+  },
+  "bolus_increment": 0.1,
+  "calc_glucose_noise": false,
+  "carb_ratio": 10,
+  "carb_ratios": {
+    "schedule": [
+      {
+        "offset": 0,
+        "ratio": 10,
+      },
+    ],
+    "units": "grams",
+  },
+  "carbsReqThreshold": 1,
+  "current_basal": 0.8,
+  "current_basal_safety_multiplier": 4,
+  "curve": "rapid-acting",
+  "dia": 5,
+  "enableEnliteBgproxy": false,
+  "enableSMB_after_carbs": false,
+  "enableSMB_always": false,
+  "enableSMB_high_bg": false,
+  "enableSMB_high_bg_target": 110,
+  "enableSMB_with_COB": false,
+  "enableSMB_with_temptarget": false,
+  "enableUAM": false,
+  "exercise_mode": false,
+  "half_basal_exercise_target": 160,
+  "high_temptarget_raises_sensitivity": false,
+  "insulinPeakTime": 75,
+  "isfProfile": {
+    "sensitivities": [
+      {
+        "offset": 0,
+        "sensitivity": 3,
+      },
+    ],
+  },
+  "low_temptarget_lowers_sensitivity": false,
+  "maxCOB": 120,
+  "maxDelta_bg_threshold": 0.2,
+  "maxMealAbsorptionTime": 6,
+  "maxSMBBasalMinutes": 30,
+  "maxUAMSMBBasalMinutes": 30,
+  "max_basal": 3.5,
+  "max_bg": 110,
+  "max_daily_basal": 1,
+  "max_daily_safety_multiplier": 3,
+  "max_iob": 0,
+  "min_5m_carbimpact": 8,
+  "min_bg": 110,
+  "noisyCGMTargetMultiplier": 1.3,
+  "offline_hotspot": false,
+  "out_units": "mg/dL",
+  "remainingCarbsCap": 90,
+  "remainingCarbsFraction": 1,
+  "resistance_lowers_target": false,
+  "rewind_resets_autosens": true,
+  "sens": 40,
+  "sensitivity_raises_target": false,
+  "sigmoid": false,
+  "skip_neutral_temps": false,
+  "smb_delivery_ratio": 0.5,
+  "suspend_zeros_iob": true,
+  "target_bg": false,
+  "tddAdjBasal": false,
+  "temptargetSet": undefined,
+  "threshold_setting": 60,
+  "unsuspend_if_no_temp": false,
+  "useCustomPeakTime": false,
+  "useNewFormula": false,
+  "weightPercentage": 0.65,
+}
+`;
+
+exports[`profile characterization tests > generate > returns -1 when ISF is -1 (bad first offset) 1`] = `
+{
+  "A52_risk_enable": false,
+  "SMBInterval": 3,
+  "adjustmentFactor": 0.8,
+  "adjustmentFactorSigmoid": 0.5,
+  "allowSMB_with_high_temptarget": false,
+  "autosens_max": 1.2,
+  "autosens_min": 0.7,
+  "autotune_isf_adjustmentFraction": 1,
+  "basalprofile": [
+    {
+      "minutes": 0,
+      "rate": 0.8,
+    },
+    {
+      "minutes": 360,
+      "rate": 0.9,
+    },
+    {
+      "minutes": 720,
+      "rate": 1,
+    },
+    {
+      "minutes": 1080,
+      "rate": 0.85,
+    },
+  ],
+  "bg_targets": {
+    "targets": [
+      {
+        "high": 110,
+        "low": 110,
+        "max_bg": 110,
+        "min_bg": 110,
+        "offset": 0,
+      },
+    ],
+    "user_preferred_units": "mg/dL",
+  },
+  "bolus_increment": 0.1,
+  "calc_glucose_noise": false,
+  "carb_ratio": 10,
+  "carb_ratios": {
+    "schedule": [
+      {
+        "offset": 0,
+        "ratio": 10,
+      },
+    ],
+    "units": "grams",
+  },
+  "carbsReqThreshold": 1,
+  "current_basal": 0.8,
+  "current_basal_safety_multiplier": 4,
+  "curve": "rapid-acting",
+  "dia": 5,
+  "enableEnliteBgproxy": false,
+  "enableSMB_after_carbs": false,
+  "enableSMB_always": false,
+  "enableSMB_high_bg": false,
+  "enableSMB_high_bg_target": 110,
+  "enableSMB_with_COB": false,
+  "enableSMB_with_temptarget": false,
+  "enableUAM": false,
+  "exercise_mode": false,
+  "half_basal_exercise_target": 160,
+  "high_temptarget_raises_sensitivity": false,
+  "insulinPeakTime": 75,
+  "isfProfile": {
+    "sensitivities": [
+      {
+        "offset": 60,
+        "sensitivity": 40,
+      },
+    ],
+  },
+  "low_temptarget_lowers_sensitivity": false,
+  "maxCOB": 120,
+  "maxDelta_bg_threshold": 0.2,
+  "maxMealAbsorptionTime": 6,
+  "maxSMBBasalMinutes": 30,
+  "maxUAMSMBBasalMinutes": 30,
+  "max_basal": 3.5,
+  "max_bg": 110,
+  "max_daily_basal": 1,
+  "max_daily_safety_multiplier": 3,
+  "max_iob": 0,
+  "min_5m_carbimpact": 8,
+  "min_bg": 110,
+  "noisyCGMTargetMultiplier": 1.3,
+  "offline_hotspot": false,
+  "out_units": "mg/dL",
+  "remainingCarbsCap": 90,
+  "remainingCarbsFraction": 1,
+  "resistance_lowers_target": false,
+  "rewind_resets_autosens": true,
+  "sens": 40,
+  "sensitivity_raises_target": false,
+  "sigmoid": false,
+  "skip_neutral_temps": false,
+  "smb_delivery_ratio": 0.5,
+  "suspend_zeros_iob": true,
+  "target_bg": false,
+  "tddAdjBasal": false,
+  "temptargetSet": undefined,
+  "threshold_setting": 60,
+  "unsuspend_if_no_temp": false,
+  "useCustomPeakTime": false,
+  "useNewFormula": false,
+  "weightPercentage": 0.65,
+}
+`;
+
+exports[`profile characterization tests > generate > returns -1 when ISF is exactly 0 1`] = `
+{
+  "A52_risk_enable": false,
+  "SMBInterval": 3,
+  "adjustmentFactor": 0.8,
+  "adjustmentFactorSigmoid": 0.5,
+  "allowSMB_with_high_temptarget": false,
+  "autosens_max": 1.2,
+  "autosens_min": 0.7,
+  "autotune_isf_adjustmentFraction": 1,
+  "basalprofile": [
+    {
+      "minutes": 0,
+      "rate": 0.8,
+    },
+    {
+      "minutes": 360,
+      "rate": 0.9,
+    },
+    {
+      "minutes": 720,
+      "rate": 1,
+    },
+    {
+      "minutes": 1080,
+      "rate": 0.85,
+    },
+  ],
+  "bg_targets": {
+    "targets": [
+      {
+        "high": 110,
+        "low": 110,
+        "max_bg": 110,
+        "min_bg": 110,
+        "offset": 0,
+      },
+    ],
+    "user_preferred_units": "mg/dL",
+  },
+  "bolus_increment": 0.1,
+  "calc_glucose_noise": false,
+  "carb_ratio": 10,
+  "carb_ratios": {
+    "schedule": [
+      {
+        "offset": 0,
+        "ratio": 10,
+      },
+    ],
+    "units": "grams",
+  },
+  "carbsReqThreshold": 1,
+  "current_basal": 0.8,
+  "current_basal_safety_multiplier": 4,
+  "curve": "rapid-acting",
+  "dia": 5,
+  "enableEnliteBgproxy": false,
+  "enableSMB_after_carbs": false,
+  "enableSMB_always": false,
+  "enableSMB_high_bg": false,
+  "enableSMB_high_bg_target": 110,
+  "enableSMB_with_COB": false,
+  "enableSMB_with_temptarget": false,
+  "enableUAM": false,
+  "exercise_mode": false,
+  "half_basal_exercise_target": 160,
+  "high_temptarget_raises_sensitivity": false,
+  "insulinPeakTime": 75,
+  "isfProfile": {
+    "sensitivities": [
+      {
+        "offset": 0,
+        "sensitivity": 0,
+      },
+    ],
+  },
+  "low_temptarget_lowers_sensitivity": false,
+  "maxCOB": 120,
+  "maxDelta_bg_threshold": 0.2,
+  "maxMealAbsorptionTime": 6,
+  "maxSMBBasalMinutes": 30,
+  "maxUAMSMBBasalMinutes": 30,
+  "max_basal": 3.5,
+  "max_bg": 110,
+  "max_daily_basal": 1,
+  "max_daily_safety_multiplier": 3,
+  "max_iob": 0,
+  "min_5m_carbimpact": 8,
+  "min_bg": 110,
+  "noisyCGMTargetMultiplier": 1.3,
+  "offline_hotspot": false,
+  "out_units": "mg/dL",
+  "remainingCarbsCap": 90,
+  "remainingCarbsFraction": 1,
+  "resistance_lowers_target": false,
+  "rewind_resets_autosens": true,
+  "sens": 40,
+  "sensitivity_raises_target": false,
+  "sigmoid": false,
+  "skip_neutral_temps": false,
+  "smb_delivery_ratio": 0.5,
+  "suspend_zeros_iob": true,
+  "target_bg": false,
+  "tddAdjBasal": false,
+  "temptargetSet": undefined,
+  "threshold_setting": 60,
+  "unsuspend_if_no_temp": false,
+  "useCustomPeakTime": false,
+  "useNewFormula": false,
+  "weightPercentage": 0.65,
+}
+`;
+
+exports[`profile characterization tests > generate > returns -1 when current_basal is 0 1`] = `-1`;
+
+exports[`profile characterization tests > generate > returns -1 when max_basal (settings.maxBasal) is < 0.1 1`] = `-1`;
+
+exports[`profile characterization tests > generate > returns -1 when max_basal is 0 1`] = `-1`;
+
+exports[`profile characterization tests > generate > returns -1 when max_daily_basal is 0 (all rates are 0) 1`] = `-1`;
+
 exports[`profile characterization tests > generate > standard profile from pump settings 1`] = `
 {
   "A52_risk_enable": false,
@@ -879,5 +1562,72 @@ exports[`profile characterization tests > generate > standard profile from pump 
   "useCustomPeakTime": false,
   "useNewFormula": false,
   "weightPercentage": 0.65,
+}
+`;
+
+exports[`profile characterization tests > generate > uses opts as profile when opts has type property 1`] = `
+{
+  "basalprofile": [
+    {
+      "minutes": 0,
+      "rate": 0.8,
+    },
+    {
+      "minutes": 360,
+      "rate": 0.9,
+    },
+    {
+      "minutes": 720,
+      "rate": 1,
+    },
+    {
+      "minutes": 1080,
+      "rate": 0.85,
+    },
+  ],
+  "bg_targets": {
+    "targets": [
+      {
+        "high": 110,
+        "low": 110,
+        "max_bg": 110,
+        "min_bg": 110,
+        "offset": 0,
+      },
+    ],
+    "user_preferred_units": "mg/dL",
+  },
+  "carb_ratio": 10,
+  "carb_ratios": {
+    "schedule": [
+      {
+        "offset": 0,
+        "ratio": 10,
+      },
+    ],
+    "units": "grams",
+  },
+  "current_basal": 0.8,
+  "current_basal_safety_multiplier": 4,
+  "dia": 5,
+  "isfProfile": {
+    "sensitivities": [
+      {
+        "offset": 0,
+        "sensitivity": 40,
+      },
+    ],
+  },
+  "max_basal": 3.5,
+  "max_bg": 110,
+  "max_daily_basal": 1,
+  "max_daily_safety_multiplier": 3,
+  "max_iob": 10,
+  "min_bg": 110,
+  "out_units": "mg/dL",
+  "sens": 40,
+  "skip_neutral_temps": false,
+  "temptargetSet": undefined,
+  "type": "custom",
 }
 `;

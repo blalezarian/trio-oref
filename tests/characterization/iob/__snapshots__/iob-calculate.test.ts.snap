@@ -98,6 +98,265 @@ exports[`iob/calculate characterization tests > custom peak time > ultra-rapid w
 }
 `;
 
+exports[`iob/calculate characterization tests > custom peak time - coverage gap fills > bilinear with custom peak time (peak is ignored for bilinear) > bilinear ignores useCustomPeakTime 1`] = `
+{
+  "activityContrib": 0.0032,
+  "iobContrib": 0.89065792,
+}
+`;
+
+exports[`iob/calculate characterization tests > custom peak time - coverage gap fills > rapid-acting out-of-range peak clamping > peak < 50 is clamped to 50 1`] = `
+{
+  "activityContrib": 0.007907646930920114,
+  "iobContrib": 0.6318025861644805,
+}
+`;
+
+exports[`iob/calculate characterization tests > custom peak time - coverage gap fills > rapid-acting out-of-range peak clamping > peak > 120 is clamped to 120 1`] = `
+{
+  "activityContrib": 0.004038335236554084,
+  "iobContrib": 0.8608485007723026,
+}
+`;
+
+exports[`iob/calculate characterization tests > custom peak time - coverage gap fills > rapid-acting out-of-range peak clamping > peak at 75 (middle of valid range) 1`] = `
+{
+  "activityContrib": 0.005987443000582721,
+  "iobContrib": 0.7640057035577161,
+}
+`;
+
+exports[`iob/calculate characterization tests > custom peak time - coverage gap fills > rapid-acting out-of-range peak clamping > peak exactly at 50 (minimum boundary) 1`] = `
+{
+  "activityContrib": 0.007188382004984542,
+  "iobContrib": 0.8675300018891292,
+}
+`;
+
+exports[`iob/calculate characterization tests > custom peak time - coverage gap fills > rapid-acting out-of-range peak clamping > peak exactly at 120 (maximum boundary) 1`] = `
+{
+  "activityContrib": 0.002468971643588383,
+  "iobContrib": 0.9604846341987177,
+}
+`;
+
+exports[`iob/calculate characterization tests > custom peak time - coverage gap fills > rapid-acting with useCustomPeakTime: true at various time points > Fiasp-like peak 45m: 1U at 0m ago 1`] = `
+{
+  "activityContrib": 0,
+  "iobContrib": 1,
+}
+`;
+
+exports[`iob/calculate characterization tests > custom peak time - coverage gap fills > rapid-acting with useCustomPeakTime: true at various time points > Fiasp-like peak 45m: 1U at 15m ago 1`] = `
+{
+  "activityContrib": 0.0048229518279006445,
+  "iobContrib": 0.960035245571582,
+}
+`;
+
+exports[`iob/calculate characterization tests > custom peak time - coverage gap fills > rapid-acting with useCustomPeakTime: true at various time points > Fiasp-like peak 45m: 1U at 30m ago 1`] = `
+{
+  "activityContrib": 0.007188382004984542,
+  "iobContrib": 0.8675300018891292,
+}
+`;
+
+exports[`iob/calculate characterization tests > custom peak time - coverage gap fills > rapid-acting with useCustomPeakTime: true at various time points > Fiasp-like peak 45m: 1U at 45m ago 1`] = `
+{
+  "activityContrib": 0.008010657211572916,
+  "iobContrib": 0.7520508202219831,
+}
+`;
+
+exports[`iob/calculate characterization tests > custom peak time - coverage gap fills > rapid-acting with useCustomPeakTime: true at various time points > Fiasp-like peak 45m: 1U at 60m ago 1`] = `
+{
+  "activityContrib": 0.007907646930920114,
+  "iobContrib": 0.6318025861644805,
+}
+`;
+
+exports[`iob/calculate characterization tests > custom peak time - coverage gap fills > rapid-acting with useCustomPeakTime: true at various time points > Fiasp-like peak 45m: 1U at 90m ago 1`] = `
+{
+  "activityContrib": 0.006422220773220219,
+  "iobContrib": 0.4143469734039926,
+}
+`;
+
+exports[`iob/calculate characterization tests > custom peak time - coverage gap fills > rapid-acting with useCustomPeakTime: true at various time points > Fiasp-like peak 45m: 1U at 120m ago 1`] = `
+{
+  "activityContrib": 0.004541672631978359,
+  "iobContrib": 0.25006244029610447,
+}
+`;
+
+exports[`iob/calculate characterization tests > custom peak time - coverage gap fills > rapid-acting with useCustomPeakTime: true at various time points > Fiasp-like peak 45m: 1U at 180m ago 1`] = `
+{
+  "activityContrib": 0.0017389741412123768,
+  "iobContrib": 0.07010112420553383,
+}
+`;
+
+exports[`iob/calculate characterization tests > custom peak time - coverage gap fills > rapid-acting with useCustomPeakTime: true at various time points > Fiasp-like peak 45m: 1U at 240m ago 1`] = `
+{
+  "activityContrib": 0.00044389388504326583,
+  "iobContrib": 0.010612015985219658,
+}
+`;
+
+exports[`iob/calculate characterization tests > custom peak time - coverage gap fills > rapid-acting with useCustomPeakTime: true at various time points > Fiasp-like peak 45m: 1U at 300m ago 1`] = `
+{
+  "activityContrib": 0,
+  "iobContrib": 0,
+}
+`;
+
+exports[`iob/calculate characterization tests > custom peak time - coverage gap fills > ultra-rapid out-of-range peak clamping > peak < 35 is clamped to 35 1`] = `
+{
+  "activityContrib": 0.009108362675806937,
+  "iobContrib": 0.4705133995340688,
+}
+`;
+
+exports[`iob/calculate characterization tests > custom peak time - coverage gap fills > ultra-rapid out-of-range peak clamping > peak > 100 is clamped to 100 1`] = `
+{
+  "activityContrib": 0.004746205395477553,
+  "iobContrib": 0.8284231028731508,
+}
+`;
+
+exports[`iob/calculate characterization tests > custom peak time - coverage gap fills > ultra-rapid out-of-range peak clamping > peak at 45 (Fiasp-like) 1`] = `
+{
+  "activityContrib": 0.008360081834177864,
+  "iobContrib": 0.5881785675385519,
+}
+`;
+
+exports[`iob/calculate characterization tests > custom peak time - coverage gap fills > ultra-rapid out-of-range peak clamping > peak at 55 (default ultra-rapid peak) 1`] = `
+{
+  "activityContrib": 0.007464446448513134,
+  "iobContrib": 0.6679385666679527,
+}
+`;
+
+exports[`iob/calculate characterization tests > custom peak time - coverage gap fills > ultra-rapid out-of-range peak clamping > peak exactly at 35 (minimum boundary) 1`] = `
+{
+  "activityContrib": 0.010780771514212788,
+  "iobContrib": 0.7806571216497636,
+}
+`;
+
+exports[`iob/calculate characterization tests > custom peak time - coverage gap fills > ultra-rapid out-of-range peak clamping > peak exactly at 100 (maximum boundary) 1`] = `
+{
+  "activityContrib": 0.0031017959727117493,
+  "iobContrib": 0.9491983148951371,
+}
+`;
+
+exports[`iob/calculate characterization tests > custom peak time - coverage gap fills > ultra-rapid with useCustomPeakTime: true at various time points > custom peak 45m: 1U at 0m ago 1`] = `
+{
+  "activityContrib": 0,
+  "iobContrib": 1,
+}
+`;
+
+exports[`iob/calculate characterization tests > custom peak time - coverage gap fills > ultra-rapid with useCustomPeakTime: true at various time points > custom peak 45m: 1U at 15m ago 1`] = `
+{
+  "activityContrib": 0.005655075855713717,
+  "iobContrib": 0.9525691705843011,
+}
+`;
+
+exports[`iob/calculate characterization tests > custom peak time - coverage gap fills > ultra-rapid with useCustomPeakTime: true at various time points > custom peak 45m: 1U at 30m ago 1`] = `
+{
+  "activityContrib": 0.008142715132555312,
+  "iobContrib": 0.8460707371861953,
+}
+`;
+
+exports[`iob/calculate characterization tests > custom peak time - coverage gap fills > ultra-rapid with useCustomPeakTime: true at various time points > custom peak 45m: 1U at 45m ago 1`] = `
+{
+  "activityContrib": 0.008766350358736385,
+  "iobContrib": 0.7175308982910391,
+}
+`;
+
+exports[`iob/calculate characterization tests > custom peak time - coverage gap fills > ultra-rapid with useCustomPeakTime: true at various time points > custom peak 45m: 1U at 60m ago 1`] = `
+{
+  "activityContrib": 0.008360081834177864,
+  "iobContrib": 0.5881785675385519,
+}
+`;
+
+exports[`iob/calculate characterization tests > custom peak time - coverage gap fills > ultra-rapid with useCustomPeakTime: true at various time points > custom peak 45m: 1U at 90m ago 1`] = `
+{
+  "activityContrib": 0.00633685331995124,
+  "iobContrib": 0.3657690106150535,
+}
+`;
+
+exports[`iob/calculate characterization tests > custom peak time - coverage gap fills > ultra-rapid with useCustomPeakTime: true at various time points > custom peak 45m: 1U at 120m ago 1`] = `
+{
+  "activityContrib": 0.004182437072121759,
+  "iobContrib": 0.20882478803467552,
+}
+`;
+
+exports[`iob/calculate characterization tests > custom peak time - coverage gap fills > ultra-rapid with useCustomPeakTime: true at various time points > custom peak 45m: 1U at 180m ago 1`] = `
+{
+  "activityContrib": 0.0013949448669066116,
+  "iobContrib": 0.05235988696171712,
+}
+`;
+
+exports[`iob/calculate characterization tests > custom peak time - coverage gap fills > ultra-rapid with useCustomPeakTime: true at various time points > custom peak 45m: 1U at 240m ago 1`] = `
+{
+  "activityContrib": 0.00031016544471633607,
+  "iobContrib": 0.007122678069489408,
+}
+`;
+
+exports[`iob/calculate characterization tests > custom peak time - coverage gap fills > ultra-rapid with useCustomPeakTime: true at various time points > custom peak 45m: 1U at 300m ago 1`] = `
+{
+  "activityContrib": 0,
+  "iobContrib": 0,
+}
+`;
+
+exports[`iob/calculate characterization tests > custom peak time - coverage gap fills > unsupported curve type > unknown curve logs error and uses exponential without peak override 1`] = `
+{
+  "activityContrib": 0.005987443000582721,
+  "iobContrib": 0.7640057035577161,
+}
+`;
+
+exports[`iob/calculate characterization tests > custom peak time - coverage gap fills > useCustomPeakTime with insulinPeakTime undefined > rapid-acting falls back to default peak 75 1`] = `
+{
+  "activityContrib": 0.005987443000582721,
+  "iobContrib": 0.7640057035577161,
+}
+`;
+
+exports[`iob/calculate characterization tests > custom peak time - coverage gap fills > useCustomPeakTime with insulinPeakTime undefined > ultra-rapid falls back to default peak 55 1`] = `
+{
+  "activityContrib": 0.007464446448513134,
+  "iobContrib": 0.6679385666679527,
+}
+`;
+
+exports[`iob/calculate characterization tests > custom peak time - coverage gap fills > useCustomPeakTime: false falls back to defaults > rapid-acting default peak 75 1`] = `
+{
+  "activityContrib": 0.005987443000582721,
+  "iobContrib": 0.7640057035577161,
+}
+`;
+
+exports[`iob/calculate characterization tests > custom peak time - coverage gap fills > useCustomPeakTime: false falls back to defaults > ultra-rapid default peak 55 1`] = `
+{
+  "activityContrib": 0.007464446448513134,
+  "iobContrib": 0.6679385666679527,
+}
+`;
+
 exports[`iob/calculate characterization tests > edge cases > no insulin property 1`] = `{}`;
 
 exports[`iob/calculate characterization tests > edge cases > treatment in the future 1`] = `

@@ -1,0 +1,4808 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`iob/history (calcTempTreatments) characterization tests > Nightscout / Care Portal treatment types > Bolus Wizard eventType 1`] = `
+[
+  {
+    "date": "[NOW-60m]",
+    "insulin": 4,
+    "started_at": "[NOW-60m]",
+    "timestamp": "2025-01-15T11:00:00.000Z",
+  },
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+]
+`;
+
+exports[`iob/history (calcTempTreatments) characterization tests > Nightscout / Care Portal treatment types > Correction Bolus eventType 1`] = `
+[
+  {
+    "date": "[NOW-45m]",
+    "insulin": 1.5,
+    "started_at": "[NOW-45m]",
+    "timestamp": "2025-01-15T11:15:00.000Z",
+  },
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+]
+`;
+
+exports[`iob/history (calcTempTreatments) characterization tests > Nightscout / Care Portal treatment types > HAPP_App enteredBy with insulin 1`] = `
+[
+  {
+    "date": "[NOW-30m]",
+    "insulin": 2,
+    "started_at": "[NOW-30m]",
+    "timestamp": "2025-01-15T11:30:00.000Z",
+  },
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+]
+`;
+
+exports[`iob/history (calcTempTreatments) characterization tests > Nightscout / Care Portal treatment types > HAPP_App enteredBy without insulin (no bolus created) 1`] = `
+[
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+]
+`;
+
+exports[`iob/history (calcTempTreatments) characterization tests > Nightscout / Care Portal treatment types > Meal Bolus eventType 1`] = `
+[
+  {
+    "date": "[NOW-30m]",
+    "insulin": 3,
+    "started_at": "[NOW-30m]",
+    "timestamp": "2025-01-15T11:30:00.000Z",
+  },
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+]
+`;
+
+exports[`iob/history (calcTempTreatments) characterization tests > Nightscout / Care Portal treatment types > Snack Bolus eventType 1`] = `
+[
+  {
+    "date": "[NOW-20m]",
+    "insulin": 2,
+    "started_at": "[NOW-20m]",
+    "timestamp": "2025-01-15T11:40:00.000Z",
+  },
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+]
+`;
+
+exports[`iob/history (calcTempTreatments) characterization tests > Nightscout / Care Portal treatment types > Temp Basal eventType (generic, uses rate field) 1`] = `
+[
+  {
+    "created_at": "[NOW-60m]",
+    "date": "[NOW-60m]",
+    "insulin": 0.05,
+  },
+  {
+    "date": "[NOW-60m]",
+    "duration": 30,
+    "rate": 2,
+    "started_at": "[NOW-60m]",
+    "timestamp": "2025-01-15T11:00:00.000Z",
+  },
+  {
+    "created_at": "[NOW-57m]",
+    "date": "[NOW-57m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-54m]",
+    "date": "[NOW-54m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-51m]",
+    "date": "[NOW-51m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-48m]",
+    "date": "[NOW-48m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-45m]",
+    "date": "[NOW-45m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-42m]",
+    "date": "[NOW-42m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-39m]",
+    "date": "[NOW-39m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-36m]",
+    "date": "[NOW-36m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-33m]",
+    "date": "[NOW-33m]",
+    "insulin": 0.05,
+  },
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+]
+`;
+
+exports[`iob/history (calcTempTreatments) characterization tests > Nightscout / Care Portal treatment types > Temp Basal eventType from AndroidAPS (uses absolute field) 1`] = `
+[
+  {
+    "created_at": "[NOW-45m]",
+    "date": "[NOW-45m]",
+    "insulin": 0.05,
+  },
+  {
+    "date": "[NOW-45m]",
+    "duration": 30,
+    "rate": 1.8,
+    "started_at": "[NOW-45m]",
+    "timestamp": "2025-01-15T11:15:00.000Z",
+  },
+  {
+    "created_at": "[NOW-41m]",
+    "date": "[NOW-41m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-37m]",
+    "date": "[NOW-37m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-34m]",
+    "date": "[NOW-34m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-30m]",
+    "date": "[NOW-30m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-26m]",
+    "date": "[NOW-26m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-22m]",
+    "date": "[NOW-22m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-19m]",
+    "date": "[NOW-19m]",
+    "insulin": 0.05,
+  },
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+]
+`;
+
+exports[`iob/history (calcTempTreatments) characterization tests > Nightscout / Care Portal treatment types > Temp Basal eventType from HAPP_App (uses absolute field) 1`] = `
+[
+  {
+    "created_at": "[NOW-60m]",
+    "date": "[NOW-60m]",
+    "insulin": 0.05,
+  },
+  {
+    "date": "[NOW-60m]",
+    "duration": 30,
+    "rate": 2.5,
+    "started_at": "[NOW-60m]",
+    "timestamp": "2025-01-15T11:00:00.000Z",
+  },
+  {
+    "created_at": "[NOW-58m]",
+    "date": "[NOW-58m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-56m]",
+    "date": "[NOW-56m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-54m]",
+    "date": "[NOW-54m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-52m]",
+    "date": "[NOW-52m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-50m]",
+    "date": "[NOW-50m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-48m]",
+    "date": "[NOW-48m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-46m]",
+    "date": "[NOW-46m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-44m]",
+    "date": "[NOW-44m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-42m]",
+    "date": "[NOW-42m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-40m]",
+    "date": "[NOW-40m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-38m]",
+    "date": "[NOW-38m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-36m]",
+    "date": "[NOW-36m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-34m]",
+    "date": "[NOW-34m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-32m]",
+    "date": "[NOW-32m]",
+    "insulin": 0.05,
+  },
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+]
+`;
+
+exports[`iob/history (calcTempTreatments) characterization tests > Nightscout / Care Portal treatment types > Temp Basal eventType with amount field (Loop style) 1`] = `
+[
+  {
+    "date": "[NOW-60m]",
+    "duration": 30,
+    "rate": 1,
+    "started_at": "[NOW-60m]",
+    "timestamp": "2025-01-15T11:00:00.000Z",
+  },
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+]
+`;
+
+exports[`iob/history (calcTempTreatments) characterization tests > Nightscout / Care Portal treatment types > xdrip enteredBy 1`] = `
+[
+  {
+    "date": "[NOW-30m]",
+    "insulin": 1,
+    "started_at": "[NOW-30m]",
+    "timestamp": "2025-01-15T11:30:00.000Z",
+  },
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+]
+`;
+
+exports[`iob/history (calcTempTreatments) characterization tests > PumpSuspend and PumpResume handling > mismatched: more resumes than suspends 1`] = `
+[
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+]
+`;
+
+exports[`iob/history (calcTempTreatments) characterization tests > PumpSuspend and PumpResume handling > mismatched: more suspends than resumes 1`] = `
+[
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+]
+`;
+
+exports[`iob/history (calcTempTreatments) characterization tests > PumpSuspend and PumpResume handling > multiple suspends and resumes 1`] = `
+[
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+]
+`;
+
+exports[`iob/history (calcTempTreatments) characterization tests > PumpSuspend and PumpResume handling > resume before first suspend (suspendedPrior) 1`] = `
+[
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+]
+`;
+
+exports[`iob/history (calcTempTreatments) characterization tests > PumpSuspend and PumpResume handling > resume without prior suspend (suspendedPrior) 1`] = `
+[
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+]
+`;
+
+exports[`iob/history (calcTempTreatments) characterization tests > PumpSuspend and PumpResume handling > single suspend and resume pair 1`] = `
+[
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+]
+`;
+
+exports[`iob/history (calcTempTreatments) characterization tests > PumpSuspend and PumpResume handling > suspend without resume (currentlySuspended) 1`] = `
+[
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+]
+`;
+
+exports[`iob/history (calcTempTreatments) characterization tests > TempBasal + TempBasalDuration pairing > TempBasal with adjacent TempBasalDuration (i-1 match) 1`] = `
+[
+  {
+    "created_at": "[NOW-60m]",
+    "date": "[NOW-60m]",
+    "insulin": 0.05,
+  },
+  {
+    "date": "[NOW-60m]",
+    "duration": 30,
+    "rate": 2,
+    "started_at": "[NOW-60m]",
+    "timestamp": "2025-01-15T11:00:00.000Z",
+  },
+  {
+    "created_at": "[NOW-57m]",
+    "date": "[NOW-57m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-54m]",
+    "date": "[NOW-54m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-51m]",
+    "date": "[NOW-51m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-48m]",
+    "date": "[NOW-48m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-45m]",
+    "date": "[NOW-45m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-42m]",
+    "date": "[NOW-42m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-39m]",
+    "date": "[NOW-39m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-36m]",
+    "date": "[NOW-36m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-33m]",
+    "date": "[NOW-33m]",
+    "insulin": 0.05,
+  },
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+]
+`;
+
+exports[`iob/history (calcTempTreatments) characterization tests > TempBasal + TempBasalDuration pairing > TempBasal with no matching TempBasalDuration (undefined duration) 1`] = `
+[
+  {
+    "date": "[NOW-60m]",
+    "duration": undefined,
+    "rate": 2,
+    "started_at": "[NOW-60m]",
+    "timestamp": "2025-01-15T11:00:00.000Z",
+  },
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+]
+`;
+
+exports[`iob/history (calcTempTreatments) characterization tests > TempBasal + TempBasalDuration pairing > TempBasal with non-adjacent TempBasalDuration (scan loop) 1`] = `
+[
+  {
+    "date": "[NOW-60m]",
+    "insulin": 1,
+    "started_at": "[NOW-60m]",
+    "timestamp": "2025-01-15T11:00:00.000Z",
+  },
+  {
+    "created_at": "[NOW-60m]",
+    "date": "[NOW-60m]",
+    "insulin": 0.05,
+  },
+  {
+    "date": "[NOW-60m]",
+    "duration": 30,
+    "rate": 1.5,
+    "started_at": "[NOW-60m]",
+    "timestamp": "2025-01-15T11:00:00.000Z",
+  },
+  {
+    "created_at": "[NOW-54m]",
+    "date": "[NOW-54m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-48m]",
+    "date": "[NOW-48m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-42m]",
+    "date": "[NOW-42m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-36m]",
+    "date": "[NOW-36m]",
+    "insulin": 0.05,
+  },
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+]
+`;
+
+exports[`iob/history (calcTempTreatments) characterization tests > TempBasal + TempBasalDuration pairing > TempBasal with percent type is skipped 1`] = `
+[
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+]
+`;
+
+exports[`iob/history (calcTempTreatments) characterization tests > basic Bolus events > multiple Bolus events at different times 1`] = `
+[
+  {
+    "date": "[NOW-60m]",
+    "insulin": 2,
+    "started_at": "[NOW-60m]",
+    "timestamp": "2025-01-15T11:00:00.000Z",
+  },
+  {
+    "date": "[NOW-30m]",
+    "insulin": 1,
+    "started_at": "[NOW-30m]",
+    "timestamp": "2025-01-15T11:30:00.000Z",
+  },
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+]
+`;
+
+exports[`iob/history (calcTempTreatments) characterization tests > basic Bolus events > nested bolus object (current.bolus._type === Bolus) 1`] = `
+[
+  {
+    "date": "[NOW-45m]",
+    "insulin": 1.5,
+    "started_at": "[NOW-45m]",
+    "timestamp": "2025-01-15T11:15:00.000Z",
+  },
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+]
+`;
+
+exports[`iob/history (calcTempTreatments) characterization tests > basic Bolus events > single Bolus event 1`] = `
+[
+  {
+    "date": "[NOW-30m]",
+    "insulin": 2,
+    "started_at": "[NOW-30m]",
+    "timestamp": "2025-01-15T11:30:00.000Z",
+  },
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+]
+`;
+
+exports[`iob/history (calcTempTreatments) characterization tests > consecutive temp basals (overlap trimming) > temp basal with null duration successor gets spliced 1`] = `
+[
+  {
+    "created_at": "[NOW-30m]",
+    "date": "[NOW-30m]",
+    "insulin": 0.05,
+  },
+  {
+    "date": "[NOW-30m]",
+    "duration": 31,
+    "rate": 2,
+    "started_at": "[NOW-30m]",
+    "timestamp": "2025-01-15T11:30:00.000Z",
+  },
+  {
+    "created_at": "[NOW-27m]",
+    "date": "[NOW-27m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-24m]",
+    "date": "[NOW-24m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-21m]",
+    "date": "[NOW-21m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-18m]",
+    "date": "[NOW-18m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-15m]",
+    "date": "[NOW-15m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-12m]",
+    "date": "[NOW-12m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-9m]",
+    "date": "[NOW-9m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-6m]",
+    "date": "[NOW-6m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-3m]",
+    "date": "[NOW-3m]",
+    "insulin": 0.05,
+  },
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+]
+`;
+
+exports[`iob/history (calcTempTreatments) characterization tests > consecutive temp basals (overlap trimming) > two overlapping temp basals get durations trimmed 1`] = `
+[
+  {
+    "created_at": "[NOW-40m]",
+    "date": "[NOW-40m]",
+    "insulin": -0.05,
+  },
+  {
+    "date": "[NOW-40m]",
+    "duration": 20,
+    "rate": 0,
+    "started_at": "[NOW-40m]",
+    "timestamp": "2025-01-15T11:20:00.000Z",
+  },
+  {
+    "created_at": "[NOW-37m]",
+    "date": "[NOW-37m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-34m]",
+    "date": "[NOW-34m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-31m]",
+    "date": "[NOW-31m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-29m]",
+    "date": "[NOW-29m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-26m]",
+    "date": "[NOW-26m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-23m]",
+    "date": "[NOW-23m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-20m]",
+    "date": "[NOW-20m]",
+    "insulin": 0.05,
+  },
+  {
+    "date": "[NOW-20m]",
+    "duration": 21,
+    "rate": 2,
+    "started_at": "[NOW-20m]",
+    "timestamp": "2025-01-15T11:40:00.000Z",
+  },
+  {
+    "created_at": "[NOW-17m]",
+    "date": "[NOW-17m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-14m]",
+    "date": "[NOW-14m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-11m]",
+    "date": "[NOW-11m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-8m]",
+    "date": "[NOW-8m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-5m]",
+    "date": "[NOW-5m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-2m]",
+    "date": "[NOW-2m]",
+    "insulin": 0.05,
+  },
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+]
+`;
+
+exports[`iob/history (calcTempTreatments) characterization tests > created_at field handling > uses created_at as timestamp when present 1`] = `
+[
+  {
+    "date": "[NOW-45m]",
+    "insulin": 2,
+    "started_at": "[NOW-45m]",
+    "timestamp": "2025-01-15T11:15:00.000Z",
+  },
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+]
+`;
+
+exports[`iob/history (calcTempTreatments) characterization tests > history24 merging > merges history and history24 1`] = `
+[
+  {
+    "date": "[NOW-120m]",
+    "insulin": 2,
+    "started_at": "[NOW-120m]",
+    "timestamp": "2025-01-15T10:00:00.000Z",
+  },
+  {
+    "date": "[NOW-30m]",
+    "insulin": 1,
+    "started_at": "[NOW-30m]",
+    "timestamp": "2025-01-15T11:30:00.000Z",
+  },
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+]
+`;
+
+exports[`iob/history (calcTempTreatments) characterization tests > mismatched suspend/resume error paths > currentlySuspended with matching counts (resumes === suspends-1) 1`] = `
+[
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+]
+`;
+
+exports[`iob/history (calcTempTreatments) characterization tests > mismatched suspend/resume error paths > suspendedPrior and currentlySuspended with mismatched counts 1`] = `
+[
+  {
+    "created_at": "[NOW-480m]",
+    "date": "[NOW-480m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-477m]",
+    "date": "[NOW-477m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-474m]",
+    "date": "[NOW-474m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-471m]",
+    "date": "[NOW-471m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-468m]",
+    "date": "[NOW-468m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-465m]",
+    "date": "[NOW-465m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-462m]",
+    "date": "[NOW-462m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-459m]",
+    "date": "[NOW-459m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-456m]",
+    "date": "[NOW-456m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-453m]",
+    "date": "[NOW-453m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-450m]",
+    "date": "[NOW-450m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-447m]",
+    "date": "[NOW-447m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-444m]",
+    "date": "[NOW-444m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-441m]",
+    "date": "[NOW-441m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-438m]",
+    "date": "[NOW-438m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-435m]",
+    "date": "[NOW-435m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-432m]",
+    "date": "[NOW-432m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-429m]",
+    "date": "[NOW-429m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-426m]",
+    "date": "[NOW-426m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-423m]",
+    "date": "[NOW-423m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-420m]",
+    "date": "[NOW-420m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-417m]",
+    "date": "[NOW-417m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-414m]",
+    "date": "[NOW-414m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-411m]",
+    "date": "[NOW-411m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-408m]",
+    "date": "[NOW-408m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-405m]",
+    "date": "[NOW-405m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-402m]",
+    "date": "[NOW-402m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-399m]",
+    "date": "[NOW-399m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-396m]",
+    "date": "[NOW-396m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-393m]",
+    "date": "[NOW-393m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-390m]",
+    "date": "[NOW-390m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-387m]",
+    "date": "[NOW-387m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-384m]",
+    "date": "[NOW-384m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-381m]",
+    "date": "[NOW-381m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-378m]",
+    "date": "[NOW-378m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-375m]",
+    "date": "[NOW-375m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-372m]",
+    "date": "[NOW-372m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-369m]",
+    "date": "[NOW-369m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-366m]",
+    "date": "[NOW-366m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-363m]",
+    "date": "[NOW-363m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-360m]",
+    "date": "[NOW-360m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-357m]",
+    "date": "[NOW-357m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-354m]",
+    "date": "[NOW-354m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-351m]",
+    "date": "[NOW-351m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-348m]",
+    "date": "[NOW-348m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-345m]",
+    "date": "[NOW-345m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-342m]",
+    "date": "[NOW-342m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-339m]",
+    "date": "[NOW-339m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-336m]",
+    "date": "[NOW-336m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-333m]",
+    "date": "[NOW-333m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-330m]",
+    "date": "[NOW-330m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-327m]",
+    "date": "[NOW-327m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-324m]",
+    "date": "[NOW-324m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-321m]",
+    "date": "[NOW-321m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-318m]",
+    "date": "[NOW-318m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-315m]",
+    "date": "[NOW-315m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-312m]",
+    "date": "[NOW-312m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-309m]",
+    "date": "[NOW-309m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-306m]",
+    "date": "[NOW-306m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-303m]",
+    "date": "[NOW-303m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-300m]",
+    "date": "[NOW-300m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-297m]",
+    "date": "[NOW-297m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-294m]",
+    "date": "[NOW-294m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-291m]",
+    "date": "[NOW-291m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-288m]",
+    "date": "[NOW-288m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-285m]",
+    "date": "[NOW-285m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-282m]",
+    "date": "[NOW-282m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-279m]",
+    "date": "[NOW-279m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-276m]",
+    "date": "[NOW-276m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-273m]",
+    "date": "[NOW-273m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-270m]",
+    "date": "[NOW-270m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-267m]",
+    "date": "[NOW-267m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-264m]",
+    "date": "[NOW-264m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-261m]",
+    "date": "[NOW-261m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-258m]",
+    "date": "[NOW-258m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-255m]",
+    "date": "[NOW-255m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-252m]",
+    "date": "[NOW-252m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-249m]",
+    "date": "[NOW-249m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-246m]",
+    "date": "[NOW-246m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-243m]",
+    "date": "[NOW-243m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-240m]",
+    "date": "[NOW-240m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-237m]",
+    "date": "[NOW-237m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-234m]",
+    "date": "[NOW-234m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-231m]",
+    "date": "[NOW-231m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-228m]",
+    "date": "[NOW-228m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-225m]",
+    "date": "[NOW-225m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-222m]",
+    "date": "[NOW-222m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-219m]",
+    "date": "[NOW-219m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-216m]",
+    "date": "[NOW-216m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-213m]",
+    "date": "[NOW-213m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-210m]",
+    "date": "[NOW-210m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-207m]",
+    "date": "[NOW-207m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-204m]",
+    "date": "[NOW-204m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-201m]",
+    "date": "[NOW-201m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-198m]",
+    "date": "[NOW-198m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-195m]",
+    "date": "[NOW-195m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-192m]",
+    "date": "[NOW-192m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-189m]",
+    "date": "[NOW-189m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-186m]",
+    "date": "[NOW-186m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-183m]",
+    "date": "[NOW-183m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-180m]",
+    "date": "[NOW-180m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-177m]",
+    "date": "[NOW-177m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-174m]",
+    "date": "[NOW-174m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-171m]",
+    "date": "[NOW-171m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-168m]",
+    "date": "[NOW-168m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-165m]",
+    "date": "[NOW-165m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-162m]",
+    "date": "[NOW-162m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-159m]",
+    "date": "[NOW-159m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-156m]",
+    "date": "[NOW-156m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-153m]",
+    "date": "[NOW-153m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-150m]",
+    "date": "[NOW-150m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-147m]",
+    "date": "[NOW-147m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-144m]",
+    "date": "[NOW-144m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-141m]",
+    "date": "[NOW-141m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-138m]",
+    "date": "[NOW-138m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-135m]",
+    "date": "[NOW-135m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-132m]",
+    "date": "[NOW-132m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-129m]",
+    "date": "[NOW-129m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-126m]",
+    "date": "[NOW-126m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-123m]",
+    "date": "[NOW-123m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-90m]",
+    "date": "[NOW-90m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-87m]",
+    "date": "[NOW-87m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-84m]",
+    "date": "[NOW-84m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-81m]",
+    "date": "[NOW-81m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-78m]",
+    "date": "[NOW-78m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-75m]",
+    "date": "[NOW-75m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-72m]",
+    "date": "[NOW-72m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-69m]",
+    "date": "[NOW-69m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-66m]",
+    "date": "[NOW-66m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-63m]",
+    "date": "[NOW-63m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-30m]",
+    "date": "[NOW-30m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-27m]",
+    "date": "[NOW-27m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-24m]",
+    "date": "[NOW-24m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-21m]",
+    "date": "[NOW-21m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-18m]",
+    "date": "[NOW-18m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-15m]",
+    "date": "[NOW-15m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-12m]",
+    "date": "[NOW-12m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-9m]",
+    "date": "[NOW-9m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-6m]",
+    "date": "[NOW-6m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-3m]",
+    "date": "[NOW-3m]",
+    "insulin": -0.05,
+  },
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+]
+`;
+
+exports[`iob/history (calcTempTreatments) characterization tests > mismatched suspend/resume error paths > suspendedPrior with matching counts (resumes-1 === suspends) 1`] = `
+[
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+]
+`;
+
+exports[`iob/history (calcTempTreatments) characterization tests > out-of-order / duplicate record filtering > ignores records with timestamps after the previous record (future relative to iteration order) 1`] = `
+[
+  {
+    "date": "[NOW-90m]",
+    "insulin": 2,
+    "started_at": "[NOW-90m]",
+    "timestamp": "2025-01-15T10:30:00.000Z",
+  },
+  {
+    "date": "[NOW-60m]",
+    "insulin": 1,
+    "started_at": "[NOW-60m]",
+    "timestamp": "2025-01-15T11:00:00.000Z",
+  },
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+]
+`;
+
+exports[`iob/history (calcTempTreatments) characterization tests > profile basal subtraction and sensitivity > exercise_mode with custom half_basal_exercise_target 1`] = `
+[
+  {
+    "created_at": "[NOW-30m]",
+    "date": "[NOW-30m]",
+    "insulin": 0.05,
+  },
+  {
+    "date": "[NOW-30m]",
+    "duration": 30,
+    "rate": 2,
+    "started_at": "[NOW-30m]",
+    "timestamp": "2025-01-15T11:30:00.000Z",
+  },
+  {
+    "created_at": "[NOW-28m]",
+    "date": "[NOW-28m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-25m]",
+    "date": "[NOW-25m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-23m]",
+    "date": "[NOW-23m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-21m]",
+    "date": "[NOW-21m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-18m]",
+    "date": "[NOW-18m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-16m]",
+    "date": "[NOW-16m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-14m]",
+    "date": "[NOW-14m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-12m]",
+    "date": "[NOW-12m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-9m]",
+    "date": "[NOW-9m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-7m]",
+    "date": "[NOW-7m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-5m]",
+    "date": "[NOW-5m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-2m]",
+    "date": "[NOW-2m]",
+    "insulin": 0.05,
+  },
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+]
+`;
+
+exports[`iob/history (calcTempTreatments) characterization tests > profile basal subtraction and sensitivity > exercise_mode without temptargetSet falls through to autosens 1`] = `
+[
+  {
+    "created_at": "[NOW-30m]",
+    "date": "[NOW-30m]",
+    "insulin": 0.05,
+  },
+  {
+    "date": "[NOW-30m]",
+    "duration": 30,
+    "rate": 2,
+    "started_at": "[NOW-30m]",
+    "timestamp": "2025-01-15T11:30:00.000Z",
+  },
+  {
+    "created_at": "[NOW-27m]",
+    "date": "[NOW-27m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-25m]",
+    "date": "[NOW-25m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-22m]",
+    "date": "[NOW-22m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-19m]",
+    "date": "[NOW-19m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-16m]",
+    "date": "[NOW-16m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-14m]",
+    "date": "[NOW-14m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-11m]",
+    "date": "[NOW-11m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-8m]",
+    "date": "[NOW-8m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-5m]",
+    "date": "[NOW-5m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-3m]",
+    "date": "[NOW-3m]",
+    "insulin": 0.05,
+  },
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+]
+`;
+
+exports[`iob/history (calcTempTreatments) characterization tests > profile basal subtraction and sensitivity > high temp with multi-segment basal profile 1`] = `
+[
+  {
+    "created_at": "[NOW-30m]",
+    "date": "[NOW-30m]",
+    "insulin": 0.05,
+  },
+  {
+    "date": "[NOW-30m]",
+    "duration": 30,
+    "rate": 3,
+    "started_at": "[NOW-30m]",
+    "timestamp": "2025-01-15T11:30:00.000Z",
+  },
+  {
+    "created_at": "[NOW-29m]",
+    "date": "[NOW-29m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-27m]",
+    "date": "[NOW-27m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-26m]",
+    "date": "[NOW-26m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-25m]",
+    "date": "[NOW-25m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-23m]",
+    "date": "[NOW-23m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-22m]",
+    "date": "[NOW-22m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-20m]",
+    "date": "[NOW-20m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-19m]",
+    "date": "[NOW-19m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-18m]",
+    "date": "[NOW-18m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-16m]",
+    "date": "[NOW-16m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-15m]",
+    "date": "[NOW-15m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-14m]",
+    "date": "[NOW-14m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-12m]",
+    "date": "[NOW-12m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-11m]",
+    "date": "[NOW-11m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-10m]",
+    "date": "[NOW-10m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-8m]",
+    "date": "[NOW-8m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-7m]",
+    "date": "[NOW-7m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-5m]",
+    "date": "[NOW-5m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-4m]",
+    "date": "[NOW-4m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-3m]",
+    "date": "[NOW-3m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-1m]",
+    "date": "[NOW-1m]",
+    "insulin": 0.05,
+  },
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+]
+`;
+
+exports[`iob/history (calcTempTreatments) characterization tests > profile basal subtraction and sensitivity > temp basal rate equal to profile basal (net zero) 1`] = `
+[
+  {
+    "date": "[NOW-30m]",
+    "duration": 30,
+    "rate": 1,
+    "started_at": "[NOW-30m]",
+    "timestamp": "2025-01-15T11:30:00.000Z",
+  },
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+]
+`;
+
+exports[`iob/history (calcTempTreatments) characterization tests > profile basal subtraction and sensitivity > with autosens ratio adjusting basal 1`] = `
+[
+  {
+    "created_at": "[NOW-30m]",
+    "date": "[NOW-30m]",
+    "insulin": 0.05,
+  },
+  {
+    "date": "[NOW-30m]",
+    "duration": 30,
+    "rate": 2,
+    "started_at": "[NOW-30m]",
+    "timestamp": "2025-01-15T11:30:00.000Z",
+  },
+  {
+    "created_at": "[NOW-26m]",
+    "date": "[NOW-26m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-22m]",
+    "date": "[NOW-22m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-19m]",
+    "date": "[NOW-19m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-15m]",
+    "date": "[NOW-15m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-11m]",
+    "date": "[NOW-11m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-7m]",
+    "date": "[NOW-7m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-4m]",
+    "date": "[NOW-4m]",
+    "insulin": 0.05,
+  },
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+]
+`;
+
+exports[`iob/history (calcTempTreatments) characterization tests > profile basal subtraction and sensitivity > with empty basalprofile uses current_basal 1`] = `
+[
+  {
+    "created_at": "[NOW-30m]",
+    "date": "[NOW-30m]",
+    "insulin": 0.05,
+  },
+  {
+    "date": "[NOW-30m]",
+    "duration": 30,
+    "rate": 2,
+    "started_at": "[NOW-30m]",
+    "timestamp": "2025-01-15T11:30:00.000Z",
+  },
+  {
+    "created_at": "[NOW-24m]",
+    "date": "[NOW-24m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-18m]",
+    "date": "[NOW-18m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-12m]",
+    "date": "[NOW-12m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-6m]",
+    "date": "[NOW-6m]",
+    "insulin": 0.05,
+  },
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+]
+`;
+
+exports[`iob/history (calcTempTreatments) characterization tests > profile basal subtraction and sensitivity > with exercise_mode and temptargetSet 1`] = `
+[
+  {
+    "created_at": "[NOW-30m]",
+    "date": "[NOW-30m]",
+    "insulin": 0.05,
+  },
+  {
+    "date": "[NOW-30m]",
+    "duration": 30,
+    "rate": 2,
+    "started_at": "[NOW-30m]",
+    "timestamp": "2025-01-15T11:30:00.000Z",
+  },
+  {
+    "created_at": "[NOW-28m]",
+    "date": "[NOW-28m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-26m]",
+    "date": "[NOW-26m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-24m]",
+    "date": "[NOW-24m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-22m]",
+    "date": "[NOW-22m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-20m]",
+    "date": "[NOW-20m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-18m]",
+    "date": "[NOW-18m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-16m]",
+    "date": "[NOW-16m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-14m]",
+    "date": "[NOW-14m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-12m]",
+    "date": "[NOW-12m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-10m]",
+    "date": "[NOW-10m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-8m]",
+    "date": "[NOW-8m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-6m]",
+    "date": "[NOW-6m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-4m]",
+    "date": "[NOW-4m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-2m]",
+    "date": "[NOW-2m]",
+    "insulin": 0.05,
+  },
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+]
+`;
+
+exports[`iob/history (calcTempTreatments) characterization tests > splitAroundSuspends edge cases > suspend starting after temp basal starts and ending during it 1`] = `
+[
+  {
+    "created_at": "[NOW-60m]",
+    "date": "[NOW-60m]",
+    "insulin": 0.05,
+  },
+  {
+    "date": "[NOW-60m]",
+    "duration": 60,
+    "rate": 2,
+    "started_at": "[NOW-60m]",
+    "timestamp": "2025-01-15T11:00:00.000Z",
+  },
+  {
+    "created_at": "[NOW-57m]",
+    "date": "[NOW-57m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-54m]",
+    "date": "[NOW-54m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-51m]",
+    "date": "[NOW-51m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-49m]",
+    "date": "[NOW-49m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-46m]",
+    "date": "[NOW-46m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-43m]",
+    "date": "[NOW-43m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-40m]",
+    "date": "[NOW-40m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-37m]",
+    "date": "[NOW-37m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-34m]",
+    "date": "[NOW-34m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-31m]",
+    "date": "[NOW-31m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-29m]",
+    "date": "[NOW-29m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-26m]",
+    "date": "[NOW-26m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-23m]",
+    "date": "[NOW-23m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-20m]",
+    "date": "[NOW-20m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-17m]",
+    "date": "[NOW-17m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-14m]",
+    "date": "[NOW-14m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-11m]",
+    "date": "[NOW-11m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-9m]",
+    "date": "[NOW-9m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-6m]",
+    "date": "[NOW-6m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-3m]",
+    "date": "[NOW-3m]",
+    "insulin": 0.05,
+  },
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+]
+`;
+
+exports[`iob/history (calcTempTreatments) characterization tests > splitAroundSuspends edge cases > temp basal entirely within suspend period (duration zeroed) 1`] = `
+[
+  {
+    "created_at": "[NOW-55m]",
+    "date": "[NOW-55m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-52m]",
+    "date": "[NOW-52m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-49m]",
+    "date": "[NOW-49m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-46m]",
+    "date": "[NOW-46m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-43m]",
+    "date": "[NOW-43m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-40m]",
+    "date": "[NOW-40m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-37m]",
+    "date": "[NOW-37m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-34m]",
+    "date": "[NOW-34m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-31m]",
+    "date": "[NOW-31m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-28m]",
+    "date": "[NOW-28m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-25m]",
+    "date": "[NOW-25m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-22m]",
+    "date": "[NOW-22m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-19m]",
+    "date": "[NOW-19m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-16m]",
+    "date": "[NOW-16m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-13m]",
+    "date": "[NOW-13m]",
+    "insulin": -0.05,
+  },
+  {
+    "date": "[NOW-10m]",
+    "duration": -10,
+    "rate": 2,
+    "started_at": "[NOW-10m]",
+    "timestamp": "2025-01-15T03:50:00-08:00",
+  },
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+]
+`;
+
+exports[`iob/history (calcTempTreatments) characterization tests > splitAroundSuspends edge cases > temp basal starting before suspend and ending after resume 1`] = `
+[
+  {
+    "created_at": "[NOW-70m]",
+    "date": "[NOW-70m]",
+    "insulin": 0.05,
+  },
+  {
+    "date": "[NOW-70m]",
+    "duration": 60,
+    "rate": 2,
+    "started_at": "[NOW-70m]",
+    "timestamp": "2025-01-15T10:50:00.000Z",
+  },
+  {
+    "created_at": "[NOW-67m]",
+    "date": "[NOW-67m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-64m]",
+    "date": "[NOW-64m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-61m]",
+    "date": "[NOW-61m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-59m]",
+    "date": "[NOW-59m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-56m]",
+    "date": "[NOW-56m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-53m]",
+    "date": "[NOW-53m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-50m]",
+    "date": "[NOW-50m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-47m]",
+    "date": "[NOW-47m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-44m]",
+    "date": "[NOW-44m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-41m]",
+    "date": "[NOW-41m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-39m]",
+    "date": "[NOW-39m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-36m]",
+    "date": "[NOW-36m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-33m]",
+    "date": "[NOW-33m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-30m]",
+    "date": "[NOW-30m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-27m]",
+    "date": "[NOW-27m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-24m]",
+    "date": "[NOW-24m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-21m]",
+    "date": "[NOW-21m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-19m]",
+    "date": "[NOW-19m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-16m]",
+    "date": "[NOW-16m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-13m]",
+    "date": "[NOW-13m]",
+    "insulin": 0.05,
+  },
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+]
+`;
+
+exports[`iob/history (calcTempTreatments) characterization tests > splitTimespan with basal profile changes > long temp basal spanning a basal profile change boundary 1`] = `
+[
+  {
+    "created_at": "[NOW-60m]",
+    "date": "[NOW-60m]",
+    "insulin": 0.05,
+  },
+  {
+    "date": "[NOW-60m]",
+    "duration": 60,
+    "rate": 2,
+    "started_at": "[NOW-60m]",
+    "timestamp": "2025-01-15T11:00:00.000Z",
+  },
+  {
+    "created_at": "[NOW-57m]",
+    "date": "[NOW-57m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-55m]",
+    "date": "[NOW-55m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-52m]",
+    "date": "[NOW-52m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-50m]",
+    "date": "[NOW-50m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-47m]",
+    "date": "[NOW-47m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-45m]",
+    "date": "[NOW-45m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-42m]",
+    "date": "[NOW-42m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-40m]",
+    "date": "[NOW-40m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-37m]",
+    "date": "[NOW-37m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-35m]",
+    "date": "[NOW-35m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-32m]",
+    "date": "[NOW-32m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-30m]",
+    "date": "[NOW-30m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-27m]",
+    "date": "[NOW-27m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-25m]",
+    "date": "[NOW-25m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-22m]",
+    "date": "[NOW-22m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-20m]",
+    "date": "[NOW-20m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-17m]",
+    "date": "[NOW-17m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-15m]",
+    "date": "[NOW-15m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-12m]",
+    "date": "[NOW-12m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-10m]",
+    "date": "[NOW-10m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-7m]",
+    "date": "[NOW-7m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-5m]",
+    "date": "[NOW-5m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-2m]",
+    "date": "[NOW-2m]",
+    "insulin": 0.05,
+  },
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+]
+`;
+
+exports[`iob/history (calcTempTreatments) characterization tests > suspend_zeros_iob: true > suspend zeros IOB with suspend/resume around a temp basal 1`] = `
+[
+  {
+    "created_at": "[NOW-90m]",
+    "date": "[NOW-90m]",
+    "insulin": 0.05,
+  },
+  {
+    "date": "[NOW-90m]",
+    "duration": 60,
+    "rate": 2,
+    "started_at": "[NOW-90m]",
+    "timestamp": "2025-01-15T10:30:00.000Z",
+  },
+  {
+    "created_at": "[NOW-87m]",
+    "date": "[NOW-87m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-84m]",
+    "date": "[NOW-84m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-81m]",
+    "date": "[NOW-81m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-78m]",
+    "date": "[NOW-78m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-75m]",
+    "date": "[NOW-75m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-72m]",
+    "date": "[NOW-72m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-69m]",
+    "date": "[NOW-69m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-66m]",
+    "date": "[NOW-66m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-63m]",
+    "date": "[NOW-63m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-60m]",
+    "date": "[NOW-60m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-57m]",
+    "date": "[NOW-57m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-54m]",
+    "date": "[NOW-54m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-51m]",
+    "date": "[NOW-51m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-48m]",
+    "date": "[NOW-48m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-45m]",
+    "date": "[NOW-45m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-42m]",
+    "date": "[NOW-42m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-39m]",
+    "date": "[NOW-39m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-36m]",
+    "date": "[NOW-36m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-33m]",
+    "date": "[NOW-33m]",
+    "insulin": -0.05,
+  },
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+]
+`;
+
+exports[`iob/history (calcTempTreatments) characterization tests > suspend_zeros_iob: true > suspend_zeros_iob with both suspendedPrior and currentlySuspended 1`] = `
+[
+  {
+    "created_at": "[NOW-480m]",
+    "date": "[NOW-480m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-477m]",
+    "date": "[NOW-477m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-474m]",
+    "date": "[NOW-474m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-471m]",
+    "date": "[NOW-471m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-468m]",
+    "date": "[NOW-468m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-465m]",
+    "date": "[NOW-465m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-462m]",
+    "date": "[NOW-462m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-459m]",
+    "date": "[NOW-459m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-456m]",
+    "date": "[NOW-456m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-453m]",
+    "date": "[NOW-453m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-450m]",
+    "date": "[NOW-450m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-447m]",
+    "date": "[NOW-447m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-444m]",
+    "date": "[NOW-444m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-441m]",
+    "date": "[NOW-441m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-438m]",
+    "date": "[NOW-438m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-435m]",
+    "date": "[NOW-435m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-432m]",
+    "date": "[NOW-432m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-429m]",
+    "date": "[NOW-429m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-426m]",
+    "date": "[NOW-426m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-423m]",
+    "date": "[NOW-423m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-420m]",
+    "date": "[NOW-420m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-417m]",
+    "date": "[NOW-417m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-414m]",
+    "date": "[NOW-414m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-411m]",
+    "date": "[NOW-411m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-408m]",
+    "date": "[NOW-408m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-405m]",
+    "date": "[NOW-405m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-402m]",
+    "date": "[NOW-402m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-399m]",
+    "date": "[NOW-399m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-396m]",
+    "date": "[NOW-396m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-393m]",
+    "date": "[NOW-393m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-390m]",
+    "date": "[NOW-390m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-387m]",
+    "date": "[NOW-387m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-384m]",
+    "date": "[NOW-384m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-381m]",
+    "date": "[NOW-381m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-378m]",
+    "date": "[NOW-378m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-375m]",
+    "date": "[NOW-375m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-372m]",
+    "date": "[NOW-372m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-369m]",
+    "date": "[NOW-369m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-366m]",
+    "date": "[NOW-366m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-363m]",
+    "date": "[NOW-363m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-360m]",
+    "date": "[NOW-360m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-357m]",
+    "date": "[NOW-357m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-354m]",
+    "date": "[NOW-354m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-351m]",
+    "date": "[NOW-351m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-348m]",
+    "date": "[NOW-348m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-345m]",
+    "date": "[NOW-345m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-342m]",
+    "date": "[NOW-342m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-339m]",
+    "date": "[NOW-339m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-336m]",
+    "date": "[NOW-336m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-333m]",
+    "date": "[NOW-333m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-330m]",
+    "date": "[NOW-330m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-327m]",
+    "date": "[NOW-327m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-324m]",
+    "date": "[NOW-324m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-321m]",
+    "date": "[NOW-321m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-318m]",
+    "date": "[NOW-318m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-315m]",
+    "date": "[NOW-315m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-312m]",
+    "date": "[NOW-312m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-309m]",
+    "date": "[NOW-309m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-306m]",
+    "date": "[NOW-306m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-303m]",
+    "date": "[NOW-303m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-300m]",
+    "date": "[NOW-300m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-297m]",
+    "date": "[NOW-297m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-294m]",
+    "date": "[NOW-294m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-291m]",
+    "date": "[NOW-291m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-288m]",
+    "date": "[NOW-288m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-285m]",
+    "date": "[NOW-285m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-282m]",
+    "date": "[NOW-282m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-279m]",
+    "date": "[NOW-279m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-276m]",
+    "date": "[NOW-276m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-273m]",
+    "date": "[NOW-273m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-270m]",
+    "date": "[NOW-270m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-267m]",
+    "date": "[NOW-267m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-264m]",
+    "date": "[NOW-264m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-261m]",
+    "date": "[NOW-261m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-258m]",
+    "date": "[NOW-258m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-255m]",
+    "date": "[NOW-255m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-252m]",
+    "date": "[NOW-252m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-249m]",
+    "date": "[NOW-249m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-246m]",
+    "date": "[NOW-246m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-243m]",
+    "date": "[NOW-243m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-240m]",
+    "date": "[NOW-240m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-237m]",
+    "date": "[NOW-237m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-234m]",
+    "date": "[NOW-234m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-231m]",
+    "date": "[NOW-231m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-228m]",
+    "date": "[NOW-228m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-225m]",
+    "date": "[NOW-225m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-222m]",
+    "date": "[NOW-222m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-219m]",
+    "date": "[NOW-219m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-216m]",
+    "date": "[NOW-216m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-213m]",
+    "date": "[NOW-213m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-210m]",
+    "date": "[NOW-210m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-207m]",
+    "date": "[NOW-207m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-204m]",
+    "date": "[NOW-204m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-201m]",
+    "date": "[NOW-201m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-198m]",
+    "date": "[NOW-198m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-195m]",
+    "date": "[NOW-195m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-192m]",
+    "date": "[NOW-192m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-189m]",
+    "date": "[NOW-189m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-186m]",
+    "date": "[NOW-186m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-183m]",
+    "date": "[NOW-183m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-180m]",
+    "date": "[NOW-180m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-177m]",
+    "date": "[NOW-177m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-174m]",
+    "date": "[NOW-174m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-171m]",
+    "date": "[NOW-171m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-168m]",
+    "date": "[NOW-168m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-165m]",
+    "date": "[NOW-165m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-162m]",
+    "date": "[NOW-162m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-159m]",
+    "date": "[NOW-159m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-156m]",
+    "date": "[NOW-156m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-153m]",
+    "date": "[NOW-153m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-150m]",
+    "date": "[NOW-150m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-147m]",
+    "date": "[NOW-147m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-144m]",
+    "date": "[NOW-144m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-141m]",
+    "date": "[NOW-141m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-138m]",
+    "date": "[NOW-138m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-135m]",
+    "date": "[NOW-135m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-132m]",
+    "date": "[NOW-132m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-129m]",
+    "date": "[NOW-129m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-126m]",
+    "date": "[NOW-126m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-123m]",
+    "date": "[NOW-123m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-30m]",
+    "date": "[NOW-30m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-27m]",
+    "date": "[NOW-27m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-24m]",
+    "date": "[NOW-24m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-21m]",
+    "date": "[NOW-21m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-18m]",
+    "date": "[NOW-18m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-15m]",
+    "date": "[NOW-15m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-12m]",
+    "date": "[NOW-12m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-9m]",
+    "date": "[NOW-9m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-6m]",
+    "date": "[NOW-6m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-3m]",
+    "date": "[NOW-3m]",
+    "insulin": -0.05,
+  },
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+]
+`;
+
+exports[`iob/history (calcTempTreatments) characterization tests > suspend_zeros_iob: true > suspend_zeros_iob with currentlySuspended 1`] = `
+[
+  {
+    "created_at": "[NOW-90m]",
+    "date": "[NOW-90m]",
+    "insulin": 0.05,
+  },
+  {
+    "date": "[NOW-90m]",
+    "duration": 30,
+    "rate": 2,
+    "started_at": "[NOW-90m]",
+    "timestamp": "2025-01-15T10:30:00.000Z",
+  },
+  {
+    "created_at": "[NOW-87m]",
+    "date": "[NOW-87m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-84m]",
+    "date": "[NOW-84m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-81m]",
+    "date": "[NOW-81m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-78m]",
+    "date": "[NOW-78m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-75m]",
+    "date": "[NOW-75m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-72m]",
+    "date": "[NOW-72m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-69m]",
+    "date": "[NOW-69m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-66m]",
+    "date": "[NOW-66m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-63m]",
+    "date": "[NOW-63m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-30m]",
+    "date": "[NOW-30m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-27m]",
+    "date": "[NOW-27m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-24m]",
+    "date": "[NOW-24m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-21m]",
+    "date": "[NOW-21m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-18m]",
+    "date": "[NOW-18m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-15m]",
+    "date": "[NOW-15m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-12m]",
+    "date": "[NOW-12m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-9m]",
+    "date": "[NOW-9m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-6m]",
+    "date": "[NOW-6m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-3m]",
+    "date": "[NOW-3m]",
+    "insulin": -0.05,
+  },
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+]
+`;
+
+exports[`iob/history (calcTempTreatments) characterization tests > suspend_zeros_iob: true > suspend_zeros_iob with suspendedPrior 1`] = `
+[
+  {
+    "created_at": "[NOW-480m]",
+    "date": "[NOW-480m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-477m]",
+    "date": "[NOW-477m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-474m]",
+    "date": "[NOW-474m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-471m]",
+    "date": "[NOW-471m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-468m]",
+    "date": "[NOW-468m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-465m]",
+    "date": "[NOW-465m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-462m]",
+    "date": "[NOW-462m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-459m]",
+    "date": "[NOW-459m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-456m]",
+    "date": "[NOW-456m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-453m]",
+    "date": "[NOW-453m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-450m]",
+    "date": "[NOW-450m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-447m]",
+    "date": "[NOW-447m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-444m]",
+    "date": "[NOW-444m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-441m]",
+    "date": "[NOW-441m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-438m]",
+    "date": "[NOW-438m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-435m]",
+    "date": "[NOW-435m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-432m]",
+    "date": "[NOW-432m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-429m]",
+    "date": "[NOW-429m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-426m]",
+    "date": "[NOW-426m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-423m]",
+    "date": "[NOW-423m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-420m]",
+    "date": "[NOW-420m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-417m]",
+    "date": "[NOW-417m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-414m]",
+    "date": "[NOW-414m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-411m]",
+    "date": "[NOW-411m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-408m]",
+    "date": "[NOW-408m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-405m]",
+    "date": "[NOW-405m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-402m]",
+    "date": "[NOW-402m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-399m]",
+    "date": "[NOW-399m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-396m]",
+    "date": "[NOW-396m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-393m]",
+    "date": "[NOW-393m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-390m]",
+    "date": "[NOW-390m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-387m]",
+    "date": "[NOW-387m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-384m]",
+    "date": "[NOW-384m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-381m]",
+    "date": "[NOW-381m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-378m]",
+    "date": "[NOW-378m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-375m]",
+    "date": "[NOW-375m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-372m]",
+    "date": "[NOW-372m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-369m]",
+    "date": "[NOW-369m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-366m]",
+    "date": "[NOW-366m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-363m]",
+    "date": "[NOW-363m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-360m]",
+    "date": "[NOW-360m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-357m]",
+    "date": "[NOW-357m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-354m]",
+    "date": "[NOW-354m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-351m]",
+    "date": "[NOW-351m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-348m]",
+    "date": "[NOW-348m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-345m]",
+    "date": "[NOW-345m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-342m]",
+    "date": "[NOW-342m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-339m]",
+    "date": "[NOW-339m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-336m]",
+    "date": "[NOW-336m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-333m]",
+    "date": "[NOW-333m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-330m]",
+    "date": "[NOW-330m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-327m]",
+    "date": "[NOW-327m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-324m]",
+    "date": "[NOW-324m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-321m]",
+    "date": "[NOW-321m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-318m]",
+    "date": "[NOW-318m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-315m]",
+    "date": "[NOW-315m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-312m]",
+    "date": "[NOW-312m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-309m]",
+    "date": "[NOW-309m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-306m]",
+    "date": "[NOW-306m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-303m]",
+    "date": "[NOW-303m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-300m]",
+    "date": "[NOW-300m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-297m]",
+    "date": "[NOW-297m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-294m]",
+    "date": "[NOW-294m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-291m]",
+    "date": "[NOW-291m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-288m]",
+    "date": "[NOW-288m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-285m]",
+    "date": "[NOW-285m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-282m]",
+    "date": "[NOW-282m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-279m]",
+    "date": "[NOW-279m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-276m]",
+    "date": "[NOW-276m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-273m]",
+    "date": "[NOW-273m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-270m]",
+    "date": "[NOW-270m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-267m]",
+    "date": "[NOW-267m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-264m]",
+    "date": "[NOW-264m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-261m]",
+    "date": "[NOW-261m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-258m]",
+    "date": "[NOW-258m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-255m]",
+    "date": "[NOW-255m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-252m]",
+    "date": "[NOW-252m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-249m]",
+    "date": "[NOW-249m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-246m]",
+    "date": "[NOW-246m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-243m]",
+    "date": "[NOW-243m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-240m]",
+    "date": "[NOW-240m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-237m]",
+    "date": "[NOW-237m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-234m]",
+    "date": "[NOW-234m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-231m]",
+    "date": "[NOW-231m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-228m]",
+    "date": "[NOW-228m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-225m]",
+    "date": "[NOW-225m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-222m]",
+    "date": "[NOW-222m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-219m]",
+    "date": "[NOW-219m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-216m]",
+    "date": "[NOW-216m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-213m]",
+    "date": "[NOW-213m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-210m]",
+    "date": "[NOW-210m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-207m]",
+    "date": "[NOW-207m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-204m]",
+    "date": "[NOW-204m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-201m]",
+    "date": "[NOW-201m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-198m]",
+    "date": "[NOW-198m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-195m]",
+    "date": "[NOW-195m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-192m]",
+    "date": "[NOW-192m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-189m]",
+    "date": "[NOW-189m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-186m]",
+    "date": "[NOW-186m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-183m]",
+    "date": "[NOW-183m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-180m]",
+    "date": "[NOW-180m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-177m]",
+    "date": "[NOW-177m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-174m]",
+    "date": "[NOW-174m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-171m]",
+    "date": "[NOW-171m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-168m]",
+    "date": "[NOW-168m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-165m]",
+    "date": "[NOW-165m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-162m]",
+    "date": "[NOW-162m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-159m]",
+    "date": "[NOW-159m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-156m]",
+    "date": "[NOW-156m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-153m]",
+    "date": "[NOW-153m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-150m]",
+    "date": "[NOW-150m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-147m]",
+    "date": "[NOW-147m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-144m]",
+    "date": "[NOW-144m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-141m]",
+    "date": "[NOW-141m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-138m]",
+    "date": "[NOW-138m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-135m]",
+    "date": "[NOW-135m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-132m]",
+    "date": "[NOW-132m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-129m]",
+    "date": "[NOW-129m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-126m]",
+    "date": "[NOW-126m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-123m]",
+    "date": "[NOW-123m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-120m]",
+    "date": "[NOW-120m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-117m]",
+    "date": "[NOW-117m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-114m]",
+    "date": "[NOW-114m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-111m]",
+    "date": "[NOW-111m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-108m]",
+    "date": "[NOW-108m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-105m]",
+    "date": "[NOW-105m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-102m]",
+    "date": "[NOW-102m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-99m]",
+    "date": "[NOW-99m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-96m]",
+    "date": "[NOW-96m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-93m]",
+    "date": "[NOW-93m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-90m]",
+    "date": "[NOW-90m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-87m]",
+    "date": "[NOW-87m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-84m]",
+    "date": "[NOW-84m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-81m]",
+    "date": "[NOW-81m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-78m]",
+    "date": "[NOW-78m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-75m]",
+    "date": "[NOW-75m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-72m]",
+    "date": "[NOW-72m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-69m]",
+    "date": "[NOW-69m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-66m]",
+    "date": "[NOW-66m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-63m]",
+    "date": "[NOW-63m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-60m]",
+    "date": "[NOW-60m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-57m]",
+    "date": "[NOW-57m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-54m]",
+    "date": "[NOW-54m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-51m]",
+    "date": "[NOW-51m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-48m]",
+    "date": "[NOW-48m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-45m]",
+    "date": "[NOW-45m]",
+    "insulin": 0.05,
+  },
+  {
+    "date": "[NOW-45m]",
+    "duration": 15,
+    "rate": 2,
+    "started_at": "[NOW-45m]",
+    "timestamp": "2025-01-15T11:00:00.000Z",
+  },
+  {
+    "created_at": "[NOW-42m]",
+    "date": "[NOW-42m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-39m]",
+    "date": "[NOW-39m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-36m]",
+    "date": "[NOW-36m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-33m]",
+    "date": "[NOW-33m]",
+    "insulin": 0.05,
+  },
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+]
+`;
+
+exports[`iob/history (calcTempTreatments) characterization tests > suspend_zeros_iob: true > suspend_zeros_iob: false (default path) 1`] = `
+[
+  {
+    "created_at": "[NOW-60m]",
+    "date": "[NOW-60m]",
+    "insulin": 0.05,
+  },
+  {
+    "date": "[NOW-60m]",
+    "duration": 30,
+    "rate": 2,
+    "started_at": "[NOW-60m]",
+    "timestamp": "2025-01-15T11:00:00.000Z",
+  },
+  {
+    "created_at": "[NOW-57m]",
+    "date": "[NOW-57m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-54m]",
+    "date": "[NOW-54m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-51m]",
+    "date": "[NOW-51m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-48m]",
+    "date": "[NOW-48m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-45m]",
+    "date": "[NOW-45m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-42m]",
+    "date": "[NOW-42m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-39m]",
+    "date": "[NOW-39m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-36m]",
+    "date": "[NOW-36m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-33m]",
+    "date": "[NOW-33m]",
+    "insulin": 0.05,
+  },
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+]
+`;
+
+exports[`iob/history (calcTempTreatments) characterization tests > target_bg computation with min_bg/max_bg > min_bg and max_bg defined computes target_bg 1`] = `
+[
+  {
+    "created_at": "[NOW-30m]",
+    "date": "[NOW-30m]",
+    "insulin": 0.05,
+  },
+  {
+    "date": "[NOW-30m]",
+    "duration": 30,
+    "rate": 2,
+    "started_at": "[NOW-30m]",
+    "timestamp": "2025-01-15T11:30:00.000Z",
+  },
+  {
+    "created_at": "[NOW-27m]",
+    "date": "[NOW-27m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-24m]",
+    "date": "[NOW-24m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-21m]",
+    "date": "[NOW-21m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-18m]",
+    "date": "[NOW-18m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-15m]",
+    "date": "[NOW-15m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-12m]",
+    "date": "[NOW-12m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-9m]",
+    "date": "[NOW-9m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-6m]",
+    "date": "[NOW-6m]",
+    "insulin": 0.05,
+  },
+  {
+    "created_at": "[NOW-3m]",
+    "date": "[NOW-3m]",
+    "insulin": 0.05,
+  },
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+]
+`;
+
+exports[`iob/history (calcTempTreatments) characterization tests > temp basal below profile rate (negative net) > low temp basal produces negative tempBolusSize 1`] = `
+[
+  {
+    "created_at": "[NOW-30m]",
+    "date": "[NOW-30m]",
+    "insulin": -0.05,
+  },
+  {
+    "date": "[NOW-30m]",
+    "duration": 30,
+    "rate": 0.2,
+    "started_at": "[NOW-30m]",
+    "timestamp": "2025-01-15T11:30:00.000Z",
+  },
+  {
+    "created_at": "[NOW-26m]",
+    "date": "[NOW-26m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-22m]",
+    "date": "[NOW-22m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-19m]",
+    "date": "[NOW-19m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-15m]",
+    "date": "[NOW-15m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-11m]",
+    "date": "[NOW-11m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-7m]",
+    "date": "[NOW-7m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-4m]",
+    "date": "[NOW-4m]",
+    "insulin": -0.05,
+  },
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+]
+`;
+
+exports[`iob/history (calcTempTreatments) characterization tests > zero-rate temp basals > zero-rate temp basal produces negative IOB 1`] = `
+[
+  {
+    "created_at": "[NOW-30m]",
+    "date": "[NOW-30m]",
+    "insulin": -0.05,
+  },
+  {
+    "date": "[NOW-30m]",
+    "duration": 30,
+    "rate": 0,
+    "started_at": "[NOW-30m]",
+    "timestamp": "2025-01-15T11:30:00.000Z",
+  },
+  {
+    "created_at": "[NOW-27m]",
+    "date": "[NOW-27m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-24m]",
+    "date": "[NOW-24m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-21m]",
+    "date": "[NOW-21m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-18m]",
+    "date": "[NOW-18m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-15m]",
+    "date": "[NOW-15m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-12m]",
+    "date": "[NOW-12m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-9m]",
+    "date": "[NOW-9m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-6m]",
+    "date": "[NOW-6m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW-3m]",
+    "date": "[NOW-3m]",
+    "insulin": -0.05,
+  },
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+]
+`;
+
+exports[`iob/history (calcTempTreatments) characterization tests > zeroTempDuration parameter > with zeroTempDuration set 1`] = `
+[
+  {
+    "date": "[NOW-30m]",
+    "insulin": 1,
+    "started_at": "[NOW-30m]",
+    "timestamp": "2025-01-15T11:30:00.000Z",
+  },
+  {
+    "created_at": "[NOW+1m]",
+    "date": "[NOW+1m]",
+    "insulin": -0.05,
+  },
+  {
+    "date": "[NOW+1m]",
+    "duration": 30,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+  {
+    "created_at": "[NOW+4m]",
+    "date": "[NOW+4m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW+7m]",
+    "date": "[NOW+7m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW+10m]",
+    "date": "[NOW+10m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW+13m]",
+    "date": "[NOW+13m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW+16m]",
+    "date": "[NOW+16m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW+19m]",
+    "date": "[NOW+19m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW+22m]",
+    "date": "[NOW+22m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW+25m]",
+    "date": "[NOW+25m]",
+    "insulin": -0.05,
+  },
+  {
+    "created_at": "[NOW+28m]",
+    "date": "[NOW+28m]",
+    "insulin": -0.05,
+  },
+]
+`;
+
+exports[`iob/history (calcTempTreatments) characterization tests > zeroTempDuration parameter > without zeroTempDuration (defaults to 0) 1`] = `
+[
+  {
+    "date": "[NOW-30m]",
+    "insulin": 1,
+    "started_at": "[NOW-30m]",
+    "timestamp": "2025-01-15T11:30:00.000Z",
+  },
+  {
+    "date": "[NOW+1m]",
+    "duration": 0,
+    "rate": 0,
+    "started_at": "[NOW+1m]",
+  },
+]
+`;

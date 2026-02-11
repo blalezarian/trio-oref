@@ -1,5 +1,122 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`glucose-get-last characterization tests > calibration record handling (lines 28-29) > cal record at index 1 stops all delta calculations 1`] = `
+{
+  "date": 1736942400000,
+  "delta": 0,
+  "device": "fakecgm",
+  "glucose": 120,
+  "last_cal": 1,
+  "long_avgdelta": 0,
+  "noise": 1,
+  "short_avgdelta": 0,
+}
+`;
+
+exports[`glucose-get-last characterization tests > calibration record handling (lines 28-29) > cal record with nonzero glucose stops processing older entries 1`] = `
+{
+  "date": 1736942400000,
+  "delta": 2,
+  "device": "fakecgm",
+  "glucose": 120,
+  "last_cal": 3,
+  "long_avgdelta": 0,
+  "noise": 1,
+  "short_avgdelta": 2,
+}
+`;
+
+exports[`glucose-get-last characterization tests > close-in-time averaging (lines 47-49) > multiple close-in-time readings get progressively averaged 1`] = `
+{
+  "date": 1736942325000,
+  "delta": 12.5,
+  "device": "fakecgm",
+  "glucose": 125,
+  "last_cal": 0,
+  "long_avgdelta": 6.31,
+  "noise": 1,
+  "short_avgdelta": 10.42,
+}
+`;
+
+exports[`glucose-get-last characterization tests > close-in-time averaging (lines 47-49) > reading at 1 minute ago gets averaged 1`] = `
+{
+  "date": 1736942370000,
+  "delta": 15,
+  "device": "fakecgm",
+  "glucose": 145,
+  "last_cal": 0,
+  "long_avgdelta": 8.13,
+  "noise": 1,
+  "short_avgdelta": 13.75,
+}
+`;
+
+exports[`glucose-get-last characterization tests > close-in-time averaging (lines 47-49) > reading at exactly 2.5 minutes gets averaged 1`] = `
+{
+  "date": 1736942400000,
+  "delta": 18.33,
+  "device": "fakecgm",
+  "glucose": 140,
+  "last_cal": 0,
+  "long_avgdelta": 9.17,
+  "noise": 1,
+  "short_avgdelta": 17.22,
+}
+`;
+
+exports[`glucose-get-last characterization tests > close-in-time averaging (lines 47-49) > two readings within 2.5 minutes get averaged 1`] = `
+{
+  "date": 1736942340000,
+  "delta": 12.5,
+  "device": "fakecgm",
+  "glucose": 125,
+  "last_cal": 0,
+  "long_avgdelta": 6.29,
+  "noise": 1,
+  "short_avgdelta": 9.33,
+}
+`;
+
+exports[`glucose-get-last characterization tests > dateString field fallback > entries with dateString but no date or display_time 1`] = `
+{
+  "date": 1736942400000,
+  "delta": 5,
+  "device": "fakecgm",
+  "glucose": 120,
+  "last_cal": 0,
+  "long_avgdelta": 3.54,
+  "noise": 1,
+  "short_avgdelta": 5,
+}
+`;
+
+exports[`glucose-get-last characterization tests > dateString field fallback > entries with display_time but no date 1`] = `
+{
+  "date": 1736942400000,
+  "delta": 5,
+  "device": "fakecgm",
+  "glucose": 120,
+  "last_cal": 0,
+  "long_avgdelta": 3.54,
+  "noise": 1,
+  "short_avgdelta": 5,
+}
+`;
+
+exports[`glucose-get-last characterization tests > device filtering > entries from different devices are ignored for delta calculation 1`] = `
+{
+  "date": 1736942400000,
+  "delta": 0,
+  "device": "deviceA",
+  "glucose": 120,
+  "last_cal": 0,
+  "long_avgdelta": 4.05,
+  "noise": 1,
+  "short_avgdelta": 2.92,
+}
+`;
+
 exports[`glucose-get-last characterization tests > edge cases > low BG values 1`] = `
 {
   "date": 1736942400000,
@@ -117,6 +234,71 @@ exports[`glucose-get-last characterization tests > falling BG > slow fall (-2/5m
 }
 `;
 
+exports[`glucose-get-last characterization tests > glucose <= 38 filtered out for delta > low glucose entries (<=38) are skipped in delta calculations 1`] = `
+{
+  "date": 1736942400000,
+  "delta": 0,
+  "device": "fakecgm",
+  "glucose": 120,
+  "last_cal": 0,
+  "long_avgdelta": 2.5,
+  "noise": 1,
+  "short_avgdelta": 1.67,
+}
+`;
+
+exports[`glucose-get-last characterization tests > large time gaps between entries > 30-minute gap between entries 1`] = `
+{
+  "date": 1736942400000,
+  "delta": 0,
+  "device": "fakecgm",
+  "glucose": 150,
+  "last_cal": 0,
+  "long_avgdelta": 5,
+  "noise": 1,
+  "short_avgdelta": 0,
+}
+`;
+
+exports[`glucose-get-last characterization tests > long delta range (17.5-42.5m) > entries only in long delta range 1`] = `
+{
+  "date": 1736942400000,
+  "delta": 0,
+  "device": "fakecgm",
+  "glucose": 120,
+  "last_cal": 0,
+  "long_avgdelta": 3.19,
+  "noise": 1,
+  "short_avgdelta": 0,
+}
+`;
+
+exports[`glucose-get-last characterization tests > missing date fields (line 42) > entry with invalid display_time and no date field 1`] = `
+{
+  "date": 1736942400000,
+  "delta": 0,
+  "device": "fakecgm",
+  "glucose": 120,
+  "last_cal": 0,
+  "long_avgdelta": 0,
+  "noise": 1,
+  "short_avgdelta": 0,
+}
+`;
+
+exports[`glucose-get-last characterization tests > missing date fields (line 42) > entry without date, display_time, or dateString triggers error path 1`] = `
+{
+  "date": 1736942400000,
+  "delta": 0,
+  "device": "fakecgm",
+  "glucose": 120,
+  "last_cal": 0,
+  "long_avgdelta": 0,
+  "noise": 1,
+  "short_avgdelta": 0,
+}
+`;
+
 exports[`glucose-get-last characterization tests > mixed trends > recent fall but long-term rise 1`] = `
 {
   "date": 1736942400000,
@@ -140,6 +322,45 @@ exports[`glucose-get-last characterization tests > mixed trends > recent rise bu
   "long_avgdelta": 0.54,
   "noise": 1,
   "short_avgdelta": 4.67,
+}
+`;
+
+exports[`glucose-get-last characterization tests > noise field variations > high noise value 1`] = `
+{
+  "date": 1736942400000,
+  "delta": 2,
+  "device": "fakecgm",
+  "glucose": 120,
+  "last_cal": 0,
+  "long_avgdelta": 2,
+  "noise": 4,
+  "short_avgdelta": 2,
+}
+`;
+
+exports[`glucose-get-last characterization tests > noise field variations > noise is NaN 1`] = `
+{
+  "date": 1736942400000,
+  "delta": 2,
+  "device": "fakecgm",
+  "glucose": 120,
+  "last_cal": 0,
+  "long_avgdelta": 2,
+  "noise": NaN,
+  "short_avgdelta": 2,
+}
+`;
+
+exports[`glucose-get-last characterization tests > noise field variations > noise is undefined 1`] = `
+{
+  "date": 1736942400000,
+  "delta": 2,
+  "device": "fakecgm",
+  "glucose": 120,
+  "last_cal": 0,
+  "long_avgdelta": 2,
+  "noise": NaN,
+  "short_avgdelta": 2,
 }
 `;
 
@@ -205,5 +426,18 @@ exports[`glucose-get-last characterization tests > steady BG > flat at 180 mg/dL
   "long_avgdelta": 0,
   "noise": 1,
   "short_avgdelta": 0,
+}
+`;
+
+exports[`glucose-get-last characterization tests > three data points (sparse data) > three entries at 5m intervals 1`] = `
+{
+  "date": 1736942400000,
+  "delta": 5,
+  "device": "fakecgm",
+  "glucose": 120,
+  "last_cal": 0,
+  "long_avgdelta": 0,
+  "noise": 1,
+  "short_avgdelta": 5,
 }
 `;

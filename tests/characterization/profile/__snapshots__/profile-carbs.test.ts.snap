@@ -1,0 +1,29 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`profile/carbs (carbRatioLookup) characterization tests > custom now parameter > uses the provided now parameter for time-of-day lookup 1`] = `15`;
+
+exports[`profile/carbs (carbRatioLookup) characterization tests > exchanges units conversion > converts exchanges to grams using 12 / ratio 1`] = `6`;
+
+exports[`profile/carbs (carbRatioLookup) characterization tests > exchanges units conversion > converts exchanges with multiple schedule entries 1`] = `8`;
+
+exports[`profile/carbs (carbRatioLookup) characterization tests > multiple ratio entries with time-of-day lookup > selects first entry when time is before second offset 1`] = `15`;
+
+exports[`profile/carbs (carbRatioLookup) characterization tests > multiple ratio entries with time-of-day lookup > selects last entry when time is past all offsets 1`] = `12`;
+
+exports[`profile/carbs (carbRatioLookup) characterization tests > multiple ratio entries with time-of-day lookup > selects the correct ratio for 12:00 UTC (720 min offset) 1`] = `8`;
+
+exports[`profile/carbs (carbRatioLookup) characterization tests > out-of-bounds ratio > accepts ratio exactly equal to 1 1`] = `1`;
+
+exports[`profile/carbs (carbRatioLookup) characterization tests > out-of-bounds ratio > accepts ratio exactly equal to 150 1`] = `150`;
+
+exports[`profile/carbs (carbRatioLookup) characterization tests > out-of-bounds ratio > returns undefined for ratio < 1 1`] = `undefined`;
+
+exports[`profile/carbs (carbRatioLookup) characterization tests > out-of-bounds ratio > returns undefined for ratio > 150 1`] = `undefined`;
+
+exports[`profile/carbs (carbRatioLookup) characterization tests > single ratio schedule > returns the single ratio value 1`] = `10`;
+
+exports[`profile/carbs (carbRatioLookup) characterization tests > undefined carbratio data > returns undefined when carbratio is undefined 1`] = `undefined`;
+
+exports[`profile/carbs (carbRatioLookup) characterization tests > undefined carbratio data > returns undefined when carbratio.schedule is undefined 1`] = `undefined`;
+
+exports[`profile/carbs (carbRatioLookup) characterization tests > unsupported units > returns undefined for unsupported carb_ratio units 1`] = `undefined`;

@@ -1,0 +1,133 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`meal/index (generate) characterization tests > custom profile > uses custom maxCOB to cap COB value 1`] = `
+{
+  "allDeviations": [
+    5,
+    5,
+    5,
+  ],
+  "bwCarbs": 0,
+  "bwFound": false,
+  "carbs": 200,
+  "currentDeviation": 5,
+  "journalCarbs": 0,
+  "lastCarbTime": 1736941800000,
+  "maxDeviation": 5,
+  "mealCOB": 10,
+  "minDeviation": 5,
+  "nsCarbs": 200,
+  "slopeFromMaxDeviation": -0,
+  "slopeFromMinDeviation": 0,
+}
+`;
+
+exports[`meal/index (generate) characterization tests > empty inputs > returns zero carbs and zero COB with empty history and carbs 1`] = `
+{
+  "allDeviations": [
+    0,
+    0,
+    0,
+  ],
+  "bwCarbs": 0,
+  "bwFound": false,
+  "carbs": 0,
+  "currentDeviation": 0,
+  "journalCarbs": 0,
+  "lastCarbTime": 0,
+  "maxDeviation": 0,
+  "mealCOB": 0,
+  "minDeviation": 0,
+  "nsCarbs": 0,
+  "slopeFromMaxDeviation": 0,
+  "slopeFromMinDeviation": 0,
+}
+`;
+
+exports[`meal/index (generate) characterization tests > flat glucose with carbs > shows low COB when glucose is flat despite carbs 1`] = `
+{
+  "allDeviations": [
+    0,
+    0,
+    0,
+  ],
+  "bwCarbs": 0,
+  "bwFound": false,
+  "carbs": 40,
+  "currentDeviation": 0,
+  "journalCarbs": 0,
+  "lastCarbTime": 1736940600000,
+  "maxDeviation": 0,
+  "mealCOB": 34,
+  "minDeviation": 0,
+  "nsCarbs": 40,
+  "slopeFromMaxDeviation": 0,
+  "slopeFromMinDeviation": 0,
+}
+`;
+
+exports[`meal/index (generate) characterization tests > mixed sources > processes NS carbs + pump boluses + BolusWizard entries 1`] = `
+{
+  "allDeviations": [
+    9,
+    8,
+    8,
+  ],
+  "bwCarbs": 35,
+  "bwFound": true,
+  "carbs": 120,
+  "currentDeviation": 5,
+  "journalCarbs": 0,
+  "lastCarbTime": 1736940600000,
+  "maxDeviation": 8.52,
+  "mealCOB": 114,
+  "minDeviation": 8.28,
+  "nsCarbs": 85,
+  "slopeFromMaxDeviation": -3.52,
+  "slopeFromMinDeviation": 0,
+}
+`;
+
+exports[`meal/index (generate) characterization tests > pump history bolus with NS carbs > processes bolus from pump history combined with NS carbs 1`] = `
+{
+  "allDeviations": [
+    8,
+    8,
+    7,
+  ],
+  "bwCarbs": 0,
+  "bwFound": false,
+  "carbs": 40,
+  "currentDeviation": 5,
+  "journalCarbs": 0,
+  "lastCarbTime": 1736940600000,
+  "maxDeviation": 8.12,
+  "mealCOB": 34,
+  "minDeviation": 7.12,
+  "nsCarbs": 40,
+  "slopeFromMaxDeviation": -3.12,
+  "slopeFromMinDeviation": 0,
+}
+`;
+
+exports[`meal/index (generate) characterization tests > simple NS carb entry > processes a single carb entry from carbs array 1`] = `
+{
+  "allDeviations": [
+    5,
+    5,
+    5,
+  ],
+  "bwCarbs": 0,
+  "bwFound": false,
+  "carbs": 45,
+  "currentDeviation": 5,
+  "journalCarbs": 0,
+  "lastCarbTime": 1736940600000,
+  "maxDeviation": 5,
+  "mealCOB": 39,
+  "minDeviation": 5,
+  "nsCarbs": 45,
+  "slopeFromMaxDeviation": -0,
+  "slopeFromMinDeviation": 0,
+}
+`;

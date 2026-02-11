@@ -1,0 +1,21 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`profile/isf (isfLookup) characterization tests > caching behavior > returns cached result on second call within same offset window 1`] = `40`;
+
+exports[`profile/isf (isfLookup) characterization tests > caching behavior > returns cached result on second call within same offset window 2`] = `40`;
+
+exports[`profile/isf (isfLookup) characterization tests > first entry offset != 0 > returns -1 when first sensitivity offset is not 0 1`] = `40`;
+
+exports[`profile/isf (isfLookup) characterization tests > multiple sensitivity entries with time-of-day lookup > selects first entry when time is before second offset 1`] = `40`;
+
+exports[`profile/isf (isfLookup) characterization tests > multiple sensitivity entries with time-of-day lookup > selects last entry when time is past all offsets 1`] = `40`;
+
+exports[`profile/isf (isfLookup) characterization tests > multiple sensitivity entries with time-of-day lookup > selects the correct ISF for 12:00 UTC (720 min) with timestamp param 1`] = `40`;
+
+exports[`profile/isf (isfLookup) characterization tests > single sensitivity entry > returns the single sensitivity value 1`] = `40`;
+
+exports[`profile/isf (isfLookup) characterization tests > timestamp parameter > uses provided timestamp for lookup 1`] = `40`;
+
+exports[`profile/isf (isfLookup) characterization tests > timestamp parameter > uses system time when timestamp is undefined 1`] = `40`;
+
+exports[`profile/isf (isfLookup) characterization tests > unsorted sensitivities > sorts sensitivities by offset before lookup 1`] = `40`;

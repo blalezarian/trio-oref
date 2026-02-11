@@ -133,5 +133,122 @@ describe('profile characterization tests', () => {
       }));
       expect(result).toMatchSnapshot();
     });
+
+    // -----------------------------------------------------------------------
+    // Model handling
+    // -----------------------------------------------------------------------
+    it('profile with model set stores model in output', () => {
+      const result = profileModule(makeInputs({
+        model: '723',
+      }));
+      expect(result).toMatchSnapshot();
+    });
+
+    it('profile without model does not set model property', () => {
+      const result = profileModule(makeInputs());
+      expect(result).toMatchSnapshot();
+    });
+
+    // -----------------------------------------------------------------------
+    // Zero basal validation
+    // -----------------------------------------------------------------------
+    it('returns -1 when current_basal is 0', () => {
+      // All rates are 0, which means basalLookup returns undefined (bad schedule)
+      // But current_basal === 0 triggers the guard
+      const result = profileModule(makeInputs({
+        basals: [
+          { minutes: 0, rate: 0 },
+        ],
+      }));
+      expect(result).toMatchSnapshot();
+    });
+
+    it('returns -1 when max_daily_basal is 0 (all rates are 0)', () => {
+      // Need at least one non-zero rate so basalLookup doesn't fail,
+      // but max_daily_basal looks at all entries.
+      // Actually, if current_basal is 0 it returns -1 first.
+      // We need a scenario where current_basal != 0 but max_daily_basal == 0.
+      // Since max_daily_basal is max of all rates, this only happens when all rates are 0,
+      // which also causes current_basal == 0. So this branch is hit in same scenario.
+      // Let's test with a single zero-rate entry.
+      const result = profileModule(makeInputs({
+        basals: [
+          { minutes: 0, rate: 0 },
+          { minutes: 720, rate: 0 },
+        ],
+      }));
+      expect(result).toMatchSnapshot();
+    });
+
+    // -----------------------------------------------------------------------
+    // max_basal < 0.1
+    // -----------------------------------------------------------------------
+    it('returns -1 when max_basal (settings.maxBasal) is < 0.1', () => {
+      const result = profileModule(makeInputs({
+        settings: { insulin_action_curve: 5, maxBasal: 0.05 },
+      }));
+      expect(result).toMatchSnapshot();
+    });
+
+    it('returns -1 when max_basal is 0', () => {
+      const result = profileModule(makeInputs({
+        settings: { insulin_action_curve: 5, maxBasal: 0 },
+      }));
+      expect(result).toMatchSnapshot();
+    });
+
+    // -----------------------------------------------------------------------
+    // ISF < 5
+    // -----------------------------------------------------------------------
+    it('returns -1 when ISF is < 5', () => {
+      const result = profileModule(makeInputs({
+        isf: {
+          sensitivities: [{ offset: 0, sensitivity: 3 }],
+        },
+      }));
+      expect(result).toMatchSnapshot();
+    });
+
+    it('returns -1 when ISF is exactly 0', () => {
+      const result = profileModule(makeInputs({
+        isf: {
+          sensitivities: [{ offset: 0, sensitivity: 0 }],
+        },
+      }));
+      expect(result).toMatchSnapshot();
+    });
+
+    it('returns -1 when ISF is -1 (bad first offset)', () => {
+      const result = profileModule(makeInputs({
+        isf: {
+          sensitivities: [{ offset: 60, sensitivity: 40 }],
+        },
+      }));
+      expect(result).toMatchSnapshot();
+    });
+
+    // -----------------------------------------------------------------------
+    // Missing carbratio
+    // -----------------------------------------------------------------------
+    it('generates profile without carb_ratio when carbratio is missing', () => {
+      const inputs = makeInputs();
+      delete (inputs as any).carbratio;
+      const result = profileModule(inputs);
+      expect(result).toMatchSnapshot();
+    });
+
+    // -----------------------------------------------------------------------
+    // opts parameter with type property
+    // -----------------------------------------------------------------------
+    it('uses opts as profile when opts has type property', () => {
+      const customOpts = {
+        type: 'custom',
+        max_iob: 10,
+        max_daily_safety_multiplier: 3,
+        current_basal_safety_multiplier: 4,
+      };
+      const result = profileModule(makeInputs(), customOpts);
+      expect(result).toMatchSnapshot();
+    });
   });
 });
