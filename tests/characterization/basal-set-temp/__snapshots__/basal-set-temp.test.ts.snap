@@ -1,0 +1,73 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`basal-set-temp characterization tests > getMaxSafeBasal > NaN safety multiplier defaults to 3/4 1`] = `3.5`;
+
+exports[`basal-set-temp characterization tests > getMaxSafeBasal > current basal multiplier is the limiting factor 1`] = `1.2`;
+
+exports[`basal-set-temp characterization tests > getMaxSafeBasal > daily safety multiplier is the limiting factor 1`] = `1.5`;
+
+exports[`basal-set-temp characterization tests > getMaxSafeBasal > max_basal is the limiting factor 1`] = `2`;
+
+exports[`basal-set-temp characterization tests > getMaxSafeBasal > null safety multiplier defaults to 3/4 1`] = `3.5`;
+
+exports[`basal-set-temp characterization tests > getMaxSafeBasal > standard profile 1`] = `3.5`;
+
+exports[`basal-set-temp characterization tests > setTempBasal > neutral temp with skip_neutral_temps and active temp — cancels 1`] = `
+{
+  "duration": 0,
+  "rate": 0,
+  "reason": "Suggested rate is same as profile rate, a temp basal is active, canceling current temp",
+}
+`;
+
+exports[`basal-set-temp characterization tests > setTempBasal > neutral temp with skip_neutral_temps — does nothing 1`] = `
+{
+  "reason": "Suggested rate is same as profile rate, no temp basal is active, doing nothing",
+}
+`;
+
+exports[`basal-set-temp characterization tests > setTempBasal > neutral temp — rate equals current basal 1`] = `
+{
+  "duration": 30,
+  "rate": 0.9,
+  "reason": "Setting neutral temp basal of 0.9U/hr",
+}
+`;
+
+exports[`basal-set-temp characterization tests > setTempBasal > rate clamped to maxSafeBasal when too high 1`] = `
+{
+  "duration": 30,
+  "rate": 2,
+  "reason": "",
+}
+`;
+
+exports[`basal-set-temp characterization tests > setTempBasal > rate clamped to zero when negative 1`] = `
+{
+  "duration": 30,
+  "rate": 0,
+  "reason": "",
+}
+`;
+
+exports[`basal-set-temp characterization tests > setTempBasal > set high temp when no temp running 1`] = `
+{
+  "duration": 30,
+  "rate": 2,
+  "reason": "",
+}
+`;
+
+exports[`basal-set-temp characterization tests > setTempBasal > set zero temp when no temp running 1`] = `
+{
+  "duration": 30,
+  "rate": 0,
+  "reason": "",
+}
+`;
+
+exports[`basal-set-temp characterization tests > setTempBasal > similar temp already running — no change needed 1`] = `
+{
+  "reason": " 25m left and 1.9 ~ req 2U/hr: no temp required",
+}
+`;

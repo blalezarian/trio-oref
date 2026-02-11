@@ -1,0 +1,209 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`glucose-get-last characterization tests > edge cases > low BG values 1`] = `
+{
+  "date": 1736942400000,
+  "delta": -2,
+  "device": "fakecgm",
+  "glucose": 60,
+  "last_cal": 0,
+  "long_avgdelta": -2.49,
+  "noise": 1,
+  "short_avgdelta": -2.39,
+}
+`;
+
+exports[`glucose-get-last characterization tests > edge cases > single data point 1`] = `
+{
+  "date": 1736942400000,
+  "delta": 0,
+  "device": "fakecgm",
+  "glucose": 120,
+  "last_cal": 0,
+  "long_avgdelta": 0,
+  "noise": 1,
+  "short_avgdelta": 0,
+}
+`;
+
+exports[`glucose-get-last characterization tests > edge cases > two data points 1`] = `
+{
+  "date": 1736942400000,
+  "delta": 5,
+  "device": "fakecgm",
+  "glucose": 120,
+  "last_cal": 0,
+  "long_avgdelta": 0,
+  "noise": 1,
+  "short_avgdelta": 5,
+}
+`;
+
+exports[`glucose-get-last characterization tests > edge cases > very high BG 1`] = `
+{
+  "date": 1736942400000,
+  "delta": 10,
+  "device": "fakecgm",
+  "glucose": 350,
+  "last_cal": 0,
+  "long_avgdelta": 10,
+  "noise": 1,
+  "short_avgdelta": 10,
+}
+`;
+
+exports[`glucose-get-last characterization tests > edge cases > with calibration record 1`] = `
+{
+  "date": 1736942400000,
+  "delta": 2,
+  "device": "fakecgm",
+  "glucose": 120,
+  "last_cal": 0,
+  "long_avgdelta": 2,
+  "noise": 1,
+  "short_avgdelta": 2,
+}
+`;
+
+exports[`glucose-get-last characterization tests > edge cases > with sgv field instead of glucose 1`] = `
+{
+  "date": 1736942400000,
+  "delta": 2,
+  "device": "fakecgm",
+  "glucose": 120,
+  "last_cal": 0,
+  "long_avgdelta": 2,
+  "noise": 1,
+  "short_avgdelta": 2,
+}
+`;
+
+exports[`glucose-get-last characterization tests > falling BG > fast fall (-10/5m) 1`] = `
+{
+  "date": 1736942400000,
+  "delta": -10,
+  "device": "fakecgm",
+  "glucose": 100,
+  "last_cal": 0,
+  "long_avgdelta": -10,
+  "noise": 1,
+  "short_avgdelta": -10,
+}
+`;
+
+exports[`glucose-get-last characterization tests > falling BG > moderate fall (-5/5m) 1`] = `
+{
+  "date": 1736942400000,
+  "delta": -5,
+  "device": "fakecgm",
+  "glucose": 100,
+  "last_cal": 0,
+  "long_avgdelta": -5,
+  "noise": 1,
+  "short_avgdelta": -5,
+}
+`;
+
+exports[`glucose-get-last characterization tests > falling BG > slow fall (-2/5m) 1`] = `
+{
+  "date": 1736942400000,
+  "delta": -2,
+  "device": "fakecgm",
+  "glucose": 100,
+  "last_cal": 0,
+  "long_avgdelta": -2,
+  "noise": 1,
+  "short_avgdelta": -2,
+}
+`;
+
+exports[`glucose-get-last characterization tests > mixed trends > recent fall but long-term rise 1`] = `
+{
+  "date": 1736942400000,
+  "delta": -5,
+  "device": "fakecgm",
+  "glucose": 120,
+  "last_cal": 0,
+  "long_avgdelta": 0.48,
+  "noise": 1,
+  "short_avgdelta": -4.11,
+}
+`;
+
+exports[`glucose-get-last characterization tests > mixed trends > recent rise but long-term fall 1`] = `
+{
+  "date": 1736942400000,
+  "delta": 5,
+  "device": "fakecgm",
+  "glucose": 130,
+  "last_cal": 0,
+  "long_avgdelta": 0.54,
+  "noise": 1,
+  "short_avgdelta": 4.67,
+}
+`;
+
+exports[`glucose-get-last characterization tests > rising BG > fast rise (+10/5m) 1`] = `
+{
+  "date": 1736942400000,
+  "delta": 10,
+  "device": "fakecgm",
+  "glucose": 200,
+  "last_cal": 0,
+  "long_avgdelta": 10,
+  "noise": 1,
+  "short_avgdelta": 10,
+}
+`;
+
+exports[`glucose-get-last characterization tests > rising BG > moderate rise (+5/5m) 1`] = `
+{
+  "date": 1736942400000,
+  "delta": 5,
+  "device": "fakecgm",
+  "glucose": 150,
+  "last_cal": 0,
+  "long_avgdelta": 5,
+  "noise": 1,
+  "short_avgdelta": 5,
+}
+`;
+
+exports[`glucose-get-last characterization tests > rising BG > slow rise (+2/5m) 1`] = `
+{
+  "date": 1736942400000,
+  "delta": 2,
+  "device": "fakecgm",
+  "glucose": 120,
+  "last_cal": 0,
+  "long_avgdelta": 2,
+  "noise": 1,
+  "short_avgdelta": 2,
+}
+`;
+
+exports[`glucose-get-last characterization tests > steady BG > flat at 120 mg/dL 1`] = `
+{
+  "date": 1736942400000,
+  "delta": 0,
+  "device": "fakecgm",
+  "glucose": 120,
+  "last_cal": 0,
+  "long_avgdelta": 0,
+  "noise": 1,
+  "short_avgdelta": 0,
+}
+`;
+
+exports[`glucose-get-last characterization tests > steady BG > flat at 180 mg/dL 1`] = `
+{
+  "date": 1736942400000,
+  "delta": 0,
+  "device": "fakecgm",
+  "glucose": 180,
+  "last_cal": 0,
+  "long_avgdelta": 0,
+  "noise": 1,
+  "short_avgdelta": 0,
+}
+`;

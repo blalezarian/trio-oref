@@ -1,0 +1,278 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`iob/calculate characterization tests > bilinear curve > 1U bolus at 0m ago (DIA=3h) 1`] = `
+{
+  "activityContrib": 0,
+  "iobContrib": 1,
+}
+`;
+
+exports[`iob/calculate characterization tests > bilinear curve > 1U bolus at 15m ago (DIA=3h) 1`] = `
+{
+  "activityContrib": 0.0022222222222222222,
+  "iobContrib": 0.977776,
+}
+`;
+
+exports[`iob/calculate characterization tests > bilinear curve > 1U bolus at 30m ago (DIA=3h) 1`] = `
+{
+  "activityContrib": 0.0044444444444444444,
+  "iobContrib": 0.922216,
+}
+`;
+
+exports[`iob/calculate characterization tests > bilinear curve > 1U bolus at 45m ago (DIA=3h) 1`] = `
+{
+  "activityContrib": 0.006666666666666666,
+  "iobContrib": 0.8333200000000001,
+}
+`;
+
+exports[`iob/calculate characterization tests > bilinear curve > 1U bolus at 60m ago (DIA=3h) 1`] = `
+{
+  "activityContrib": 0.008888888888888889,
+  "iobContrib": 0.7110879999999999,
+}
+`;
+
+exports[`iob/calculate characterization tests > bilinear curve > 1U bolus at 60m ago with DIA=5h 1`] = `
+{
+  "activityContrib": 0.0032,
+  "iobContrib": 0.89065792,
+}
+`;
+
+exports[`iob/calculate characterization tests > bilinear curve > 1U bolus at 75m ago (DIA=3h) 1`] = `
+{
+  "activityContrib": 0.011111111111111112,
+  "iobContrib": 0.55556,
+}
+`;
+
+exports[`iob/calculate characterization tests > bilinear curve > 1U bolus at 90m ago (DIA=3h) 1`] = `
+{
+  "activityContrib": 0.009523809523809525,
+  "iobContrib": 0.404768,
+}
+`;
+
+exports[`iob/calculate characterization tests > bilinear curve > 1U bolus at 120m ago (DIA=3h) 1`] = `
+{
+  "activityContrib": 0.006349206349206349,
+  "iobContrib": 0.17462600000000006,
+}
+`;
+
+exports[`iob/calculate characterization tests > bilinear curve > 1U bolus at 150m ago (DIA=3h) 1`] = `
+{
+  "activityContrib": 0.0031746031746031755,
+  "iobContrib": 0.039739999999999887,
+}
+`;
+
+exports[`iob/calculate characterization tests > bilinear curve > 1U bolus at 180m ago (DIA=3h) 1`] = `
+{
+  "activityContrib": 0,
+  "iobContrib": 0,
+}
+`;
+
+exports[`iob/calculate characterization tests > custom peak time > rapid-acting with custom peak 50m 1`] = `
+{
+  "activityContrib": 0.007907646930920114,
+  "iobContrib": 0.6318025861644805,
+}
+`;
+
+exports[`iob/calculate characterization tests > custom peak time > rapid-acting with custom peak 120m 1`] = `
+{
+  "activityContrib": 0.004038335236554084,
+  "iobContrib": 0.8608485007723026,
+}
+`;
+
+exports[`iob/calculate characterization tests > custom peak time > ultra-rapid with custom peak 35m 1`] = `
+{
+  "activityContrib": 0.009108362675806937,
+  "iobContrib": 0.4705133995340688,
+}
+`;
+
+exports[`iob/calculate characterization tests > edge cases > no insulin property 1`] = `{}`;
+
+exports[`iob/calculate characterization tests > edge cases > treatment in the future 1`] = `
+{
+  "activityContrib": -0.0024014208189625753,
+  "iobContrib": 0.9884644150603206,
+}
+`;
+
+exports[`iob/calculate characterization tests > edge cases > very old treatment (past DIA) 1`] = `
+{
+  "activityContrib": 0,
+  "iobContrib": 0,
+}
+`;
+
+exports[`iob/calculate characterization tests > edge cases > zero insulin treatment 1`] = `{}`;
+
+exports[`iob/calculate characterization tests > rapid-acting curve > 0.5U bolus at 30m ago 1`] = `
+{
+  "activityContrib": 0.0021985977794076266,
+  "iobContrib": 0.46248509281574973,
+}
+`;
+
+exports[`iob/calculate characterization tests > rapid-acting curve > 1U bolus at 0m ago 1`] = `
+{
+  "activityContrib": 0,
+  "iobContrib": 1,
+}
+`;
+
+exports[`iob/calculate characterization tests > rapid-acting curve > 1U bolus at 5m ago 1`] = `
+{
+  "activityContrib": 0.0009999831151973248,
+  "iobContrib": 0.9974481484496988,
+}
+`;
+
+exports[`iob/calculate characterization tests > rapid-acting curve > 1U bolus at 15m ago 1`] = `
+{
+  "activityContrib": 0.002651751430246632,
+  "iobContrib": 0.9788245454057859,
+}
+`;
+
+exports[`iob/calculate characterization tests > rapid-acting curve > 1U bolus at 30m ago 1`] = `
+{
+  "activityContrib": 0.004397195558815253,
+  "iobContrib": 0.9249701856314995,
+}
+`;
+
+exports[`iob/calculate characterization tests > rapid-acting curve > 1U bolus at 45m ago 1`] = `
+{
+  "activityContrib": 0.005451769994893109,
+  "iobContrib": 0.850355814600309,
+}
+`;
+
+exports[`iob/calculate characterization tests > rapid-acting curve > 1U bolus at 60m ago 1`] = `
+{
+  "activityContrib": 0.005987443000582721,
+  "iobContrib": 0.7640057035577161,
+}
+`;
+
+exports[`iob/calculate characterization tests > rapid-acting curve > 1U bolus at 75m ago 1`] = `
+{
+  "activityContrib": 0.006140684019609894,
+  "iobContrib": 0.6726398904581075,
+}
+`;
+
+exports[`iob/calculate characterization tests > rapid-acting curve > 1U bolus at 90m ago 1`] = `
+{
+  "activityContrib": 0.006019062352392295,
+  "iobContrib": 0.581155607346601,
+}
+`;
+
+exports[`iob/calculate characterization tests > rapid-acting curve > 1U bolus at 120m ago 1`] = `
+{
+  "activityContrib": 0.00526876620123548,
+  "iobContrib": 0.41057994214803417,
+}
+`;
+
+exports[`iob/calculate characterization tests > rapid-acting curve > 1U bolus at 150m ago 1`] = `
+{
+  "activityContrib": 0.0042036430643167845,
+  "iobContrib": 0.26811268376309616,
+}
+`;
+
+exports[`iob/calculate characterization tests > rapid-acting curve > 1U bolus at 180m ago 1`] = `
+{
+  "activityContrib": 0.003090901773437026,
+  "iobContrib": 0.15879641537283806,
+}
+`;
+
+exports[`iob/calculate characterization tests > rapid-acting curve > 1U bolus at 240m ago 1`] = `
+{
+  "activityContrib": 0.0012088438935091224,
+  "iobContrib": 0.032924868796628814,
+}
+`;
+
+exports[`iob/calculate characterization tests > rapid-acting curve > 1U bolus at 300m ago 1`] = `
+{
+  "activityContrib": 0,
+  "iobContrib": 0,
+}
+`;
+
+exports[`iob/calculate characterization tests > rapid-acting curve > 2U bolus at 60m ago 1`] = `
+{
+  "activityContrib": 0.011974886001165442,
+  "iobContrib": 1.5280114071154323,
+}
+`;
+
+exports[`iob/calculate characterization tests > ultra-rapid curve > 1U bolus at 0m ago 1`] = `
+{
+  "activityContrib": 0,
+  "iobContrib": 1,
+}
+`;
+
+exports[`iob/calculate characterization tests > ultra-rapid curve > 1U bolus at 15m ago 1`] = `
+{
+  "activityContrib": 0.004179599881938281,
+  "iobContrib": 0.9657090553900602,
+}
+`;
+
+exports[`iob/calculate characterization tests > ultra-rapid curve > 1U bolus at 30m ago 1`] = `
+{
+  "activityContrib": 0.0064095732707394925,
+  "iobContrib": 0.8843166919212472,
+}
+`;
+
+exports[`iob/calculate characterization tests > ultra-rapid curve > 1U bolus at 55m ago 1`] = `
+{
+  "activityContrib": 0.007495179744488486,
+  "iobContrib": 0.7053625074116086,
+}
+`;
+
+exports[`iob/calculate characterization tests > ultra-rapid curve > 1U bolus at 75m ago 1`] = `
+{
+  "activityContrib": 0.007079855674747175,
+  "iobContrib": 0.5583902561202713,
+}
+`;
+
+exports[`iob/calculate characterization tests > ultra-rapid curve > 1U bolus at 120m ago 1`] = `
+{
+  "activityContrib": 0.004804751152084165,
+  "iobContrib": 0.2882542500311185,
+}
+`;
+
+exports[`iob/calculate characterization tests > ultra-rapid curve > 1U bolus at 180m ago 1`] = `
+{
+  "activityContrib": 0.002061830375294394,
+  "iobContrib": 0.0883831674425879,
+}
+`;
+
+exports[`iob/calculate characterization tests > ultra-rapid curve > 1U bolus at 300m ago 1`] = `
+{
+  "activityContrib": 0,
+  "iobContrib": 0,
+}
+`;
