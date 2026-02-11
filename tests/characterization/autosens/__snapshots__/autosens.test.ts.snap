@@ -1,0 +1,141 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`determine-basal/autosens (detectSensitivity) characterization tests > UAM exclusion > UAM detected in non-retrospective mode: deviations excluded 1`] = `
+{
+  "newisf": 40,
+  "ratio": 1,
+}
+`;
+
+exports[`determine-basal/autosens (detectSensitivity) characterization tests > core sensitivity detection > falling BG (negative deviations) indicates sensitivity 1`] = `
+{
+  "newisf": 33,
+  "ratio": 1.2,
+}
+`;
+
+exports[`determine-basal/autosens (detectSensitivity) characterization tests > core sensitivity detection > flat BG ~120 with no insulin and no meals returns ratio near 1.0 1`] = `
+{
+  "newisf": 40,
+  "ratio": 1,
+}
+`;
+
+exports[`determine-basal/autosens (detectSensitivity) characterization tests > core sensitivity detection > rising BG (positive deviations) indicates resistance 1`] = `
+{
+  "newisf": 57,
+  "ratio": 0.7,
+}
+`;
+
+exports[`determine-basal/autosens (detectSensitivity) characterization tests > exercise mode / temp targets > exercise_mode with high temp target adds negative deviations 1`] = `
+{
+  "newisf": 40,
+  "ratio": 1,
+}
+`;
+
+exports[`determine-basal/autosens (detectSensitivity) characterization tests > exercise mode / temp targets > temp target with duration 0 (cancelled) returns 0 from tempTargetRunning 1`] = `
+{
+  "newisf": 40,
+  "ratio": 1,
+}
+`;
+
+exports[`determine-basal/autosens (detectSensitivity) characterization tests > glucose data edge cases > BG < 39 entries are skipped 1`] = `
+{
+  "newisf": 40,
+  "ratio": 1,
+}
+`;
+
+exports[`determine-basal/autosens (detectSensitivity) characterization tests > glucose data edge cases > BG < 80 zeros positive deviations 1`] = `
+{
+  "newisf": 40,
+  "ratio": 1,
+}
+`;
+
+exports[`determine-basal/autosens (detectSensitivity) characterization tests > glucose data edge cases > display_time field format instead of dateString 1`] = `
+{
+  "newisf": 40,
+  "ratio": 1,
+}
+`;
+
+exports[`determine-basal/autosens (detectSensitivity) characterization tests > glucose data edge cases > sgv field compat: entries with sgv instead of glucose 1`] = `
+{
+  "newisf": 40,
+  "ratio": 1,
+}
+`;
+
+exports[`determine-basal/autosens (detectSensitivity) characterization tests > lookback and padding > custom deviations lookback of 48 (4h) 1`] = `
+{
+  "newisf": 40,
+  "ratio": 1,
+}
+`;
+
+exports[`determine-basal/autosens (detectSensitivity) characterization tests > lookback and padding > few data points get zero-padded 1`] = `
+{
+  "newisf": 40,
+  "ratio": 1,
+}
+`;
+
+exports[`determine-basal/autosens (detectSensitivity) characterization tests > meal exclusion > carbs present: meal deviations are excluded from autosens 1`] = `
+{
+  "newisf": 57,
+  "ratio": 0.7,
+}
+`;
+
+exports[`determine-basal/autosens (detectSensitivity) characterization tests > ratio clamping > very strong resistance is clamped to autosens_max (1.2) 1`] = `
+{
+  "newisf": 57,
+  "ratio": 0.7,
+}
+`;
+
+exports[`determine-basal/autosens (detectSensitivity) characterization tests > ratio clamping > very strong sensitivity is clamped to autosens_min (0.7) 1`] = `
+{
+  "newisf": 33,
+  "ratio": 1.2,
+}
+`;
+
+exports[`determine-basal/autosens (detectSensitivity) characterization tests > retrospective mode > retrospective: false uses current time for lookback 1`] = `
+{
+  "newisf": 40,
+  "ratio": 1,
+}
+`;
+
+exports[`determine-basal/autosens (detectSensitivity) characterization tests > retrospective mode > retrospective: true uses glucose_data[0].date for 24h lookback 1`] = `
+{
+  "newisf": 40,
+  "ratio": 1,
+}
+`;
+
+exports[`determine-basal/autosens (detectSensitivity) characterization tests > site change / Rewind handling > rewind_resets_autosens with Rewind event in history 1`] = `
+{
+  "newisf": 40,
+  "ratio": 1,
+}
+`;
+
+exports[`determine-basal/autosens (detectSensitivity) characterization tests > site change / Rewind handling > rewind_resets_autosens without Rewind event falls through to 24h default 1`] = `
+{
+  "newisf": 40,
+  "ratio": 1,
+}
+`;
+
+exports[`determine-basal/autosens (detectSensitivity) characterization tests > xDrip_started_at handling > entries with xDrip_started_at are skipped 1`] = `
+{
+  "newisf": 40,
+  "ratio": 1,
+}
+`;
