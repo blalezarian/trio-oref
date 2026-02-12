@@ -1,4 +1,5 @@
 import endsWith from 'lodash/endsWith';
+import { BASAL_SCALE_DEFAULT, BASAL_SCALE_MEDTRONIC } from './constants';
 
 interface RoundBasalProfile {
   model?: string;
@@ -12,7 +13,7 @@ var round_basal = function round_basal(basal: number, profile?: RoundBasalProfil
             0.1u for 10 < x
       To round numbers nicely for the pump, use a scale factor of (1 / increment). */
 
-    var lowest_rate_scale = 20;
+    var lowest_rate_scale = BASAL_SCALE_DEFAULT;
 
     // Has profile even been passed in?
     if (typeof profile !== 'undefined')
@@ -22,7 +23,7 @@ var round_basal = function round_basal(basal: number, profile?: RoundBasalProfil
         {
             if (endsWith(profile.model, "54") || endsWith(profile.model, "23"))
             {
-                lowest_rate_scale = 40;
+                lowest_rate_scale = BASAL_SCALE_MEDTRONIC;
             }
         }
     }

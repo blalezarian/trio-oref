@@ -2,6 +2,18 @@
 // Only used by bin/oref0-calculate-glucose-noise.js CLI tool.
 
 import moment from 'moment';
+import {
+    NOISE_MAX_RECORDS,
+    NOISE_MIN_RECORDS,
+    NOISE_MIN_VALID_GLUCOSE,
+    MAX_VALID_GLUCOSE_MGDL,
+    MAX_DELTA_FOR_NOISE,
+    NOISE_CLEAN_THRESHOLD,
+    NOISE_LIGHT_THRESHOLD,
+    NOISE_MEDIUM_THRESHOLD,
+    TREND_MAX_MINUTES,
+    MS_PER_MINUTE,
+} from './constants';
 
 interface GlucoseHistEntry {
   glucose: number;
@@ -128,22 +140,22 @@ const calcNoise = (sgvArr: NoisePoint[]): number => {
 };
 
 calcStatsExports.calcSensorNoise = (calcGlucose: CalcGlucoseFn, glucoseHist: GlucoseHistEntry[], lastCal: CalibrationData | null, sgv: SgvEntry | null): number => {
-  const MAXRECORDS = 8;
-  const MINRECORDS = 4;
+  const MAXRECORDS = NOISE_MAX_RECORDS;
+  const MINRECORDS = NOISE_MIN_RECORDS;
   const sgvArr: NoisePoint[] = [];
 
   const numRecords = Math.max(glucoseHist.length - MAXRECORDS, 0);
 
   for (let i = numRecords; i < glucoseHist.length; i += 1) {
     // Only use values that are > 30 to filter out invalid values.
-    if (lastCal && (glucoseHist[i].glucose > 30) && ('unfiltered' in glucoseHist[i]) && (glucoseHist[i].unfiltered! > 100)) {
+    if (lastCal && (glucoseHist[i].glucose > NOISE_MIN_VALID_GLUCOSE) && ('unfiltered' in glucoseHist[i]) && (glucoseHist[i].unfiltered! > 100)) {
       // use the unfiltered data with the most recent calculated calibration value
       // this will provide a noise calculation that is independent of calibration jumps
       sgvArr.push({
         glucose: calcGlucose!(glucoseHist[i], lastCal),
         readDate: glucoseHist[i].readDateMills,
       });
-    } else if (glucoseHist[i].glucose > 30) {
+    } else if (glucoseHist[i].glucose > NOISE_MIN_VALID_GLUCOSE) {
       // if raw data isn't available, use the transmitter calibrated glucose
       sgvArr.push({
         glucose: glucoseHist[i].glucose,
@@ -187,7 +199,7 @@ calcStatsExports.calcTrend = (calcGlucose: CalcGlucoseFn, glucoseHist: GlucoseHi
     sgvHist = [];
 
     // delete any deltas > 16 minutes and any that don't have an unfiltered value (backfill records)
-    let minDate: number = currentTime.valueOf() - 16 * 60 * 1000;
+    let minDate: number = currentTime.valueOf() - TREND_MAX_MINUTES * MS_PER_MINUTE;
     for (let i = 0; i < glucoseHist.length; i += 1) {
       if (lastCal && (glucoseHist[i].readDateMills >= minDate) && ('unfiltered' in glucoseHist[i]) && (glucoseHist[i].unfiltered! > 100)) {
         sgvHist.push({
@@ -245,31 +257,31 @@ calcStatsExports.calcNSNoise = (noise: number, glucoseHist: Array<{ glucose: num
   if (glucoseHist.length > 1) {
     const priorSGV = glucoseHist[glucoseHist.length - 2];
 
-    if ((currSGV.glucose > 30) && (priorSGV.glucose > 30)) {
+    if ((currSGV.glucose > NOISE_MIN_VALID_GLUCOSE) && (priorSGV.glucose > NOISE_MIN_VALID_GLUCOSE)) {
       deltaSGV = currSGV.glucose - priorSGV.glucose;
     }
   }
 
   if (!currSGV) {
     nsNoise = 1;
-  } else if (currSGV.glucose > 400) {
+  } else if (currSGV.glucose > MAX_VALID_GLUCOSE_MGDL) {
     log(`Glucose ${currSGV.glucose} > 400 - setting noise level Heavy`);
     nsNoise = 4;
   } else if (currSGV.glucose < 40) {
     log(`Glucose ${currSGV.glucose} < 40 - setting noise level Light`);
     nsNoise = 2;
-  } else if (Math.abs(deltaSGV) > 30) {
+  } else if (Math.abs(deltaSGV) > MAX_DELTA_FOR_NOISE) {
     // This is OK even during a calibration jump because we don't want OpenAPS to be too
     // agressive with the "false" trend implied by a large positive jump
     log(`Glucose change ${deltaSGV} out of range [-30, 30] - setting noise level Heavy`);
     nsNoise = 4;
-  } else if (noise < 0.35) {
+  } else if (noise < NOISE_CLEAN_THRESHOLD) {
     nsNoise = 1; // Clean
-  } else if (noise < 0.5) {
+  } else if (noise < NOISE_LIGHT_THRESHOLD) {
     nsNoise = 2; // Light
-  } else if (noise < 0.7) {
+  } else if (noise < NOISE_MEDIUM_THRESHOLD) {
     nsNoise = 3; // Medium
-  } else if (noise >= 0.7) {
+  } else if (noise >= NOISE_MEDIUM_THRESHOLD) {
     nsNoise = 4; // Heavy
   }
 

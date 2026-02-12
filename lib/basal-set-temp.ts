@@ -1,6 +1,11 @@
 'use strict';
 
 import round_basal from './round-basal';
+import {
+    DEFAULT_MAX_DAILY_SAFETY_MULTIPLIER,
+    DEFAULT_CURRENT_BASAL_SAFETY_MULTIPLIER,
+    MAX_TEMP_BASAL_DURATION_MINUTES,
+} from './constants';
 
 interface TempBasalProfile {
   current_basal: number;
@@ -43,8 +48,8 @@ var tempBasalFunctions = {} as TempBasalFunctionsInterface;
 
 tempBasalFunctions.getMaxSafeBasal = function getMaxSafeBasal(profile: TempBasalProfile): number {
 
-    var max_daily_safety_multiplier = (isNaN(profile.max_daily_safety_multiplier as number) || profile.max_daily_safety_multiplier === null) ? 3 : profile.max_daily_safety_multiplier;
-    var current_basal_safety_multiplier = (isNaN(profile.current_basal_safety_multiplier as number) || profile.current_basal_safety_multiplier === null) ? 4 : profile.current_basal_safety_multiplier;
+    var max_daily_safety_multiplier = (isNaN(profile.max_daily_safety_multiplier as number) || profile.max_daily_safety_multiplier === null) ? DEFAULT_MAX_DAILY_SAFETY_MULTIPLIER : profile.max_daily_safety_multiplier;
+    var current_basal_safety_multiplier = (isNaN(profile.current_basal_safety_multiplier as number) || profile.current_basal_safety_multiplier === null) ? DEFAULT_CURRENT_BASAL_SAFETY_MULTIPLIER : profile.current_basal_safety_multiplier;
 
     return Math.min(profile.max_basal, max_daily_safety_multiplier * profile.max_daily_basal, current_basal_safety_multiplier * profile.current_basal);
 };
@@ -61,7 +66,7 @@ tempBasalFunctions.setTempBasal = function setTempBasal(rate: number, duration: 
     }
 
     var suggestedRate = round_basal(rate, profile);
-    if (typeof(currenttemp) !== 'undefined' && typeof(currenttemp.duration) !== 'undefined' && typeof(currenttemp.rate) !== 'undefined' && currenttemp.duration > (duration-10) && currenttemp.duration <= 120 && suggestedRate <= currenttemp.rate * 1.2 && suggestedRate >= currenttemp.rate * 0.8 && duration > 0 ) {
+    if (typeof(currenttemp) !== 'undefined' && typeof(currenttemp.duration) !== 'undefined' && typeof(currenttemp.rate) !== 'undefined' && currenttemp.duration > (duration-10) && currenttemp.duration <= MAX_TEMP_BASAL_DURATION_MINUTES && suggestedRate <= currenttemp.rate * 1.2 && suggestedRate >= currenttemp.rate * 0.8 && duration > 0 ) {
         rT.reason += " "+currenttemp.duration+"m left and " + currenttemp.rate + " ~ req " + suggestedRate + "U/hr: no temp required";
         return rT;
     }

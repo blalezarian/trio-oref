@@ -1,4 +1,5 @@
 import type { GlucoseEntry, GlucoseStatus } from './types/index';
+import { MS_PER_MINUTE, PRED_INTERVAL_MINUTES } from './constants';
 
 function getDateFromEntry(entry: GlucoseEntry): number {
   return entry.date || Date.parse(entry.display_time as string) || Date.parse(entry.dateString as string);
@@ -37,10 +38,10 @@ var getLastGlucose = function (data: GlucoseEntry[]): GlucoseStatus {
             var avgdelta = 0;
             var minutesago: number;
             if (typeof then_date !== 'undefined' && typeof now_date !== 'undefined') {
-                minutesago = Math.round( (now_date - then_date) / (1000 * 60) );
+                minutesago = Math.round( (now_date - then_date) / MS_PER_MINUTE );
                 // multiply by 5 to get the same units as delta, i.e. mg/dL/5m
                 change = (now.glucose as number) - (then.glucose as number);
-                avgdelta = change/minutesago * 5;
+                avgdelta = change/minutesago * PRED_INTERVAL_MINUTES;
             } else { console.error("Error: date field not found: cannot calculate avgdelta"); }
             //if (i < 5) {
                 //console.error(then.glucose, minutesago, avgdelta);
