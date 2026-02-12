@@ -9,6 +9,7 @@ import {
     MS_PER_MINUTE,
     MS_PER_5_MIN,
     PRED_INTERVAL_MINUTES,
+    BUCKETING_MERGE_THRESHOLD_MIN,
 } from '../constants';
 
 interface CarbAbsorptionInputs {
@@ -39,9 +40,6 @@ const CI_LOOKBACK_MS = 45 * MS_PER_MINUTE;
 const MAX_INTERPOLATION_GAP_MINUTES = 240;
 /** Elapsed-minutes gap above which BG data is interpolated */
 const BUCKETING_GAP_THRESHOLD_MIN = 8;
-/** Elapsed-minutes gap at or below which BG readings are merged into same bucket */
-const BUCKETING_MERGE_THRESHOLD_MIN = 2;
-
 function detectCarbAbsorption(inputs: CarbAbsorptionInputs): CarbAbsorptionResult {
 
     var profile: Record<string, unknown>;

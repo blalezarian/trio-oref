@@ -5,6 +5,14 @@ import calculate from './calculate';
 import sum from './total';
 
 import type { PumpHistoryEvent, Treatment, IOBContribution, InsulinCurve } from '../types/index';
+import { PRED_INTERVAL_MINUTES, MS_PER_MINUTE } from '../constants';
+
+/** Lookahead minutes for zero-temp IOB projection */
+const ZERO_TEMP_LOOKAHEAD_MINUTES = 240;
+/** IOB prediction horizon: 4 hours at 5-minute intervals */
+const IOB_PREDICTION_HORIZON_MINUTES = 4 * 60;
+/** Rounding scale for 2 decimal places */
+const ROUND_SCALE_2DP = 100;
 
 interface IobIndexBasalProfileEntry {
     i: number;
@@ -78,7 +86,7 @@ function generate (inputs: IobIndexInputs, currentIOBOnly?: boolean, treatments?
     if (!treatments) {
         treatments = find_insulin(inputs);
         // calculate IOB based on continuous future zero temping as well
-        treatmentsWithZeroTemp = find_insulin(inputs, 240);
+        treatmentsWithZeroTemp = find_insulin(inputs, ZERO_TEMP_LOOKAHEAD_MINUTES);
     } else {
         treatmentsWithZeroTemp = [];
     }
@@ -116,7 +124,7 @@ function generate (inputs: IobIndexInputs, currentIOBOnly?: boolean, treatments?
         } else if (typeof(treatment.rate) === 'number' && treatment.duration ) {
             if ( treatment.date > lastTemp.date ) {
                 lastTemp = treatment;
-                lastTemp.duration = Math.round(lastTemp.duration!*100)/100;
+                lastTemp.duration = Math.round(lastTemp.duration!*ROUND_SCALE_2DP)/ROUND_SCALE_2DP;
             }
 
             //console.error(treatment.rate, treatment.duration, treatment.started_at,lastTemp.started_at)
@@ -130,11 +138,11 @@ function generate (inputs: IobIndexInputs, currentIOBOnly?: boolean, treatments?
         iStop=1
     } else {
         // predict IOB out to 4h, regardless of DIA
-        iStop=4*60;
+        iStop=IOB_PREDICTION_HORIZON_MINUTES;
     }
     var t: Date;
-    for (var i=0; i<iStop; i+=5){
-        t = new Date(clock.getTime() + i*60000);
+    for (var i=0; i<iStop; i+=PRED_INTERVAL_MINUTES){
+        t = new Date(clock.getTime() + i*MS_PER_MINUTE);
         //console.error(t);
         var iob = sum(opts as Parameters<typeof sum>[0], t) as IobIndexEntry;
         var iobWithZeroTemp = sum(optsWithZeroTemp as Parameters<typeof sum>[0], t) as IobIndexEntry;

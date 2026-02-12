@@ -1,6 +1,15 @@
 import endsWith from 'lodash/endsWith';
 import { BASAL_SCALE_DEFAULT, BASAL_SCALE_MEDTRONIC } from './constants';
 
+/** Basal rate (U/hr) below which lowest_rate_scale is used */
+const BASAL_RATE_LOW_THRESHOLD = 1;
+/** Basal rate (U/hr) below which mid-range scale (0.05 increments) is used */
+const BASAL_RATE_MID_THRESHOLD = 10;
+/** Rounding scale for mid-range basal rates (0.05 U increments) */
+const BASAL_SCALE_MID_RANGE = 20;
+/** Rounding scale for high basal rates (0.1 U increments) */
+const BASAL_SCALE_HIGH_RANGE = 10;
+
 interface RoundBasalProfile {
   model?: string;
 }
@@ -30,17 +39,17 @@ var round_basal = function round_basal(basal: number, profile?: RoundBasalProfil
 
     var rounded_basal = basal;
     // Shouldn't need to check against 0 as pumps can't deliver negative basal anyway?
-    if (basal < 1)
+    if (basal < BASAL_RATE_LOW_THRESHOLD)
     {
         rounded_basal = Math.round(basal * lowest_rate_scale) / lowest_rate_scale;
     }
-    else if (basal < 10)
+    else if (basal < BASAL_RATE_MID_THRESHOLD)
     {
-        rounded_basal = Math.round(basal * 20) / 20;
+        rounded_basal = Math.round(basal * BASAL_SCALE_MID_RANGE) / BASAL_SCALE_MID_RANGE;
     }
     else
     {
-        rounded_basal = Math.round(basal * 10) / 10;
+        rounded_basal = Math.round(basal * BASAL_SCALE_HIGH_RANGE) / BASAL_SCALE_HIGH_RANGE;
     }
 
     return rounded_basal;

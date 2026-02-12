@@ -7,6 +7,13 @@ import {
     MAX_TEMP_BASAL_DURATION_MINUTES,
 } from './constants';
 
+/** Duration tolerance (minutes) when comparing current temp to suggested */
+const TEMP_DURATION_TOLERANCE_MINUTES = 10;
+/** Upper rate tolerance factor for current temp comparison */
+const RATE_TOLERANCE_HIGH = 1.2;
+/** Lower rate tolerance factor for current temp comparison */
+const RATE_TOLERANCE_LOW = 0.8;
+
 interface TempBasalProfile {
   current_basal: number;
   max_daily_basal: number;
@@ -66,7 +73,7 @@ tempBasalFunctions.setTempBasal = function setTempBasal(rate: number, duration: 
     }
 
     var suggestedRate = round_basal(rate, profile);
-    if (typeof(currenttemp) !== 'undefined' && typeof(currenttemp.duration) !== 'undefined' && typeof(currenttemp.rate) !== 'undefined' && currenttemp.duration > (duration-10) && currenttemp.duration <= MAX_TEMP_BASAL_DURATION_MINUTES && suggestedRate <= currenttemp.rate * 1.2 && suggestedRate >= currenttemp.rate * 0.8 && duration > 0 ) {
+    if (typeof(currenttemp) !== 'undefined' && typeof(currenttemp.duration) !== 'undefined' && typeof(currenttemp.rate) !== 'undefined' && currenttemp.duration > (duration-TEMP_DURATION_TOLERANCE_MINUTES) && currenttemp.duration <= MAX_TEMP_BASAL_DURATION_MINUTES && suggestedRate <= currenttemp.rate * RATE_TOLERANCE_HIGH && suggestedRate >= currenttemp.rate * RATE_TOLERANCE_LOW && duration > 0 ) {
         rT.reason += " "+currenttemp.duration+"m left and " + currenttemp.rate + " ~ req " + suggestedRate + "U/hr: no temp required";
         return rT;
     }

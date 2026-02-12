@@ -1,5 +1,9 @@
 
 import _ from 'lodash';
+import { MINUTES_PER_DAY } from '../constants';
+
+/** Error sentinel returned when ISF schedule has invalid first offset */
+const ISF_LOOKUP_ERROR = -1;
 
 interface ISFScheduleEntry {
   offset: number;
@@ -32,10 +36,10 @@ function isfLookup(isf_data: ISFData, timestamp?: Date): number {
     var isfSchedule = sorted[sorted.length - 1];
 
     if (sorted[0].offset !== 0) {
-        return -1;
+        return ISF_LOOKUP_ERROR;
     }
 
-    var endMinutes = 1440;
+    var endMinutes = MINUTES_PER_DAY;
 
     for (var i = 0; i < sorted.length - 1; i++) {
         var currentISF = sorted[i];

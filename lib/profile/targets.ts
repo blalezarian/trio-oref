@@ -1,6 +1,6 @@
 
 import getTime from '../medtronic-clock';
-import { MS_PER_MINUTE, MMOL_L_DETECTION_THRESHOLD, MIN_BG_TARGET, MAX_BG_TARGET } from '../constants';
+import { MS_PER_MINUTE, MMOL_L_DETECTION_THRESHOLD, MIN_BG_TARGET, MAX_BG_TARGET, MMOL_TO_MGDL_FACTOR } from '../constants';
 
 interface BGTarget {
   offset?: number;
@@ -99,8 +99,8 @@ function lookup (inputs: TargetsInputs, profile: TargetsProfile): BGTarget {
 
 function bound_target_range (target: BGTarget): BGTarget {
     // if targets are < 20, assume for safety that they're intended to be mmol/L, and convert to mg/dL
-    if ( target.high < MMOL_L_DETECTION_THRESHOLD ) { target.high = target.high * 18; }
-    if ( target.low < MMOL_L_DETECTION_THRESHOLD ) { target.low = target.low * 18; }
+    if ( target.high < MMOL_L_DETECTION_THRESHOLD ) { target.high = target.high * MMOL_TO_MGDL_FACTOR; }
+    if ( target.low < MMOL_L_DETECTION_THRESHOLD ) { target.low = target.low * MMOL_TO_MGDL_FACTOR; }
     // hard-code lower bounds for min_bg and max_bg in case pump is set too low, or units are wrong
     target.max_bg = Math.max(MIN_BG_TARGET, target.high);
     target.min_bg = Math.max(MIN_BG_TARGET, target.low);

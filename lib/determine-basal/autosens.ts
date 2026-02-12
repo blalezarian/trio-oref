@@ -15,6 +15,8 @@ import {
     EXERCISE_NORMAL_TARGET,
     DEFAULT_AUTOSENS_LOOKBACK,
     PRED_INTERVAL_MINUTES,
+    AUTOSENS_MIN_VALID_BG,
+    BUCKETING_MERGE_THRESHOLD_MIN,
 } from '../constants';
 
 interface AutosensInputs {
@@ -36,10 +38,6 @@ interface AutosensResult {
   newisf: number;
 }
 
-/** BG validity threshold used in autosens bucketing */
-const AUTOSENS_MIN_VALID_BG = 40;
-/** Elapsed-minutes gap at or below which BG readings are merged */
-const BUCKETING_MERGE_THRESHOLD_MIN = 2;
 /** Meal-start counter threshold: 9 intervals = ~45 minutes of exclusion */
 const MEAL_EXCLUSION_COUNTER = 9;
 /** Meal-start counter indicating >5h of absorption (60 intervals * 5m = 300m) */
@@ -50,6 +48,10 @@ const TEMP_TARGET_DEVIATION_DIVISOR = 20;
 const MAX_ZERO_DEVIATION_PAD = 18;
 /** Deviations per hour (60 / 5) */
 const DEVIATIONS_PER_HOUR = 12;
+/** Rounding scale for 2 decimal places */
+const ROUND_SCALE_2DP = 100;
+/** Percentage multiplier */
+const PERCENT = 100;
 
 function detectSensitivity(inputs: AutosensInputs): AutosensResult {
 
@@ -224,7 +226,7 @@ function detectSensitivity(inputs: AutosensInputs): AutosensResult {
         //console.error("After: ", new Date().getTime());
         //console.log(JSON.stringify(iob));
 
-        var bgi: number | string = Math.round(( -iob.activity * sens * PRED_INTERVAL_MINUTES )*100)/100;
+        var bgi: number | string = Math.round(( -iob.activity * sens * PRED_INTERVAL_MINUTES )*ROUND_SCALE_2DP)/ROUND_SCALE_2DP;
         bgi = (bgi as number).toFixed(2);
         //console.error(delta);
         var deviation: number | string;
@@ -413,12 +415,12 @@ function detectSensitivity(inputs: AutosensInputs): AutosensResult {
         //console.error("p="+i.toFixed(2)+": "+percentile(avgDeltas, i).toFixed(2)+", "+percentile(bgis, i).toFixed(2)+", "+percentile(deviations, i).toFixed(2));
         if ( percentile(deviations as number[], (i+0.01)) >= 0 && percentile(deviations as number[], i) < 0 ) {
             //console.error("p="+i.toFixed(2)+": "+percentile(avgDeltas, i).toFixed(2)+", "+percentile(bgis, i).toFixed(2)+", "+percentile(deviations, i).toFixed(2));
-            var lessThanZero = Math.round(100*i);
+            var lessThanZero = Math.round(PERCENT*i);
             console.error(lessThanZero+"% of non-meal deviations negative (>50% = sensitivity)");
         }
         if ( percentile(deviations as number[], (i+0.01)) > 0 && percentile(deviations as number[], i) <= 0 ) {
             //console.error("p="+i.toFixed(2)+": "+percentile(avgDeltas, i).toFixed(2)+", "+percentile(bgis, i).toFixed(2)+", "+percentile(deviations, i).toFixed(2));
-            var greaterThanZero = 100-Math.round(100*i);
+            var greaterThanZero = PERCENT-Math.round(PERCENT*i);
             console.error(greaterThanZero+"% of non-meal deviations positive (>50% = resistance)");
         }
     }
@@ -456,7 +458,7 @@ function detectSensitivity(inputs: AutosensInputs): AutosensResult {
       console.error('Ratio limited from ' + rawRatio + ' to ' + ratio);
     }
 
-    ratio = Math.round(ratio*100)/100;
+    ratio = Math.round(ratio*ROUND_SCALE_2DP)/ROUND_SCALE_2DP;
     var newisf: number;
     newisf = Math.round((profile.sens as number) / ratio);
     //console.error(profile, newisf, ratio);

@@ -3,6 +3,11 @@ import calcMealCOB from '../determine-basal/cob';
 import type { CarbTreatment, GlucoseEntry, PumpHistoryEvent } from '../types/index';
 import { MS_PER_HOUR, DEFAULT_MAX_MEAL_ABSORPTION_HOURS } from '../constants';
 
+/** Rounding scale for 3 decimal places */
+const ROUND_SCALE_3DP = 1000;
+/** Rounding scale for 2 decimal places */
+const ROUND_SCALE_2DP = 100;
+
 interface RecentCarbsOpts {
   treatments: CarbTreatment[] | null;
   profile: Record<string, unknown>;
@@ -175,16 +180,16 @@ function recentCarbs(opts: RecentCarbsOpts, time: Date): RecentCarbsResult | Rec
     }
 
     return {
-        carbs: Math.round( carbs * 1000 ) / 1000
-    ,   nsCarbs: Math.round( nsCarbs * 1000 ) / 1000
-    ,   bwCarbs: Math.round( bwCarbs * 1000 ) / 1000
-    ,   journalCarbs: Math.round( journalCarbs * 1000 ) / 1000
+        carbs: Math.round( carbs * ROUND_SCALE_3DP ) / ROUND_SCALE_3DP
+    ,   nsCarbs: Math.round( nsCarbs * ROUND_SCALE_3DP ) / ROUND_SCALE_3DP
+    ,   bwCarbs: Math.round( bwCarbs * ROUND_SCALE_3DP ) / ROUND_SCALE_3DP
+    ,   journalCarbs: Math.round( journalCarbs * ROUND_SCALE_3DP ) / ROUND_SCALE_3DP
     ,   mealCOB: Math.round( mealCOB )
-    ,   currentDeviation: Math.round( c.currentDeviation * 100 ) / 100
-    ,   maxDeviation: Math.round( c.maxDeviation * 100 ) / 100
-    ,   minDeviation: Math.round( c.minDeviation * 100 ) / 100
-    ,   slopeFromMaxDeviation: Math.round( c.slopeFromMaxDeviation * 1000 ) / 1000
-    ,   slopeFromMinDeviation: Math.round( c.slopeFromMinDeviation * 1000 ) / 1000
+    ,   currentDeviation: Math.round( c.currentDeviation * ROUND_SCALE_2DP ) / ROUND_SCALE_2DP
+    ,   maxDeviation: Math.round( c.maxDeviation * ROUND_SCALE_2DP ) / ROUND_SCALE_2DP
+    ,   minDeviation: Math.round( c.minDeviation * ROUND_SCALE_2DP ) / ROUND_SCALE_2DP
+    ,   slopeFromMaxDeviation: Math.round( c.slopeFromMaxDeviation * ROUND_SCALE_3DP ) / ROUND_SCALE_3DP
+    ,   slopeFromMinDeviation: Math.round( c.slopeFromMinDeviation * ROUND_SCALE_3DP ) / ROUND_SCALE_3DP
     ,   allDeviations: c.allDeviations
     ,   lastCarbTime: lastCarbTime
     ,   bwFound: bwFound

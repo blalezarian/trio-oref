@@ -1,5 +1,11 @@
 
 import type { PumpHistoryEvent } from './types/index';
+import { MS_PER_MINUTE } from './constants';
+
+/** Minutes window for grouping related bolus events */
+const BOLUS_GROUPING_MINUTES = 2;
+/** Percentage multiplier */
+const PERCENT = 100;
 
 interface BolusTreatment {
   _type: string;
@@ -59,7 +65,7 @@ function reduce (treatments: BolusTreatment[]): BolusResult[] {
   }
 
   function within_minutes_from (origin: BolusTreatment, tail: BolusTreatment[], minutes: number): BolusTreatment[] {
-    var ms = minutes * 1000 * 60;
+    var ms = minutes * MS_PER_MINUTE;
     var ts = Date.parse(origin.timestamp);
     return /* candidates */ tail.slice( ).filter(function (elem: BolusTreatment) {
       var dt = Date.parse(elem.timestamp);
@@ -141,12 +147,12 @@ function reduce (treatments: BolusTreatment[]): BolusResult[] {
       if (state.bolus) {
         annotate("Programmed bolus", state.bolus.programmed);
         annotate("Delivered bolus", state.bolus.amount);
-        annotate("Percent delivered: ", (state.bolus.amount!/state.bolus.programmed! * 100).toString( ) + '%');
+        annotate("Percent delivered: ", (state.bolus.amount!/state.bolus.programmed! * PERCENT).toString( ) + '%');
       }
       if (state.square) {
         annotate("Programmed square", state.square.programmed);
         annotate("Delivered square", state.square.amount);
-        annotate("Success: ", (state.square.amount!/state.square.programmed! * 100).toString( ) + '%');
+        annotate("Success: ", (state.square.amount!/state.square.programmed! * PERCENT).toString( ) + '%');
       }
       if (state.wizard) {
         state.created_at = state.wizard.timestamp;
@@ -200,7 +206,7 @@ function reduce (treatments: BolusTreatment[]): BolusResult[] {
     switch (current._type) {
       case 'Bolus':
       case 'BolusWizard':
-        var tail = within_minutes_from(current, treatments.slice(index+1), 2);
+        var tail = within_minutes_from(current, treatments.slice(index+1), BOLUS_GROUPING_MINUTES);
         bolus(current, tail);
         break;
       case 'JournalEntryMealMarker':

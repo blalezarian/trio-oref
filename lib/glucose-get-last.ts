@@ -1,5 +1,18 @@
 import type { GlucoseEntry, GlucoseStatus } from './types/index';
-import { MS_PER_MINUTE, PRED_INTERVAL_MINUTES } from './constants';
+import { MS_PER_MINUTE, PRED_INTERVAL_MINUTES, MIN_VALID_GLUCOSE_MGDL } from './constants';
+
+/** Lower bound (minutes ago) for averaging current BG reading */
+const NOW_AVERAGING_MIN_MINUTES = -2;
+/** Upper bound (minutes ago) for averaging current BG reading */
+const NOW_AVERAGING_MAX_MINUTES = 2.5;
+/** Upper bound (minutes ago) for short delta calculations (~5-15m) */
+const SHORT_DELTA_MAX_MINUTES = 17.5;
+/** Upper bound (minutes ago) for last delta calculations (~5m) */
+const LAST_DELTA_MAX_MINUTES = 7.5;
+/** Upper bound (minutes ago) for long delta calculations (~20-40m) */
+const LONG_DELTA_MAX_MINUTES = 42.5;
+/** Scale factor for rounding to 2 decimal places */
+const ROUND_SCALE_2DP = 100;
 
 function getDateFromEntry(entry: GlucoseEntry): number {
   return entry.date || Date.parse(entry.display_time as string) || Date.parse(entry.dateString as string);
@@ -32,7 +45,7 @@ var getLastGlucose = function (data: GlucoseEntry[]): GlucoseStatus {
             break;
         }
         // only use data from the same device as the most recent BG data point
-        if (typeof data[i] !== 'undefined' && (data[i].glucose as number) > 38 && data[i].device === now.device) {
+        if (typeof data[i] !== 'undefined' && (data[i].glucose as number) >= MIN_VALID_GLUCOSE_MGDL && data[i].device === now.device) {
             var then = data[i];
             var then_date = getDateFromEntry(then);
             var avgdelta = 0;
@@ -47,21 +60,21 @@ var getLastGlucose = function (data: GlucoseEntry[]): GlucoseStatus {
                 //console.error(then.glucose, minutesago, avgdelta);
             //}
             // use the average of all data points in the last 2.5m for all further "now" calculations
-            if (-2 < minutesago! && minutesago! <= 2.5) {
+            if (NOW_AVERAGING_MIN_MINUTES < minutesago! && minutesago! <= NOW_AVERAGING_MAX_MINUTES) {
                 now.glucose = ( (now.glucose as number) + (then.glucose as number) ) / 2;
                 now_date = ( now_date + then_date ) / 2;
                 //console.error(then.glucose, now.glucose);
             // short_deltas are calculated from everything ~5-15 minutes ago
-            } else if (2.5 < minutesago! && minutesago! <= 17.5) {
+            } else if (NOW_AVERAGING_MAX_MINUTES < minutesago! && minutesago! <= SHORT_DELTA_MAX_MINUTES) {
                 //console.error(minutesago, avgdelta);
                 short_deltas.push(avgdelta);
                 // last_deltas are calculated from everything ~5 minutes ago
-                if (2.5 < minutesago! && minutesago! < 7.5) {
+                if (NOW_AVERAGING_MAX_MINUTES < minutesago! && minutesago! < LAST_DELTA_MAX_MINUTES) {
                     last_deltas.push(avgdelta);
                 }
                 //console.error(then.glucose, minutesago, avgdelta, last_deltas, short_deltas);
             // long_deltas are calculated from everything ~20-40 minutes ago
-            } else if (17.5 < minutesago! && minutesago! < 42.5) {
+            } else if (SHORT_DELTA_MAX_MINUTES < minutesago! && minutesago! < LONG_DELTA_MAX_MINUTES) {
                 long_deltas.push(avgdelta);
             }
         }
@@ -80,11 +93,11 @@ var getLastGlucose = function (data: GlucoseEntry[]): GlucoseStatus {
     }
 
     return {
-        delta: Math.round( last_delta * 100 ) / 100
-        , glucose: Math.round( (now.glucose as number) * 100 ) / 100
+        delta: Math.round( last_delta * ROUND_SCALE_2DP ) / ROUND_SCALE_2DP
+        , glucose: Math.round( (now.glucose as number) * ROUND_SCALE_2DP ) / ROUND_SCALE_2DP
         , noise: Math.round(now.noise as number)
-        , short_avgdelta: Math.round( short_avgdelta * 100 ) / 100
-        , long_avgdelta: Math.round( long_avgdelta * 100 ) / 100
+        , short_avgdelta: Math.round( short_avgdelta * ROUND_SCALE_2DP ) / ROUND_SCALE_2DP
+        , long_avgdelta: Math.round( long_avgdelta * ROUND_SCALE_2DP ) / ROUND_SCALE_2DP
         , date: now_date
         , last_cal: last_cal
         , device: now.device

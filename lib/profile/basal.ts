@@ -1,6 +1,9 @@
 
 import _ from 'lodash';
 
+/** Rounding scale for basal rate precision (3 decimal places) */
+const BASAL_ROUND_SCALE = 1000;
+
 interface BasalScheduleEntry {
   i?: number;
   minutes?: number;
@@ -35,13 +38,13 @@ function basalLookup (schedules: BasalScheduleEntry[], now?: Date): number | und
             break;
         }
     }
-    return Math.round(basalRate*1000)/1000;
+    return Math.round(basalRate*BASAL_ROUND_SCALE)/BASAL_ROUND_SCALE;
 }
 
 
 function maxDailyBasal (inputs: BasalInputs): number {
     var maxRate = _.maxBy(inputs.basals,function(o: BasalScheduleEntry) { return Number(o.rate); });
-    return (Number(maxRate!.rate) *1000)/1000;
+    return (Number(maxRate!.rate) *BASAL_ROUND_SCALE)/BASAL_ROUND_SCALE;
 }
 
 /*Return maximum daily basal rate(U / hr) from profile.basals */

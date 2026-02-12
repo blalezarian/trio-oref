@@ -12,7 +12,14 @@ import {
     MINUTES_PER_HOUR,
     MIN_BG_TARGET,
     PRED_INTERVAL_MINUTES,
+    AUTOSENS_MIN_VALID_BG,
+    BUCKETING_MERGE_THRESHOLD_MIN,
 } from '../constants';
+
+/** Rounding scale for 3 decimal places */
+const ROUND_SCALE_3DP = 1000;
+/** Rounding scale for 2 decimal places */
+const ROUND_SCALE_2DP = 100;
 
 interface CategorizeGlucoseEntry {
   glucose?: number;
@@ -117,9 +124,6 @@ interface CategorizeResult {
   basalGlucoseData: CategorizeGlucoseDatum[];
 }
 
-/** BG validity threshold used in autotune bucketing (same as autosens) */
-const AUTOSENS_MIN_VALID_BG = 40;
-
 // main function categorizeBGDatums. ;) categorize to ISF, CSF, or basals.
 
 function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
@@ -194,7 +198,7 @@ function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
         var lastBGTime = glucoseData[k].date!;
         var elapsedMinutes = ((BGTime as number) - lastBGTime)/MS_PER_MINUTE;
 
-        if(Math.abs(elapsedMinutes) >= 2) {
+        if(Math.abs(elapsedMinutes) >= BUCKETING_MERGE_THRESHOLD_MIN) {
             j++; // move to next bucket
             k=i; // store index of first value used by bucket
             bucketedData[j]=JSON.parse(JSON.stringify(glucoseData[i]));
@@ -316,21 +320,21 @@ function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
         var basal2hAgo = basal.basalLookup(opts.pumpbasalprofile, BGDate2hAgo);
         var basal3hAgo = basal.basalLookup(opts.pumpbasalprofile, BGDate3hAgo);
         var sum = [currentPumpBasal,basal1hAgo,basal2hAgo,basal3hAgo].reduce(function(a, b) { return a! + b!; })!;
-        IOBInputs.profile.currentBasal = Math.round(((sum as number)/4)*1000)/1000;
+        IOBInputs.profile.currentBasal = Math.round(((sum as number)/4)*ROUND_SCALE_3DP)/ROUND_SCALE_3DP;
 
         // this is the current autotuned basal, used for everything else besides IOB calculations
         var currentBasal: number = basal.basalLookup(opts.basalprofile, BGDate)!;
 
         //console.error(currentBasal,basal1hAgo,basal2hAgo,basal3hAgo,IOBInputs.profile.currentBasal);
         // basalBGI is BGI of basal insulin activity.
-        var basalBGI = Math.round(( currentBasal * sens / MINUTES_PER_HOUR * PRED_INTERVAL_MINUTES )*100)/100; // U/hr * mg/dL/U * 1 hr / 60 minutes * 5 = mg/dL/5m
+        var basalBGI = Math.round(( currentBasal * sens / MINUTES_PER_HOUR * PRED_INTERVAL_MINUTES )*ROUND_SCALE_2DP)/ROUND_SCALE_2DP; // U/hr * mg/dL/U * 1 hr / 60 minutes * 5 = mg/dL/5m
         //console.log(JSON.stringify(IOBInputs.profile));
         // call iob since calculated elsewhere
         var iob = getIOB(IOBInputs as unknown as Parameters<typeof getIOB>[0])[0];
         //console.error(JSON.stringify(iob));
 
         // activity times ISF times 5 minutes is BGI
-        var BGI = Math.round(( -iob.activity * sens * PRED_INTERVAL_MINUTES )*100)/100;
+        var BGI = Math.round(( -iob.activity * sens * PRED_INTERVAL_MINUTES )*ROUND_SCALE_2DP)/ROUND_SCALE_2DP;
         // datum = one glucose data point (being prepped to store in output)
         glucoseDatum.BGI = BGI;
         // calculating deviation
@@ -396,7 +400,7 @@ function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
                 };
                 //console.error(crDatum);
 
-                var CRElapsedMinutes = Math.round((CREndTime.getTime() - CRInitialCarbTime.getTime()) / 1000 / 60);
+                var CRElapsedMinutes = Math.round((CREndTime.getTime() - CRInitialCarbTime.getTime()) / MS_PER_MINUTE);
                 //console.error(CREndTime - CRInitialCarbTime, CRElapsedMinutes);
                 if ( CRElapsedMinutes < 60 || ( i===1 && mealCOB > 0 ) ) {
                     console.error("Ignoring",CRElapsedMinutes,"m CR period.");

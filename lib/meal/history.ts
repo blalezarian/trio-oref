@@ -1,5 +1,8 @@
 import type { PumpHistoryEvent, CarbTreatment } from '../types/index';
 
+/** Timestamp matching tolerance for deduplication (ms) */
+const TIMESTAMP_MATCH_TOLERANCE_MS = 2000;
+
 interface MealHistoryInputs {
   history: PumpHistoryEvent[];
   carbs: PumpHistoryEvent[];
@@ -13,8 +16,8 @@ function arrayHasElementWithSameTimestampAndProperty(array: CarbTreatment[],t: s
         if ( (element as unknown as Record<string, unknown>)[propname] !== undefined ) {
             var eDate = new Date(element.timestamp);
             var tDate = new Date(t);
-            var tMin = new Date(tDate.getTime() - 2000);
-            var tMax = new Date(tDate.getTime() + 2000);
+            var tMin = new Date(tDate.getTime() - TIMESTAMP_MATCH_TOLERANCE_MS);
+            var tMax = new Date(tDate.getTime() + TIMESTAMP_MATCH_TOLERANCE_MS);
             //console.error(tDate, tMin, tMax);
             if (eDate > tMin && eDate < tMax) return true;
         }

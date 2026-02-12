@@ -8,6 +8,13 @@ import {
     MS_PER_HOUR,
 } from '../constants';
 
+/** Bolus threshold below which insulin is considered basal (U) */
+const BOLUS_DETECTION_THRESHOLD = 0.1;
+/** Rounding scale for 3 decimal places */
+const ROUND_SCALE_3DP = 1000;
+/** Rounding scale for 4 decimal places */
+const ROUND_SCALE_4DP = 10000;
+
 interface IobCalcProfile {
     dia: number;
     curve?: InsulinCurve;
@@ -117,7 +124,7 @@ function iobTotal(opts: IobTotalOpts, time: Date): IobTotalResult | Record<strin
                 // boluses look like:
                 // {"timestamp":"2017-10-05T22:06:31-07:00","started_at":"2017-10-06T05:06:31.000Z","date":1507266391000,"insulin":0.5}
                 if (treatment.insulin && tIOB && tIOB.iobContrib) {
-                    if (treatment.insulin < 0.1) {
+                    if (treatment.insulin < BOLUS_DETECTION_THRESHOLD) {
                         basaliob += tIOB.iobContrib;
                         netbasalinsulin += treatment.insulin;
                     } else {
@@ -131,12 +138,12 @@ function iobTotal(opts: IobTotalOpts, time: Date): IobTotalResult | Record<strin
     });
 
     return {
-        iob: Math.round(iob * 1000) / 1000,
-        activity: Math.round(activity * 10000) / 10000,
-        basaliob: Math.round(basaliob * 1000) / 1000,
-        bolusiob: Math.round(bolusiob * 1000) / 1000,
-        netbasalinsulin: Math.round(netbasalinsulin * 1000) / 1000,
-        bolusinsulin: Math.round(bolusinsulin * 1000) / 1000,
+        iob: Math.round(iob * ROUND_SCALE_3DP) / ROUND_SCALE_3DP,
+        activity: Math.round(activity * ROUND_SCALE_4DP) / ROUND_SCALE_4DP,
+        basaliob: Math.round(basaliob * ROUND_SCALE_3DP) / ROUND_SCALE_3DP,
+        bolusiob: Math.round(bolusiob * ROUND_SCALE_3DP) / ROUND_SCALE_3DP,
+        netbasalinsulin: Math.round(netbasalinsulin * ROUND_SCALE_3DP) / ROUND_SCALE_3DP,
+        bolusinsulin: Math.round(bolusinsulin * ROUND_SCALE_3DP) / ROUND_SCALE_3DP,
         time: time
     };
 }

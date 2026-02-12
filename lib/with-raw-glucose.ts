@@ -1,5 +1,14 @@
 'use strict';
 
+/** Default maximum raw glucose value considered usable */
+const DEFAULT_MAX_RAW_GLUCOSE = 200;
+/** BG threshold (mg/dL) below which raw calibration data is used directly */
+const RAW_BG_CALIBRATION_THRESHOLD = 40;
+/** CGM noise level: low (raw data within max range) */
+const NOISE_LEVEL_LOW_RAW = 2;
+/** CGM noise level: high (raw data exceeds max range or no raw data) */
+const NOISE_LEVEL_HIGH_RAW = 3;
+
 interface RawGlucoseEntry {
   type?: string;
   glucose?: number;
@@ -41,7 +50,7 @@ function cleanCal (cal: RawGlucoseCal): CleanCal {
 }
 
 export default function withRawGlucose (entry: RawGlucoseEntry, cals: RawGlucoseCal[] | null | undefined, maxRaw?: number): RawGlucoseEntry {
-  maxRaw = maxRaw || 200;
+  maxRaw = maxRaw || DEFAULT_MAX_RAW_GLUCOSE;
 
   if ( entry.type === "mbg" || entry.type === "cal" ) {
     return entry;
@@ -56,24 +65,24 @@ export default function withRawGlucose (entry: RawGlucoseEntry, cals: RawGlucose
   var cal = cals && cals.length > 0 && cleanCal(cals[0]);
 
   if (cal && cal.valid) {
-    if (cal.filtered === 0 || egv < 40) {
+    if (cal.filtered === 0 || egv < RAW_BG_CALIBRATION_THRESHOLD) {
       entry.raw = Math.round(cal.scale * ((entry.unfiltered as number) - cal.intercept) / cal.slope);
     } else {
       var ratio = cal.scale * ((entry.filtered as number) - cal.intercept) / cal.slope / egv;
       entry.raw = Math.round(cal.scale * ((entry.unfiltered as number) - cal.intercept) / cal.slope / ratio);
     }
 
-    if ( egv < 40 ) {
+    if ( egv < RAW_BG_CALIBRATION_THRESHOLD ) {
         if (entry.raw) {
             entry.glucose = entry.raw;
             entry.fromRaw = true;
             if (entry.raw <= maxRaw) {
-                entry.noise = 2;
+                entry.noise = NOISE_LEVEL_LOW_RAW;
             } else {
-                entry.noise = 3;
+                entry.noise = NOISE_LEVEL_HIGH_RAW;
             }
         } else {
-            entry.noise = 3;
+            entry.noise = NOISE_LEVEL_HIGH_RAW;
         }
     } else if (! entry.noise) {
         entry.noise = 0;

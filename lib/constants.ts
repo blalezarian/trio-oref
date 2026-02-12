@@ -14,6 +14,8 @@ export const MAX_VALID_GLUCOSE_MGDL = 400;
 export const MGDL_TO_MMOL = 0.0555;
 /** Threshold below which a BG target is assumed to be in mmol/L */
 export const MMOL_L_DETECTION_THRESHOLD = 20;
+/** mmol/L to mg/dL multiplier */
+export const MMOL_TO_MGDL_FACTOR = 18;
 
 // === Time Constants ===
 
@@ -197,3 +199,11 @@ export const INSULIN_FACTOR_CEILING = 120;
 
 /** Minimum time (minutes) for exponential curves */
 export const EXPONENTIAL_MIN_TD = 300;
+
+// === BG Bucketing (shared: autosens, categorize, cob) ===
+
+/** BG validity threshold for autosens/autotune bucketing (mg/dL) */
+export const AUTOSENS_MIN_VALID_BG = 40;
+/** Elapsed-minutes gap at or below which BG readings merge into same bucket */
+export const BUCKETING_MERGE_THRESHOLD_MIN = 2;
+
