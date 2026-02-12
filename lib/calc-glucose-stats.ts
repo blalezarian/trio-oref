@@ -1,3 +1,6 @@
+// Standalone CGM noise calculation utility — not part of the Trio Swift bundle.
+// Only used by bin/oref0-calculate-glucose-noise.js CLI tool.
+
 import moment from 'moment';
 import _ from 'lodash';
 import stats from './glucose-stats';
