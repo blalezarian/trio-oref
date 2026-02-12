@@ -376,15 +376,10 @@ function calculateDynamicISF(
     if (tdd24h_14d_Ratio > 1) {
         tdd24h_14d_Ratio = Math.min(tdd24h_14d_Ratio, profile.autosens_max);
         tdd24h_14d_Ratio = round(tdd24h_14d_Ratio,2);
-        basal_ratio_log = "Basal adjustment with a 24 hour  to total average (up to 14 days of data) TDD ratio (limited by Autosens max setting). Basal Ratio: " + tdd24h_14d_Ratio + ". Upper limit = Autosens max (" + profile.autosens_max + ")";
     }
     else if (tdd24h_14d_Ratio < 1) {
         tdd24h_14d_Ratio = Math.max(tdd24h_14d_Ratio, profile.autosens_min);
         tdd24h_14d_Ratio = round(tdd24h_14d_Ratio,2);
-        basal_ratio_log = "Basal adjustment with a 24 hour to  to total average (up to 14 days of data) TDD ratio (limited by Autosens min setting). Basal Ratio: " + tdd24h_14d_Ratio + ". Lower limit = Autosens min (" + profile.autosens_min + ")";
-    }
-    else {
-        basal_ratio_log = "Basal adjusted with a 24 hour to total average (up to 14 days of data) TDD ratio: " + tdd24h_14d_Ratio;
     }
 
     basal_ratio_log = ", Basal ratio: " + tdd24h_14d_Ratio;
