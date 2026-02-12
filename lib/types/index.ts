@@ -10,6 +10,146 @@
  */
 
 // ---------------------------------------------------------------------------
+// Pump History Event — raw events from Medtronic pump or Nightscout
+// ---------------------------------------------------------------------------
+
+/** Broad interface for pump history events. Uses optional fields + index
+ *  signature rather than a discriminated union to avoid narrowing logic
+ *  changes. Covers Medtronic _type events, Nightscout eventType events,
+ *  and Care Portal entries. */
+export interface PumpHistoryEvent {
+  // -- Event type discriminators --
+  /** Medtronic event type (e.g. "Bolus", "TempBasal", "PumpSuspend") */
+  _type?: string;
+  /** Nightscout event type (e.g. "Meal Bolus", "Correction Bolus") */
+  eventType?: string;
+
+  // -- Timestamps --
+  /** ISO timestamp string */
+  timestamp?: string;
+  /** Nightscout created_at ISO timestamp */
+  created_at?: string;
+
+  // -- Insulin & bolus --
+  /** Insulin delivery amount in Units (bolus) */
+  amount?: number;
+  /** Insulin amount in Units (Nightscout treatment) */
+  insulin?: number;
+  /** Programmed bolus amount in Units */
+  programmed?: number;
+  /** Temp basal rate in U/hr */
+  rate?: number;
+  /** Duration in minutes */
+  duration?: number;
+  /** Duration in minutes (Medtronic alternate field) */
+  'duration (min)'?: number;
+  /** Absolute temp basal rate */
+  absolute?: number;
+  /** Percentage temp basal */
+  percent?: number;
+  /** Temp type: "percent" or "absolute" */
+  temp?: string;
+
+  // -- Carb fields --
+  /** Carbs in grams (Nightscout) */
+  carbs?: number;
+  /** Carb input in grams (Medtronic BolusWizard / JournalEntryMealMarker) */
+  carb_input?: number;
+
+  // -- Bolus Wizard fields --
+  /** Carb ratio used by Bolus Wizard */
+  carb_ratio?: number;
+  /** Food estimate from Bolus Wizard */
+  food_estimate?: number;
+  /** Correction estimate from Bolus Wizard */
+  correction_estimate?: number;
+  /** Total bolus estimate from Bolus Wizard */
+  bolus_estimate?: number;
+  /** BG reading used by Bolus Wizard (mg/dL) */
+  bg?: number;
+  /** Low BG target for Bolus Wizard */
+  bg_target_low?: number;
+  /** High BG target for Bolus Wizard */
+  bg_target_high?: number;
+  /** ISF used by Bolus Wizard */
+  sensitivity?: number;
+
+  // -- Metadata --
+  /** Entry source (e.g. "xdrip", "HAPP_App", "openaps://AndroidAPS") */
+  enteredBy?: string;
+
+  // -- Nested objects --
+  /** Nested bolus object (Medtronic compound events) */
+  bolus?: { _type?: string; amount?: number; programmed?: number; timestamp?: string; duration?: number };
+
+  /** Allow additional fields present in pump data */
+  [key: string]: unknown;
+}
+
+// ---------------------------------------------------------------------------
+// Glucose Entry — raw CGM entry from Nightscout / xDrip / Dexcom
+// ---------------------------------------------------------------------------
+
+/** Raw CGM glucose entry as received from the glucose data source */
+export interface GlucoseEntry {
+  /** Glucose value in mg/dL */
+  glucose?: number;
+  /** Nightscout sgv field (used interchangeably with glucose) */
+  sgv?: number;
+  /** Epoch milliseconds timestamp */
+  date?: number;
+  /** Display timestamp string */
+  display_time?: string;
+  /** ISO date string */
+  dateString?: string;
+  /** CGM device identifier */
+  device?: string;
+  /** CGM noise level */
+  noise?: number;
+  /** Entry type (e.g. "cal" for calibration) */
+  type?: string;
+  /** xDrip start timestamp */
+  xDrip_started_at?: string;
+}
+
+// ---------------------------------------------------------------------------
+// Bucketed Glucose — time-bucketed glucose datum used by autosens/cob
+// ---------------------------------------------------------------------------
+
+/** Glucose data point bucketed into 5-minute intervals for autosens,
+ *  COB, and categorize calculations */
+export interface BucketedGlucose {
+  /** Glucose value in mg/dL */
+  glucose?: number;
+  /** Epoch milliseconds timestamp */
+  date?: number;
+  /** Display timestamp string */
+  display_time?: string;
+  /** ISO date string */
+  dateString?: string;
+}
+
+// ---------------------------------------------------------------------------
+// Carb Treatment — carb entry extracted from meal history
+// ---------------------------------------------------------------------------
+
+/** Carb/bolus entry extracted from pump history by meal/history.ts */
+export interface CarbTreatment {
+  /** ISO timestamp string */
+  timestamp: string;
+  /** Total carbs in grams */
+  carbs?: number;
+  /** Carbs entered via Nightscout Care Portal (g) */
+  nsCarbs?: number;
+  /** Carbs from Medtronic Bolus Wizard (g) */
+  bwCarbs?: number;
+  /** Carbs from journal/meal marker entries (g) */
+  journalCarbs?: number;
+  /** Bolus amount in Units */
+  bolus?: number;
+}
+
+// ---------------------------------------------------------------------------
 // Glucose Status — output of glucose-get-last.js
 // ---------------------------------------------------------------------------
 
@@ -463,6 +603,26 @@ export interface DetermineBasalResult {
   target_bg?: number;
   /** Dynamic ISF/ratio log information */
   reason_log?: string;
+
+  // -- Additional Trio output fields read by iOS app --
+  /** Current carbs on board (COB) in grams */
+  COB?: number;
+  /** Current insulin on board (IOB) in Units */
+  IOB?: number;
+  /** Blood glucose impact rate in display units */
+  BGI?: number;
+  /** Current deviation from expected BG in display units */
+  deviation?: number;
+  /** Current target BG (unrounded, in display units) */
+  current_target?: number;
+  /** Manual bolus error state code */
+  manualBolusErrorString?: number;
+  /** Insulin suggested for manual bolus in Units */
+  insulinForManualBolus?: number;
+  /** Minimum delta between last two readings */
+  minDelta?: number;
+  /** Expected delta based on IOB activity */
+  expectedDelta?: number;
 
   // Allow additional fields the algorithm may produce
   [key: string]: unknown;
