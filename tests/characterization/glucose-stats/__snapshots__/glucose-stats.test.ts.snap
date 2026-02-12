@@ -1,0 +1,117 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`glucose-stats characterization tests > NSNoiseString > 0 — Unknown 1`] = `"Unknown"`;
+
+exports[`glucose-stats characterization tests > NSNoiseString > 1 — Clean 1`] = `"Clean"`;
+
+exports[`glucose-stats characterization tests > NSNoiseString > 2 — Light 1`] = `"Light"`;
+
+exports[`glucose-stats characterization tests > NSNoiseString > 3 — Medium 1`] = `"Medium"`;
+
+exports[`glucose-stats characterization tests > NSNoiseString > 4 — Heavy 1`] = `"Heavy"`;
+
+exports[`glucose-stats characterization tests > NSNoiseString > negative value — Unknown (default) 1`] = `"Unknown"`;
+
+exports[`glucose-stats characterization tests > NSNoiseString > undefined — Unknown (default) 1`] = `"Unknown"`;
+
+exports[`glucose-stats characterization tests > NSNoiseString > unrecognized value — Unknown (default) 1`] = `"Unknown"`;
+
+exports[`glucose-stats characterization tests > calcNSNoise > current glucose <= 30 — deltaSGV stays 0 (then < 40 branch) 1`] = `1`;
+
+exports[`glucose-stats characterization tests > calcNSNoise > deltaSGV < -30 — Heavy (4) 1`] = `4`;
+
+exports[`glucose-stats characterization tests > calcNSNoise > deltaSGV > 30 — Heavy (4) 1`] = `4`;
+
+exports[`glucose-stats characterization tests > calcNSNoise > deltaSGV exactly -30 — not Heavy (uses noise threshold) 1`] = `1`;
+
+exports[`glucose-stats characterization tests > calcNSNoise > deltaSGV exactly 30 — not Heavy (uses noise threshold) 1`] = `1`;
+
+exports[`glucose-stats characterization tests > calcNSNoise > glucose < 40 — Light (2) 1`] = `2`;
+
+exports[`glucose-stats characterization tests > calcNSNoise > glucose > 400 — Heavy (4) 1`] = `4`;
+
+exports[`glucose-stats characterization tests > calcNSNoise > glucose exactly 40 — uses noise thresholds (not < 40 branch) 1`] = `1`;
+
+exports[`glucose-stats characterization tests > calcNSNoise > glucose exactly 400 — uses noise thresholds (not > 400 branch) 1`] = `1`;
+
+exports[`glucose-stats characterization tests > calcNSNoise > noise < 0.35 — Clean (1) 1`] = `1`;
+
+exports[`glucose-stats characterization tests > calcNSNoise > noise = 0 — Clean (1) 1`] = `1`;
+
+exports[`glucose-stats characterization tests > calcNSNoise > noise = 0.9 — Heavy (4) 1`] = `4`;
+
+exports[`glucose-stats characterization tests > calcNSNoise > noise = 0.49 — Light (2) 1`] = `2`;
+
+exports[`glucose-stats characterization tests > calcNSNoise > noise = 0.69 — Medium (3) 1`] = `3`;
+
+exports[`glucose-stats characterization tests > calcNSNoise > noise exactly 0.5 — Medium (3) 1`] = `3`;
+
+exports[`glucose-stats characterization tests > calcNSNoise > noise exactly 0.7 — Heavy (4) 1`] = `4`;
+
+exports[`glucose-stats characterization tests > calcNSNoise > noise exactly 0.35 — Light (2) 1`] = `2`;
+
+exports[`glucose-stats characterization tests > calcNSNoise > prior glucose <= 30 — deltaSGV stays 0 1`] = `2`;
+
+exports[`glucose-stats characterization tests > calcNSNoise > single entry — deltaSGV stays 0 1`] = `1`;
+
+exports[`glucose-stats characterization tests > calcSensorNoise > all glucose <= 30 — returns 0 (fewer than MINRECORDS after filtering) 1`] = `0`;
+
+exports[`glucose-stats characterization tests > calcSensorNoise > all identical values — sod is zero — noise is 0 1`] = `0`;
+
+exports[`glucose-stats characterization tests > calcSensorNoise > delta direction change: negative to positive (1.2x multiplier) 1`] = `0.22764415865744014`;
+
+exports[`glucose-stats characterization tests > calcSensorNoise > delta direction change: positive to negative (1.1x multiplier) 1`] = `0.22215196321970232`;
+
+exports[`glucose-stats characterization tests > calcSensorNoise > exactly MINRECORDS (4) entries — uses transmitter glucose (no lastCal) 1`] = `0.008489460004983074`;
+
+exports[`glucose-stats characterization tests > calcSensorNoise > glucose <= 30 entries are filtered out 1`] = `0.007730713776796128`;
+
+exports[`glucose-stats characterization tests > calcSensorNoise > linearly rising glucose — low noise 1`] = `0.04055348574626938`;
+
+exports[`glucose-stats characterization tests > calcSensorNoise > more than MAXRECORDS (8) entries — only uses last 8 1`] = `0.008539200646027978`;
+
+exports[`glucose-stats characterization tests > calcSensorNoise > oscillating glucose — high noise 1`] = `0.7679903411863482`;
+
+exports[`glucose-stats characterization tests > calcSensorNoise > returns 0 when fewer than MINRECORDS (4) entries 1`] = `0`;
+
+exports[`glucose-stats characterization tests > calcSensorNoise > steady glucose — low noise 1`] = `0`;
+
+exports[`glucose-stats characterization tests > calcSensorNoise > with lastCal and unfiltered data 1`] = `0.014452735248188575`;
+
+exports[`glucose-stats characterization tests > calcSensorNoise > with lastCal but unfiltered <= 100 — falls back to transmitter glucose 1`] = `0.008509357274162244`;
+
+exports[`glucose-stats characterization tests > calcSensorNoise > with sgv parameter (no lastCal) — appends to array 1`] = `0.8039028097627543`;
+
+exports[`glucose-stats characterization tests > calcSensorNoise > with sgv parameter and lastCal + unfiltered — uses calcGlucose for sgv 1`] = `0.8618929103039675`;
+
+exports[`glucose-stats characterization tests > calcSensorNoise > with sgv parameter — sgv has unfiltered <= 100 (falls back to glucose) 1`] = `0.8599771973869212`;
+
+exports[`glucose-stats characterization tests > calcTrend > all entries older than 16 minutes from sgv — returns 0 1`] = `0`;
+
+exports[`glucose-stats characterization tests > calcTrend > empty glucoseHist — returns 0 1`] = `0`;
+
+exports[`glucose-stats characterization tests > calcTrend > entries older than 16 minutes are excluded 1`] = `28.333333333333332`;
+
+exports[`glucose-stats characterization tests > calcTrend > falling glucose — negative trend 1`] = `-10`;
+
+exports[`glucose-stats characterization tests > calcTrend > lastCal with unfiltered <= 100 — falls back to transmitter glucose 1`] = `4`;
+
+exports[`glucose-stats characterization tests > calcTrend > rapid fall trend 1`] = `-20`;
+
+exports[`glucose-stats characterization tests > calcTrend > rapid rise trend 1`] = `20`;
+
+exports[`glucose-stats characterization tests > calcTrend > rising glucose — positive trend 1`] = `10`;
+
+exports[`glucose-stats characterization tests > calcTrend > sgv with lastCal but unfiltered <= 100 — uses sgv.glucose 1`] = `10`;
+
+exports[`glucose-stats characterization tests > calcTrend > sgv without unfiltered — uses sgv.glucose directly 1`] = `10`;
+
+exports[`glucose-stats characterization tests > calcTrend > single entry, no sgv — returns 0 (need >1 entries for trend) 1`] = `0`;
+
+exports[`glucose-stats characterization tests > calcTrend > steady glucose — trend near zero 1`] = `-0`;
+
+exports[`glucose-stats characterization tests > calcTrend > with lastCal and sgv with unfiltered 1`] = `5.333333333333314`;
+
+exports[`glucose-stats characterization tests > calcTrend > with lastCal and unfiltered data — uses calcGlucose 1`] = `5.333333333333343`;
+
+exports[`glucose-stats characterization tests > calcTrend > with sgv parameter — sgv determines currentTime 1`] = `4`;

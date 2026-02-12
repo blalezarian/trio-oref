@@ -1,0 +1,81 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`autotune-prep/dosed characterization tests > multiple treatments > multiple treatments all within window 1`] = `
+{
+  "insulin": 4,
+}
+`;
+
+exports[`autotune-prep/dosed characterization tests > multiple treatments > treatments with floating-point insulin values 1`] = `
+{
+  "insulin": 1,
+}
+`;
+
+exports[`autotune-prep/dosed characterization tests > no treatments > empty treatments array returns zero insulin 1`] = `
+{
+  "insulin": 0,
+}
+`;
+
+exports[`autotune-prep/dosed characterization tests > no treatments > undefined treatments returns empty object 1`] = `{}`;
+
+exports[`autotune-prep/dosed characterization tests > single treatment in window > treatment at midpoint of window 1`] = `
+{
+  "insulin": 2.5,
+}
+`;
+
+exports[`autotune-prep/dosed characterization tests > single treatment in window > treatment exactly at end boundary (inclusive) 1`] = `
+{
+  "insulin": 1,
+}
+`;
+
+exports[`autotune-prep/dosed characterization tests > single treatment in window > treatment exactly at start boundary (exclusive) 1`] = `
+{
+  "insulin": 0,
+}
+`;
+
+exports[`autotune-prep/dosed characterization tests > treatment with no insulin field > mix of treatments with and without insulin 1`] = `
+{
+  "insulin": 4,
+}
+`;
+
+exports[`autotune-prep/dosed characterization tests > treatment with no insulin field > treatment with insulin=0 is falsy, not counted 1`] = `
+{
+  "insulin": 0,
+}
+`;
+
+exports[`autotune-prep/dosed characterization tests > treatment with no insulin field > treatment with insulin=null is falsy, not counted 1`] = `
+{
+  "insulin": 0,
+}
+`;
+
+exports[`autotune-prep/dosed characterization tests > treatment with no insulin field > treatment without insulin property is ignored 1`] = `
+{
+  "insulin": 0,
+}
+`;
+
+exports[`autotune-prep/dosed characterization tests > treatments outside window > mix of in-window and out-of-window treatments 1`] = `
+{
+  "insulin": 1,
+}
+`;
+
+exports[`autotune-prep/dosed characterization tests > treatments outside window > treatment after window end 1`] = `
+{
+  "insulin": 0,
+}
+`;
+
+exports[`autotune-prep/dosed characterization tests > treatments outside window > treatment before window start 1`] = `
+{
+  "insulin": 0,
+}
+`;

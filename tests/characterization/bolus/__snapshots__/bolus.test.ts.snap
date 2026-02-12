@@ -1,0 +1,1108 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`bolus characterization tests > JournalEntryMealMarker > meal marker among bolus events 1`] = `
+[
+  {
+    "bolus": {
+      "_type": "Bolus",
+      "amount": 2,
+      "duration": 0,
+      "programmed": 2,
+      "timestamp": "2025-01-15T12:00:00-05:00",
+      "type": "normal",
+    },
+    "created_at": "2025-01-15T12:00:00-05:00",
+    "duration": "0",
+    "eventType": "Correction Bolus",
+    "insulin": "2",
+    "notes": "Normal bolus (solo, no bolus wizard).
+Programmed bolus 2
+Delivered bolus 2
+Percent delivered:  100%",
+    "timestamp": "2025-01-15T12:00:00-05:00",
+  },
+  {
+    "_type": "JournalEntryMealMarker",
+    "carb_input": 25,
+    "carbs": 25,
+    "eventType": "Carb Correction",
+    "timestamp": "2025-01-15T12:10:00-05:00",
+  },
+]
+`;
+
+exports[`bolus characterization tests > JournalEntryMealMarker > single meal marker 1`] = `
+[
+  {
+    "_type": "JournalEntryMealMarker",
+    "carb_input": 30,
+    "carbs": 30,
+    "eventType": "Carb Correction",
+    "timestamp": "2025-01-15T12:00:00-05:00",
+  },
+]
+`;
+
+exports[`bolus characterization tests > dual wave bolus > normal bolus + square bolus without wizard 1`] = `
+[
+  {
+    "bolus": {
+      "_type": "Bolus",
+      "amount": 2,
+      "duration": 0,
+      "programmed": 2,
+      "timestamp": "2025-01-15T12:00:00-05:00",
+      "type": "normal",
+    },
+    "created_at": "2025-01-15T12:01:00-05:00",
+    "duration": "30",
+    "eventType": "Correction Bolus",
+    "insulin": "3.5",
+    "notes": "DualWave bolus for 30 minutes
+Programmed bolus 2
+Delivered bolus 2
+Percent delivered:  100%
+Programmed square 1.5
+Delivered square 1.5
+Success:  100%",
+    "square": {
+      "_type": "Bolus",
+      "amount": 1.5,
+      "duration": 30,
+      "programmed": 1.5,
+      "timestamp": "2025-01-15T12:01:00-05:00",
+      "type": "normal",
+    },
+    "timestamp": "2025-01-15T12:01:00-05:00",
+  },
+]
+`;
+
+exports[`bolus characterization tests > dual wave bolus > wizard + normal bolus + square bolus — dual wave 1`] = `
+[
+  {
+    "bg": "150",
+    "bolus": {
+      "_type": "Bolus",
+      "amount": 2,
+      "duration": 0,
+      "programmed": 2,
+      "timestamp": "2025-01-15T12:01:00-05:00",
+      "type": "normal",
+    },
+    "carbs": "45",
+    "created_at": "2025-01-15T12:00:00-05:00",
+    "duration": "0",
+    "eventType": "Meal Bolus",
+    "glucose": "150",
+    "glucoseType": "BolusWizard",
+    "insulin": "2",
+    "notes": "Normal bolus with wizard.
+Programmed bolus 2
+Delivered bolus 2
+Percent delivered:  100%
+Food estimate 4.5
+Correction estimate 1
+Bolus estimate 5.5
+Target low 100
+Target high 120
+Hypothetical glucose delta -100
+Glucose was: 150",
+    "ratio": "10",
+    "timestamp": "2025-01-15T12:01:00-05:00",
+    "wizard": {
+      "_type": "BolusWizard",
+      "bg": 150,
+      "bg_target_high": 120,
+      "bg_target_low": 100,
+      "bolus_estimate": 5.5,
+      "carb_input": 45,
+      "carb_ratio": 10,
+      "correction_estimate": 1,
+      "food_estimate": 4.5,
+      "sensitivity": 50,
+      "timestamp": "2025-01-15T12:00:00-05:00",
+    },
+  },
+  {
+    "created_at": "2025-01-15T12:01:30-05:00",
+    "duration": "30",
+    "eventType": "Correction Bolus",
+    "insulin": "1.5",
+    "notes": "Solo Square wave bolus for 30 minutes
+No bolus wizard used.
+Programmed square 1.5
+Delivered square 1.5
+Success:  100%",
+    "square": {
+      "_type": "Bolus",
+      "amount": 1.5,
+      "duration": 30,
+      "programmed": 1.5,
+      "timestamp": "2025-01-15T12:01:30-05:00",
+      "type": "normal",
+    },
+    "timestamp": "2025-01-15T12:01:30-05:00",
+  },
+]
+`;
+
+exports[`bolus characterization tests > edge cases > bolus with undefined event triggers console.error guard 1`] = `
+[
+  {
+    "bg": "150",
+    "bolus": {
+      "_type": "Bolus",
+      "amount": 2,
+      "duration": 0,
+      "programmed": 2,
+      "timestamp": "2025-01-15T12:01:00-05:00",
+      "type": "normal",
+    },
+    "carbs": "45",
+    "created_at": "2025-01-15T12:00:00-05:00",
+    "duration": "0",
+    "eventType": "Meal Bolus",
+    "glucose": "150",
+    "glucoseType": "BolusWizard",
+    "insulin": "2",
+    "notes": "Normal bolus with wizard.
+Programmed bolus 2
+Delivered bolus 2
+Percent delivered:  100%
+Food estimate 4.5
+Correction estimate 1
+Bolus estimate 5.5
+Target low 100
+Target high 120
+Hypothetical glucose delta -100
+Glucose was: 150",
+    "ratio": "10",
+    "timestamp": "2025-01-15T12:01:00-05:00",
+    "wizard": {
+      "_type": "BolusWizard",
+      "bg": 150,
+      "bg_target_high": 120,
+      "bg_target_low": 100,
+      "bolus_estimate": 5.5,
+      "carb_input": 45,
+      "carb_ratio": 10,
+      "correction_estimate": 1,
+      "food_estimate": 4.5,
+      "sensitivity": 50,
+      "timestamp": "2025-01-15T12:00:00-05:00",
+    },
+  },
+]
+`;
+
+exports[`bolus characterization tests > edge cases > bolus with very large amount 1`] = `
+[
+  {
+    "bolus": {
+      "_type": "Bolus",
+      "amount": 25,
+      "duration": 0,
+      "programmed": 25,
+      "timestamp": "2025-01-15T12:00:00-05:00",
+      "type": "normal",
+    },
+    "created_at": "2025-01-15T12:00:00-05:00",
+    "duration": "0",
+    "eventType": "Correction Bolus",
+    "insulin": "25",
+    "notes": "Normal bolus (solo, no bolus wizard).
+Programmed bolus 25
+Delivered bolus 25
+Percent delivered:  100%",
+    "timestamp": "2025-01-15T12:00:00-05:00",
+  },
+]
+`;
+
+exports[`bolus characterization tests > edge cases > multiple wizard+bolus pairs far apart 1`] = `
+[
+  {
+    "bg": "150",
+    "bolus": {
+      "_type": "Bolus",
+      "amount": 2,
+      "duration": 0,
+      "programmed": 2,
+      "timestamp": "2025-01-15T12:01:00-05:00",
+      "type": "normal",
+    },
+    "carbs": "45",
+    "created_at": "2025-01-15T12:00:00-05:00",
+    "duration": "0",
+    "eventType": "Meal Bolus",
+    "glucose": "150",
+    "glucoseType": "BolusWizard",
+    "insulin": "2",
+    "notes": "Normal bolus with wizard.
+Programmed bolus 2
+Delivered bolus 2
+Percent delivered:  100%
+Food estimate 4.5
+Correction estimate 1
+Bolus estimate 5.5
+Target low 100
+Target high 120
+Hypothetical glucose delta -100
+Glucose was: 150",
+    "ratio": "10",
+    "timestamp": "2025-01-15T12:01:00-05:00",
+    "wizard": {
+      "_type": "BolusWizard",
+      "bg": 150,
+      "bg_target_high": 120,
+      "bg_target_low": 100,
+      "bolus_estimate": 5.5,
+      "carb_input": 45,
+      "carb_ratio": 10,
+      "correction_estimate": 1,
+      "food_estimate": 4.5,
+      "sensitivity": 50,
+      "timestamp": "2025-01-15T12:00:00-05:00",
+    },
+  },
+  {
+    "bg": "180",
+    "bolus": {
+      "_type": "Bolus",
+      "amount": 1,
+      "duration": 0,
+      "programmed": 1,
+      "timestamp": "2025-01-15T12:11:00-05:00",
+      "type": "normal",
+    },
+    "carbs": "20",
+    "created_at": "2025-01-15T12:10:00-05:00",
+    "duration": "0",
+    "eventType": "Meal Bolus",
+    "glucose": "180",
+    "glucoseType": "BolusWizard",
+    "insulin": "1",
+    "notes": "Normal bolus with wizard.
+Programmed bolus 1
+Delivered bolus 1
+Percent delivered:  100%
+Food estimate 4.5
+Correction estimate 1
+Bolus estimate 5.5
+Target low 100
+Target high 120
+Hypothetical glucose delta -50
+Glucose was: 180",
+    "ratio": "10",
+    "timestamp": "2025-01-15T12:11:00-05:00",
+    "wizard": {
+      "_type": "BolusWizard",
+      "bg": 180,
+      "bg_target_high": 120,
+      "bg_target_low": 100,
+      "bolus_estimate": 5.5,
+      "carb_input": 20,
+      "carb_ratio": 10,
+      "correction_estimate": 1,
+      "food_estimate": 4.5,
+      "sensitivity": 50,
+      "timestamp": "2025-01-15T12:10:00-05:00",
+    },
+  },
+]
+`;
+
+exports[`bolus characterization tests > edge cases > square bolus with partial delivery 1`] = `
+[
+  {
+    "created_at": "2025-01-15T12:00:00-05:00",
+    "duration": "60",
+    "eventType": "Correction Bolus",
+    "insulin": "2",
+    "notes": "Solo Square wave bolus for 60 minutes
+No bolus wizard used.
+Programmed square 4
+Delivered square 2
+Success:  50%",
+    "square": {
+      "_type": "Bolus",
+      "amount": 2,
+      "duration": 60,
+      "programmed": 4,
+      "timestamp": "2025-01-15T12:00:00-05:00",
+      "type": "normal",
+    },
+    "timestamp": "2025-01-15T12:00:00-05:00",
+  },
+]
+`;
+
+exports[`bolus characterization tests > empty and trivial inputs > empty array returns empty results 1`] = `[]`;
+
+exports[`bolus characterization tests > event type classification > carb correction — wizard with carbs but wizard alone has no insulin 1`] = `
+[
+  {
+    "bg": "150",
+    "carbs": "30",
+    "created_at": "2025-01-15T12:00:00-05:00",
+    "eventType": "Carb Correction",
+    "glucose": "150",
+    "glucoseType": "BolusWizard",
+    "insulin": 0,
+    "notes": "Food estimate 4.5
+Correction estimate 1
+Bolus estimate 5.5
+Target low 100
+Target high 120
+Hypothetical glucose delta 0
+Glucose was: 150",
+    "ratio": "10",
+    "timestamp": "2025-01-15T12:00:00-05:00",
+    "wizard": {
+      "_type": "BolusWizard",
+      "bg": 150,
+      "bg_target_high": 120,
+      "bg_target_low": 100,
+      "bolus_estimate": 5.5,
+      "carb_input": 30,
+      "carb_ratio": 10,
+      "correction_estimate": 1,
+      "food_estimate": 4.5,
+      "sensitivity": 50,
+      "timestamp": "2025-01-15T12:00:00-05:00",
+    },
+  },
+]
+`;
+
+exports[`bolus characterization tests > event type classification > correction bolus — has insulin but no carbs 1`] = `
+[
+  {
+    "bg": "150",
+    "bolus": {
+      "_type": "Bolus",
+      "amount": 2,
+      "duration": 0,
+      "programmed": 2,
+      "timestamp": "2025-01-15T12:01:00-05:00",
+      "type": "normal",
+    },
+    "carbs": "0",
+    "created_at": "2025-01-15T12:00:00-05:00",
+    "duration": "0",
+    "eventType": "Correction Bolus",
+    "glucose": "150",
+    "glucoseType": "BolusWizard",
+    "insulin": "2",
+    "notes": "Normal bolus with wizard.
+Programmed bolus 2
+Delivered bolus 2
+Percent delivered:  100%
+Food estimate 4.5
+Correction estimate 1
+Bolus estimate 5.5
+Target low 100
+Target high 120
+Hypothetical glucose delta -100
+Glucose was: 150",
+    "ratio": "10",
+    "timestamp": "2025-01-15T12:01:00-05:00",
+    "wizard": {
+      "_type": "BolusWizard",
+      "bg": 150,
+      "bg_target_high": 120,
+      "bg_target_low": 100,
+      "bolus_estimate": 5.5,
+      "carb_input": 0,
+      "carb_ratio": 10,
+      "correction_estimate": 1,
+      "food_estimate": 4.5,
+      "sensitivity": 50,
+      "timestamp": "2025-01-15T12:00:00-05:00",
+    },
+  },
+]
+`;
+
+exports[`bolus characterization tests > event type classification > meal bolus — has carbs and insulin 1`] = `
+[
+  {
+    "bg": "150",
+    "bolus": {
+      "_type": "Bolus",
+      "amount": 2,
+      "duration": 0,
+      "programmed": 2,
+      "timestamp": "2025-01-15T12:01:00-05:00",
+      "type": "normal",
+    },
+    "carbs": "45",
+    "created_at": "2025-01-15T12:00:00-05:00",
+    "duration": "0",
+    "eventType": "Meal Bolus",
+    "glucose": "150",
+    "glucoseType": "BolusWizard",
+    "insulin": "2",
+    "notes": "Normal bolus with wizard.
+Programmed bolus 2
+Delivered bolus 2
+Percent delivered:  100%
+Food estimate 4.5
+Correction estimate 1
+Bolus estimate 5.5
+Target low 100
+Target high 120
+Hypothetical glucose delta -100
+Glucose was: 150",
+    "ratio": "10",
+    "timestamp": "2025-01-15T12:01:00-05:00",
+    "wizard": {
+      "_type": "BolusWizard",
+      "bg": 150,
+      "bg_target_high": 120,
+      "bg_target_low": 100,
+      "bolus_estimate": 5.5,
+      "carb_input": 45,
+      "carb_ratio": 10,
+      "correction_estimate": 1,
+      "food_estimate": 4.5,
+      "sensitivity": 50,
+      "timestamp": "2025-01-15T12:00:00-05:00",
+    },
+  },
+]
+`;
+
+exports[`bolus characterization tests > iob.json filesystem interaction > iob.json does not exist — no IOB annotation 1`] = `
+[
+  {
+    "bolus": {
+      "_type": "Bolus",
+      "amount": 2,
+      "duration": 0,
+      "programmed": 2,
+      "timestamp": "2025-01-15T12:00:00-05:00",
+      "type": "normal",
+    },
+    "created_at": "2025-01-15T12:00:00-05:00",
+    "duration": "0",
+    "eventType": "Correction Bolus",
+    "insulin": "2",
+    "notes": "Normal bolus (solo, no bolus wizard).
+Programmed bolus 2
+Delivered bolus 2
+Percent delivered:  100%",
+    "timestamp": "2025-01-15T12:00:00-05:00",
+  },
+]
+`;
+
+exports[`bolus characterization tests > iob.json filesystem interaction > reads iob.json when it exists and annotates IOB 1`] = `
+[
+  {
+    "bolus": {
+      "_type": "Bolus",
+      "amount": 2,
+      "duration": 0,
+      "programmed": 2,
+      "timestamp": "2025-01-15T12:00:00-05:00",
+      "type": "normal",
+    },
+    "created_at": "2025-01-15T12:00:00-05:00",
+    "duration": "0",
+    "eventType": "Correction Bolus",
+    "insulin": "2",
+    "notes": "Normal bolus (solo, no bolus wizard).
+Calculated IOB: 2.5
+Programmed bolus 2
+Delivered bolus 2
+Percent delivered:  100%",
+    "timestamp": "2025-01-15T12:00:00-05:00",
+  },
+]
+`;
+
+exports[`bolus characterization tests > iob.json filesystem interaction > reads iob.json with empty array — no IOB annotation 1`] = `
+[
+  {
+    "bolus": {
+      "_type": "Bolus",
+      "amount": 2,
+      "duration": 0,
+      "programmed": 2,
+      "timestamp": "2025-01-15T12:00:00-05:00",
+      "type": "normal",
+    },
+    "created_at": "2025-01-15T12:00:00-05:00",
+    "duration": "0",
+    "eventType": "Correction Bolus",
+    "insulin": "2",
+    "notes": "Normal bolus (solo, no bolus wizard).
+Programmed bolus 2
+Delivered bolus 2
+Percent delivered:  100%",
+    "timestamp": "2025-01-15T12:00:00-05:00",
+  },
+]
+`;
+
+exports[`bolus characterization tests > multiple independent boluses > two boluses far apart — separate results 1`] = `
+[
+  {
+    "bolus": {
+      "_type": "Bolus",
+      "amount": 3,
+      "duration": 0,
+      "programmed": 2,
+      "timestamp": "2025-01-15T12:00:00-05:00",
+      "type": "normal",
+    },
+    "created_at": "2025-01-15T12:10:00-05:00",
+    "duration": "0",
+    "eventType": "Correction Bolus",
+    "insulin": "3",
+    "notes": "Normal bolus (solo, no bolus wizard).
+Programmed bolus 2
+Delivered bolus 3
+Percent delivered:  150%",
+    "timestamp": "2025-01-15T12:10:00-05:00",
+  },
+]
+`;
+
+exports[`bolus characterization tests > multiple independent boluses > two closely-timed boluses — combined (existing mocha test case) 1`] = `
+[
+  {
+    "bolus": {
+      "_type": "Bolus",
+      "amount": 3.2,
+      "duration": 0,
+      "programmed": 3,
+      "timestamp": "2017-04-12T12:49:49-05:00",
+      "type": "normal",
+    },
+    "created_at": "2017-04-12T12:47:53-05:00",
+    "duration": "0",
+    "eventType": "Correction Bolus",
+    "insulin": "3.2",
+    "notes": "Normal bolus (solo, no bolus wizard).
+Programmed bolus 3
+Delivered bolus 3.2
+Percent delivered:  106.66666666666667%",
+    "timestamp": "2017-04-12T12:47:53-05:00",
+  },
+]
+`;
+
+exports[`bolus characterization tests > single Bolus event > bolus with partial delivery (amount < programmed) 1`] = `
+[
+  {
+    "bolus": {
+      "_type": "Bolus",
+      "amount": 1.5,
+      "duration": 0,
+      "programmed": 2,
+      "timestamp": "2025-01-15T12:00:00-05:00",
+      "type": "normal",
+    },
+    "created_at": "2025-01-15T12:00:00-05:00",
+    "duration": "0",
+    "eventType": "Correction Bolus",
+    "insulin": "1.5",
+    "notes": "Normal bolus (solo, no bolus wizard).
+Programmed bolus 2
+Delivered bolus 1.5
+Percent delivered:  75%",
+    "timestamp": "2025-01-15T12:00:00-05:00",
+  },
+]
+`;
+
+exports[`bolus characterization tests > single Bolus event > bolus with zero amount 1`] = `
+[
+  {
+    "bolus": {
+      "_type": "Bolus",
+      "amount": 0,
+      "duration": 0,
+      "programmed": 0,
+      "timestamp": "2025-01-15T12:00:00-05:00",
+      "type": "normal",
+    },
+    "created_at": "2025-01-15T12:00:00-05:00",
+    "duration": "0",
+    "eventType": "<none>",
+    "insulin": 0,
+    "notes": "Normal bolus (solo, no bolus wizard).
+Programmed bolus 0
+Delivered bolus 0
+Percent delivered:  NaN%",
+    "timestamp": "2025-01-15T12:00:00-05:00",
+  },
+]
+`;
+
+exports[`bolus characterization tests > single Bolus event > normal bolus without wizard 1`] = `
+[
+  {
+    "bolus": {
+      "_type": "Bolus",
+      "amount": 2,
+      "duration": 0,
+      "programmed": 2,
+      "timestamp": "2025-01-15T12:00:00-05:00",
+      "type": "normal",
+    },
+    "created_at": "2025-01-15T12:00:00-05:00",
+    "duration": "0",
+    "eventType": "Correction Bolus",
+    "insulin": "2",
+    "notes": "Normal bolus (solo, no bolus wizard).
+Programmed bolus 2
+Delivered bolus 2
+Percent delivered:  100%",
+    "timestamp": "2025-01-15T12:00:00-05:00",
+  },
+]
+`;
+
+exports[`bolus characterization tests > single BolusWizard event > wizard alone without bolus 1`] = `
+[
+  {
+    "bg": "150",
+    "carbs": "45",
+    "created_at": "2025-01-15T12:00:00-05:00",
+    "eventType": "Carb Correction",
+    "glucose": "150",
+    "glucoseType": "BolusWizard",
+    "insulin": 0,
+    "notes": "Food estimate 4.5
+Correction estimate 1
+Bolus estimate 5.5
+Target low 100
+Target high 120
+Hypothetical glucose delta 0
+Glucose was: 150",
+    "ratio": "10",
+    "timestamp": "2025-01-15T12:00:00-05:00",
+    "wizard": {
+      "_type": "BolusWizard",
+      "bg": 150,
+      "bg_target_high": 120,
+      "bg_target_low": 100,
+      "bolus_estimate": 5.5,
+      "carb_input": 45,
+      "carb_ratio": 10,
+      "correction_estimate": 1,
+      "food_estimate": 4.5,
+      "sensitivity": 50,
+      "timestamp": "2025-01-15T12:00:00-05:00",
+    },
+  },
+]
+`;
+
+exports[`bolus characterization tests > single BolusWizard event > wizard with no bg field 1`] = `
+[
+  {
+    "carbs": "45",
+    "created_at": "2025-01-15T12:00:00-05:00",
+    "eventType": "Carb Correction",
+    "insulin": 0,
+    "notes": "Food estimate 4.5
+Correction estimate 1
+Bolus estimate 5.5
+Target low 100
+Target high 120
+Hypothetical glucose delta 0",
+    "ratio": "10",
+    "timestamp": "2025-01-15T12:00:00-05:00",
+    "wizard": {
+      "_type": "BolusWizard",
+      "bg": undefined,
+      "bg_target_high": 120,
+      "bg_target_low": 100,
+      "bolus_estimate": 5.5,
+      "carb_input": 45,
+      "carb_ratio": 10,
+      "correction_estimate": 1,
+      "food_estimate": 4.5,
+      "sensitivity": 50,
+      "timestamp": "2025-01-15T12:00:00-05:00",
+    },
+  },
+]
+`;
+
+exports[`bolus characterization tests > single BolusWizard event > wizard with zero bg 1`] = `
+[
+  {
+    "carbs": "45",
+    "created_at": "2025-01-15T12:00:00-05:00",
+    "eventType": "Carb Correction",
+    "insulin": 0,
+    "notes": "Food estimate 4.5
+Correction estimate 1
+Bolus estimate 5.5
+Target low 100
+Target high 120
+Hypothetical glucose delta 0",
+    "ratio": "10",
+    "timestamp": "2025-01-15T12:00:00-05:00",
+    "wizard": {
+      "_type": "BolusWizard",
+      "bg": 0,
+      "bg_target_high": 120,
+      "bg_target_low": 100,
+      "bolus_estimate": 5.5,
+      "carb_input": 45,
+      "carb_ratio": 10,
+      "correction_estimate": 1,
+      "food_estimate": 4.5,
+      "sensitivity": 50,
+      "timestamp": "2025-01-15T12:00:00-05:00",
+    },
+  },
+]
+`;
+
+exports[`bolus characterization tests > single BolusWizard event > wizard with zero carbs 1`] = `
+[
+  {
+    "bg": "150",
+    "carbs": "0",
+    "created_at": "2025-01-15T12:00:00-05:00",
+    "eventType": "<none>",
+    "glucose": "150",
+    "glucoseType": "BolusWizard",
+    "insulin": 0,
+    "notes": "Food estimate 4.5
+Correction estimate 1
+Bolus estimate 5.5
+Target low 100
+Target high 120
+Hypothetical glucose delta 0
+Glucose was: 150",
+    "ratio": "10",
+    "timestamp": "2025-01-15T12:00:00-05:00",
+    "wizard": {
+      "_type": "BolusWizard",
+      "bg": 150,
+      "bg_target_high": 120,
+      "bg_target_low": 100,
+      "bolus_estimate": 5.5,
+      "carb_input": 0,
+      "carb_ratio": 10,
+      "correction_estimate": 1,
+      "food_estimate": 4.5,
+      "sensitivity": 50,
+      "timestamp": "2025-01-15T12:00:00-05:00",
+    },
+  },
+]
+`;
+
+exports[`bolus characterization tests > square wave bolus > square wave bolus alone (duration > 0, no wizard) 1`] = `
+[
+  {
+    "created_at": "2025-01-15T12:00:00-05:00",
+    "duration": "30",
+    "eventType": "Correction Bolus",
+    "insulin": "3",
+    "notes": "Solo Square wave bolus for 30 minutes
+No bolus wizard used.
+Programmed square 3
+Delivered square 3
+Success:  100%",
+    "square": {
+      "_type": "Bolus",
+      "amount": 3,
+      "duration": 30,
+      "programmed": 3,
+      "timestamp": "2025-01-15T12:00:00-05:00",
+      "type": "normal",
+    },
+    "timestamp": "2025-01-15T12:00:00-05:00",
+  },
+]
+`;
+
+exports[`bolus characterization tests > square wave bolus > square wave with wizard (no normal bolus) 1`] = `
+[
+  {
+    "bg": "150",
+    "carbs": "45",
+    "created_at": "2025-01-15T12:00:00-05:00",
+    "duration": "30",
+    "eventType": "Meal Bolus",
+    "glucose": "150",
+    "glucoseType": "BolusWizard",
+    "insulin": "3",
+    "notes": "Square wave bolus for 30 minutes
+Programmed square 3
+Delivered square 3
+Success:  100%
+Food estimate 4.5
+Correction estimate 1
+Bolus estimate 5.5
+Target low 100
+Target high 120
+Hypothetical glucose delta -150
+Glucose was: 150",
+    "ratio": "10",
+    "square": {
+      "_type": "Bolus",
+      "amount": 3,
+      "duration": 30,
+      "programmed": 3,
+      "timestamp": "2025-01-15T12:01:00-05:00",
+      "type": "normal",
+    },
+    "timestamp": "2025-01-15T12:01:00-05:00",
+    "wizard": {
+      "_type": "BolusWizard",
+      "bg": 150,
+      "bg_target_high": 120,
+      "bg_target_low": 100,
+      "bolus_estimate": 5.5,
+      "carb_input": 45,
+      "carb_ratio": 10,
+      "correction_estimate": 1,
+      "food_estimate": 4.5,
+      "sensitivity": 50,
+      "timestamp": "2025-01-15T12:00:00-05:00",
+    },
+  },
+]
+`;
+
+exports[`bolus characterization tests > unknown _type events > mixed known and unknown types 1`] = `
+[
+  {
+    "_type": "SomeOtherEvent",
+    "timestamp": "2025-01-15T12:00:00-05:00",
+  },
+  {
+    "bolus": {
+      "_type": "Bolus",
+      "amount": 2,
+      "duration": 0,
+      "programmed": 2,
+      "timestamp": "2025-01-15T12:10:00-05:00",
+      "type": "normal",
+    },
+    "created_at": "2025-01-15T12:10:00-05:00",
+    "duration": "0",
+    "eventType": "Correction Bolus",
+    "insulin": "2",
+    "notes": "Normal bolus (solo, no bolus wizard).
+Programmed bolus 2
+Delivered bolus 2
+Percent delivered:  100%",
+    "timestamp": "2025-01-15T12:10:00-05:00",
+  },
+]
+`;
+
+exports[`bolus characterization tests > unknown _type events > unknown type passes through to results 1`] = `
+[
+  {
+    "_type": "SomeOtherEvent",
+    "data": "test",
+    "timestamp": "2025-01-15T12:00:00-05:00",
+  },
+]
+`;
+
+exports[`bolus characterization tests > wizard + bolus pair (within 2 minutes) > bolus followed by wizard — normal meal bolus (reversed order) 1`] = `
+[
+  {
+    "bg": "150",
+    "bolus": {
+      "_type": "Bolus",
+      "amount": 2,
+      "duration": 0,
+      "programmed": 2,
+      "timestamp": "2025-01-15T12:00:00-05:00",
+      "type": "normal",
+    },
+    "carbs": "45",
+    "created_at": "2025-01-15T12:01:00-05:00",
+    "duration": "0",
+    "eventType": "Meal Bolus",
+    "glucose": "150",
+    "glucoseType": "BolusWizard",
+    "insulin": "2",
+    "notes": "Normal bolus with wizard.
+Programmed bolus 2
+Delivered bolus 2
+Percent delivered:  100%
+Food estimate 4.5
+Correction estimate 1
+Bolus estimate 5.5
+Target low 100
+Target high 120
+Hypothetical glucose delta -100
+Glucose was: 150",
+    "ratio": "10",
+    "timestamp": "2025-01-15T12:01:00-05:00",
+    "wizard": {
+      "_type": "BolusWizard",
+      "bg": 150,
+      "bg_target_high": 120,
+      "bg_target_low": 100,
+      "bolus_estimate": 5.5,
+      "carb_input": 45,
+      "carb_ratio": 10,
+      "correction_estimate": 1,
+      "food_estimate": 4.5,
+      "sensitivity": 50,
+      "timestamp": "2025-01-15T12:01:00-05:00",
+    },
+  },
+]
+`;
+
+exports[`bolus characterization tests > wizard + bolus pair (within 2 minutes) > wizard + bolus with zero bg — no glucose annotation 1`] = `
+[
+  {
+    "bolus": {
+      "_type": "Bolus",
+      "amount": 2,
+      "duration": 0,
+      "programmed": 2,
+      "timestamp": "2025-01-15T12:01:00-05:00",
+      "type": "normal",
+    },
+    "carbs": "45",
+    "created_at": "2025-01-15T12:00:00-05:00",
+    "duration": "0",
+    "eventType": "Meal Bolus",
+    "insulin": "2",
+    "notes": "Normal bolus with wizard.
+Programmed bolus 2
+Delivered bolus 2
+Percent delivered:  100%
+Food estimate 4.5
+Correction estimate 1
+Bolus estimate 5.5
+Target low 100
+Target high 120
+Hypothetical glucose delta -100",
+    "ratio": "10",
+    "timestamp": "2025-01-15T12:01:00-05:00",
+    "wizard": {
+      "_type": "BolusWizard",
+      "bg": 0,
+      "bg_target_high": 120,
+      "bg_target_low": 100,
+      "bolus_estimate": 5.5,
+      "carb_input": 45,
+      "carb_ratio": 10,
+      "correction_estimate": 1,
+      "food_estimate": 4.5,
+      "sensitivity": 50,
+      "timestamp": "2025-01-15T12:00:00-05:00",
+    },
+  },
+]
+`;
+
+exports[`bolus characterization tests > wizard + bolus pair (within 2 minutes) > wizard + bolus with zero carbs — correction bolus 1`] = `
+[
+  {
+    "bg": "150",
+    "bolus": {
+      "_type": "Bolus",
+      "amount": 2,
+      "duration": 0,
+      "programmed": 2,
+      "timestamp": "2025-01-15T12:01:00-05:00",
+      "type": "normal",
+    },
+    "carbs": "0",
+    "created_at": "2025-01-15T12:00:00-05:00",
+    "duration": "0",
+    "eventType": "Correction Bolus",
+    "glucose": "150",
+    "glucoseType": "BolusWizard",
+    "insulin": "2",
+    "notes": "Normal bolus with wizard.
+Programmed bolus 2
+Delivered bolus 2
+Percent delivered:  100%
+Food estimate 4.5
+Correction estimate 1
+Bolus estimate 5.5
+Target low 100
+Target high 120
+Hypothetical glucose delta -100
+Glucose was: 150",
+    "ratio": "10",
+    "timestamp": "2025-01-15T12:01:00-05:00",
+    "wizard": {
+      "_type": "BolusWizard",
+      "bg": 150,
+      "bg_target_high": 120,
+      "bg_target_low": 100,
+      "bolus_estimate": 5.5,
+      "carb_input": 0,
+      "carb_ratio": 10,
+      "correction_estimate": 1,
+      "food_estimate": 4.5,
+      "sensitivity": 50,
+      "timestamp": "2025-01-15T12:00:00-05:00",
+    },
+  },
+]
+`;
+
+exports[`bolus characterization tests > wizard + bolus pair (within 2 minutes) > wizard followed by bolus — normal meal bolus 1`] = `
+[
+  {
+    "bg": "150",
+    "bolus": {
+      "_type": "Bolus",
+      "amount": 2,
+      "duration": 0,
+      "programmed": 2,
+      "timestamp": "2025-01-15T12:01:00-05:00",
+      "type": "normal",
+    },
+    "carbs": "45",
+    "created_at": "2025-01-15T12:00:00-05:00",
+    "duration": "0",
+    "eventType": "Meal Bolus",
+    "glucose": "150",
+    "glucoseType": "BolusWizard",
+    "insulin": "2",
+    "notes": "Normal bolus with wizard.
+Programmed bolus 2
+Delivered bolus 2
+Percent delivered:  100%
+Food estimate 4.5
+Correction estimate 1
+Bolus estimate 5.5
+Target low 100
+Target high 120
+Hypothetical glucose delta -100
+Glucose was: 150",
+    "ratio": "10",
+    "timestamp": "2025-01-15T12:01:00-05:00",
+    "wizard": {
+      "_type": "BolusWizard",
+      "bg": 150,
+      "bg_target_high": 120,
+      "bg_target_low": 100,
+      "bolus_estimate": 5.5,
+      "carb_input": 45,
+      "carb_ratio": 10,
+      "correction_estimate": 1,
+      "food_estimate": 4.5,
+      "sensitivity": 50,
+      "timestamp": "2025-01-15T12:00:00-05:00",
+    },
+  },
+]
+`;

@@ -1,0 +1,45 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`percentile characterization tests > boundary percentiles > p greater than 1 returns last element 1`] = `50`;
+
+exports[`percentile characterization tests > boundary percentiles > p less than 0 returns first element 1`] = `10`;
+
+exports[`percentile characterization tests > boundary percentiles > p=0 returns first element of sorted array 1`] = `10`;
+
+exports[`percentile characterization tests > boundary percentiles > p=1 returns last element of sorted array 1`] = `50`;
+
+exports[`percentile characterization tests > empty array > returns 0 for empty array 1`] = `0`;
+
+exports[`percentile characterization tests > floating-point values > array with decimal values 1`] = `4`;
+
+exports[`percentile characterization tests > floating-point values > p=0.33 fractional percentile 1`] = `26.5`;
+
+exports[`percentile characterization tests > identical elements > all elements the same 1`] = `100`;
+
+exports[`percentile characterization tests > mid-range percentiles > p=0.1 on multi-element array 1`] = `15`;
+
+exports[`percentile characterization tests > mid-range percentiles > p=0.5 on even-length sorted array 1`] = `30`;
+
+exports[`percentile characterization tests > mid-range percentiles > p=0.5 on odd-length sorted array 1`] = `35`;
+
+exports[`percentile characterization tests > mid-range percentiles > p=0.9 on multi-element array 1`] = `50`;
+
+exports[`percentile characterization tests > mid-range percentiles > p=0.25 on multi-element array 1`] = `22.5`;
+
+exports[`percentile characterization tests > mid-range percentiles > p=0.75 on multi-element array 1`] = `47.5`;
+
+exports[`percentile characterization tests > single element > p=0 returns the only element 1`] = `42`;
+
+exports[`percentile characterization tests > single element > p=0.5 returns the only element 1`] = `42`;
+
+exports[`percentile characterization tests > single element > p=1 returns the only element 1`] = `42`;
+
+exports[`percentile characterization tests > two-element array > p=0.5 interpolates midpoint 1`] = `200`;
+
+exports[`percentile characterization tests > two-element array > p=0.25 interpolates quarter 1`] = `150`;
+
+exports[`percentile characterization tests > two-element array > p=0.75 interpolates three-quarter 1`] = `200`;
+
+exports[`percentile characterization tests > unsorted array behavior > reverse-sorted array 1`] = `37.5`;
+
+exports[`percentile characterization tests > unsorted array behavior > unsorted array — captures actual behavior (no internal sorting) 1`] = `30`;

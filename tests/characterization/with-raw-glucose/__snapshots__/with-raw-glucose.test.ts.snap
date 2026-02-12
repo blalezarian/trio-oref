@@ -1,0 +1,302 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`with-raw-glucose characterization tests > cal.filtered === 0 path > cal.filtered is 0 — uses direct formula (no ratio) 1`] = `
+{
+  "filtered": 85000,
+  "fromRaw": true,
+  "glucose": 87,
+  "noise": 2,
+  "raw": 87,
+  "unfiltered": 90000,
+}
+`;
+
+exports[`with-raw-glucose characterization tests > calibration value parsing > cal with all zero — invalid 1`] = `
+{
+  "filtered": 85000,
+  "glucose": 120,
+  "unfiltered": 90000,
+}
+`;
+
+exports[`with-raw-glucose characterization tests > calibration value parsing > string cal values — parsed to float 1`] = `
+{
+  "filtered": 85000,
+  "glucose": 120,
+  "noise": 0,
+  "raw": 130,
+  "unfiltered": 90000,
+}
+`;
+
+exports[`with-raw-glucose characterization tests > egv < 40 — raw glucose substitution > egv < 40 with raw <= maxRaw — glucose replaced, noise = 2 1`] = `
+{
+  "filtered": 85000,
+  "fromRaw": true,
+  "glucose": 87,
+  "noise": 2,
+  "raw": 87,
+  "unfiltered": 90000,
+}
+`;
+
+exports[`with-raw-glucose characterization tests > egv < 40 — raw glucose substitution > egv < 40 with raw = 0 — glucose not replaced, noise = 3 1`] = `
+{
+  "filtered": 85000,
+  "glucose": 35,
+  "noise": 3,
+  "raw": 0,
+  "unfiltered": 25000,
+}
+`;
+
+exports[`with-raw-glucose characterization tests > egv < 40 — raw glucose substitution > egv < 40 with raw > maxRaw — glucose replaced, noise = 3 1`] = `
+{
+  "filtered": 85000,
+  "fromRaw": true,
+  "glucose": 233,
+  "noise": 3,
+  "raw": 233,
+  "unfiltered": 200000,
+}
+`;
+
+exports[`with-raw-glucose characterization tests > egv < 40 — raw glucose substitution > egv = 0 (no glucose or sgv) with valid raw 1`] = `
+{
+  "filtered": 85000,
+  "fromRaw": true,
+  "glucose": 87,
+  "noise": 2,
+  "raw": 87,
+  "unfiltered": 90000,
+}
+`;
+
+exports[`with-raw-glucose characterization tests > egv < 40 — raw glucose substitution > egv = 39 — just under threshold 1`] = `
+{
+  "filtered": 85000,
+  "fromRaw": true,
+  "glucose": 87,
+  "noise": 2,
+  "raw": 87,
+  "unfiltered": 90000,
+}
+`;
+
+exports[`with-raw-glucose characterization tests > egv < 40 — raw glucose substitution > egv = 40 — at threshold, standard path (not <40) 1`] = `
+{
+  "filtered": 85000,
+  "glucose": 40,
+  "noise": 0,
+  "raw": 43,
+  "unfiltered": 90000,
+}
+`;
+
+exports[`with-raw-glucose characterization tests > entry type bypass > entry type "cal" — returned unchanged 1`] = `
+{
+  "glucose": 0,
+  "type": "cal",
+}
+`;
+
+exports[`with-raw-glucose characterization tests > entry type bypass > entry type "mbg" — returned unchanged 1`] = `
+{
+  "glucose": 150,
+  "type": "mbg",
+}
+`;
+
+exports[`with-raw-glucose characterization tests > invalid calibration > cal with non-numeric slope — parsed to NaN then 0, invalid 1`] = `
+{
+  "filtered": 85000,
+  "glucose": 120,
+  "unfiltered": 90000,
+}
+`;
+
+exports[`with-raw-glucose characterization tests > invalid calibration > cal with scale = 0 — invalid, no raw calculation 1`] = `
+{
+  "filtered": 85000,
+  "glucose": 120,
+  "unfiltered": 90000,
+}
+`;
+
+exports[`with-raw-glucose characterization tests > invalid calibration > cal with slope = 0 — invalid, no raw calculation 1`] = `
+{
+  "filtered": 85000,
+  "glucose": 120,
+  "unfiltered": 90000,
+}
+`;
+
+exports[`with-raw-glucose characterization tests > maxRaw parameter > maxRaw = 0 — uses default of 200 1`] = `
+{
+  "filtered": 85000,
+  "fromRaw": true,
+  "glucose": 87,
+  "noise": 2,
+  "raw": 87,
+  "unfiltered": 90000,
+}
+`;
+
+exports[`with-raw-glucose characterization tests > maxRaw parameter > maxRaw = 50 — low threshold 1`] = `
+{
+  "filtered": 85000,
+  "fromRaw": true,
+  "glucose": 87,
+  "noise": 3,
+  "raw": 87,
+  "unfiltered": 90000,
+}
+`;
+
+exports[`with-raw-glucose characterization tests > maxRaw parameter > maxRaw defaults to 200 when not provided 1`] = `
+{
+  "filtered": 85000,
+  "fromRaw": true,
+  "glucose": 87,
+  "noise": 2,
+  "raw": 87,
+  "unfiltered": 90000,
+}
+`;
+
+exports[`with-raw-glucose characterization tests > multiple calibrations > uses only the first calibration from cals array 1`] = `
+{
+  "filtered": 85000,
+  "glucose": 120,
+  "noise": 0,
+  "raw": 130,
+  "unfiltered": 90000,
+}
+`;
+
+exports[`with-raw-glucose characterization tests > no calibration data > empty cals array — no raw calculation 1`] = `
+{
+  "filtered": 85000,
+  "glucose": 120,
+  "unfiltered": 90000,
+}
+`;
+
+exports[`with-raw-glucose characterization tests > no calibration data > null cals — no raw calculation 1`] = `
+{
+  "filtered": 85000,
+  "glucose": 120,
+  "unfiltered": 90000,
+}
+`;
+
+exports[`with-raw-glucose characterization tests > no calibration data > undefined cals — no raw calculation 1`] = `
+{
+  "filtered": 85000,
+  "glucose": 120,
+  "unfiltered": 90000,
+}
+`;
+
+exports[`with-raw-glucose characterization tests > unfiltered/filtered parsing > NaN unfiltered — parsed to 0 1`] = `
+{
+  "filtered": 85000,
+  "glucose": 120,
+  "noise": 0,
+  "raw": -50,
+  "unfiltered": 0,
+}
+`;
+
+exports[`with-raw-glucose characterization tests > unfiltered/filtered parsing > string unfiltered/filtered — parsed to int 1`] = `
+{
+  "filtered": 85000,
+  "glucose": 120,
+  "noise": 0,
+  "raw": 130,
+  "unfiltered": 90000,
+}
+`;
+
+exports[`with-raw-glucose characterization tests > unfiltered/filtered parsing > undefined unfiltered/filtered — parsed to 0 1`] = `
+{
+  "filtered": 0,
+  "glucose": 120,
+  "noise": 0,
+  "raw": 120,
+  "unfiltered": 0,
+}
+`;
+
+exports[`with-raw-glucose characterization tests > valid calibration — standard path (egv >= 40, filtered != 0) > entry already has noise set — noise not overwritten 1`] = `
+{
+  "filtered": 85000,
+  "glucose": 120,
+  "noise": 3,
+  "raw": 130,
+  "unfiltered": 90000,
+}
+`;
+
+exports[`with-raw-glucose characterization tests > valid calibration — standard path (egv >= 40, filtered != 0) > entry with both glucose and sgv — glucose takes precedence 1`] = `
+{
+  "filtered": 85000,
+  "glucose": 120,
+  "noise": 0,
+  "raw": 130,
+  "sgv": 110,
+  "unfiltered": 90000,
+}
+`;
+
+exports[`with-raw-glucose characterization tests > valid calibration — standard path (egv >= 40, filtered != 0) > entry with no glucose or sgv — egv defaults to 0 1`] = `
+{
+  "filtered": 85000,
+  "fromRaw": true,
+  "glucose": 87,
+  "noise": 2,
+  "raw": 87,
+  "unfiltered": 90000,
+}
+`;
+
+exports[`with-raw-glucose characterization tests > valid calibration — standard path (egv >= 40, filtered != 0) > entry with noise = 0 (falsy) — noise set to 0 again 1`] = `
+{
+  "filtered": 85000,
+  "glucose": 120,
+  "noise": 0,
+  "raw": 130,
+  "unfiltered": 90000,
+}
+`;
+
+exports[`with-raw-glucose characterization tests > valid calibration — standard path (egv >= 40, filtered != 0) > entry with sgv field instead of glucose 1`] = `
+{
+  "filtered": 85000,
+  "glucose": undefined,
+  "noise": 0,
+  "raw": 130,
+  "sgv": 120,
+  "unfiltered": 90000,
+}
+`;
+
+exports[`with-raw-glucose characterization tests > valid calibration — standard path (egv >= 40, filtered != 0) > entry without noise — noise set to 0 1`] = `
+{
+  "filtered": 85000,
+  "glucose": 120,
+  "noise": 0,
+  "raw": 130,
+  "unfiltered": 90000,
+}
+`;
+
+exports[`with-raw-glucose characterization tests > valid calibration — standard path (egv >= 40, filtered != 0) > normal entry with glucose field 1`] = `
+{
+  "filtered": 85000,
+  "glucose": 120,
+  "noise": 0,
+  "raw": 130,
+  "unfiltered": 90000,
+}
+`;

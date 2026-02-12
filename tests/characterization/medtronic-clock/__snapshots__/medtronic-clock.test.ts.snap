@@ -1,0 +1,21 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`medtronic-clock characterization tests > edge cases > 1 minute 1`] = `1736928060000`;
+
+exports[`medtronic-clock characterization tests > edge cases > fractional minutes 1`] = `1736929830000`;
+
+exports[`medtronic-clock characterization tests > edge cases > negative 360 minutes — 6 hours before midnight 1`] = `1736906400000`;
+
+exports[`medtronic-clock characterization tests > edge cases > negative minutes — before midnight 1`] = `1736924400000`;
+
+exports[`medtronic-clock characterization tests > edge cases > very large minute value 1`] = `1737100800000`;
+
+exports[`medtronic-clock characterization tests > standard minute offsets > 0 minutes — midnight 1`] = `1736928000000`;
+
+exports[`medtronic-clock characterization tests > standard minute offsets > 360 minutes — 6:00 AM 1`] = `1736949600000`;
+
+exports[`medtronic-clock characterization tests > standard minute offsets > 720 minutes — noon 1`] = `1736971200000`;
+
+exports[`medtronic-clock characterization tests > standard minute offsets > 1080 minutes — 6:00 PM 1`] = `1736992800000`;
+
+exports[`medtronic-clock characterization tests > standard minute offsets > 1440 minutes — next midnight 1`] = `1737014400000`;
