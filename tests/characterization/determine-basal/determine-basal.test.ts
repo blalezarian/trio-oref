@@ -182,14 +182,12 @@ function callDetermineBasal(overrides: {
 }
 
 describe('determine-basal error path tests', () => {
-  // Lines 381-382: undefined profile — actually crashes before line 381 because
-  // line 143 accesses profile.min_bg in the dynamic ratios section. The typeof check
-  // at line 381 is only reached if profile is an object but missing current_basal.
-  // So we test that passing undefined profile throws a TypeError.
-  it('throws when profile is undefined (crashes before the guard)', () => {
-    expect(() =>
-      callDetermineBasal({ profile: undefined, profile_raw: true }),
-    ).toThrow(TypeError);
+  // Lines 155-157: undefined profile — early guard returns error before reaching
+  // the dynamic ratios section (previously crashed at line 143 before the guard
+  // at line 395 could handle it).
+  it('returns error when profile is undefined', () => {
+    const output = callDetermineBasal({ profile: undefined, profile_raw: true });
+    expect(output).toEqual({ error: 'Error: could not get current basal rate' });
   });
 
   // Lines 381-382: profile without current_basal

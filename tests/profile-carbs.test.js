@@ -54,7 +54,7 @@ describe('Carb Ratio Profile', function() {
         var invalid_input = {
             units: 'grams',
             schedule: [
-                { offset: 0, ratio: 2, start: '00:00:00' } // Less than min of 3
+                { offset: 0, ratio: 0.5, start: '00:00:00' } // Less than min of 1
             ]
         };
         var ratio = carb_ratios.carbRatioLookup({carbratio: invalid_input});

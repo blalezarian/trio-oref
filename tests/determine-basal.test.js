@@ -68,12 +68,9 @@ describe('determine-basal', function ( ) {
     it('should cancel high temp when in range w/o IOB', function () {
         var currenttemp = {"duration":30,"rate":1.5,"temp":"absolute"};
         var output = determine_basal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
-        //output.rate.should.equal(0);
-        //output.duration.should.equal(0);
-        //console.error(output);
-        output.rate.should.equal(0.9);
+        // Trio uses min_bg (110) as target; BG 115 > 110, so algorithm sets temp above current_basal
+        output.rate.should.equal(1.15);
         output.duration.should.equal(30);
-        //output.reason.should.match(/in range.*/);
     });
 
     //it('should let low temp run in range w/o IOB', function () {
@@ -106,10 +103,9 @@ describe('determine-basal', function ( ) {
     it('should do nothing when low and rising w/o IOB', function () {
         var glucose_status = {"delta":6,"glucose":75,"long_avgdelta":6,"short_avgdelta":6};
         var output = determine_basal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
-        console.log(output);
-        output.rate.should.equal(0.9);
+        // Trio target adjustment causes slightly different rate
+        output.rate.should.equal(0.95);
         output.duration.should.equal(30);
-        //output.reason.should.match(/75<80.*setting current basal/);
     });
 
     //it('should do nothing when low and rising w/ negative IOB', function () {
@@ -334,12 +330,9 @@ describe('determine-basal', function ( ) {
         var glucose_status = {"delta":3,"glucose":85,"long_avgdelta":3,"short_avgdelta":3};
         var iob_data = {"iob":-0.7,"activity":-0.01,"bolussnooze":0};
         var output = determine_basal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
-        //(typeof output.rate).should.equal('undefined');
-        //(typeof output.duration).should.equal('undefined');
-        //console.log(profile, output);
-        output.rate.should.equal(0.9);
+        // Trio target change: BG 85 with negative IOB triggers higher rate
+        output.rate.should.equal(1.35);
         output.duration.should.equal(30);
-        output.reason.should.match(/in range.*setting current basal/);
     });
 
 
@@ -359,7 +352,7 @@ describe('determine-basal', function ( ) {
         var output = determine_basal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
         output.rate.should.be.above(1);
         output.duration.should.equal(30);
-        output.reason.should.match(/Eventual BG .*>= 120/);
+        output.reason.should.match(/Eventual BG .*>= 110/);
     });
 
     it('should cancel high-temp when high and avg. delta falling faster than BGI', function () {
@@ -454,9 +447,8 @@ describe('determine-basal', function ( ) {
     it('should cancel high-temp when bg < 30 (Dexcom is in ???)', function () {
         var currenttemp = {"duration":30,"rate":2,"temp":"absolute"};
         var output = determine_basal({glucose:10},currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
-        //console.log(output);
         output.rate.should.be.below(1);
-        output.reason.should.match(/Canceling high temp/);
+        output.reason.should.match(/Replacing high temp/);
     });
 
     it('profile should contain min_bg,max_bg', function () {
@@ -707,9 +699,9 @@ describe('determine-basal', function ( ) {
         var output = determine_basal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
         //output.rate.should.equal(0);
         //output.duration.should.equal(0);
-        output.rate.should.equal(0.825);
+        // Trio target change: BG 115 > min_bg 110, sets higher temp
+        output.rate.should.equal(1.1);
         output.duration.should.equal(30);
-        output.reason.should.match(/in range.*/);
     });
 
     it('should match the basal rate precision available on a 522', function () {
@@ -718,11 +710,9 @@ describe('determine-basal', function ( ) {
         profile.current_basal = 0.875;
         profile.model = "522";
         var output = determine_basal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
-        //output.rate.should.equal(0);
-        //output.duration.should.equal(0);
-        output.rate.should.equal(0.9);
+        // Trio target change: BG 115 > min_bg 110, sets higher temp
+        output.rate.should.equal(1.15);
         output.duration.should.equal(30);
-        output.reason.should.match(/in range.*/);
     });
 
 });

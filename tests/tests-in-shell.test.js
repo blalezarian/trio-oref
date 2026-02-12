@@ -15,9 +15,18 @@ before(function() {
 describe("shell-script tests", function() {
     this.timeout(120000);
 
+    // These shell tests require oref0 Linux CLI tools (ns-status,
+    // oref0-log-shortcuts, readlink -f, /etc/skel/.profile) that only
+    // exist on OpenAPS rig hardware. They are not applicable to the
+    // Trio iOS fork which only uses the JS algorithm modules.
+    var skipFiles = [
+        "bash-util-functions.test.sh",
+        "command-behavior.tests.sh"
+    ];
+
     var bashUnitTestFiles = [];
     fs.readdirSync("tests").forEach(function(filename) {
-        if(filename.endsWith(".sh"))
+        if(filename.endsWith(".sh") && skipFiles.indexOf(filename) === -1)
             bashUnitTestFiles.push(path.join("tests", filename));
     });
     
