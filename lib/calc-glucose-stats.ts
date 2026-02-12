@@ -24,17 +24,17 @@ interface CalcGlucoseStats {
   updateGlucoseStats(options: UpdateGlucoseStatsOptions): GlucoseHistItem[];
 }
 
-var calcStatsExports = {} as CalcGlucoseStats;
+const calcStatsExports = {} as CalcGlucoseStats;
 
 calcStatsExports.updateGlucoseStats = (options: UpdateGlucoseStatsOptions): GlucoseHistItem[] => {
-  var hist = _.map(_.sortBy(options.glucose_hist, 'dateString'), function readDate(value: GlucoseHistItem): GlucoseHistItemWithDate {
+  const hist = _.map(_.sortBy(options.glucose_hist, 'dateString'), (value: GlucoseHistItem): GlucoseHistItemWithDate => {
       return Object.assign(value, { readDateMills: moment(value.dateString).valueOf() });
     });
 
   if (hist && hist.length > 0) {
-    var noise_val = stats.calcSensorNoise(null, hist, null, null);
+    const noise_val = stats.calcSensorNoise(null, hist, null, null);
 
-    var ns_noise_val = stats.calcNSNoise(noise_val, hist);
+    let ns_noise_val = stats.calcNSNoise(noise_val, hist);
 
     if ('noise' in options.glucose_hist[0]) {
       console.error("Glucose noise CGM reported level: ", options.glucose_hist[0].noise);
