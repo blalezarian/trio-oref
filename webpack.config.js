@@ -5,6 +5,21 @@ const CopyRenameWebpackPlugin = require("copy-rename-webpack-plugin");
 
 module.exports = {
   mode: 'production',
+  resolve: {
+    extensions: ['.ts', '.js'],
+  },
+  module: {
+    rules: [
+      {
+        test: /\.ts$/,
+        use: {
+          loader: 'ts-loader',
+          options: { transpileOnly: true },
+        },
+        exclude: /node_modules/,
+      },
+    ],
+  },
   entry: {
     iob: './lib/iob/index.js',
     meal: './lib/meal/index.js',

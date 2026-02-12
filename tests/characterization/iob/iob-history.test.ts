@@ -55,7 +55,7 @@ function makeInputs(
       ...profileOverrides,
     },
     ...extras,
-  };
+  } as Record<string, any>;
 }
 
 /** Strip non-deterministic date objects for stable snapshots */
