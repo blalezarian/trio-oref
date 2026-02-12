@@ -1,24 +1,4 @@
-interface GlucoseEntry {
-  glucose?: number;
-  sgv?: number;
-  date?: number;
-  display_time?: string;
-  dateString?: string;
-  device?: string;
-  noise?: number;
-  type?: string;
-}
-
-interface GlucoseStatus {
-  delta: number;
-  glucose: number;
-  noise: number;
-  short_avgdelta: number;
-  long_avgdelta: number;
-  date: number;
-  last_cal: number;
-  device: string | undefined;
-}
+import type { GlucoseEntry, GlucoseStatus } from './types/index';
 
 function getDateFromEntry(entry: GlucoseEntry): number {
   return entry.date || Date.parse(entry.display_time as string) || Date.parse(entry.dateString as string);

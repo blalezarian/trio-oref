@@ -1,19 +1,34 @@
 /** @deprecated Not used by the Trio algorithm pipeline. Candidate for removal. */
 
-function filter (treatments: any[]) {
+import type { PumpHistoryEvent } from './types/index';
 
-  var results: any[] = [ ];
+interface TempBasalState {
+  duration?: string;
+  raw_duration?: PumpHistoryEvent;
+  percent?: string;
+  absolute?: string;
+  rate?: number;
+  raw_rate?: PumpHistoryEvent;
+  timestamp?: string;
+  invalid?: boolean;
+  eventType?: string;
+  [key: string]: unknown;
+}
 
-  var state: any = { };
+function filter (treatments: PumpHistoryEvent[]) {
 
-  function temp (ev: any) {
+  var results: Array<PumpHistoryEvent | TempBasalState> = [ ];
+
+  var state: TempBasalState = { };
+
+  function temp (ev: PumpHistoryEvent) {
     if ('duration (min)' in ev) {
-      state.duration = ev['duration (min)'].toString( );
+      state.duration = ev['duration (min)']!.toString( );
       state.raw_duration = ev;
     }
 
     if ('rate' in ev) {
-      state[ev.temp] = ev.rate.toString( );
+      state[ev.temp as string] = ev.rate!.toString( );
       state.rate = ev['rate'];
       state.raw_rate = ev;
     }
@@ -31,7 +46,7 @@ function filter (treatments: any[]) {
     }
   }
 
-  function step (current: any) {
+  function step (current: PumpHistoryEvent) {
     switch (current._type) {
       case 'TempBasalDuration':
       case 'TempBasal':

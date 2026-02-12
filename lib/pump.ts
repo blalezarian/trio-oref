@@ -1,10 +1,12 @@
 /** @deprecated Not used by the Trio algorithm pipeline. Candidate for removal. */
 
-function translate (treatments: any[]) {
+import type { PumpHistoryEvent } from './types/index';
 
-  var results: any[] = [ ];
+function translate (treatments: PumpHistoryEvent[]) {
 
-  function step (current: any) {
+  var results: PumpHistoryEvent[] = [ ];
+
+  function step (current: PumpHistoryEvent) {
     var invalid = false;
     switch (current._type) {
       case 'CalBGForPH':

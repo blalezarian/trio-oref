@@ -1,4 +1,6 @@
 
+import type { PumpHistoryEvent } from './types/index';
+
 interface BolusTreatment {
   _type: string;
   timestamp: string;
@@ -6,7 +8,7 @@ interface BolusTreatment {
 }
 
 interface BolusResult {
-  eventType: string;
+  eventType?: string;
   insulin?: string;
   carbs?: string;
   ratio?: string;
@@ -20,11 +22,29 @@ interface BolusResult {
   [key: string]: unknown;
 }
 
+interface BolusAccumulator {
+  carbs?: string;
+  ratio?: string;
+  bg?: string;
+  glucose?: string;
+  glucoseType?: string;
+  wizard?: PumpHistoryEvent;
+  created_at?: string;
+  timestamp?: string;
+  duration?: string;
+  square?: PumpHistoryEvent;
+  bolus?: PumpHistoryEvent;
+  eventType?: string;
+  insulin?: number | string;
+  notes?: string[] | string;
+  [key: string]: unknown;
+}
+
 function reduce (treatments: BolusTreatment[]): BolusResult[] {
 
   var results: BolusResult[] = [ ];
 
-  var state: Record<string, any> = { };
+  var state: BolusAccumulator = { };
   var previous: BolusTreatment[] = [ ];
 
   function in_previous (ev: BolusTreatment): boolean {
@@ -47,11 +67,11 @@ function reduce (treatments: BolusTreatment[]): BolusResult[] {
     });
   }
 
-  function bolus (ev: Record<string, any>, remaining: Record<string, any>[]): void {
+  function bolus (ev: PumpHistoryEvent, remaining: PumpHistoryEvent[]): void {
     if (!ev) { console.error('XXX', ev, remaining); return; }
     if (ev._type === 'BolusWizard') {
-      state.carbs = ev.carb_input.toString( );
-      state.ratio = ev.carb_ratio.toString( );
+      state.carbs = ev.carb_input!.toString( );
+      state.ratio = ev.carb_ratio!.toString( );
       if (ev.bg) {
         state.bg = ev.bg.toString( );
         state.glucose = ev.bg.toString( );
@@ -63,14 +83,14 @@ function reduce (treatments: BolusTreatment[]): BolusResult[] {
     }
 
     if (ev._type === 'Bolus') {
-      state.duration = ev.duration.toString( );
+      state.duration = ev.duration!.toString( );
       // if (state.square || state.bolus) { }
       // state.insulin = (state.insulin ? state.insulin : 0) + ev.amount;
       if (ev.duration && ev.duration > 0) {
         state.square = ev;
       } else {
         if (state.bolus) {
-          state.bolus.amount = state.bolus.amount + ev.amount;
+          state.bolus.amount = state.bolus.amount! + ev.amount!;
         } else
           state.bolus = ev;
       }
@@ -90,10 +110,10 @@ function reduce (treatments: BolusTreatment[]): BolusResult[] {
       // console.error("remaining", remaining);
       state.eventType = '<none>';
 
-      state.insulin = (state.insulin ? state.insulin : 0) + (state.square ? state.square.amount : 0) +
-            (state.bolus ? state.bolus.amount : 0);
-      var has_insulin = state.insulin && state.insulin > 0;
-      var has_carbs = state.carbs && state.carbs > 0;
+      state.insulin = ((state.insulin ? state.insulin : 0) as number) + (state.square ? state.square.amount! : 0) +
+            (state.bolus ? state.bolus.amount! : 0);
+      var has_insulin = state.insulin && (state.insulin as number) > 0;
+      var has_carbs = state.carbs && Number(state.carbs) > 0;
       if (state.square && state.bolus) {
         annotate("DualWave bolus for", state.square.duration, "minutes");
       } else if (state.square && state.wizard) {
@@ -121,12 +141,12 @@ function reduce (treatments: BolusTreatment[]): BolusResult[] {
       if (state.bolus) {
         annotate("Programmed bolus", state.bolus.programmed);
         annotate("Delivered bolus", state.bolus.amount);
-        annotate("Percent delivered: ", (state.bolus.amount/state.bolus.programmed * 100).toString( ) + '%');
+        annotate("Percent delivered: ", (state.bolus.amount!/state.bolus.programmed! * 100).toString( ) + '%');
       }
       if (state.square) {
         annotate("Programmed square", state.square.programmed);
         annotate("Delivered square", state.square.amount);
-        annotate("Success: ", (state.square.amount/state.square.programmed * 100).toString( ) + '%');
+        annotate("Success: ", (state.square.amount!/state.square.programmed! * 100).toString( ) + '%');
       }
       if (state.wizard) {
         state.created_at = state.wizard.timestamp;
@@ -135,9 +155,9 @@ function reduce (treatments: BolusTreatment[]): BolusResult[] {
         annotate("Bolus estimate", state.wizard.bolus_estimate);
         annotate("Target low", state.wizard.bg_target_low);
         annotate("Target high", state.wizard.bg_target_high);
-        var delta = state.wizard.sensitivity * state.insulin * -1;
+        var delta = state.wizard.sensitivity! * (state.insulin as number) * -1;
         annotate("Hypothetical glucose delta", delta);
-        if (state.bg && state.bg > 0) {
+        if (state.bg && Number(state.bg) > 0) {
           annotate('Glucose was:', state.bg);
           // state.glucose = state.bg;
           // TODO: annotate prediction
@@ -153,11 +173,11 @@ function reduce (treatments: BolusTreatment[]): BolusResult[] {
           state.eventType = 'Correction Bolus';
         }
       }
-      if (state.notes && state.notes.length > 0) {
-        state.notes = state.notes.join("\n");
+      if (state.notes && (state.notes as string[]).length > 0) {
+        state.notes = (state.notes as string[]).join("\n");
       }
       if (state.insulin) {
-        state.insulin = state.insulin.toString( );
+        state.insulin = (state.insulin as number).toString( );
       }
 
       results.push(state as BolusResult);
@@ -165,12 +185,12 @@ function reduce (treatments: BolusTreatment[]): BolusResult[] {
     }
   }
 
-  function annotate (...args: any[]): void {
+  function annotate (...args: unknown[]): void {
     var msg = args.join(' ');
     if (!state.notes) {
       state.notes = [ ];
     }
-    state.notes.push(msg);
+    (state.notes as string[]).push(msg);
   }
 
   function step (current: BolusTreatment, index: number): void {
@@ -184,12 +204,12 @@ function reduce (treatments: BolusTreatment[]): BolusResult[] {
         bolus(current, tail);
         break;
       case 'JournalEntryMealMarker':
-        (current as any).carbs = (current as any).carb_input;
-        (current as any).eventType = 'Carb Correction';
-        results.push(current as any);
+        (current as BolusResult).carbs = current.carb_input as string;
+        (current as BolusResult).eventType = 'Carb Correction';
+        results.push(current as BolusResult);
         break;
       default:
-        results.push(current as any);
+        results.push(current as BolusResult);
         break;
     }
   }
