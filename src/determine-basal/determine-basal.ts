@@ -1867,7 +1867,7 @@ function calculateDosingDecision(inputs: DosingDecisionInputs): DetermineBasalRe
     }
 }
 
-const determine_basal = function determine_basal(glucose_status: GlucoseStatus, currenttemp: CurrentTemp, iob_data: IOBData, profile: Profile, autosens_data: AutosensData, meal_data: MealData, tempBasalFunctions: TempBasalFunctions, microBolusAllowed: boolean, reservoir_data: number | undefined, currentTime: Date | string | undefined, pumphistory: unknown[], preferences: Preferences, basalprofile: BasalEntry[] | undefined, trio_custom_variables?: TrioCustomVariables, middleWare?: (arg: DetermineBasalResult) => DetermineBasalResult): DetermineBasalResult {
+const determine_basal = function determine_basal(glucose_status: GlucoseStatus, currenttemp: CurrentTemp, iob_data: IOBData, profile: Profile, autosens_data: AutosensData, meal_data: MealData, tempBasalFunctions: TempBasalFunctions, microBolusAllowed: boolean, reservoir_data: number | undefined, currentTime: Date | string | undefined, _pumphistory: unknown[], preferences: Preferences, _basalprofile: BasalEntry[] | undefined, trio_custom_variables?: TrioCustomVariables, middleWare?: (arg: DetermineBasalResult) => DetermineBasalResult): DetermineBasalResult {
 
     if (!trio_custom_variables) {
         trio_custom_variables = {
@@ -1942,7 +1942,7 @@ const determine_basal = function determine_basal(glucose_status: GlucoseStatus, 
         currenttemp, trio_custom_variables.useOverride, trio_custom_variables.duration
     );
     if ('earlyReturn' in cgmValidation) return cgmValidation.earlyReturn;
-    const { bg, noise, tick, minDelta, minAvgDelta, maxDelta, minAgo, bgTime, deliverAt, profile_current_basal } = cgmValidation;
+    const { bg, tick, minDelta, minAvgDelta, maxDelta, deliverAt, profile_current_basal } = cgmValidation;
 
     const sensTargets = configureSensitivityAndTargets(
         glucose_status, profile, autosens_data, profileTarget, overrideTarget,
