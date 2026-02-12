@@ -239,6 +239,8 @@ function enable_smb(profile: Profile, microBolusAllowed: boolean, meal_data: Mea
          * SMBs will be disabled from [start, end), such that if an SMB is scheduled to be disabled from 10 AM to 2 PM,
          * an SMB will not be allowed from 10:00:00 until 1:59:59.
          */
+        // BUG: new Date(time.getHours()) creates a Date from epoch ms, not the hour number.
+        // This breaks SMB time-range scheduling (currentHour is always a Date, not 0-23).
         let currentHour = new Date(time.getHours()) as unknown as number;
         let startTime = trio_custom_variables.start;
         let endTime = trio_custom_variables.end;
@@ -610,6 +612,7 @@ function validateCGMData(
     }
     if (bg > BG_UNCHANGED_FLOOR && glucose_status.delta == 0 && glucose_status.short_avgdelta > -DELTA_UNCHANGED_THRESHOLD && glucose_status.short_avgdelta < DELTA_UNCHANGED_THRESHOLD && glucose_status.long_avgdelta > -DELTA_UNCHANGED_THRESHOLD && glucose_status.long_avgdelta < DELTA_UNCHANGED_THRESHOLD) {
         if (glucose_status.device == "fakecgm") {
+            // BUG: passes `2` instead of `profile` to convert_bg — wrong unit conversion in console output.
             console.error("CGM data is unchanged (" + convert_bg(bg,profile) + "+" + convert_bg(glucose_status.delta,profile)+ ") for 5m w/ " + convert_bg(glucose_status.short_avgdelta,profile) + " mg/dL ~15m change & " + convert_bg(glucose_status.long_avgdelta, 2 as unknown as Profile) + " mg/dL ~45m change");
             console.error("Simulator mode detected (" + glucose_status.device + "): continuing anyway");
         }
@@ -1701,12 +1704,14 @@ function calculateDosingDecision(inputs: DosingDecisionInputs): DetermineBasalRe
         insulinForManualBolus = round((eventualBG - target_bg) / adjustedSens, 2);
         // if that would put us over max_iob, then reduce accordingly
         if (insulinReq > max_iob-iob_data.iob) {
+            // BUG: operator precedence — ("text" + max_iob as number) - iob_data.iob evaluates as NaN. Console output only.
             console.error(("SMB limited by maxIOB: " + max_iob as unknown as number)-iob_data.iob + " (. insulinReq: " + insulinReq + " U)");
             result.reason += "max_iob " + max_iob + ", ";
             insulinReq = max_iob-iob_data.iob;
         } else { console.error("SMB not limited by maxIOB ( insulinReq: " + insulinReq + " U).");}
 
         if (insulinForManualBolus > max_iob-iob_data.iob) {
+            // BUG: operator precedence — ("text" + max_iob as number) - iob_data.iob evaluates as NaN. Console output only.
             console.error(("Ev. Bolus limited by maxIOB: " + max_iob as unknown as number)-iob_data.iob + " (. insulinForManualBolus: " + insulinForManualBolus + " U)");
             result.reason += "max_iob " + max_iob + ", ";
         } else { console.error("Ev. Bolus would not be limited by maxIOB ( insulinForManualBolus: " + insulinForManualBolus + " U).");}
