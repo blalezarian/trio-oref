@@ -57,152 +57,74 @@ import type {
     TrioCustomVariables,
 } from '../types/index';
 
-// === Local constants for determine-basal ===
+import {
+    BG_ERROR_CEILING,
+    XDRIP_ERROR_CODE,
+    CGM_NOISE_LEVEL_MEDIUM,
+    BG_UNCHANGED_FLOOR,
+    MAX_BG_DATA_AGE_MINUTES,
+    MAX_BG_FUTURE_MINUTES,
+    RECENT_CAL_THRESHOLD,
+    TARGET_BG_PIVOT,
+    MIN_NOISY_TARGET_MULTIPLIER,
+    MAX_RAW_BG,
+    THRESHOLD_FACTOR,
+    THRESHOLD_BG_OFFSET,
+    MIN_THRESHOLD_BG,
+    MAX_THRESHOLD_BG,
+    TEMP_AGE_STALE_MINUTES,
+    TEMP_END_GAP_MINUTES,
+    TEMP_ACTIVE_DURATION_MINUTES,
+    TEMP_SHORT_DURATION_MINUTES,
+    RATE_TOLERANCE_LOW,
+    BASAL_SHORTFALL_FRACTION,
+    INSULIN_OVERSHOOT_FACTOR,
+    LOW_BG_SAFETY_THRESHOLD,
+    IOB_NEG_CHECK_MINUTES,
+    LOW_TEMP_CORRECTION_FACTOR,
+    PRED_HORIZON_MAX_MINUTES,
+    MINUTES_ABOVE_MIN_BG_THRESHOLD,
+    CARBS_REQ_WINDOW_MINUTES,
+    CARB_TIME_EXTENSION_FACTOR,
+    COB_DISCOUNT_FRACTION,
+    UAM_DECAY_HOURS,
+    MIN_PRED_TRIM_POINTS,
+    MIN_ZT_TRIM_POINTS,
+    COB_PRED_BG_CAP,
+    DYNISF_EXERCISE_THRESHOLD,
+    MIN_SMB_INTERVAL_MINUTES,
+    MAX_SMB_INTERVAL_MINUTES,
+    DEFAULT_MAX_DELTA_BG_THRESHOLD,
+    MAX_DELTA_BG_THRESHOLD_CAP,
+    SMB_MAX_ZERO_TEMP_MINUTES,
+    TOP_OF_HOUR_WINDOW_MINUTES,
+    EXPECTED_DELTA_HOURS,
+    CGM_NOISE_LEVEL_NOISY,
+    DELTA_UNCHANGED_THRESHOLD,
+    LINEAR_DECAY_FACTOR,
+    SLOPE_DAMPENING_DIVISOR,
+    PRED_BG_SENTINEL,
+    DELTA_SIGNIFICANCE_THRESHOLD,
+    OVERRIDE_TARGET_SENTINEL,
+    SECONDS_PER_MINUTE,
+    BOLUS_ERR_GUARD_BELOW_THRESHOLD,
+    BOLUS_ERR_LGS_GUARD_BELOW_THRESHOLD,
+    BOLUS_ERR_RISING_SLOWER,
+    BOLUS_ERR_FALLING_OR_MIXED,
+    BOLUS_ERR_OTHER_DELTA,
+    BOLUS_ERR_MIN_PRED_BELOW_MIN,
+    DEFAULT_TRIO_CUSTOM_VARIABLES,
+} from './constants';
 
-// --- Data quality / error thresholds ---
-/** CGM calibrating or error state ceiling (mg/dL) */
-const BG_ERROR_CEILING = 10;
-/** xDrip sensor failure error code */
-const XDRIP_ERROR_CODE = 38;
-/** CGM noise level at or above which data is considered unreliable */
-const CGM_NOISE_LEVEL_MEDIUM = 3;
-/** Suppress unchanged-data warnings below this BG (mg/dL) */
-const BG_UNCHANGED_FLOOR = 60;
-/** BG data older than this (minutes) is considered too old */
-const MAX_BG_DATA_AGE_MINUTES = 12;
-/** BG data from further in the future than this (minutes) is invalid */
-const MAX_BG_FUTURE_MINUTES = 5;
-/** Calibration recency threshold (minutes) — just calibrated */
-const RECENT_CAL_THRESHOLD = 3;
-
-// --- Target BG adjustment ---
-/** Pivot point for autosens-based target BG adjustment (mg/dL) */
-const TARGET_BG_PIVOT = 60;
-/** Minimum multiplier for noisy CGM target raise */
-const MIN_NOISY_TARGET_MULTIPLIER = 1.1;
-/** Maximum raw BG value considered valid for noise adjustment */
-const MAX_RAW_BG = 250;
-
-// --- Threshold calculation ---
-/** Factor applied to (min_bg - offset) for threshold computation */
-const THRESHOLD_FACTOR = 0.5;
-/** Offset subtracted from min_bg in threshold formula (mg/dL) */
-const THRESHOLD_BG_OFFSET = 40;
-/** Minimum allowed threshold BG (mg/dL) */
-const MIN_THRESHOLD_BG = 60;
-/** Maximum allowed threshold BG (mg/dL) */
-const MAX_THRESHOLD_BG = 120;
-
-// --- Temp basal decision thresholds ---
-/** Temp age (minutes) above which a rate mismatch triggers cancellation */
-const TEMP_AGE_STALE_MINUTES = 10;
-/** Minutes since last temp ended to trigger cancellation */
-const TEMP_END_GAP_MINUTES = 5;
-/** Minimum remaining temp duration (minutes) to consider it "active" */
-const TEMP_ACTIVE_DURATION_MINUTES = 15;
-/** Short temp duration threshold (minutes) */
-const TEMP_SHORT_DURATION_MINUTES = 5;
-/** Low rate tolerance factor for current temp comparison */
-const RATE_TOLERANCE_LOW = 0.8;
-/** Fraction of basal below which scheduled insulin is considered a shortfall */
-const BASAL_SHORTFALL_FRACTION = 0.3;
-/** Factor applied to insulinReq when current temp delivers too much */
-const INSULIN_OVERSHOOT_FACTOR = 2;
-
-// --- Low glucose / safety ---
-/** BG floor (mg/dL) for safety checks on naive/carbs-required eventualBG */
-const LOW_BG_SAFETY_THRESHOLD = 40;
-/** Minutes of negative IOB to check before suppressing LGS */
-const IOB_NEG_CHECK_MINUTES = 20;
-/** Multiplier for low-temp insulin correction */
-const LOW_TEMP_CORRECTION_FACTOR = 2;
-
-// --- Prediction durations ---
-/** Maximum prediction horizon (minutes) for above-min/above-threshold checks */
-const PRED_HORIZON_MAX_MINUTES = 240;
-/** Threshold (minutes above min_bg) that triggers carbs-required evaluation */
-const MINUTES_ABOVE_MIN_BG_THRESHOLD = 60;
-/** Window (minutes above threshold) within which carbsReq is displayed */
-const CARBS_REQ_WINDOW_MINUTES = 45;
-
-// --- Carb absorption ---
-/** Extension factor applied to lastCarbAge for remainingCATime */
-const CARB_TIME_EXTENSION_FACTOR = 1.5;
-/** Fraction of COB discounted when computing carbsReq */
-const COB_DISCOUNT_FRACTION = 0.25;
-/** Hours over which UAM deviation impact decays to zero */
-const UAM_DECAY_HOURS = 3;
-
-// --- Prediction array trimming ---
-/** Minimum data points to retain when trimming flat prediction tails */
-const MIN_PRED_TRIM_POINTS = 12;
-/** Minimum data points to retain when trimming ZT predictions */
-const MIN_ZT_TRIM_POINTS = 6;
-/** Upper cap for COB predicted BG (mg/dL) */
-const COB_PRED_BG_CAP = 1500;
-
-// --- Dynamic ISF exercise threshold ---
-/** Target BG (mg/dL) at/above which dynamic ISF is disabled during exercise */
-const DYNISF_EXERCISE_THRESHOLD = 118;
-
-// --- SMB settings ---
-/** Minimum SMB interval (minutes) */
-const MIN_SMB_INTERVAL_MINUTES = 1;
-/** Maximum SMB interval (minutes) */
-const MAX_SMB_INTERVAL_MINUTES = 10;
-/** Default maxDelta BG threshold fraction for SMB disablement */
-const DEFAULT_MAX_DELTA_BG_THRESHOLD = 0.2;
-/** Safety cap for maxDelta BG threshold fraction */
-const MAX_DELTA_BG_THRESHOLD_CAP = 0.4;
-/** Maximum duration (minutes) for SMB zero-temp */
-const SMB_MAX_ZERO_TEMP_MINUTES = 60;
-
-// --- Neutral temp near top of hour ---
-/** Minutes before the hour at which neutral temps are cancelled */
-const TOP_OF_HOUR_WINDOW_MINUTES = 55;
-
-// --- Calculation parameters ---
-/** Hours over which expectedDelta is calculated */
-const EXPECTED_DELTA_HOURS = 2;
-/** CGM noise level at or above which target BG is raised for safety */
-const CGM_NOISE_LEVEL_NOISY = 2;
-/** Delta threshold (mg/dL) below which BG change is considered negligible */
-const DELTA_UNCHANGED_THRESHOLD = 1;
-/** Divisor for triangular (linear decay) carb impact area calculation */
-const LINEAR_DECAY_FACTOR = 2;
-/** Divisor for dampening slope from minimum deviation */
-const SLOPE_DAMPENING_DIVISOR = 3;
-/** Sentinel BG value meaning "no prediction calculated yet" */
-const PRED_BG_SENTINEL = 999;
-/** Delta difference threshold (mg/dL) for classifying glucose change significance */
-const DELTA_SIGNIFICANCE_THRESHOLD = 2;
-/** Override target sentinel meaning "not set" (~0.33 mmol/L, impossibly low as a real target) */
-const OVERRIDE_TARGET_SENTINEL = 6;
-/** Seconds per minute — used for minutes-to-seconds display conversion */
-const SECONDS_PER_MINUTE = 60;
-
-// --- Manual bolus error codes (sent to Trio iOS app) ---
-/** Guard BG below safety threshold */
-const BOLUS_ERR_GUARD_BELOW_THRESHOLD = 1;
-/** LGS mode: guard BG below threshold */
-const BOLUS_ERR_LGS_GUARD_BELOW_THRESHOLD = 2;
-/** BG rising slower than expected */
-const BOLUS_ERR_RISING_SLOWER = 3;
-/** BG falling or mixed direction */
-const BOLUS_ERR_FALLING_OR_MIXED = 4;
-/** Other delta mismatch */
-const BOLUS_ERR_OTHER_DELTA = 5;
-/** Min predicted BG below minimum target */
-const BOLUS_ERR_MIN_PRED_BELOW_MIN = 6;
-
-// --- Default trio_custom_variables ---
-const DEFAULT_TRIO_CUSTOM_VARIABLES: TrioCustomVariables = {
-    useOverride: false, overridePercentage: 100, overrideTarget: 0,
-    advancedSettings: false, isfAndCr: false, isf: false, cr: false,
-    smbIsOff: false, smbIsScheduledOff: false, start: 0, end: 0,
-    smbMinutes: 30, uamMinutes: 30, currentTDD: 0,
-    average_total_data: 0, weightedAverage: 0, duration: 0
-};
+import type {
+    DynamicISFResult,
+    CGMValidationResult,
+    SensitivityAndTargetsResult,
+    CarbAbsorptionResult,
+    PredBGs,
+    BGPredictionResult,
+    DosingDecisionInputs,
+} from './types';
 
 // Rounds value to 'digits' decimal places
 function round(value: number, digits?: number): number {
@@ -328,17 +250,6 @@ function enable_smb(profile: Profile, microBolusAllowed: boolean, meal_data: Mea
     return false;
 }
 
-
-interface DynamicISFResult {
-    dynISFenabled: boolean;
-    tdd: number;
-    tddReason: string;
-    newRatio: number;
-    insulinFactor: number;
-    adjustmentFactor: number;
-    enable_sigmoid: boolean;
-    tdd24h_14d_Ratio: number;
-}
 
 function calculateDynamicISF(
     glucose_status: GlucoseStatus,
@@ -540,21 +451,6 @@ function calculateDynamicISF(
     return { dynISFenabled, tdd, tddReason, newRatio, insulinFactor, adjustmentFactor, enable_sigmoid, tdd24h_14d_Ratio };
 }
 
-interface CGMValidationResult {
-    bg: number;
-    noise: number | undefined;
-    tick: number | string;
-    minDelta: number;
-    minAvgDelta: number;
-    maxDelta: number;
-    minAgo: number;
-    bgTime: Date;
-    deliverAt: Date;
-    profile_current_basal: number;
-    basal: number;
-    reason: string | undefined;
-}
-
 function validateCGMData(
     glucose_status: GlucoseStatus,
     profile: Profile,
@@ -656,20 +552,6 @@ function validateCGMData(
     }
 
     return { bg, noise, tick, minDelta, minAvgDelta, maxDelta, minAgo, bgTime, deliverAt, profile_current_basal, basal, reason: result.reason };
-}
-
-interface SensitivityAndTargetsResult {
-    max_iob: number;
-    target_bg: number;
-    min_bg: number;
-    max_bg: number;
-    high_bg: number;
-    sensitivityRatio: number;
-    basal: number;
-    threshold: number;
-    adjustedSens: number;
-    isfreason: string;
-    targetLog: number | string;
 }
 
 function configureSensitivityAndTargets(
@@ -877,16 +759,6 @@ function configureSensitivityAndTargets(
     return { max_iob, target_bg, min_bg, max_bg, high_bg, sensitivityRatio, basal, threshold: thresholdFinal, adjustedSens, isfreason, targetLog };
 }
 
-interface CarbAbsorptionResult {
-    carbImpact: number;
-    carbImpactDuration: number;
-    uamCarbImpact: number;
-    carbSensFactor: number;
-    remainingCATime: number;
-    remainingCIpeak: number;
-    slopeFromDeviations: number;
-}
-
 function calculateCarbAbsorption(
     minDelta: number,
     bgImpact: number,
@@ -983,32 +855,6 @@ function calculateCarbAbsorption(
     console.error("Carb Impact:" + carbImpact + "mg/dL per 5m; CI Duration:" + round(carbImpactDuration*PRED_INTERVAL_MINUTES/MINUTES_PER_HOUR*LINEAR_DECAY_FACTOR,1) + "hours; remaining CI (" + remainingCATime/LINEAR_DECAY_FACTOR + "h peak):" + round(remainingCIpeak,1) + "mg/dL per 5m");
 
     return { carbImpact, carbImpactDuration, uamCarbImpact, carbSensFactor, remainingCATime, remainingCIpeak, slopeFromDeviations };
-}
-
-/** Predicted BG arrays for each scenario. Keys are part of the external API consumed by the Trio iOS app. */
-interface PredBGs {
-    /** Predicted BG based on insulin-on-board decay */
-    IOB: number[];
-    /** Zero Temp: predicted BG if all insulin delivery were suspended */
-    ZT: number[];
-    /** Predicted BG accounting for carbs-on-board absorption */
-    COB?: number[];
-    /** Unannounced Meal: predicted BG accounting for detected but unannounced carb absorption */
-    UAM?: number[];
-}
-
-interface BGPredictionResult {
-    eventualBG: number;
-    minPredBG: number;
-    minGuardBG: number;
-    lastIOBpredBG: number;
-    lastCOBpredBG: number;
-    lastUAMpredBG: number;
-    maxCOBPredBG: number;
-    minIOBPredBG: number;
-    IOBpredBGs: number[];
-    COBpredBGs: number[];
-    predBGs: PredBGs;
 }
 
 function generateBGPredictions(
@@ -1322,52 +1168,6 @@ function generateBGPredictions(
     }
 
     return { eventualBG, minPredBG, minGuardBG, lastIOBpredBG, lastCOBpredBG, lastUAMpredBG, maxCOBPredBG, minIOBPredBG, IOBpredBGs, COBpredBGs, predBGs };
-}
-
-interface DosingDecisionInputs {
-    result: DetermineBasalResult;
-    iob_data: IOBData;
-    meal_data: MealData;
-    profile: Profile;
-    glucose_status: GlucoseStatus;
-    currenttemp: CurrentTemp;
-    tempBasalFunctions: TempBasalFunctions;
-    systemTime: Date;
-    trio_custom_variables: TrioCustomVariables;
-    bg: number;
-    eventualBG: number;
-    naive_eventualBG: number;
-    threshold: number;
-    target_bg: number;
-    min_bg: number;
-    max_bg: number;
-    max_iob: number;
-    basal: number;
-    adjustedSens: number;
-    carbRatio: number;
-    overrideFactor: number;
-    expectedDelta: number;
-    minDelta: number;
-    maxDelta: number;
-    tick: number | string;
-    bgImpact: number;
-    deviation: number;
-    carbImpact: number;
-    remainingCIpeak: number;
-    carbSensFactor: number;
-    minPredBG: number;
-    minGuardBG: number;
-    lastIOBpredBG: number;
-    lastCOBpredBG: number;
-    lastUAMpredBG: number;
-    minIOBPredBG: number;
-    IOBpredBGs: number[];
-    COBpredBGs: number[];
-    enableSMB: boolean;
-    microBolusAllowed: boolean;
-    isfreason: string;
-    targetLog: number | string;
-    tddReason: string;
 }
 
 function calculateDosingDecision(inputs: DosingDecisionInputs): DetermineBasalResult {
