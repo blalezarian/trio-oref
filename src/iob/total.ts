@@ -16,7 +16,7 @@ const ROUND_SCALE_3DP = 1000;
 /** Rounding scale for 4 decimal places */
 const ROUND_SCALE_4DP = 10000;
 
-function iobTotal(opts: IobTotalOpts, time: Date): IobTotalResult | Record<string, never> {
+export function iobTotal(opts: IobTotalOpts, time: Date): IobTotalResult | Record<string, never> {
 
     const now = time.getTime();
     const iobCalc = opts.calculate;

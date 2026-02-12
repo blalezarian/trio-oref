@@ -146,7 +146,7 @@ export interface IobIndexEntry {
 export interface IobGenerateOpts {
     treatments: IobTreatment[];
     profile: IobProfile;
-    calculate: typeof import('./calculate').default;
+    calculate: typeof import('./calculate').iobCalc;
     autosens?: { ratio: number };
 }
 

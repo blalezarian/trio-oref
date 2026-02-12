@@ -14,7 +14,7 @@ import {
     SECONDS_PER_MINUTE,
 } from '../constants';
 
-function iobCalc(treatment: Treatment, time: Date | undefined, curve: InsulinCurve, dia: number, peak: number, profile: IobCalcProfile): IOBContribution | Record<string, never> {
+export function iobCalc(treatment: Treatment, time: Date | undefined, curve: InsulinCurve, dia: number, peak: number, profile: IobCalcProfile): IOBContribution | Record<string, never> {
     // iobCalc returns two variables:
     //   activityContrib = units of treatment.insulin used in previous minute
     //   iobContrib = units of treatment.insulin still remaining at a given point in time
@@ -158,3 +158,4 @@ function iobCalcExponential(treatment: Treatment, minsAgo: number, dia: number, 
 
 
 export default iobCalc;
+export { iobCalc as calculate };
