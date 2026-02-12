@@ -2,10 +2,11 @@ import basal from '../profile/basal';
 import get_iob from '../iob/index';
 import isf from '../profile/isf';
 import tz from 'moment-timezone';
-import { percentile } from '../utils/percentile';
 import { calculateBGImpact, calculateDeviation } from '../utils/glucose-math';
 import { prepareAutosensData } from './prepare-data';
+import { padDeviations, analyzePercentiles, calculateAutosensRatio } from './calculate-ratio';
 import type { AutosensInputs } from './prepare-data';
+import type { AutosensResult } from './calculate-ratio';
 import type { GlucoseEntry, CarbTreatment } from '../types/index';
 import type { IobInputs } from '../iob/types';
 import type { TempTarget } from '../profile/targets';
@@ -17,11 +18,6 @@ import {
     AUTOSENS_MIN_VALID_BG,
 } from '../constants';
 
-interface AutosensResult {
-  ratio: number;
-  newisf: number;
-}
-
 /** Meal-start counter threshold: 9 intervals = ~45 minutes of exclusion */
 const MEAL_EXCLUSION_COUNTER = 9;
 /** Meal-start counter indicating >5h of absorption (60 intervals * 5m = 300m) */
@@ -30,12 +26,6 @@ const MEAL_ABSORPTION_LONG_COUNTER = 60;
 const TEMP_TARGET_DEVIATION_DIVISOR = 20;
 /** Maximum zero-deviation padding count (90m / 5m = 18) */
 const MAX_ZERO_DEVIATION_PAD = 18;
-/** Deviations per hour (60 / 5) */
-const DEVIATIONS_PER_HOUR = 12;
-/** Rounding scale for 2 decimal places */
-const ROUND_SCALE_2DP = 100;
-/** Percentage multiplier */
-const PERCENT = 100;
 
 export function detectSensitivity(inputs: AutosensInputs): AutosensResult {
 
@@ -276,75 +266,20 @@ export function detectSensitivity(inputs: AutosensInputs): AutosensResult {
     // this dampens any large sensitivity changes detected based on too little data, without ignoring them completely
     console.error("");
     console.error("Using most recent",deviations.length,"deviations since",lastSiteChange);
-    if (deviations.length < DEFAULT_AUTOSENS_LOOKBACK) {
-        const pad = Math.round((1 - deviations.length/DEFAULT_AUTOSENS_LOOKBACK) * MAX_ZERO_DEVIATION_PAD);
-        console.error("Adding",pad,"more zero deviations");
-        for (let d=0; d<pad; d++) {
-            //process.stderr.write(".");
-            deviations.push(0);
+    padDeviations(deviations, DEFAULT_AUTOSENS_LOOKBACK, MAX_ZERO_DEVIATION_PAD);
+    const { pSensitive, pResistant } = analyzePercentiles(deviations, avgDeltas, bgis);
+    return calculateAutosensRatio(
+        deviations,
+        deviationSum,
+        pSensitive,
+        pResistant,
+        {
+            sens: profile.sens as number,
+            max_daily_basal: profile.max_daily_basal as number,
+            autosens_min: profile.autosens_min as number,
+            autosens_max: profile.autosens_max as number,
         }
-    }
-    avgDeltas.sort((a: number, b: number) => {return a-b});
-    bgis.sort((a: number, b: number) => {return a-b});
-    deviations.sort((a: number, b: number) => {return a-b});
-    for (let i=0.9; i > 0.1; i = i - 0.01) {
-        //console.error(`p=${i.toFixed(2)}: ${percentile(avgDeltas, i).toFixed(2)}, ${percentile(bgis, i).toFixed(2)}, ${percentile(deviations, i).toFixed(2)}`);
-        if ( percentile(deviations, (i+0.01)) >= 0 && percentile(deviations, i) < 0 ) {
-            //console.error(`p=${i.toFixed(2)}: ${percentile(avgDeltas, i).toFixed(2)}, ${percentile(bgis, i).toFixed(2)}, ${percentile(deviations, i).toFixed(2)}`);
-            const lessThanZero = Math.round(PERCENT*i);
-            console.error(`${lessThanZero}% of non-meal deviations negative (>50% = sensitivity)`);
-        }
-        if ( percentile(deviations, (i+0.01)) > 0 && percentile(deviations, i) <= 0 ) {
-            //console.error(`p=${i.toFixed(2)}: ${percentile(avgDeltas, i).toFixed(2)}, ${percentile(bgis, i).toFixed(2)}, ${percentile(deviations, i).toFixed(2)}`);
-            const greaterThanZero = PERCENT-Math.round(PERCENT*i);
-            console.error(`${greaterThanZero}% of non-meal deviations positive (>50% = resistance)`);
-        }
-    }
-    const pSensitive = percentile(deviations, 0.50);
-    const pResistant = percentile(deviations, 0.50);
-
-    const average = deviationSum / deviations.length;
-    //console.error(`Mean deviation: ${average.toFixed(2)}`);
-
-    const squareDeviations = deviations.reduce((acc: number, dev: number) => acc + dev * dev, 0);
-    const rmsDev = Math.sqrt(squareDeviations / deviations.length);
-    console.error(`RMS deviation: ${rmsDev.toFixed(2)}`);
-
-    let basalOff = 0;
-
-    if(pSensitive < 0) { // sensitive
-        basalOff = pSensitive * DEVIATIONS_PER_HOUR / (profile.sens as number);
-        process.stderr.write("Insulin sensitivity detected: ");
-    } else if (pResistant > 0) { // resistant
-        basalOff = pResistant * DEVIATIONS_PER_HOUR / (profile.sens as number);
-        process.stderr.write("Insulin resistance detected: ");
-    } else {
-        console.error("Sensitivity normal.");
-    }
-    let ratio: number;
-    ratio = 1 + (basalOff / (profile.max_daily_basal as number));
-    //console.error(basalOff, profile.max_daily_basal, ratio);
-
-    // don't adjust more than 1.2x by default (set in preferences.json)
-    const rawRatio = ratio;
-    ratio = Math.max(ratio, profile.autosens_min as number);
-    ratio = Math.min(ratio, profile.autosens_max as number);
-
-    if (ratio !== rawRatio) {
-      console.error(`Ratio limited from ${rawRatio} to ${ratio}`);
-    }
-
-    ratio = Math.round(ratio*ROUND_SCALE_2DP)/ROUND_SCALE_2DP;
-    let newisf: number;
-    newisf = Math.round((profile.sens as number) / ratio);
-    //console.error(profile, newisf, ratio);
-    console.error(`ISF adjusted from ${profile.sens as number} to ${newisf}`);
-    //console.error(`Basal adjustment ${basalOff.toFixed(2)}U/hr`);
-    //console.error(`Ratio: ${ratio*100}%: new ISF: ${newisf.toFixed(1)}mg/dL/U`);
-    return {
-        "ratio": ratio,
-        "newisf": newisf
-    }
+    );
 }
 
 function tempTargetRunning(temptargets_data: TempTarget[] | undefined, time: Date): number | undefined {
