@@ -18,8 +18,8 @@ function getDateFromEntry(entry: GlucoseEntry): number {
   return entry.date || Date.parse(entry.display_time as string) || Date.parse(entry.dateString as string);
 }
 
-var getLastGlucose = function (data: GlucoseEntry[]): GlucoseStatus {
-    data = data.filter(function(obj) {
+const getLastGlucose = (data: GlucoseEntry[]): GlucoseStatus => {
+    data = data.filter((obj) => {
       return obj.glucose || obj.sgv;
     }).map(function prepGlucose (obj) {
         //Support the NS sgv field to avoid having to convert in a custom way
@@ -29,28 +29,28 @@ var getLastGlucose = function (data: GlucoseEntry[]): GlucoseStatus {
         }
     }) as GlucoseEntry[];
 
-    var now = data[0];
-    var now_date = getDateFromEntry(now);
-    var change;
-    var last_deltas: number[] = [];
-    var short_deltas: number[] = [];
-    var long_deltas: number[] = [];
-    var last_cal = 0;
+    const now = data[0];
+    let now_date = getDateFromEntry(now);
+    let change;
+    const last_deltas: number[] = [];
+    const short_deltas: number[] = [];
+    const long_deltas: number[] = [];
+    let last_cal = 0;
 
     //console.error(now.glucose);
-    for (var i=1; i < data.length; i++) {
+    for (let i=1; i < data.length; i++) {
         // if we come across a cal record, don't process any older SGVs
-        if (typeof data[i] !== 'undefined' && data[i].type === "cal") {
+        if (data[i] !== undefined && data[i].type === "cal") {
             last_cal = i;
             break;
         }
         // only use data from the same device as the most recent BG data point
-        if (typeof data[i] !== 'undefined' && (data[i].glucose as number) >= MIN_VALID_GLUCOSE_MGDL && data[i].device === now.device) {
-            var then = data[i];
-            var then_date = getDateFromEntry(then);
-            var avgdelta = 0;
-            var minutesago: number;
-            if (typeof then_date !== 'undefined' && typeof now_date !== 'undefined') {
+        if (data[i] !== undefined && (data[i].glucose as number) >= MIN_VALID_GLUCOSE_MGDL && data[i].device === now.device) {
+            const then = data[i];
+            const then_date = getDateFromEntry(then);
+            let avgdelta = 0;
+            let minutesago: number;
+            if (then_date !== undefined && now_date !== undefined) {
                 minutesago = Math.round( (now_date - then_date) / MS_PER_MINUTE );
                 // multiply by 5 to get the same units as delta, i.e. mg/dL/5m
                 change = (now.glucose as number) - (then.glucose as number);
@@ -79,17 +79,17 @@ var getLastGlucose = function (data: GlucoseEntry[]): GlucoseStatus {
             }
         }
     }
-    var last_delta = 0;
-    var short_avgdelta = 0;
-    var long_avgdelta = 0;
+    let last_delta = 0;
+    let short_avgdelta = 0;
+    let long_avgdelta = 0;
     if (last_deltas.length > 0) {
-        last_delta = last_deltas.reduce(function(a, b) { return a + b; }) / last_deltas.length;
+        last_delta = last_deltas.reduce((a, b) => { return a + b; }) / last_deltas.length;
     }
     if (short_deltas.length > 0) {
-        short_avgdelta = short_deltas.reduce(function(a, b) { return a + b; }) / short_deltas.length;
+        short_avgdelta = short_deltas.reduce((a, b) => { return a + b; }) / short_deltas.length;
     }
     if (long_deltas.length > 0) {
-        long_avgdelta = long_deltas.reduce(function(a, b) { return a + b; }) / long_deltas.length;
+        long_avgdelta = long_deltas.reduce((a, b) => { return a + b; }) / long_deltas.length;
     }
 
     return {

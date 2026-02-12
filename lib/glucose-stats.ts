@@ -68,7 +68,7 @@ interface GlucoseStats {
   NSNoiseString(nsNoise: number | undefined): string;
 }
 
-var calcStatsExports = {} as GlucoseStats;
+const calcStatsExports = {} as GlucoseStats;
 
 // Calculate the sum of the distance of all points (sod)
 // Calculate the overall distance between the first and the last point (overallDistance)
@@ -89,17 +89,17 @@ var calcStatsExports = {} as GlucoseStats;
 const calcNoise = (sgvArr: NoisePoint[]): number => {
   let noise = 0;
 
-  const n = sgvArr.length;
+  const sampleCount = sgvArr.length;
 
   const firstSGV = sgvArr[0].glucose * 1000.0;
   const firstTime = sgvArr[0].readDate / 1000.0 * 30.0;
 
-  const lastSGV = sgvArr[n - 1].glucose * 1000.0;
-  const lastTime = sgvArr[n - 1].readDate / 1000.0 * 30.0;
+  const lastSGV = sgvArr[sampleCount - 1].glucose * 1000.0;
+  const lastTime = sgvArr[sampleCount - 1].readDate / 1000.0 * 30.0;
 
   const xarr: number[] = [];
 
-  for (let i = 0; i < n; i += 1) {
+  for (let i = 0; i < sampleCount; i += 1) {
     xarr.push(sgvArr[i].readDate / 1000.0 * 30.0 - firstTime);
   }
 
@@ -107,10 +107,10 @@ const calcNoise = (sgvArr: NoisePoint[]): number => {
   let sod = 0;
   let lastDelta = 0;
 
-  for (let i = 1; i < n; i += 1) {
+  for (let i = 1; i < sampleCount; i += 1) {
     // y2y1Delta adds a multiplier that gives
     // higher priority to the latest BG's
-    let y2y1Delta = (sgvArr[i].glucose - sgvArr[i - 1].glucose) * 1000.0 * (1 + i / (n * 3));
+    let y2y1Delta = (sgvArr[i].glucose - sgvArr[i - 1].glucose) * 1000.0 * (1 + i / (sampleCount * 3));
 
     const x2x1Delta = xarr[i] - xarr[i - 1];
 

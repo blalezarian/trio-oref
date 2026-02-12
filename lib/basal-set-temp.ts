@@ -51,20 +51,20 @@ interface TempBasalFunctionsInterface {
   ) => TempBasalResult;
 }
 
-var tempBasalFunctions = {} as TempBasalFunctionsInterface;
+const tempBasalFunctions = {} as TempBasalFunctionsInterface;
 
-tempBasalFunctions.getMaxSafeBasal = function getMaxSafeBasal(profile: TempBasalProfile): number {
+tempBasalFunctions.getMaxSafeBasal = (profile: TempBasalProfile): number => {
 
-    var max_daily_safety_multiplier = (isNaN(profile.max_daily_safety_multiplier as number) || profile.max_daily_safety_multiplier === null) ? DEFAULT_MAX_DAILY_SAFETY_MULTIPLIER : profile.max_daily_safety_multiplier;
-    var current_basal_safety_multiplier = (isNaN(profile.current_basal_safety_multiplier as number) || profile.current_basal_safety_multiplier === null) ? DEFAULT_CURRENT_BASAL_SAFETY_MULTIPLIER : profile.current_basal_safety_multiplier;
+    const max_daily_safety_multiplier = (isNaN(profile.max_daily_safety_multiplier as number) || profile.max_daily_safety_multiplier === null) ? DEFAULT_MAX_DAILY_SAFETY_MULTIPLIER : profile.max_daily_safety_multiplier;
+    const current_basal_safety_multiplier = (isNaN(profile.current_basal_safety_multiplier as number) || profile.current_basal_safety_multiplier === null) ? DEFAULT_CURRENT_BASAL_SAFETY_MULTIPLIER : profile.current_basal_safety_multiplier;
 
     return Math.min(profile.max_basal, max_daily_safety_multiplier * profile.max_daily_basal, current_basal_safety_multiplier * profile.current_basal);
 };
 
-tempBasalFunctions.setTempBasal = function setTempBasal(rate: number, duration: number, profile: TempBasalProfile, rT: TempBasalResult, currenttemp?: CurrentTemp): TempBasalResult {
+tempBasalFunctions.setTempBasal = (rate: number, duration: number, profile: TempBasalProfile, rT: TempBasalResult, currenttemp?: CurrentTemp): TempBasalResult => {
     //var maxSafeBasal = Math.min(profile.max_basal, 3 * profile.max_daily_basal, 4 * profile.current_basal);
 
-    var maxSafeBasal = tempBasalFunctions.getMaxSafeBasal(profile);
+    const maxSafeBasal = tempBasalFunctions.getMaxSafeBasal(profile);
 
     if (rate < 0) {
         rate = 0;
@@ -72,15 +72,15 @@ tempBasalFunctions.setTempBasal = function setTempBasal(rate: number, duration: 
         rate = maxSafeBasal;
     }
 
-    var suggestedRate = round_basal(rate, profile);
-    if (typeof(currenttemp) !== 'undefined' && typeof(currenttemp.duration) !== 'undefined' && typeof(currenttemp.rate) !== 'undefined' && currenttemp.duration > (duration-TEMP_DURATION_TOLERANCE_MINUTES) && currenttemp.duration <= MAX_TEMP_BASAL_DURATION_MINUTES && suggestedRate <= currenttemp.rate * RATE_TOLERANCE_HIGH && suggestedRate >= currenttemp.rate * RATE_TOLERANCE_LOW && duration > 0 ) {
+    const suggestedRate = round_basal(rate, profile);
+    if (currenttemp?.duration !== undefined && currenttemp?.rate !== undefined && currenttemp.duration > (duration-TEMP_DURATION_TOLERANCE_MINUTES) && currenttemp.duration <= MAX_TEMP_BASAL_DURATION_MINUTES && suggestedRate <= currenttemp.rate * RATE_TOLERANCE_HIGH && suggestedRate >= currenttemp.rate * RATE_TOLERANCE_LOW && duration > 0 ) {
         rT.reason += " "+currenttemp.duration+"m left and " + currenttemp.rate + " ~ req " + suggestedRate + "U/hr: no temp required";
         return rT;
     }
 
     if (suggestedRate === profile.current_basal) {
       if (profile.skip_neutral_temps === true) {
-        if (typeof(currenttemp) !== 'undefined' && typeof(currenttemp.duration) !== 'undefined' && currenttemp.duration > 0) {
+        if (currenttemp?.duration !== undefined && currenttemp.duration > 0) {
           reason(rT, 'Suggested rate is same as profile rate, a temp basal is active, canceling current temp');
           rT.duration = 0;
           rT.rate = 0;
