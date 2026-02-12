@@ -195,6 +195,15 @@ const BOLUS_ERR_OTHER_DELTA = 5;
 /** Min predicted BG below minimum target */
 const BOLUS_ERR_MIN_PRED_BELOW_MIN = 6;
 
+// --- Default trio_custom_variables ---
+const DEFAULT_TRIO_CUSTOM_VARIABLES: TrioCustomVariables = {
+    useOverride: false, overridePercentage: 100, overrideTarget: 0,
+    advancedSettings: false, isfAndCr: false, isf: false, cr: false,
+    smbIsOff: false, smbIsScheduledOff: false, start: 0, end: 0,
+    smbMinutes: 30, uamMinutes: 30, currentTDD: 0,
+    average_total_data: 0, weightedAverage: 0, duration: 0
+};
+
 // Rounds value to 'digits' decimal places
 function round(value: number, digits?: number): number {
     if (! digits) { digits = 0; }
@@ -1870,14 +1879,7 @@ function calculateDosingDecision(inputs: DosingDecisionInputs): DetermineBasalRe
 const determine_basal = function determine_basal(glucose_status: GlucoseStatus, currenttemp: CurrentTemp, iob_data: IOBData, profile: Profile, autosens_data: AutosensData, meal_data: MealData, tempBasalFunctions: TempBasalFunctions, microBolusAllowed: boolean, reservoir_data: number | undefined, currentTime: Date | string | undefined, _pumphistory: unknown[], preferences: Preferences, _basalprofile: BasalEntry[] | undefined, trio_custom_variables?: TrioCustomVariables, middleWare?: (arg: DetermineBasalResult) => DetermineBasalResult): DetermineBasalResult {
 
     if (!trio_custom_variables) {
-        trio_custom_variables = {
-            useOverride: false, overridePercentage: 100, overrideTarget: 0,
-            advancedSettings: false, isfAndCr: false, isf: 0, cr: 0,
-            smbIsOff: false, smbIsScheduledOff: false, start: 0, end: 0,
-            smbMinutes: 30, uamMinutes: 30, currentTDD: 0,
-            average_total_data: 0, weightedAverage: 0, past2hoursAverage: 0,
-            date: 0, overrideMaxIOB: 0, duration: 0
-        } as unknown as TrioCustomVariables;
+        trio_custom_variables = DEFAULT_TRIO_CUSTOM_VARIABLES;
     }
     if (!preferences) {
         preferences = {} as Preferences;
