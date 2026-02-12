@@ -30,14 +30,8 @@ export function calculate_expected_delta(
 }
 
 
-export function convert_bg(value: number, profile: Profile): number
-{
-    if (profile.out_units === "mmol/L")
-    {
-        return round(value * MGDL_TO_MMOL,1);
-    }
-    else
-    {
-        return Math.round(value);
-    }
+export function convert_bg(value: number, profile: Profile): number {
+    if (profile.out_units === "mmol/L") return round(value * MGDL_TO_MMOL,1);   
+    
+    return Math.round(value);
 }

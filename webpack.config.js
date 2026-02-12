@@ -26,7 +26,7 @@ module.exports = {
   entry: {
     iob: './src/iob/index.ts',
     meal: './src/meal/index.ts',
-    "determineBasal": './src/determine-basal/determine-basal.ts',
+    "determineBasal": './src/determine-basal/index.ts',
     "glucoseGetLast": './src/glucose-get-last.ts',
     "basalSetTemp": './src/basal-set-temp.ts',
     autosens: './src/autosens/index.ts',

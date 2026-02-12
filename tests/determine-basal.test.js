@@ -52,7 +52,7 @@ describe('round_basal', function ( ) {
 });
 
 describe('determine-basal', function ( ) {
-    var determine_basal = require('../src/determine-basal/determine-basal').default;
+    var determine_basal = require('../src/determine-basal/determine-basal').determine_basal;
     var tempBasalFunctions = require('../src/basal-set-temp').default;
 
    //function determine_basal(glucose_status, currenttemp, iob_data, profile)

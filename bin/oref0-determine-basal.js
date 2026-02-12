@@ -15,7 +15,7 @@
   THE SOFTWARE.
 */
 var getLastGlucose = require('../src/glucose-get-last');
-var determine_basal = require('../src/determine-basal/determine-basal');
+var determine_basal = require('../src/determine-basal/determine-basal').determine_basal;
 
 /* istanbul ignore next */
 if (!module.parent) {
