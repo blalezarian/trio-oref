@@ -38,7 +38,7 @@ interface CleanCal {
 }
 
 function cleanCal (cal: RawGlucoseCal): CleanCal {
-  var clean = {
+  const clean = {
     scale: parseFloat(cal.scale as string) || 0
     , intercept: parseFloat(cal.intercept as string) || 0
     , slope: parseFloat(cal.slope as string) || 0
@@ -55,20 +55,20 @@ export default function withRawGlucose (entry: RawGlucoseEntry, cals: RawGlucose
   if ( entry.type === "mbg" || entry.type === "cal" ) {
     return entry;
   }
-  var egv = entry.glucose || entry.sgv || 0;
+  const egv = entry.glucose || entry.sgv || 0;
 
   entry.unfiltered = parseInt(entry.unfiltered as string) || 0;
   entry.filtered = parseInt(entry.filtered as string) || 0;
 
   //TODO: add time check, but how recent should it be?
   //TODO: currently assuming the first is the best (and that there is probably just 1 cal)
-  var cal = cals && cals.length > 0 && cleanCal(cals[0]);
+  const cal = cals && cals.length > 0 && cleanCal(cals[0]);
 
   if (cal && cal.valid) {
     if (cal.filtered === 0 || egv < RAW_BG_CALIBRATION_THRESHOLD) {
       entry.raw = Math.round(cal.scale * ((entry.unfiltered as number) - cal.intercept) / cal.slope);
     } else {
-      var ratio = cal.scale * ((entry.filtered as number) - cal.intercept) / cal.slope / egv;
+      const ratio = cal.scale * ((entry.filtered as number) - cal.intercept) / cal.slope / egv;
       entry.raw = Math.round(cal.scale * ((entry.unfiltered as number) - cal.intercept) / cal.slope / ratio);
     }
 

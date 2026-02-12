@@ -17,9 +17,9 @@ interface TempBasalState {
 
 function filter (treatments: PumpHistoryEvent[]) {
 
-  var results: Array<PumpHistoryEvent | TempBasalState> = [ ];
+  const results: Array<PumpHistoryEvent | TempBasalState> = [ ];
 
-  var state: TempBasalState = { };
+  let state: TempBasalState = { };
 
   function temp (ev: PumpHistoryEvent) {
     if ('duration (min)' in ev) {

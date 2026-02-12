@@ -48,14 +48,14 @@ interface BolusAccumulator {
 
 function reduce (treatments: BolusTreatment[]): BolusResult[] {
 
-  var results: BolusResult[] = [ ];
+  const results: BolusResult[] = [ ];
 
-  var state: BolusAccumulator = { };
-  var previous: BolusTreatment[] = [ ];
+  let state: BolusAccumulator = { };
+  const previous: BolusTreatment[] = [ ];
 
   function in_previous (ev: BolusTreatment): boolean {
-    var found = false;
-    previous.forEach(function (elem: BolusTreatment) {
+    let found = false;
+    previous.forEach((elem: BolusTreatment) => {
       if (elem.timestamp === ev.timestamp && ev._type === elem._type) {
         found = true;
       }
@@ -65,10 +65,10 @@ function reduce (treatments: BolusTreatment[]): BolusResult[] {
   }
 
   function within_minutes_from (origin: BolusTreatment, tail: BolusTreatment[], minutes: number): BolusTreatment[] {
-    var ms = minutes * MS_PER_MINUTE;
-    var ts = Date.parse(origin.timestamp);
-    return /* candidates */ tail.slice( ).filter(function (elem: BolusTreatment) {
-      var dt = Date.parse(elem.timestamp);
+    const ms = minutes * MS_PER_MINUTE;
+    const ts = Date.parse(origin.timestamp);
+    return /* candidates */ tail.slice( ).filter((elem: BolusTreatment) => {
+      const dt = Date.parse(elem.timestamp);
       return ts - dt <= ms;
     });
   }
@@ -118,8 +118,8 @@ function reduce (treatments: BolusTreatment[]): BolusResult[] {
 
       state.insulin = ((state.insulin ? state.insulin : 0) as number) + (state.square ? state.square.amount! : 0) +
             (state.bolus ? state.bolus.amount! : 0);
-      var has_insulin = state.insulin && (state.insulin as number) > 0;
-      var has_carbs = state.carbs && Number(state.carbs) > 0;
+      const has_insulin = state.insulin && (state.insulin as number) > 0;
+      const has_carbs = state.carbs && Number(state.carbs) > 0;
       if (state.square && state.bolus) {
         annotate("DualWave bolus for", state.square.duration, "minutes");
       } else if (state.square && state.wizard) {
@@ -134,10 +134,10 @@ function reduce (treatments: BolusTreatment[]): BolusResult[] {
       }
 
       if (has_insulin) {
-        var iobFile = "./monitor/iob.json";
-        var fs = require('fs');
+        const iobFile = "./monitor/iob.json";
+        const fs = require('fs');
         if (fs.existsSync(iobFile)) {
-            var iob = JSON.parse(fs.readFileSync(iobFile));
+            const iob = JSON.parse(fs.readFileSync(iobFile));
             if (iob && Array.isArray(iob) && iob.length) {
                 annotate("Calculated IOB:", iob[0].iob);
             }
@@ -161,7 +161,7 @@ function reduce (treatments: BolusTreatment[]): BolusResult[] {
         annotate("Bolus estimate", state.wizard.bolus_estimate);
         annotate("Target low", state.wizard.bg_target_low);
         annotate("Target high", state.wizard.bg_target_high);
-        var delta = state.wizard.sensitivity! * (state.insulin as number) * -1;
+        const delta = state.wizard.sensitivity! * (state.insulin as number) * -1;
         annotate("Hypothetical glucose delta", delta);
         if (state.bg && Number(state.bg) > 0) {
           annotate('Glucose was:', state.bg);
@@ -192,7 +192,7 @@ function reduce (treatments: BolusTreatment[]): BolusResult[] {
   }
 
   function annotate (...args: unknown[]): void {
-    var msg = args.join(' ');
+    const msg = args.join(' ');
     if (!state.notes) {
       state.notes = [ ];
     }
@@ -205,10 +205,11 @@ function reduce (treatments: BolusTreatment[]): BolusResult[] {
     }
     switch (current._type) {
       case 'Bolus':
-      case 'BolusWizard':
-        var tail = within_minutes_from(current, treatments.slice(index+1), BOLUS_GROUPING_MINUTES);
+      case 'BolusWizard': {
+        const tail = within_minutes_from(current, treatments.slice(index+1), BOLUS_GROUPING_MINUTES);
         bolus(current, tail);
         break;
+      }
       case 'JournalEntryMealMarker':
         (current as BolusResult).carbs = current.carb_input as string;
         (current as BolusResult).eventType = 'Carb Correction';

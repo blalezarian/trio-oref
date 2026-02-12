@@ -14,7 +14,7 @@ interface RoundBasalProfile {
   model?: string;
 }
 
-var round_basal = function round_basal(basal: number, profile?: RoundBasalProfile): number {
+const round_basal = (basal: number, profile?: RoundBasalProfile): number => {
 
     /* x23 and x54 pumps change basal increment depending on how much basal is being delivered:
             0.025u for 0.025 < x < 0.975
@@ -22,10 +22,10 @@ var round_basal = function round_basal(basal: number, profile?: RoundBasalProfil
             0.1u for 10 < x
       To round numbers nicely for the pump, use a scale factor of (1 / increment). */
 
-    var lowest_rate_scale = BASAL_SCALE_DEFAULT;
+    let lowest_rate_scale = BASAL_SCALE_DEFAULT;
 
     // Has profile even been passed in?
-    if (typeof profile !== 'undefined')
+    if (profile)
     {
         // Make sure optional model has been set
         if (typeof profile.model === 'string')
@@ -37,7 +37,7 @@ var round_basal = function round_basal(basal: number, profile?: RoundBasalProfil
         }
     }
 
-    var rounded_basal = basal;
+    let rounded_basal = basal;
     // Shouldn't need to check against 0 as pumps can't deliver negative basal anyway?
     if (basal < BASAL_RATE_LOW_THRESHOLD)
     {

@@ -4,10 +4,10 @@ import type { PumpHistoryEvent } from './types/index';
 
 function translate (treatments: PumpHistoryEvent[]) {
 
-  var results: PumpHistoryEvent[] = [ ];
+  const results: PumpHistoryEvent[] = [ ];
 
   function step (current: PumpHistoryEvent) {
-    var invalid = false;
+    let invalid = false;
     switch (current._type) {
       case 'CalBGForPH':
         current.eventType = 'BG Check';

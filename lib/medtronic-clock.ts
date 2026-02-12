@@ -2,7 +2,7 @@
 import { MS_PER_MINUTE } from './constants';
 
 function getTime(minutes: number): number {
-    var baseTime = new Date();
+    const baseTime = new Date();
     baseTime.setHours(0);
     baseTime.setMinutes(0);
     baseTime.setSeconds(0);
