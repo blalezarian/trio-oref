@@ -3,15 +3,12 @@ import get_iob from '../iob/index';
 import find_insulin from '../iob/history';
 import isf from '../profile/isf';
 import { normalizeGlucoseData, calculateBGImpact, calculateDeviation } from '../utils/glucose-math';
-import type { GlucoseEntry, BucketedGlucose, PumpHistoryEvent } from '../types/index';
+import { bucketGlucoseWithInterpolation } from './bucket-glucose';
+import type { GlucoseEntry, PumpHistoryEvent } from '../types/index';
 import type { IobProfile, HistoryBasalProfileEntry, IobInputs } from '../iob/types';
 import {
     MIN_VALID_GLUCOSE_MGDL,
-    MS_PER_HOUR,
-    MS_PER_MINUTE,
     MS_PER_5_MIN,
-    PRED_INTERVAL_MINUTES,
-    BUCKETING_MERGE_THRESHOLD_MIN,
 } from '../constants';
 
 interface CarbAbsorptionInputs {
@@ -36,13 +33,6 @@ interface CarbAbsorptionResult {
   allDeviations: number[];
 }
 
-/** Time window for CI-mode lookback (45 minutes in ms) */
-const CI_LOOKBACK_MS = 45 * MS_PER_MINUTE;
-/** Maximum interpolation gap cap (4 hours in minutes) */
-const MAX_INTERPOLATION_GAP_MINUTES = 240;
-/** Elapsed-minutes gap above which BG data is interpolated */
-const BUCKETING_GAP_THRESHOLD_MIN = 8;
-
 export function detectCarbAbsorption(inputs: CarbAbsorptionInputs): CarbAbsorptionResult {
 
     let profile: IobProfile & Record<string, unknown>;
@@ -59,101 +49,23 @@ export function detectCarbAbsorption(inputs: CarbAbsorptionInputs): CarbAbsorpti
     // get treatments from pumphistory once, not every time we get_iob()
     const treatments = find_insulin(inputs.iob_inputs as IobInputs);
 
-    const avgDeltas: number[] = [];
-    const bgis: number[] = [];
-    const deviations: number[] = [];
-    const deviationSum = 0;
+    const bucketed_data = bucketGlucoseWithInterpolation(
+        glucose_data,
+        mealTime,
+        ciTime,
+        profile.maxMealAbsorptionTime as number
+    );
+
     let carbsAbsorbed = 0;
-    const bucketed_data: BucketedGlucose[] = [];
-    bucketed_data[0] = glucose_data[0];
-    let j=0;
-    let foundPreMealBG = false;
-    let lastbgi = 0;
-
-    if (! glucose_data[0].glucose || glucose_data[0].glucose < MIN_VALID_GLUCOSE_MGDL) {
-      lastbgi = -1;
-    }
-
-    let i: number;
-    let bgTime: Date | undefined;
-    let lastbgTime: Date | undefined;
-    for (i=1; i < glucose_data.length; ++i) {
-        if (glucose_data[i].display_time) {
-            bgTime = new Date(glucose_data[i].display_time!.replace('T', ' '));
-        } else if (glucose_data[i].dateString) {
-            bgTime = new Date(glucose_data[i].dateString!);
-        } else { console.error("Could not determine BG time"); }
-        if (! glucose_data[i].glucose || glucose_data[i].glucose! < MIN_VALID_GLUCOSE_MGDL) {
-//console.error("skipping:",glucose_data[i].glucose);
-            continue;
-        }
-        // only consider BGs for 6h after a meal for calculating COB
-        const hoursAfterMeal = (Number(bgTime)-Number(mealTime))/MS_PER_HOUR;
-        if (hoursAfterMeal > (profile.maxMealAbsorptionTime as number) || foundPreMealBG) {
-            continue;
-        } else if (hoursAfterMeal < 0) {
-//console.error("Found pre-meal BG:",glucose_data[i].glucose, bgTime, Math.round(hoursAfterMeal*100)/100);
-            foundPreMealBG = true;
-        }
-//console.error(glucose_data[i].glucose, bgTime, Math.round(hoursAfterMeal*100)/100, bucketed_data[bucketed_data.length-1].display_time);
-        // only consider last ~45m of data in CI mode
-        // this allows us to calculate deviations for the last ~30m
-        if (ciTime !== undefined) {
-            const hoursAgo = (Number(ciTime)-Number(bgTime))/CI_LOOKBACK_MS;
-            if (hoursAgo > 1 || hoursAgo < 0) {
-                continue;
-            }
-        }
-        if (bucketed_data[bucketed_data.length-1].display_time) {
-            lastbgTime = new Date(bucketed_data[bucketed_data.length-1].display_time!.replace('T', ' '));
-        } else if ((lastbgi >= 0) && glucose_data[lastbgi].display_time) {
-            lastbgTime = new Date(glucose_data[lastbgi].display_time!.replace('T', ' '));
-        } else if ((lastbgi >= 0) && glucose_data[lastbgi].dateString) {
-            lastbgTime = new Date(glucose_data[lastbgi].dateString!);
-        } else { console.error("Could not determine last BG time"); }
-        let elapsed_minutes = (Number(bgTime) - Number(lastbgTime))/MS_PER_MINUTE;
-    //console.error(bgTime, lastbgTime, elapsed_minutes);
-        if(Math.abs(elapsed_minutes) > BUCKETING_GAP_THRESHOLD_MIN) {
-            // interpolate missing data points
-            let lastbg = glucose_data[lastbgi].glucose!;
-            // cap interpolation at a maximum of 4h
-            elapsed_minutes = Math.min(MAX_INTERPOLATION_GAP_MINUTES,Math.abs(elapsed_minutes));
-            //console.error(elapsed_minutes);
-            while(elapsed_minutes > PRED_INTERVAL_MINUTES) {
-                const previousbgTime = new Date(lastbgTime!.getTime() - MS_PER_5_MIN);
-                j++;
-                bucketed_data[j] = {} as BucketedGlucose;
-                bucketed_data[j].date = previousbgTime.getTime();
-                const gapDelta = glucose_data[i].glucose! - lastbg;
-                //console.error(gapDelta, lastbg, elapsed_minutes);
-                const previousbg = lastbg + (PRED_INTERVAL_MINUTES/elapsed_minutes * gapDelta);
-                bucketed_data[j].glucose = Math.round(previousbg);
-                //console.error("Interpolated", bucketed_data[j]);
-
-                elapsed_minutes = elapsed_minutes - PRED_INTERVAL_MINUTES;
-                lastbg = previousbg;
-                lastbgTime = new Date(previousbgTime);
-            }
-
-        } else if(Math.abs(elapsed_minutes) > BUCKETING_MERGE_THRESHOLD_MIN) {
-            j++;
-            bucketed_data[j]=glucose_data[i];
-            bucketed_data[j].date = bgTime!.getTime();
-        } else {
-            bucketed_data[j].glucose = (bucketed_data[j].glucose! + glucose_data[i].glucose!)/2;
-        }
-
-        lastbgi = i;
-        //console.error(bucketed_data[j].date)
-    }
     let currentDeviation: number;
     let slopeFromMaxDeviation = 0;
     let slopeFromMinDeviation = 999;
     let maxDeviation = 0;
     let minDeviation = 999;
     const allDeviations: number[] = [];
+    let bgTime: Date | undefined;
     //console.error(bucketed_data);
-    for (i=0; i < bucketed_data.length-3; ++i) {
+    for (let i=0; i < bucketed_data.length-3; ++i) {
         bgTime = new Date(bucketed_data[i].date!);
 
         const sens = isf.isfLookup((profile.isfProfile as { sensitivities: Array<{ offset: number; sensitivity: number }> }),bgTime);
