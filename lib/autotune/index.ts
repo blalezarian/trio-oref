@@ -1,9 +1,21 @@
 import percentile from '../percentile';
 import type { InsulinCurve } from '../types/index';
+import {
+    ULTRA_RAPID_PEAK,
+    RAPID_ACTING_PEAK,
+    MAX_DIA_HOURS,
+    AUTOTUNE_IMPROVEMENT_THRESHOLD,
+    AUTOTUNE_ADJUSTMENT_FRACTION,
+    DEFAULT_AUTOSENS_MAX,
+    DEFAULT_AUTOSENS_MIN,
+    MAX_CARB_RATIO,
+    MIN_CARB_RATIO,
+    BASAL_SCALE_DEFAULT,
+} from '../constants';
 //rounding of basals for pumps
 //20 for omnipod to 0.05
 //40 for medtronic to 0.025
-var basal_scale: number = 20;
+var basal_scale: number = BASAL_SCALE_DEFAULT;
 // does three things - tunes basals, ISF, and CSF
 
 interface AutotuneBasalProfileEntry {
@@ -119,9 +131,9 @@ function tuneAllTheThings (inputs: AutotuneInputs): AutotunePreviousProfile | un
     var peak = previousAutotune.insulinPeakTime;
     if (! previousAutotune.useCustomPeakTime === true) {
         if ( previousAutotune.curve === "ultra-rapid" ) {
-            peak = 55;
+            peak = ULTRA_RAPID_PEAK;
         } else {
-            peak = 75;
+            peak = RAPID_ACTING_PEAK;
         }
     }
     //console.error(DIA, peak);
@@ -180,17 +192,17 @@ function tuneAllTheThings (inputs: AutotuneInputs): AutotunePreviousProfile | un
         console.error("Best insulinEndTime for meanDeviations:",diaDeviations[meanBest].dia,"hours");
         console.error("Best insulinEndTime for RMSDeviations:",diaDeviations[RMSBest].dia,"hours");
         if ( meanBest < 2 && RMSBest < 2 ) {
-            if ( diaDeviations[1].meanDeviation < currentDIAMeanDev * 0.99 && diaDeviations[1].RMSDeviation < currentDIARMSDev * 0.99 ) {
+            if ( diaDeviations[1].meanDeviation < currentDIAMeanDev * AUTOTUNE_IMPROVEMENT_THRESHOLD && diaDeviations[1].RMSDeviation < currentDIARMSDev * AUTOTUNE_IMPROVEMENT_THRESHOLD ) {
                 newDIA = diaDeviations[1].dia;
             }
         } else if ( meanBest > 2 && RMSBest > 2 ) {
-            if ( diaDeviations[3].meanDeviation < currentDIAMeanDev * 0.99 && diaDeviations[3].RMSDeviation < currentDIARMSDev * 0.99 ) {
+            if ( diaDeviations[3].meanDeviation < currentDIAMeanDev * AUTOTUNE_IMPROVEMENT_THRESHOLD && diaDeviations[3].RMSDeviation < currentDIARMSDev * AUTOTUNE_IMPROVEMENT_THRESHOLD ) {
                 newDIA = diaDeviations[3].dia;
             }
         }
-        if ( newDIA > 12 ) {
+        if ( newDIA > MAX_DIA_HOURS ) {
             console.error("insulinEndTime maximum is 12h: not raising further");
-            newDIA=12;
+            newDIA=MAX_DIA_HOURS;
         }
         if ( newDIA !== DIA ) {
             console.error("Adjusting insulinEndTime from",DIA,"to",newDIA,"hours");
@@ -224,11 +236,11 @@ function tuneAllTheThings (inputs: AutotuneInputs): AutotunePreviousProfile | un
         console.error("Best insulinPeakTime for meanDeviations:",peakDeviations[meanBest].peak,"minutes");
         console.error("Best insulinPeakTime for RMSDeviations:",peakDeviations[RMSBest].peak,"minutes");
         if ( meanBest < 2 && RMSBest < 2 ) {
-            if ( peakDeviations[1].meanDeviation < currentPeakMeanDev * 0.99 && peakDeviations[1].RMSDeviation < currentPeakRMSDev * 0.99 ) {
+            if ( peakDeviations[1].meanDeviation < currentPeakMeanDev * AUTOTUNE_IMPROVEMENT_THRESHOLD && peakDeviations[1].RMSDeviation < currentPeakRMSDev * AUTOTUNE_IMPROVEMENT_THRESHOLD ) {
                 newPeak = peakDeviations[1].peak;
             }
         } else if ( meanBest > 2 && RMSBest > 2 ) {
-            if ( peakDeviations[3].meanDeviation < currentPeakMeanDev * 0.99 && peakDeviations[3].RMSDeviation < currentPeakRMSDev * 0.99 ) {
+            if ( peakDeviations[3].meanDeviation < currentPeakMeanDev * AUTOTUNE_IMPROVEMENT_THRESHOLD && peakDeviations[3].RMSDeviation < currentPeakRMSDev * AUTOTUNE_IMPROVEMENT_THRESHOLD ) {
                 newPeak = peakDeviations[3].peak;
             }
         }
@@ -336,7 +348,7 @@ function tuneAllTheThings (inputs: AutotuneInputs): AutotunePreviousProfile | un
         console.error("Hour",hour.toString(),"total deviations:",deviations,"mg/dL");
         // calculate how much less or additional basal insulin would have been required to eliminate the deviations
         // only apply 20% of the needed adjustment to keep things relatively stable
-        var basalNeeded = 0.2 * deviations / ISF;
+        var basalNeeded = AUTOTUNE_ADJUSTMENT_FRACTION * deviations / ISF;
         basalNeeded = Math.round( basalNeeded * 100 ) / 100
         // if basalNeeded is positive, adjust each of the 1-3 hour prior basals by 10% of the needed adjustment
         console.error("Hour",hour,"basal adjustment needed:",basalNeeded,"U/hr");
@@ -374,12 +386,12 @@ function tuneAllTheThings (inputs: AutotuneInputs): AutotunePreviousProfile | un
             if (typeof pumpProfile.autosens_max !== 'undefined') {
                 autotuneMax = pumpProfile.autosens_max;
             } else {
-                autotuneMax = 1.2;
+                autotuneMax = DEFAULT_AUTOSENS_MAX;
             }
             if (typeof pumpProfile.autosens_min !== 'undefined') {
                 autotuneMin = pumpProfile.autosens_min;
             } else {
-                autotuneMin = 0.7;
+                autotuneMin = DEFAULT_AUTOSENS_MIN;
             }
             var maxRate = hourlyPumpProfile[hour].rate * autotuneMax;
             var minRate = hourlyPumpProfile[hour].rate * autotuneMin;
@@ -479,7 +491,7 @@ function tuneAllTheThings (inputs: AutotuneInputs): AutotunePreviousProfile | un
         fullNewCSF = Math.round( (totalDeviations / totalMealCarbs)*100 )/100;
     }
     // only adjust by 20%
-    var newCSF = ( 0.8 * CSF ) + ( 0.2 * fullNewCSF );
+    var newCSF = ( (1 - AUTOTUNE_ADJUSTMENT_FRACTION) * CSF ) + ( AUTOTUNE_ADJUSTMENT_FRACTION * fullNewCSF );
     // safety cap CSF
     if (typeof(pumpCSF) !== 'undefined') {
         var maxCSF = pumpCSF * autotuneMax!;
@@ -510,9 +522,9 @@ function tuneAllTheThings (inputs: AutotuneInputs): AutotunePreviousProfile | un
     }
     // don't tune CR out of bounds
     var maxCR = pumpCarbRatio! * autotuneMax!;
-    if (maxCR > 150) { maxCR = 150 }
+    if (maxCR > MAX_CARB_RATIO) { maxCR = MAX_CARB_RATIO }
     var minCR = pumpCarbRatio! * autotuneMin!;
-    if (minCR < 1) { minCR = 1 }
+    if (minCR < MIN_CARB_RATIO) { minCR = MIN_CARB_RATIO }
     // safety cap fullNewCR
     if (typeof(pumpCarbRatio) !== 'undefined') {
         if (fullNewCR > maxCR) {
@@ -524,7 +536,7 @@ function tuneAllTheThings (inputs: AutotuneInputs): AutotunePreviousProfile | un
         } //else { console.error("newCR",newCR,"is close enough to",pumpCarbRatio); }
     }
     // only adjust by 20%
-    var newCR = ( 0.8 * carbRatio ) + ( 0.2 * fullNewCR );
+    var newCR = ( (1 - AUTOTUNE_ADJUSTMENT_FRACTION) * carbRatio ) + ( AUTOTUNE_ADJUSTMENT_FRACTION * fullNewCR );
     // safety cap newCR
     if (typeof(pumpCarbRatio) !== 'undefined') {
         if (newCR > maxCR) {
@@ -612,7 +624,7 @@ function tuneAllTheThings (inputs: AutotuneInputs): AutotunePreviousProfile | un
         }
 
         // and apply 20% of that adjustment
-        newISF = ( 0.8 * ISF ) + ( 0.2 * adjustedISF );
+        newISF = ( (1 - AUTOTUNE_ADJUSTMENT_FRACTION) * ISF ) + ( AUTOTUNE_ADJUSTMENT_FRACTION * adjustedISF );
 
         if (newISF > maxISF) {
             console.error("Limiting ISF of",newISF.toFixed(2),"to",maxISF.toFixed(2),"(which is pump ISF of",pumpISF,"/",autotuneMin!,")");

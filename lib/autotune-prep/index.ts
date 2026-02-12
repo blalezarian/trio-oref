@@ -4,6 +4,7 @@
 import find_meals from '../meal/history';
 import categorize from './categorize';
 import type { PumpHistoryEvent, InsulinCurve } from '../types/index';
+import { ULTRA_RAPID_PEAK, RAPID_ACTING_PEAK } from '../constants';
 
 interface AutotunePrepBasalProfileEntry {
   i: number;
@@ -191,9 +192,9 @@ function generate (inputs: AutotunePrepInputs): AutotunePrepResult {
       opts.profile.dia = currentDIA;
       //consoleError(opts.profile.useCustomPeakTime, opts.profile.insulinPeakTime);
       if ( ! opts.profile.useCustomPeakTime === true && opts.profile.curve === "ultra-rapid" ) {
-        opts.profile.insulinPeakTime = 55;
+        opts.profile.insulinPeakTime = ULTRA_RAPID_PEAK;
       } else if ( ! opts.profile.useCustomPeakTime === true ) {
-        opts.profile.insulinPeakTime = 75;
+        opts.profile.insulinPeakTime = RAPID_ACTING_PEAK;
       }
       opts.profile.useCustomPeakTime = true;
 

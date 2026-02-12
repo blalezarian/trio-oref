@@ -5,6 +5,14 @@ import ISF from '../profile/isf';
 import find_insulin from '../iob/history';
 import dosed from './dosed';
 import type { PumpHistoryEvent, CarbTreatment, InsulinCurve } from '../types/index';
+import {
+    MIN_VALID_GLUCOSE_MGDL,
+    MS_PER_MINUTE,
+    MS_PER_HOUR,
+    MINUTES_PER_HOUR,
+    MIN_BG_TARGET,
+    PRED_INTERVAL_MINUTES,
+} from '../constants';
 
 interface CategorizeGlucoseEntry {
   glucose?: number;
@@ -109,6 +117,9 @@ interface CategorizeResult {
   basalGlucoseData: CategorizeGlucoseDatum[];
 }
 
+/** BG validity threshold used in autotune bucketing (same as autosens) */
+const AUTOSENS_MIN_VALID_BG = 40;
+
 // main function categorizeBGDatums. ;) categorize to ISF, CSF, or basals.
 
 function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
@@ -147,7 +158,7 @@ function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
         }).filter(function filterRecords(obj: CategorizeGlucoseEntry) {
             // Only take records with a valid date record
             // and a glucose value, which is also above 39
-            return (obj.date && obj.glucose && obj.glucose >=39);
+            return (obj.date && obj.glucose && obj.glucose >=MIN_VALID_GLUCOSE_MGDL);
         }).sort(function (a: CategorizeGlucoseEntry, b: CategorizeGlucoseEntry) {
             // sort the collection in order
             return b.date! - a.date!;
@@ -181,7 +192,7 @@ function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
     for (var i=1; i < glucoseData.length; ++i) {
         var BGTime: number | string = glucoseData[i].date!;
         var lastBGTime = glucoseData[k].date!;
-        var elapsedMinutes = ((BGTime as number) - lastBGTime)/(60*1000);
+        var elapsedMinutes = ((BGTime as number) - lastBGTime)/MS_PER_MINUTE;
 
         if(Math.abs(elapsedMinutes) >= 2) {
             j++; // move to next bucket
@@ -260,7 +271,7 @@ function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
         if (typeof(bucketedData[i].glucose) !== 'undefined' && typeof(bucketedData[i+4].glucose) !== 'undefined') {
             //console.error(bucketedData[i]);
             BG = bucketedData[i].glucose!;
-            if ( BG < 40 || bucketedData[i+4].glucose! < 40) {
+            if ( BG < AUTOSENS_MIN_VALID_BG || bucketedData[i+4].glucose! < AUTOSENS_MIN_VALID_BG) {
                 //process.stderr.write("!");
                 continue;
             }
@@ -283,7 +294,7 @@ function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
             //if (h == 0 || h == fullHistory.length - 1) {
                 //console.error(hDate, BGDate, hDate-BGDate)
             //}
-            if (BGDate.getTime()-hDate.getTime() < 6*60*60*1000 && BGDate.getTime()-hDate.getTime() > 0) {
+            if (BGDate.getTime()-hDate.getTime() < 6*MS_PER_HOUR && BGDate.getTime()-hDate.getTime() > 0) {
                 //process.stderr.write("i");
                 //console.error(hDate);
                 newHistory.push(fullHistory[h]);
@@ -298,9 +309,9 @@ function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
         // this helps since the basal this hour could be different from previous, especially if with autotune they start to diverge.
         // use the pumpbasalprofile to properly calculate IOB during periods where no temp basal is set
         var currentPumpBasal = basal.basalLookup(opts.pumpbasalprofile, BGDate);
-        var BGDate1hAgo = new Date((BGTime as number)-1*60*60*1000);
-        var BGDate2hAgo = new Date((BGTime as number)-2*60*60*1000);
-        var BGDate3hAgo = new Date((BGTime as number)-3*60*60*1000);
+        var BGDate1hAgo = new Date((BGTime as number)-1*MS_PER_HOUR);
+        var BGDate2hAgo = new Date((BGTime as number)-2*MS_PER_HOUR);
+        var BGDate3hAgo = new Date((BGTime as number)-3*MS_PER_HOUR);
         var basal1hAgo = basal.basalLookup(opts.pumpbasalprofile, BGDate1hAgo);
         var basal2hAgo = basal.basalLookup(opts.pumpbasalprofile, BGDate2hAgo);
         var basal3hAgo = basal.basalLookup(opts.pumpbasalprofile, BGDate3hAgo);
@@ -312,14 +323,14 @@ function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
 
         //console.error(currentBasal,basal1hAgo,basal2hAgo,basal3hAgo,IOBInputs.profile.currentBasal);
         // basalBGI is BGI of basal insulin activity.
-        var basalBGI = Math.round(( currentBasal * sens / 60 * 5 )*100)/100; // U/hr * mg/dL/U * 1 hr / 60 minutes * 5 = mg/dL/5m
+        var basalBGI = Math.round(( currentBasal * sens / MINUTES_PER_HOUR * PRED_INTERVAL_MINUTES )*100)/100; // U/hr * mg/dL/U * 1 hr / 60 minutes * 5 = mg/dL/5m
         //console.log(JSON.stringify(IOBInputs.profile));
         // call iob since calculated elsewhere
         var iob = getIOB(IOBInputs as unknown as Parameters<typeof getIOB>[0])[0];
         //console.error(JSON.stringify(iob));
 
         // activity times ISF times 5 minutes is BGI
-        var BGI = Math.round(( -iob.activity * sens * 5 )*100)/100;
+        var BGI = Math.round(( -iob.activity * sens * PRED_INTERVAL_MINUTES )*100)/100;
         // datum = one glucose data point (being prepped to store in output)
         glucoseDatum.BGI = BGI;
         // calculating deviation
@@ -328,7 +339,7 @@ function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
         //console.error(deviation,avgDelta,BG,bucketedData[i].glucose);
 
         // set positive deviations to zero if BG is below 80
-        if ( BG < 80 && deviation > 0 ) {
+        if ( BG < MIN_BG_TARGET && deviation > 0 ) {
             deviation = 0;
         }
 
