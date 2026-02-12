@@ -12,6 +12,7 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import carbRatioLookup from '../../../lib/profile/carbs';
+import type { CarbRatioUnits } from '../../../lib/types/index';
 
 const FIXED_TIME = '2025-01-15T12:00:00.000Z';
 
@@ -213,7 +214,8 @@ describe('profile/carbs (carbRatioLookup) characterization tests', () => {
     it('returns undefined for unsupported carb_ratio units', () => {
       const inputs = {
         carbratio: {
-          units: 'ounces' as unknown as 'grams',
+          // Deliberately invalid units to exercise the unsupported-units error branch
+          units: 'ounces' as unknown as CarbRatioUnits,
           schedule: [{ offset: 0, ratio: 10 }],
         },
       };
