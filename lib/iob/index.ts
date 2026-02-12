@@ -4,6 +4,8 @@ import find_insulin from './history';
 import calculate from './calculate';
 import sum from './total';
 
+import type { PumpHistoryEvent, Treatment, IOBContribution } from '../types/index';
+
 interface IobIndexBasalProfileEntry {
     i: number;
     start: string;
@@ -29,8 +31,8 @@ interface IobIndexProfile {
 
 interface IobIndexInputs {
     clock: string;
-    history: unknown[];
-    history24?: unknown[];
+    history: PumpHistoryEvent[];
+    history24?: PumpHistoryEvent[];
     profile: IobIndexProfile;
     autosens?: { ratio: number };
 }
@@ -63,20 +65,27 @@ interface IobIndexTreatment {
     duration?: number;
 }
 
-function generate (inputs: IobIndexInputs, currentIOBOnly?: boolean, treatments?: any[]): IobIndexEntry[] {
+interface IobGenerateOpts {
+    treatments: IobIndexTreatment[];
+    profile: IobIndexProfile;
+    calculate: typeof calculate;
+    autosens?: { ratio: number };
+}
 
-    var treatmentsWithZeroTemp: any[];
+function generate (inputs: IobIndexInputs, currentIOBOnly?: boolean, treatments?: IobIndexTreatment[]): IobIndexEntry[] {
+
+    var treatmentsWithZeroTemp: IobIndexTreatment[];
     if (!treatments) {
-        treatments = find_insulin(inputs as any);
+        treatments = find_insulin(inputs);
         // calculate IOB based on continuous future zero temping as well
-        treatmentsWithZeroTemp = find_insulin(inputs as any, 240);
+        treatmentsWithZeroTemp = find_insulin(inputs, 240);
     } else {
         treatmentsWithZeroTemp = [];
     }
     //console.error(treatments.length, treatmentsWithZeroTemp.length);
     //console.error(treatments[treatments.length-1], treatmentsWithZeroTemp[treatmentsWithZeroTemp.length-1])
 
-    var opts: any = {
+    var opts: IobGenerateOpts = {
         treatments: treatments
     , profile: inputs.profile
     , calculate: calculate
@@ -84,31 +93,30 @@ function generate (inputs: IobIndexInputs, currentIOBOnly?: boolean, treatments?
     if ( inputs.autosens ) {
         opts.autosens = inputs.autosens;
     }
-    var optsWithZeroTemp: any = {
+    var optsWithZeroTemp: IobGenerateOpts = {
         treatments: treatmentsWithZeroTemp
     , profile: inputs.profile
     , calculate: calculate
     };
 
-    var iobArray: any[] = [];
+    var iobArray: IobIndexEntry[] = [];
     //console.error(inputs.clock);
     if (! /(Z|[+-][0-2][0-9]:?[034][05])+/.test(inputs.clock) ) {
         console.error("Warning: clock input " + inputs.clock + " is unzoned; please pass clock-zoned.json instead");
     }
     var clock = new Date(tz(inputs.clock));
 
-    var lastBolusTime: any = new Date(0).getTime(); //clock.getTime());
-    var lastTemp: any = {};
-    lastTemp.date = new Date(0).getTime(); //clock.getTime());
+    var lastBolusTime: number = new Date(0).getTime(); //clock.getTime());
+    var lastTemp: IobIndexTreatment = { date: new Date(0).getTime() } as IobIndexTreatment;
     //console.error(treatments[treatments.length-1]);
-    treatments.forEach(function(treatment: any) {
+    treatments.forEach(function(treatment: IobIndexTreatment) {
         if (treatment.insulin && treatment.started_at) {
-            lastBolusTime = Math.max(lastBolusTime,treatment.started_at);
+            lastBolusTime = Math.max(lastBolusTime, treatment.started_at.getTime());
             //console.error(treatment.insulin,treatment.started_at,lastBolusTime);
         } else if (typeof(treatment.rate) === 'number' && treatment.duration ) {
             if ( treatment.date > lastTemp.date ) {
                 lastTemp = treatment;
-                lastTemp.duration = Math.round(lastTemp.duration*100)/100;
+                lastTemp.duration = Math.round(lastTemp.duration!*100)/100;
             }
 
             //console.error(treatment.rate, treatment.duration, treatment.started_at,lastTemp.started_at)
@@ -124,12 +132,12 @@ function generate (inputs: IobIndexInputs, currentIOBOnly?: boolean, treatments?
         // predict IOB out to 4h, regardless of DIA
         iStop=4*60;
     }
-    var t: any;
+    var t: Date;
     for (var i=0; i<iStop; i+=5){
         t = new Date(clock.getTime() + i*60000);
         //console.error(t);
-        var iob: any = sum(opts, t);
-        var iobWithZeroTemp: any = sum(optsWithZeroTemp, t);
+        var iob = sum(opts as Parameters<typeof sum>[0], t) as IobIndexEntry;
+        var iobWithZeroTemp = sum(optsWithZeroTemp as Parameters<typeof sum>[0], t) as IobIndexEntry;
         //console.error(opts.treatments[opts.treatments.length-1], optsWithZeroTemp.treatments[optsWithZeroTemp.treatments.length-1])
         iobArray.push(iob);
         //console.error(iob.iob, iobWithZeroTemp.iob);

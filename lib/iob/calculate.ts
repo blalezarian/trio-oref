@@ -24,7 +24,7 @@ function iobCalc(treatment: Treatment, time: Date | undefined, curve: string, di
             time = new Date();
         }
         var bolusTime = new Date(treatment.date);
-        var minsAgo = Math.round(((time as any) - (bolusTime as any)) / 1000 / 60);
+        var minsAgo = Math.round((time.getTime() - bolusTime.getTime()) / 1000 / 60);
 
 
         if (curve === 'bilinear') {

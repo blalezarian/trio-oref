@@ -3,6 +3,7 @@ import tz from 'moment-timezone';
 import basalprofile from '../profile/basal';
 import _ from 'lodash';
 import moment from 'moment';
+import type { PumpHistoryEvent } from '../types/index';
 
 interface HistoryBasalProfileEntry {
     i: number;
@@ -27,8 +28,8 @@ interface HistoryProfile {
 
 interface HistoryInputs {
     clock: string;
-    history: any[];
-    history24?: any[];
+    history: PumpHistoryEvent[];
+    history24?: PumpHistoryEvent[];
     profile: HistoryProfile;
     autosens?: { ratio: number };
 }
@@ -43,26 +44,49 @@ interface HistoryTreatment {
     duration?: number;
 }
 
-function splitTimespanWithOneSplitter(event: any, splitter: any): any[] {
+interface TempEvent {
+    _type?: string;
+    rate?: number;
+    duration?: number;
+    date: number;
+    timestamp?: string;
+    started_at?: Date;
+    created_at?: Date;
+    insulin?: number;
+}
 
-    var resultArray = [event];
+interface SplitterEvent {
+    type: 'recurring';
+    minutes: number;
+}
+
+interface SuspendEvent {
+    timestamp?: string;
+    started_at?: Date;
+    date: number;
+    duration?: number;
+}
+
+function splitTimespanWithOneSplitter(event: TempEvent, splitter: SplitterEvent): TempEvent[] {
+
+    var resultArray: TempEvent[] = [event];
 
     if (splitter.type === 'recurring') {
 
-        var startMinutes = event.started_at.getHours() * 60 + event.started_at.getMinutes();
-        var endMinutes = startMinutes + event.duration;
+        var startMinutes = event.started_at!.getHours() * 60 + event.started_at!.getMinutes();
+        var endMinutes = startMinutes + event.duration!;
 
         // 1440 = one day; no clean way to check if the event overlaps midnight
         // so checking if end of event in minutes is past midnight
 
-        if (event.duration > 30 || (startMinutes < splitter.minutes && endMinutes > splitter.minutes) || (endMinutes > 1440 && splitter.minutes < (endMinutes - 1440))) {
+        if (event.duration! > 30 || (startMinutes < splitter.minutes && endMinutes > splitter.minutes) || (endMinutes > 1440 && splitter.minutes < (endMinutes - 1440))) {
 
             var event1 = _.cloneDeep(event);
-            var event2 = _.cloneDeep(event);
+            var event2: TempEvent = _.cloneDeep(event);
 
             var event1Duration = 0;
 
-            if (event.duration > 30) {
+            if (event.duration! > 30) {
                 event1Duration = 30;
             } else {
                 var splitPoint = splitter.minutes;
@@ -74,7 +98,7 @@ function splitTimespanWithOneSplitter(event: any, splitter: any): any[] {
 
             event1.duration = event1Duration;
 
-            event2.duration  = event.duration - event1Duration;
+            event2.duration  = event.duration! - event1Duration;
             event2.timestamp = event1EndDate.format();
             event2.started_at = new Date(event2.timestamp);
             event2.date = event2.started_at.getTime();
@@ -86,15 +110,15 @@ function splitTimespanWithOneSplitter(event: any, splitter: any): any[] {
     return resultArray;
 }
 
-function splitTimespan(event: any, splitterMoments: any[]): any[] {
+function splitTimespan(event: TempEvent, splitterMoments: SplitterEvent[]): TempEvent[] {
 
-    var results = [event];
+    var results: TempEvent[] = [event];
 
     var splitFound = true;
 
     while(splitFound) {
 
-        var resultArray: any[] = [];
+        var resultArray: TempEvent[] = [];
         splitFound = false;
 
         _.forEach(results,function split(o) {
@@ -120,8 +144,8 @@ function splitTimespan(event: any, splitterMoments: any[]): any[] {
 // Split currentEvent around any conflicting suspends
 // by removing the time period from the event that
 // overlaps with any suspend.
-function splitAroundSuspends (currentEvent: any, pumpSuspends: any[], firstResumeTime: any, suspendedPrior: boolean, lastSuspendTime: any, currentlySuspended: any): any[] {
-    var events: any[] = [];
+function splitAroundSuspends (currentEvent: TempEvent, pumpSuspends: SuspendEvent[], firstResumeTime: string, suspendedPrior: boolean, lastSuspendTime: string, currentlySuspended: number | false): TempEvent[] {
+    var events: TempEvent[] = [];
 
     var firstResumeStarted = new Date(firstResumeTime);
     var firstResumeDate = firstResumeStarted.getTime()
@@ -130,18 +154,18 @@ function splitAroundSuspends (currentEvent: any, pumpSuspends: any[], firstResum
     var lastSuspendDate = lastSuspendStarted.getTime();
 
     if (suspendedPrior && (currentEvent.date < firstResumeDate)) {
-        if ((currentEvent.date+currentEvent.duration*60*1000) < firstResumeDate) {
+        if ((currentEvent.date+currentEvent.duration!*60*1000) < firstResumeDate) {
             currentEvent.duration = 0;
         } else {
-            currentEvent.duration = ((currentEvent.date+currentEvent.duration*60*1000)-firstResumeDate)/60/1000;
+            currentEvent.duration = ((currentEvent.date+currentEvent.duration!*60*1000)-firstResumeDate)/60/1000;
 
             currentEvent.started_at = new Date(tz(firstResumeTime));
             currentEvent.date = firstResumeDate
         }
     }
 
-    if (currentlySuspended && ((currentEvent.date+currentEvent.duration*60*1000) > lastSuspendTime)) {
-        if (currentEvent.date > lastSuspendTime) {
+    if (currentlySuspended && ((currentEvent.date+currentEvent.duration!*60*1000) > (lastSuspendTime as unknown as number))) {
+        if (currentEvent.date > (lastSuspendTime as unknown as number)) {
             currentEvent.duration = 0;
         } else {
             currentEvent.duration = (firstResumeDate - currentEvent.date)/60/1000;
@@ -160,35 +184,35 @@ function splitAroundSuspends (currentEvent: any, pumpSuspends: any[], firstResum
 
         for (var j=0; j < events.length; j++) {
 
-            if ((events[j].date <= suspend.date) && (events[j].date+events[j].duration*60*1000) > suspend.date) {
+            if ((events[j].date <= suspend.date) && (events[j].date+events[j].duration!*60*1000) > suspend.date) {
                 // event started before the suspend, but finished after the suspend started
 
-                if ((events[j].date+events[j].duration*60*1000) > (suspend.date+suspend.duration*60*1000)) {
-                    var event2: any = _.cloneDeep(events[j]);
+                if ((events[j].date+events[j].duration!*60*1000) > (suspend.date+suspend.duration!*60*1000)) {
+                    var event2: TempEvent = _.cloneDeep(events[j]);
 
                     var event2StartDate = moment(suspend.started_at).add(suspend.duration,'minutes');
 
                     event2.timestamp = event2StartDate.format();
                     event2.started_at = new Date(tz(event2.timestamp));
-                    event2.date = suspend.date+suspend.duration*60*1000;
+                    event2.date = suspend.date+suspend.duration!*60*1000;
 
-                    event2.duration = ((events[j].date+events[j].duration*60*1000) - (suspend.date+suspend.duration*60*1000))/60/1000;
+                    event2.duration = ((events[j].date+events[j].duration!*60*1000) - (suspend.date+suspend.duration!*60*1000))/60/1000;
 
                     events.push(event2);
                 }
 
                 events[j].duration = (suspend.date-events[j].date)/60/1000;
 
-            } else if ((suspend.date <= events[j].date) && (suspend.date+suspend.duration*60*1000 > events[j].date)) {
+            } else if ((suspend.date <= events[j].date) && (suspend.date+suspend.duration!*60*1000 > events[j].date)) {
                 // suspend started before the event, but finished after the event started
 
-                events[j].duration = ((events[j].date+events[j].duration*60*1000) - (suspend.date+suspend.duration*60*1000))/60/1000;
+                events[j].duration = ((events[j].date+events[j].duration!*60*1000) - (suspend.date+suspend.duration!*60*1000))/60/1000;
 
                 var eventStartDate = moment(suspend.started_at).add(suspend.duration,'minutes');
 
                 events[j].timestamp = eventStartDate.format();
                 events[j].started_at = new Date(tz(events[j].timestamp));
-                events[j].date = suspend.date + suspend.duration*60*1000;
+                events[j].date = suspend.date + suspend.duration!*60*1000;
             }
         }
     }
@@ -197,43 +221,44 @@ function splitAroundSuspends (currentEvent: any, pumpSuspends: any[], firstResum
 }
 
 function calcTempTreatments (inputs: HistoryInputs, zeroTempDuration?: number): HistoryTreatment[] {
-    var pumpHistory: any[] = inputs.history;
+    var pumpHistory: PumpHistoryEvent[] = inputs.history;
     var pumpHistory24 = inputs.history24;
     var profile_data = inputs.profile;
     var autosens_data = inputs.autosens;
-    var tempHistory: any[] = [];
-    var tempBoluses: any[] = [];
-    var pumpSuspends: any[] = [];
-    var pumpResumes: any[] = [];
+    var tempHistory: TempEvent[] = [];
+    var tempBoluses: TempEvent[] = [];
+    var pumpSuspends: SuspendEvent[] = [];
+    var pumpResumes: SuspendEvent[] = [];
     var suspendedPrior = false;
-    var firstResumeTime: any, lastSuspendTime: any;
-    var currentlySuspended: any = false;
+    var firstResumeTime: string = undefined!;
+    var lastSuspendTime: string = undefined!;
+    var currentlySuspended: number | false = false;
     var suspendError = false;
 
     var now = new Date(tz(inputs.clock));
 
     if(inputs.history24) {
-        var pumpHistory: any[] =  ([] as any[]).concat(inputs.history).concat(inputs.history24);
+        var pumpHistory: PumpHistoryEvent[] =  ([] as PumpHistoryEvent[]).concat(inputs.history).concat(inputs.history24);
     }
 
     var lastRecordTime = now;
 
     // Gather the times the pump was suspended and resumed
     for (var i=0; i < pumpHistory.length; i++) {
-        var temp: any = {};
+        var temp: TempEvent = {} as TempEvent;
 
-        var current: any = pumpHistory[i];
+        var current: PumpHistoryEvent = pumpHistory[i];
 
         if (current._type === "PumpSuspend") {
             temp.timestamp = current.timestamp;
             temp.started_at = new Date(tz(current.timestamp));
             temp.date = temp.started_at.getTime();
-            pumpSuspends.push(temp);
+            pumpSuspends.push(temp as SuspendEvent);
         } else if (current._type === "PumpResume") {
             temp.timestamp = current.timestamp;
             temp.started_at = new Date(tz(current.timestamp));
             temp.date = temp.started_at.getTime();
-            pumpResumes.push(temp);
+            pumpResumes.push(temp as SuspendEvent);
         }
     }
 
@@ -242,7 +267,7 @@ function calcTempTreatments (inputs: HistoryInputs, zeroTempDuration?: number): 
     pumpResumes = _.sortBy(pumpResumes, 'date');
 
     if (pumpResumes.length > 0) {
-        firstResumeTime = pumpResumes[0].timestamp;
+        firstResumeTime = pumpResumes[0].timestamp!;
 
         // Check to see if our first resume was prior to our first suspend
         // indicating suspend was prior to our first event.
@@ -269,7 +294,7 @@ function calcTempTreatments (inputs: HistoryInputs, zeroTempDuration?: number): 
             // through the last record beginning at the last suspend
             // since we don't have a matching resume.
             currentlySuspended = 1;
-            lastSuspendTime = pumpSuspends[i].timestamp;
+            lastSuspendTime = pumpSuspends[i].timestamp!;
 
             break;
         }
@@ -299,10 +324,10 @@ function calcTempTreatments (inputs: HistoryInputs, zeroTempDuration?: number): 
     // Pick relevant events for processing and clean the data
 
     for (i=0; i < pumpHistory.length; i++) {
-        var current: any = pumpHistory[i];
+        var current: PumpHistoryEvent = pumpHistory[i];
         if (current.bolus && current.bolus._type === "Bolus") {
-            var temp: any = current;
-            current = temp.bolus;
+            var temp: TempEvent = current as unknown as TempEvent;
+            current = (temp as unknown as PumpHistoryEvent).bolus as PumpHistoryEvent;
         }
         if (current.created_at) {
             current.timestamp = current.created_at;
@@ -319,7 +344,7 @@ function calcTempTreatments (inputs: HistoryInputs, zeroTempDuration?: number): 
             lastRecordTime = currentRecordTime;
         }
         if (current._type === "Bolus") {
-            var temp: any = {};
+            var temp: TempEvent = {} as TempEvent;
             temp.timestamp = current.timestamp;
             temp.started_at = new Date(tz(current.timestamp));
             if (temp.started_at > now) {
@@ -333,28 +358,28 @@ function calcTempTreatments (inputs: HistoryInputs, zeroTempDuration?: number): 
         } else if (current.eventType === "Meal Bolus" || current.eventType === "Correction Bolus" || current.eventType === "Snack Bolus" || current.eventType === "Bolus Wizard") {
             //imports treatments entered through Nightscout Care Portal
             //"Bolus Wizard" refers to the Nightscout Bolus Wizard, not the Medtronic Bolus Wizard
-            var temp: any = {};
+            var temp: TempEvent = {} as TempEvent;
             temp.timestamp = current.created_at;
             temp.started_at = new Date(tz(temp.timestamp));
             temp.date = temp.started_at.getTime();
             temp.insulin = current.insulin;
             tempBoluses.push(temp);
         } else if (current.enteredBy === "xdrip") {
-            var temp: any = {};
+            var temp: TempEvent = {} as TempEvent;
             temp.timestamp = current.timestamp;
             temp.started_at = new Date(tz(temp.timestamp));
             temp.date = temp.started_at.getTime();
             temp.insulin = current.insulin;
             tempBoluses.push(temp);
         } else if (current.enteredBy ==="HAPP_App" && current.insulin) {
-            var temp: any = {};
+            var temp: TempEvent = {} as TempEvent;
             temp.timestamp = current.created_at;
             temp.started_at = new Date(tz(temp.timestamp));
             temp.date = temp.started_at.getTime();
             temp.insulin = current.insulin;
             tempBoluses.push(temp);
         } else if (current.eventType === "Temp Basal" && (current.enteredBy === "HAPP_App" || current.enteredBy === "openaps://AndroidAPS")) {
-            var temp: any = {};
+            var temp: TempEvent = {} as TempEvent;
             temp.rate = current.absolute;
             temp.duration = current.duration;
             temp.timestamp = current.created_at;
@@ -362,13 +387,13 @@ function calcTempTreatments (inputs: HistoryInputs, zeroTempDuration?: number): 
             temp.date = temp.started_at.getTime();
             tempHistory.push(temp);
         } else if (current.eventType === "Temp Basal") {
-            var temp: any = {};
+            var temp: TempEvent = {} as TempEvent;
             temp.rate = current.rate;
             temp.duration = current.duration;
             // Loop reports the amount of insulin actually delivered while the temp basal was running
             // use that to calculate the effective temp basal rate
             if (typeof current.amount !== 'undefined') {
-                temp.rate = current.amount / current.duration * 60;
+                temp.rate = current.amount / current.duration! * 60;
             }
             temp.timestamp = current.timestamp;
             temp.started_at = new Date(tz(temp.timestamp));
@@ -380,13 +405,13 @@ function calcTempTreatments (inputs: HistoryInputs, zeroTempDuration?: number): 
             }
             var rate = current.rate;
             var timestamp = current.timestamp;
-            var duration: any;
-            if (i>0 && (pumpHistory[i-1] as any).timestamp === timestamp && (pumpHistory[i-1] as any)._type === "TempBasalDuration") {
-                duration = (pumpHistory[i-1] as any)['duration (min)'];
+            var duration: number | undefined;
+            if (i>0 && pumpHistory[i-1].timestamp === timestamp && pumpHistory[i-1]._type === "TempBasalDuration") {
+                duration = pumpHistory[i-1]['duration (min)'] as number;
             } else {
                 for (var iter=0; iter < pumpHistory.length; iter++) {
-                    if ((pumpHistory[iter] as any).timestamp === timestamp && (pumpHistory[iter] as any)._type === "TempBasalDuration") {
-                            duration = (pumpHistory[iter] as any)['duration (min)'];
+                    if (pumpHistory[iter].timestamp === timestamp && pumpHistory[iter]._type === "TempBasalDuration") {
+                            duration = pumpHistory[iter]['duration (min)'] as number;
                             break;
                     }
                 }
@@ -395,7 +420,7 @@ function calcTempTreatments (inputs: HistoryInputs, zeroTempDuration?: number): 
                     console.error("No duration found for "+rate+" U/hr basal "+timestamp, pumpHistory[i - 1], current, pumpHistory[i + 1]);
                 }
             }
-            var temp: any = {};
+            var temp: TempEvent = {} as TempEvent;
             temp.rate = rate;
             temp.timestamp = current.timestamp;
             temp.started_at = new Date(tz(temp.timestamp));
@@ -404,7 +429,7 @@ function calcTempTreatments (inputs: HistoryInputs, zeroTempDuration?: number): 
             tempHistory.push(temp);
         }
         // Add a temp basal cancel event to ignore future temps and reduce predBG oscillation
-        var temp: any = {};
+        var temp: TempEvent = {} as TempEvent;
         temp.rate = 0;
         // start the zero temp 1m in the future to avoid clock skew
         temp.started_at = new Date(now.getTime() + (1 * 60 * 1000));
@@ -422,7 +447,7 @@ function calcTempTreatments (inputs: HistoryInputs, zeroTempDuration?: number): 
     tempHistory = _.sortBy(tempHistory, 'date');
 
     for (i=0; i+1 < tempHistory.length; i++) {
-        if (tempHistory[i].date + tempHistory[i].duration*60*1000 > tempHistory[i+1].date) {
+        if (tempHistory[i].date + tempHistory[i].duration!*60*1000 > tempHistory[i+1].date) {
             tempHistory[i].duration = (tempHistory[i+1].date - tempHistory[i].date)/60/1000;
             // Delete AndroidAPS "Cancel TBR records" in which duration is not populated
             if (tempHistory[i+1].duration === null) {
@@ -434,10 +459,10 @@ function calcTempTreatments (inputs: HistoryInputs, zeroTempDuration?: number): 
     // Create an array of moments to slit the temps by
     // currently supports basal changes
 
-    var splitterEvents: any[] = [];
+    var splitterEvents: SplitterEvent[] = [];
 
     _.forEach(profile_data.basalprofile,function addSplitter(o) {
-        var splitterEvent: any = {};
+        var splitterEvent: SplitterEvent = {} as SplitterEvent;
         splitterEvent.type = 'recurring';
         splitterEvent.minutes = o.minutes;
         splitterEvents.push(splitterEvent);
@@ -445,7 +470,7 @@ function calcTempTreatments (inputs: HistoryInputs, zeroTempDuration?: number): 
 
     // iterate through the events and split at basal break points if needed
 
-    var splitHistoryByBasal: any[] = [];
+    var splitHistoryByBasal: TempEvent[] = [];
 
     _.forEach(tempHistory, function splitEvent(o) {
         splitHistoryByBasal = splitHistoryByBasal.concat(splitTimespan(o,splitterEvents));
@@ -453,7 +478,7 @@ function calcTempTreatments (inputs: HistoryInputs, zeroTempDuration?: number): 
 
     tempHistory = _.sortBy(tempHistory, function(o) { return o.date; });
 
-    var suspend_zeros_iob: any = false;
+    var suspend_zeros_iob: boolean = false;
 
     if (typeof profile_data.suspend_zeros_iob !== 'undefined') {
         suspend_zeros_iob = profile_data.suspend_zeros_iob;
@@ -462,19 +487,19 @@ function calcTempTreatments (inputs: HistoryInputs, zeroTempDuration?: number): 
     if (suspend_zeros_iob) {
         // iterate through the events and adjust their
         // times as required to account for pump suspends
-        var splitHistory: any[] = [];
+        var splitHistory: TempEvent[] = [];
 
         _.forEach(splitHistoryByBasal, function splitSuspendEvent(o) {
             var splitEvents = splitAroundSuspends(o, pumpSuspends, firstResumeTime, suspendedPrior, lastSuspendTime, currentlySuspended);
             splitHistory = splitHistory.concat(splitEvents);
         });
 
-        var zTempSuspendBasals: any[] = [];
+        var zTempSuspendBasals: TempEvent[] = [];
 
         // Any existing temp basals during times the pump was suspended are now deleted
         // Add 0 temp basals to negate the profile basal rates during times pump is suspended
         _.forEach(pumpSuspends, function createTempBasal(o) {
-            var zTempBasal: any[] = [{
+            var zTempBasal: TempEvent[] = [{
                 _type: 'SuspendBasal',
                 rate: 0,
                 duration: o.duration,
@@ -502,7 +527,7 @@ function calcTempTreatments (inputs: HistoryInputs, zeroTempDuration?: number): 
             var suspendStartDate = suspendStart.getTime()
             var started_at = new Date(tz(suspendStart.toISOString()));
 
-            var zTempBasal: any[] = [{
+            var zTempBasal: TempEvent[] = [{
                // add _type to aid debugging. It isn't used
                // anywhere.
                 _type: 'SuspendBasal',
@@ -519,7 +544,7 @@ function calcTempTreatments (inputs: HistoryInputs, zeroTempDuration?: number): 
             var suspendStartDate = suspendStart.getTime()
             var started_at = new Date(tz(suspendStart.toISOString()));
 
-            var zTempBasal: any[] = [{
+            var zTempBasal: TempEvent[] = [{
                 _type: 'SuspendBasal',
                 rate: 0,
                 duration: (now.getTime() - suspendStartDate)/60/1000,
@@ -547,17 +572,17 @@ function calcTempTreatments (inputs: HistoryInputs, zeroTempDuration?: number): 
     // iterate through the temp basals and create bolus events from temps that affect IOB
 
     var tempBolusSize;
-    var target_bg: any;
+    var target_bg: number | undefined;
 
     for (i=0; i < splitHistory.length; i++) {
 
         var currentItem = splitHistory[i];
 
-        if (currentItem.duration > 0) {
+        if (currentItem.duration! > 0) {
 
-            var currentRate: any = profile_data.current_basal;
+            var currentRate: number = profile_data.current_basal;
             if (!_.isEmpty(profile_data.basalprofile)) {
-                currentRate = basalprofile.basalLookup(profile_data.basalprofile,new Date(currentItem.timestamp));
+                currentRate = basalprofile.basalLookup(profile_data.basalprofile,new Date(currentItem.timestamp!))!;
             }
 
             if (typeof profile_data.min_bg !== 'undefined' && typeof profile_data.max_bg !== 'undefined') {
@@ -567,7 +592,7 @@ function calcTempTreatments (inputs: HistoryInputs, zeroTempDuration?: number): 
                 //sensitivityRatio = 2/(2+(target_bg-100)/40);
                 //currentRate = profile_data.current_basal * sensitivityRatio;
             //}
-            var sensitivityRatio: any;
+            var sensitivityRatio: number | undefined;
             var profile = profile_data;
             var normalTarget = 100; // evaluate high/low temptarget against 100, not scheduled basal (which might change)
             if ( profile.half_basal_exercise_target ) {
@@ -575,11 +600,11 @@ function calcTempTreatments (inputs: HistoryInputs, zeroTempDuration?: number): 
             } else {
                 var halfBasalTarget = 160; // when temptarget is 160 mg/dL, run 50% basal (120 = 75%; 140 = 60%)
             }
-            if ( profile.exercise_mode && profile.temptargetSet && target_bg >= normalTarget + 5 ) {
+            if ( profile.exercise_mode && profile.temptargetSet && target_bg! >= normalTarget + 5 ) {
                 // w/ target 100, temp target 110 = .89, 120 = 0.8, 140 = 0.67, 160 = .57, and 200 = .44
                 // e.g.: Sensitivity ratio set to 0.8 based on temp target of 120; Adjusting basal from 1.65 to 1.35; ISF from 58.9 to 73.6
                 var c = halfBasalTarget - normalTarget;
-                sensitivityRatio = c/(c+target_bg-normalTarget);
+                sensitivityRatio = c/(c+target_bg!-normalTarget);
             } else if (typeof autosens_data !== 'undefined' ) {
                 sensitivityRatio = autosens_data.ratio;
                 //process.stderr.write("Autosens ratio: "+sensitivityRatio+"; ");
@@ -588,14 +613,14 @@ function calcTempTreatments (inputs: HistoryInputs, zeroTempDuration?: number): 
                 currentRate = currentRate * sensitivityRatio;
             }
 
-            var netBasalRate = currentItem.rate - currentRate;
+            var netBasalRate = currentItem.rate! - currentRate;
             if (netBasalRate < 0) { tempBolusSize = -0.05; }
             else { tempBolusSize = 0.05; }
-            var netBasalAmount = Math.round(netBasalRate*currentItem.duration*10/6)/100
+            var netBasalAmount = Math.round(netBasalRate*currentItem.duration!*10/6)/100
             var tempBolusCount = Math.round(netBasalAmount / tempBolusSize);
-            var tempBolusSpacing = currentItem.duration / tempBolusCount;
+            var tempBolusSpacing = currentItem.duration! / tempBolusCount;
             for (j=0; j < tempBolusCount; j++) {
-                var tempBolus: any = {};
+                var tempBolus: TempEvent = {} as TempEvent;
                 tempBolus.insulin = tempBolusSize;
                 tempBolus.date = currentItem.date + j * tempBolusSpacing*60*1000;
                 tempBolus.created_at = new Date(tempBolus.date);
@@ -603,7 +628,7 @@ function calcTempTreatments (inputs: HistoryInputs, zeroTempDuration?: number): 
             }
         }
     }
-    var all_data: any[] =  ([] as any[]).concat(tempBoluses).concat(tempHistory);
+    var all_data: TempEvent[] =  ([] as TempEvent[]).concat(tempBoluses).concat(tempHistory);
     all_data = _.sortBy(all_data, 'date');
     return all_data;
 }

@@ -8,6 +8,7 @@
 
 import { describe, it, expect } from 'vitest';
 import iob from '../../../lib/iob/index';
+import type { PumpHistoryEvent } from '../../../lib/types/index';
 
 const FIXED_TIME = '2025-01-15T12:00:00.000Z';
 const NOW = new Date(FIXED_TIME).getTime();
@@ -18,7 +19,7 @@ function ts(minsAgo: number): string {
 
 const BASAL_PROFILE = [{ i: 0, start: '00:00:00', rate: 1, minutes: 0 }];
 
-function makeInputs(history: unknown[], profileOverrides: Record<string, unknown> = {}) {
+function makeInputs(history: PumpHistoryEvent[], profileOverrides: Record<string, unknown> = {}) {
   return {
     clock: FIXED_TIME,
     history,
