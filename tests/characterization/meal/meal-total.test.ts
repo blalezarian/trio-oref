@@ -11,6 +11,7 @@
 
 import { describe, it, expect } from 'vitest';
 import recentCarbs from '../../../lib/meal/total';
+import type { CarbTreatment, GlucoseEntry } from '../../../lib/types/index';
 
 const FIXED_TIME = '2025-01-15T12:00:00.000Z';
 const NOW = new Date(FIXED_TIME).getTime();
@@ -69,11 +70,11 @@ function risingGlucose() {
 }
 
 function makeOpts(
-  treatments: unknown[] | null,
+  treatments: CarbTreatment[] | null,
   overrides: {
     profile?: Record<string, unknown>;
-    pumphistory?: unknown[];
-    glucose?: unknown[];
+    pumphistory?: Array<Record<string, unknown>>;
+    glucose?: GlucoseEntry[];
   } = {},
 ) {
   return {

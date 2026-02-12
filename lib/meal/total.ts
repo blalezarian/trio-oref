@@ -1,12 +1,24 @@
 import tz from 'moment-timezone';
 import calcMealCOB from '../determine-basal/cob';
+import type { CarbTreatment, GlucoseEntry, PumpHistoryEvent } from '../types/index';
 
 interface RecentCarbsOpts {
-  treatments: any[] | null;
-  profile: Record<string, any>;
-  pumphistory: any[];
-  glucose?: any[];
-  basalprofile: any[];
+  treatments: CarbTreatment[] | null;
+  profile: Record<string, unknown>;
+  pumphistory: PumpHistoryEvent[];
+  glucose?: GlucoseEntry[];
+  basalprofile: Array<Record<string, unknown>>;
+}
+
+interface COBInputs {
+  glucose_data: GlucoseEntry[] | undefined;
+  iob_inputs: {
+    profile: Record<string, unknown>;
+    history: PumpHistoryEvent[];
+  };
+  basalprofile: Array<Record<string, unknown>>;
+  mealTime: number;
+  ciTime?: number;
 }
 
 interface RecentCarbsResult {
@@ -20,7 +32,7 @@ interface RecentCarbsResult {
   minDeviation: number;
   slopeFromMaxDeviation: number;
   slopeFromMinDeviation: number;
-  allDeviations: any;
+  allDeviations: number[];
   lastCarbTime: number;
   bwFound: boolean;
 }
@@ -34,7 +46,7 @@ function round(value: number, digits?: number): number {
 function recentCarbs(opts: RecentCarbsOpts, time: Date): RecentCarbsResult | Record<string, never> {
     var treatments = opts.treatments;
     var profile_data = opts.profile;
-    var glucose_data: any[] | undefined;
+    var glucose_data: GlucoseEntry[] | undefined;
     if (typeof(opts.glucose) !== 'undefined') {
         glucose_data = opts.glucose;
     }
@@ -52,7 +64,7 @@ function recentCarbs(opts: RecentCarbsOpts, time: Date): RecentCarbsResult | Rec
         profile: profile_data
     ,   history: opts.pumphistory
     };
-    var COB_inputs: any = {
+    var COB_inputs: COBInputs = {
         glucose_data: glucose_data
     ,   iob_inputs: iob_inputs
     ,   basalprofile: opts.basalprofile
@@ -61,9 +73,9 @@ function recentCarbs(opts: RecentCarbsOpts, time: Date): RecentCarbsResult | Rec
     var mealCOB = 0;
 
     // this sorts the treatments collection in order.
-    treatments.sort(function (a: any, b: any) {
-        var aDate = new Date(tz(a.timestamp) as any);
-        var bDate = new Date(tz(b.timestamp) as any);
+    treatments.sort(function (a: CarbTreatment, b: CarbTreatment) {
+        var aDate = new Date(tz(a.timestamp).toDate());
+        var bDate = new Date(tz(b.timestamp).toDate());
         //console.error(aDate);
         return bDate.getTime() - aDate.getTime();
     });
@@ -80,26 +92,26 @@ function recentCarbs(opts: RecentCarbsOpts, time: Date): RecentCarbsResult | Rec
         console.error("Bad profile.maxMealAbsorptionTime:",profile_data.maxMealAbsorptionTime);
     }
 
-    treatments.forEach(function(treatment: any) {
+    treatments.forEach(function(treatment: CarbTreatment) {
         var now = time.getTime();
         // consider carbs from up to the meal preference maxMealAbsorptionTime hours ago in calculating COB
         var carbWindow = now - maxMealAbsorptionTime * 60*60*1000;
-        var treatmentDate = new Date(tz(treatment.timestamp) as any);
+        var treatmentDate = new Date(tz(treatment.timestamp).toDate());
         var treatmentTime = treatmentDate.getTime();
         if (treatmentTime > carbWindow && treatmentTime <= now) {
-            if (treatment.carbs >= 1) {
-                if (treatment.nsCarbs >= 1) {
-                    nsCarbs += parseFloat(treatment.nsCarbs);
-                } else if (treatment.bwCarbs >= 1) {
-                    bwCarbs += parseFloat(treatment.bwCarbs);
+            if (treatment.carbs! >= 1) {
+                if (treatment.nsCarbs! >= 1) {
+                    nsCarbs += parseFloat(treatment.nsCarbs as unknown as string);
+                } else if (treatment.bwCarbs! >= 1) {
+                    bwCarbs += parseFloat(treatment.bwCarbs as unknown as string);
                     bwFound = true;
-                } else if (treatment.journalCarbs >= 1) {
-                    journalCarbs += parseFloat(treatment.journalCarbs);
+                } else if (treatment.journalCarbs! >= 1) {
+                    journalCarbs += parseFloat(treatment.journalCarbs as unknown as string);
                 } else {
                     console.error("Treatment carbs unclassified:",treatment);
                 }
                 //console.error(treatment.carbs, maxCarbs, treatmentDate);
-                carbs += parseFloat(treatment.carbs);
+                carbs += parseFloat(treatment.carbs as unknown as string);
                 COB_inputs.mealTime = treatmentTime;
                 lastCarbTime = Math.max(lastCarbTime,treatmentTime);
                 var myCarbsAbsorbed = calcMealCOB(COB_inputs).carbsAbsorbed;
@@ -110,13 +122,13 @@ function recentCarbs(opts: RecentCarbsOpts, time: Date): RecentCarbsResult | Rec
                     console.error("Bad myMealCOB:",myMealCOB, "mealCOB:",mealCOB, "carbs:",carbs,"myCarbsAbsorbed:",myCarbsAbsorbed);
                 }
                 if (myMealCOB < mealCOB) {
-                    carbsToRemove += parseFloat(treatment.carbs);
-                    if (treatment.nsCarbs >= 1) {
-                        nsCarbsToRemove += parseFloat(treatment.nsCarbs);
-                    } else if (treatment.bwCarbs >= 1) {
-                        bwCarbsToRemove += parseFloat(treatment.bwCarbs);
-                    } else if (treatment.journalCarbs >= 1) {
-                        journalCarbsToRemove += parseFloat(treatment.journalCarbs);
+                    carbsToRemove += parseFloat(treatment.carbs as unknown as string);
+                    if (treatment.nsCarbs! >= 1) {
+                        nsCarbsToRemove += parseFloat(treatment.nsCarbs as unknown as string);
+                    } else if (treatment.bwCarbs! >= 1) {
+                        bwCarbsToRemove += parseFloat(treatment.bwCarbs as unknown as string);
+                    } else if (treatment.journalCarbs! >= 1) {
+                        journalCarbsToRemove += parseFloat(treatment.journalCarbs as unknown as string);
                     }
                 } else {
                     carbsToRemove = 0;

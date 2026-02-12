@@ -3,6 +3,7 @@
 
 import find_meals from '../meal/history';
 import categorize from './categorize';
+import type { PumpHistoryEvent } from '../types/index';
 
 interface AutotunePrepBasalProfileEntry {
   i: number;
@@ -39,10 +40,10 @@ interface AutotunePrepPumpProfile {
 }
 
 interface AutotunePrepInputs {
-  history: unknown[];
+  history: PumpHistoryEvent[];
   profile: AutotunePrepProfile;
   pumpprofile: AutotunePrepPumpProfile;
-  carbs: unknown[];
+  carbs: PumpHistoryEvent[];
   glucose: Array<Record<string, unknown>>;
   categorize_uam_as_basal?: boolean;
   tune_insulin_curve?: boolean;

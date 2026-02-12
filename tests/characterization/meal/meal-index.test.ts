@@ -10,6 +10,7 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import mealGenerate from '../../../lib/meal/index';
+import type { PumpHistoryEvent, GlucoseEntry } from '../../../lib/types/index';
 
 const FIXED_TIME = '2025-01-15T12:00:00.000Z';
 const NOW = new Date(FIXED_TIME).getTime();
@@ -67,11 +68,11 @@ function risingGlucose() {
 }
 
 function makeInputs(overrides: {
-  history?: unknown[];
-  carbs?: unknown[];
+  history?: PumpHistoryEvent[];
+  carbs?: PumpHistoryEvent[];
   profile?: Record<string, unknown>;
-  glucose?: unknown[];
-  basalprofile?: unknown[];
+  glucose?: GlucoseEntry[];
+  basalprofile?: Array<Record<string, unknown>>;
 } = {}) {
   return {
     clock: FIXED_TIME,
