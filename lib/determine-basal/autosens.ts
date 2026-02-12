@@ -6,6 +6,16 @@ import find_meals from '../meal/history';
 import tz from 'moment-timezone';
 import percentile from '../percentile';
 import type { PumpHistoryEvent, GlucoseEntry, CarbTreatment } from '../types/index';
+import {
+    MIN_VALID_GLUCOSE_MGDL,
+    MS_PER_HOUR,
+    MS_PER_MINUTE,
+    HOURS_PER_DAY,
+    MIN_BG_TARGET,
+    EXERCISE_NORMAL_TARGET,
+    DEFAULT_AUTOSENS_LOOKBACK,
+    PRED_INTERVAL_MINUTES,
+} from '../constants';
 
 interface AutosensInputs {
   glucose_data: GlucoseEntry[];
@@ -26,6 +36,21 @@ interface AutosensResult {
   newisf: number;
 }
 
+/** BG validity threshold used in autosens bucketing */
+const AUTOSENS_MIN_VALID_BG = 40;
+/** Elapsed-minutes gap at or below which BG readings are merged */
+const BUCKETING_MERGE_THRESHOLD_MIN = 2;
+/** Meal-start counter threshold: 9 intervals = ~45 minutes of exclusion */
+const MEAL_EXCLUSION_COUNTER = 9;
+/** Meal-start counter indicating >5h of absorption (60 intervals * 5m = 300m) */
+const MEAL_ABSORPTION_LONG_COUNTER = 60;
+/** Temp-target deviation divisor: (tempTarget - 100) / this */
+const TEMP_TARGET_DEVIATION_DIVISOR = 20;
+/** Maximum zero-deviation padding count (90m / 5m = 18) */
+const MAX_ZERO_DEVIATION_PAD = 18;
+/** Deviations per hour (60 / 5) */
+const DEVIATIONS_PER_HOUR = 12;
+
 function detectSensitivity(inputs: AutosensInputs): AutosensResult {
 
     //console.error(inputs.glucose_data[0]);
@@ -42,9 +67,9 @@ function detectSensitivity(inputs: AutosensInputs): AutosensResult {
     // use last 24h worth of data by default
     if (inputs.retrospective) {
         //console.error(glucose_data[0]);
-        var lastSiteChange = new Date(new Date(glucose_data[0].date!).getTime() - (24 * 60 * 60 * 1000));
+        var lastSiteChange = new Date(new Date(glucose_data[0].date!).getTime() - (HOURS_PER_DAY * MS_PER_HOUR));
     } else {
-        lastSiteChange = new Date(new Date().getTime() - (24 * 60 * 60 * 1000));
+        lastSiteChange = new Date(new Date().getTime() - (HOURS_PER_DAY * MS_PER_HOUR));
     }
     if (inputs.iob_inputs.profile.rewind_resets_autosens === true ) {
         // scan through pumphistory and set lastSiteChange to the time of the last pump rewind event
@@ -112,20 +137,20 @@ function detectSensitivity(inputs: AutosensInputs): AutosensResult {
         } else if (glucose_data[i-1].xDrip_started_at) {
             continue;
         } else { console.error("Could not determine last BG time"); }
-        if (glucose_data[i].glucose! < 39 || glucose_data[i-1].glucose! < 39) {
+        if (glucose_data[i].glucose! < MIN_VALID_GLUCOSE_MGDL || glucose_data[i-1].glucose! < MIN_VALID_GLUCOSE_MGDL) {
 //console.error("skipping:",glucose_data[i].glucose,glucose_data[i-1].glucose);
             continue;
         }
         // only consider BGs since lastSiteChange
         if (lastSiteChange) {
-            var hoursSinceSiteChange = ((bgTime ? bgTime.getTime() : NaN) - lastSiteChange.getTime())/(60*60*1000);
+            var hoursSinceSiteChange = ((bgTime ? bgTime.getTime() : NaN) - lastSiteChange.getTime())/MS_PER_HOUR;
             if (hoursSinceSiteChange < 0) {
                 //console.error(hoursSinceSiteChange, bgTime, lastSiteChange);
                 continue;
             }
         }
-        var elapsed_minutes = ((bgTime ? bgTime.getTime() : NaN) - (lastbgTime ? lastbgTime.getTime() : NaN))/(60*1000);
-        if(Math.abs(elapsed_minutes) > 2) {
+        var elapsed_minutes = ((bgTime ? bgTime.getTime() : NaN) - (lastbgTime ? lastbgTime.getTime() : NaN))/MS_PER_MINUTE;
+        if(Math.abs(elapsed_minutes) > BUCKETING_MERGE_THRESHOLD_MIN) {
             j++;
             bucketed_data[j]=glucose_data[i];
             bucketed_data[j].date = bgTime ? bgTime.getTime() : NaN;
@@ -177,7 +202,7 @@ function detectSensitivity(inputs: AutosensInputs): AutosensResult {
             bg = bucketed_data[i].glucose!;
             var last_bg = bucketed_data[i-1].glucose!;
             var old_bg = bucketed_data[i-3].glucose!;
-            if ( isNaN(bg) || !bg || bg < 40 || isNaN(old_bg) || !old_bg || old_bg < 40 || isNaN(last_bg) || !last_bg || last_bg < 40) {
+            if ( isNaN(bg) || !bg || bg < AUTOSENS_MIN_VALID_BG || isNaN(old_bg) || !old_bg || old_bg < AUTOSENS_MIN_VALID_BG || isNaN(last_bg) || !last_bg || last_bg < AUTOSENS_MIN_VALID_BG) {
                 process.stderr.write("!");
                 continue;
             }
@@ -199,7 +224,7 @@ function detectSensitivity(inputs: AutosensInputs): AutosensResult {
         //console.error("After: ", new Date().getTime());
         //console.log(JSON.stringify(iob));
 
-        var bgi: number | string = Math.round(( -iob.activity * sens * 5 )*100)/100;
+        var bgi: number | string = Math.round(( -iob.activity * sens * PRED_INTERVAL_MINUTES )*100)/100;
         bgi = (bgi as number).toFixed(2);
         //console.error(delta);
         var deviation: number | string;
@@ -210,7 +235,7 @@ function detectSensitivity(inputs: AutosensInputs): AutosensResult {
         }
         //if (!deviation) { console.error(deviation, delta, bgi); }
         // set positive deviations to zero if BG is below 80
-        if ( bg < 80 && (deviation! as number) > 0 ) {
+        if ( bg < MIN_BG_TARGET && (deviation! as number) > 0 ) {
             deviation = 0;
         }
         deviation = (deviation! as number).toFixed(2);
@@ -259,7 +284,7 @@ function detectSensitivity(inputs: AutosensInputs): AutosensResult {
                 absorbing = 0;
             }
             // stop excluding positive deviations as soon as mealCOB=0 if meal has been absorbing for >5h
-            if ( mealStartCounter > 60 && mealCOB < 0.5 ) {
+            if ( mealStartCounter > MEAL_ABSORPTION_LONG_COUNTER && mealCOB < 0.5 ) {
                 displayCOB = Math.round(mealCOB);
                 process.stderr.write(displayCOB.toString()+"g");
                 absorbing = 0;
@@ -291,7 +316,7 @@ function detectSensitivity(inputs: AutosensInputs): AutosensResult {
           var currentBasal = iob_inputs.profile.current_basal as number;
           // always exclude the first 45m after each carb entry using mealStartCounter
           //if (iob.iob > currentBasal || uam ) {
-          if ((!inputs.retrospective && iob.iob > 2 * currentBasal) || uam || mealStartCounter < 9 ) {
+          if ((!inputs.retrospective && iob.iob > 2 * currentBasal) || uam || mealStartCounter < MEAL_EXCLUSION_COUNTER ) {
             mealStartCounter++;
             if ((deviation as unknown as number) > 0) {
                 uam = 1;
@@ -338,9 +363,9 @@ function detectSensitivity(inputs: AutosensInputs): AutosensResult {
             if (tempTarget) {
                 //console.error(tempTarget)
             }
-            if ( tempTarget! > 100 ) {
+            if ( tempTarget! > EXERCISE_NORMAL_TARGET ) {
                 // for a 110 temptarget, add a -0.5 deviation, for 160 add -3
-                var tempDeviation=-(tempTarget!-100)/20;
+                var tempDeviation=-(tempTarget!-EXERCISE_NORMAL_TARGET)/TEMP_TARGET_DEVIATION_DIVISOR;
                 process.stderr.write("-");
                 //console.error(tempDeviation)
                 deviations.push(tempDeviation);
@@ -359,7 +384,7 @@ function detectSensitivity(inputs: AutosensInputs): AutosensResult {
             }
         }
         var lookback = inputs.deviations;
-        if (!lookback) { lookback = 96; }
+        if (!lookback) { lookback = DEFAULT_AUTOSENS_LOOKBACK; }
         // only keep the last 96 non-excluded data points (8h+ for any exclusions)
         if (deviations.length > lookback) {
             deviations.shift();
@@ -373,8 +398,8 @@ function detectSensitivity(inputs: AutosensInputs): AutosensResult {
     // this dampens any large sensitivity changes detected based on too little data, without ignoring them completely
     console.error("");
     console.error("Using most recent",deviations.length,"deviations since",lastSiteChange);
-    if (deviations.length < 96) {
-        var pad = Math.round((1 - deviations.length/96) * 18);
+    if (deviations.length < DEFAULT_AUTOSENS_LOOKBACK) {
+        var pad = Math.round((1 - deviations.length/DEFAULT_AUTOSENS_LOOKBACK) * MAX_ZERO_DEVIATION_PAD);
         console.error("Adding",pad,"more zero deviations");
         for (var d=0; d<pad; d++) {
             //process.stderr.write(".");
@@ -410,10 +435,10 @@ function detectSensitivity(inputs: AutosensInputs): AutosensResult {
     var basalOff = 0;
 
     if(pSensitive < 0) { // sensitive
-        basalOff = pSensitive * (60/5) / (profile.sens as number);
+        basalOff = pSensitive * DEVIATIONS_PER_HOUR / (profile.sens as number);
         process.stderr.write("Insulin sensitivity detected: ");
     } else if (pResistant > 0) { // resistant
-        basalOff = pResistant * (60/5) / (profile.sens as number);
+        basalOff = pResistant * DEVIATIONS_PER_HOUR / (profile.sens as number);
         process.stderr.write("Insulin resistance detected: ");
     } else {
         console.error("Sensitivity normal.");
@@ -457,7 +482,7 @@ function tempTargetRunning(temptargets_data: Array<Record<string, unknown>> | un
     for (var i = 0; i < temptargets_data!.length; i++) {
         var start = new Date(temptargets_data![i].created_at as string);
         //console.error(start);
-        var expires = new Date(start.getTime() + (temptargets_data![i].duration as number) * 60 * 1000);
+        var expires = new Date(start.getTime() + (temptargets_data![i].duration as number) * MS_PER_MINUTE);
         //console.error(expires);
         if (time >= new Date(temptargets_data![i].created_at as string) && temptargets_data![i].duration === 0) {
             // cancel temp targets
