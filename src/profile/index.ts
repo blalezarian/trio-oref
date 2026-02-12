@@ -263,7 +263,7 @@ function generate (inputs: ProfileInputs, opts?: ProfileOpts): ProfileDefaults |
   profile.basalprofile = inputs.basals;
 
   _.forEach(profile.basalprofile, (basalentry: { rate: number; [key: string]: unknown }) => {
-    basalentry.rate = +(Math.round(basalentry.rate + "e+3" as unknown as number)  + "e-3");
+    basalentry.rate = Math.round(basalentry.rate * 1000) / 1000;
   });
 
   profile.max_daily_basal = basal.maxDailyBasal(inputs);

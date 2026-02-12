@@ -82,7 +82,7 @@ function lookup (inputs: TargetsInputs, profile: TargetsProfile): BGTarget {
             tempTargets = bgTargets;
             break;
         } else if (! temptargets_data[i].targetBottom || ! temptargets_data[i].targetTop) {
-            console.error("eventualBG target range invalid: " + temptargets_data[i].targetBottom + "-" + temptargets_data[i].targetTop);
+            console.error(`eventualBG target range invalid: ${temptargets_data[i].targetBottom}-${temptargets_data[i].targetTop}`);
             break;
         } else if (now >= start && now < expires ) {
             //console.error(temptargets_data[i]);

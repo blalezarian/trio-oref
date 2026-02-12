@@ -39,7 +39,7 @@ function carbRatioLookup (inputs: CarbsInputs, profile: Record<string, unknown>,
             }
             // disallow impossibly high/low carbRatios due to bad decoding
             if (carbRatio!.ratio < MIN_CARB_RATIO || carbRatio!.ratio > MAX_CARB_RATIO) {
-                console.error("Error: carbRatio of " + carbRatio!.ratio + " out of bounds.");
+                console.error(`Error: carbRatio of ${carbRatio!.ratio} out of bounds.`);
                 return;
             }
 
@@ -48,7 +48,7 @@ function carbRatioLookup (inputs: CarbsInputs, profile: Record<string, unknown>,
             }
             return carbRatio!.ratio;
         } else {
-            console.error("Error: Unsupported carb_ratio units " + carbratio_data.units);
+            console.error(`Error: Unsupported carb_ratio units ${carbratio_data.units}`);
             return;
         }
     //return carbRatio.ratio;
