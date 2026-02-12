@@ -1454,13 +1454,9 @@ function calculateDosingDecision(inputs: DosingDecisionInputs): DetermineBasalRe
     }
 // Disable SMB for sudden rises (often caused by calibrations or activation/deactivation of Dexcom's noise-filtering algorithm)
 // Added maxDelta_bg_threshold as a hidden preference and included a cap at 0.4 as a safety limitLog
-let maxDelta_bg_threshold: number = undefined!;
-    if (profile.maxDelta_bg_threshold === undefined) {
-        maxDelta_bg_threshold = DEFAULT_MAX_DELTA_BG_THRESHOLD;
-    }
-    if (profile.maxDelta_bg_threshold !== undefined) {
-        maxDelta_bg_threshold = Math.min(profile.maxDelta_bg_threshold, MAX_DELTA_BG_THRESHOLD_CAP);
-    }
+    const maxDelta_bg_threshold = profile.maxDelta_bg_threshold !== undefined
+        ? Math.min(profile.maxDelta_bg_threshold, MAX_DELTA_BG_THRESHOLD_CAP)
+        : DEFAULT_MAX_DELTA_BG_THRESHOLD;
     if ( maxDelta > maxDelta_bg_threshold * bg ) {
         console.error("maxDelta " + convert_bg(maxDelta, profile)+ " > " + 100 * maxDelta_bg_threshold + "% of BG " + convert_bg(bg, profile) + " - disabling SMB");
         result.reason += "maxDelta " + convert_bg(maxDelta, profile) + " > " + 100 * maxDelta_bg_threshold + "% of BG " + convert_bg(bg, profile) + " - SMB disabled!, ";
