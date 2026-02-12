@@ -13,7 +13,7 @@
 
 // Define various functions used later on, in the main function determine_basal() below
 
-import round_basal from '../round-basal';
+import { round_basal } from '../utils/round-basal';
 
 import {
     MGDL_TO_MMOL,

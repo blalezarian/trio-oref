@@ -4,7 +4,7 @@ import find_insulin from '../iob/history';
 import isf from '../profile/isf';
 import find_meals from '../meal/history';
 import tz from 'moment-timezone';
-import percentile from '../percentile';
+import { percentile } from '../utils/percentile';
 import type { PumpHistoryEvent, GlucoseEntry, CarbTreatment } from '../types/index';
 import {
     MIN_VALID_GLUCOSE_MGDL,

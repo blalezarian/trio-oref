@@ -1,5 +1,5 @@
 
-import getTime from '../medtronic-clock';
+import { getTime } from '../utils/medtronic-clock';
 import { MS_PER_MINUTE, MMOL_L_DETECTION_THRESHOLD, MIN_BG_TARGET, MAX_BG_TARGET, MMOL_TO_MGDL_FACTOR } from '../constants';
 import type { BGUnits } from '../types/index';
 

@@ -1,4 +1,4 @@
-import percentile from '../percentile';
+import { percentile } from '../utils/percentile';
 import type { InsulinCurve, MealAbsorptionPhase } from '../types/index';
 import {
     ULTRA_RAPID_PEAK,

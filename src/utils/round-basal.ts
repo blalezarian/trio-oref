@@ -1,5 +1,5 @@
 import endsWith from 'lodash/endsWith';
-import { BASAL_SCALE_DEFAULT, BASAL_SCALE_MEDTRONIC } from './constants';
+import { BASAL_SCALE_DEFAULT, BASAL_SCALE_MEDTRONIC } from '../constants';
 
 /** Basal rate (U/hr) below which lowest_rate_scale is used */
 const BASAL_RATE_LOW_THRESHOLD = 1;
@@ -14,7 +14,7 @@ interface RoundBasalProfile {
   model?: string;
 }
 
-const round_basal = (basal: number, profile?: RoundBasalProfile): number => {
+export const round_basal = (basal: number, profile?: RoundBasalProfile): number => {
 
     /* x23 and x54 pumps change basal increment depending on how much basal is being delivered:
             0.025u for 0.025 < x < 0.975
@@ -55,4 +55,3 @@ const round_basal = (basal: number, profile?: RoundBasalProfile): number => {
     return rounded_basal;
 }
 
-export default round_basal;

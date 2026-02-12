@@ -1,7 +1,7 @@
 
-import { MS_PER_MINUTE } from './constants';
+import { MS_PER_MINUTE } from '../constants';
 
-function getTime(minutes: number): number {
+export function getTime(minutes: number): number {
     const baseTime = new Date();
     baseTime.setHours(0);
     baseTime.setMinutes(0);
@@ -10,4 +10,3 @@ function getTime(minutes: number): number {
     return baseTime.getTime() + minutes * MS_PER_MINUTE;
 }
 
-export default getTime;
