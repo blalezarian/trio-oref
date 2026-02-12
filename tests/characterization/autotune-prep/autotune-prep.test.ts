@@ -10,11 +10,8 @@
  * current behavior. Do not update snapshots without understanding why they changed.
  */
 
-import { createRequire } from 'node:module';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-
-const require = createRequire(import.meta.url);
-const generate = require('../../../lib/autotune-prep/index');
+import generate from '../../../lib/autotune-prep/index';
 
 // ---------------------------------------------------------------------------
 // Constants & helpers
@@ -360,7 +357,7 @@ describe('autotune-prep/index (generate) characterization tests', () => {
       });
       const result = generate(inputs);
       expect(result.diaDeviations).toBeDefined();
-      expect(result.diaDeviations.length).toBeGreaterThan(0);
+      expect(result.diaDeviations!.length).toBeGreaterThan(0);
       expect(normalizeOutput(result)).toMatchSnapshot();
     });
 
@@ -422,9 +419,9 @@ describe('autotune-prep/index (generate) characterization tests', () => {
       const result = generate(inputs);
       expect(result.diaDeviations).toBeDefined();
       // DIA range should be currentDIA-2 to currentDIA+2 = 5 entries
-      expect(result.diaDeviations.length).toBe(5);
+      expect(result.diaDeviations!.length).toBe(5);
       // Each entry should have the expected structure
-      for (const entry of result.diaDeviations) {
+      for (const entry of result.diaDeviations!) {
         expect(entry).toHaveProperty('dia');
         expect(entry).toHaveProperty('meanDeviation');
         expect(entry).toHaveProperty('SMRDeviation');
@@ -457,10 +454,10 @@ describe('autotune-prep/index (generate) characterization tests', () => {
       });
       const result = generate(inputs);
       expect(result.peakDeviations).toBeDefined();
-      expect(result.peakDeviations.length).toBeGreaterThan(0);
+      expect(result.peakDeviations!.length).toBeGreaterThan(0);
       // Peak range: 55-10=45 to 55+10=65 step 5 => 5 entries
-      expect(result.peakDeviations.length).toBe(5);
-      for (const entry of result.peakDeviations) {
+      expect(result.peakDeviations!.length).toBe(5);
+      for (const entry of result.peakDeviations!) {
         expect(entry).toHaveProperty('peak');
         expect(entry).toHaveProperty('meanDeviation');
         expect(entry).toHaveProperty('SMRDeviation');
@@ -489,7 +486,7 @@ describe('autotune-prep/index (generate) characterization tests', () => {
       const result = generate(inputs);
       expect(result.peakDeviations).toBeDefined();
       // Peak range: 75-10=65 to 75+10=85 step 5 => 5 entries
-      expect(result.peakDeviations.length).toBe(5);
+      expect(result.peakDeviations!.length).toBe(5);
       expect(normalizeOutput(result)).toMatchSnapshot();
     });
 
@@ -513,11 +510,11 @@ describe('autotune-prep/index (generate) characterization tests', () => {
       const result = generate(inputs);
       expect(result.peakDeviations).toBeDefined();
       // Peak range: 60-10=50 to 60+10=70 step 5 => 5 entries
-      expect(result.peakDeviations.length).toBe(5);
+      expect(result.peakDeviations!.length).toBe(5);
       // First peak should be 50
-      expect(result.peakDeviations[0].peak).toBe(50);
+      expect(result.peakDeviations![0].peak).toBe(50);
       // Last peak should be 70
-      expect(result.peakDeviations[4].peak).toBe(70);
+      expect(result.peakDeviations![4].peak).toBe(70);
       expect(normalizeOutput(result)).toMatchSnapshot();
     });
 
@@ -719,9 +716,9 @@ describe('autotune-prep/index (generate) characterization tests', () => {
       const result = generate(inputs);
       expect(result.diaDeviations).toBeDefined();
       // DIA range: 3-2=1 to 3+2=5 => 5 entries
-      expect(result.diaDeviations.length).toBe(5);
-      expect(result.diaDeviations[0].dia).toBe(1);
-      expect(result.diaDeviations[4].dia).toBe(5);
+      expect(result.diaDeviations!.length).toBe(5);
+      expect(result.diaDeviations![0].dia).toBe(1);
+      expect(result.diaDeviations![4].dia).toBe(5);
       expect(normalizeOutput(result)).toMatchSnapshot();
     });
 
@@ -741,9 +738,9 @@ describe('autotune-prep/index (generate) characterization tests', () => {
       const result = generate(inputs);
       expect(result.diaDeviations).toBeDefined();
       // DIA range: 10-2=8 to 10+2=12 => 5 entries
-      expect(result.diaDeviations.length).toBe(5);
-      expect(result.diaDeviations[0].dia).toBe(8);
-      expect(result.diaDeviations[4].dia).toBe(12);
+      expect(result.diaDeviations!.length).toBe(5);
+      expect(result.diaDeviations![0].dia).toBe(8);
+      expect(result.diaDeviations![4].dia).toBe(12);
       expect(normalizeOutput(result)).toMatchSnapshot();
     });
 
@@ -767,9 +764,9 @@ describe('autotune-prep/index (generate) characterization tests', () => {
       const result = generate(inputs);
       expect(result.peakDeviations).toBeDefined();
       // Custom peak 45: range 35-55 step 5 => 5 entries
-      expect(result.peakDeviations.length).toBe(5);
-      expect(result.peakDeviations[0].peak).toBe(35);
-      expect(result.peakDeviations[4].peak).toBe(55);
+      expect(result.peakDeviations!.length).toBe(5);
+      expect(result.peakDeviations![0].peak).toBe(35);
+      expect(result.peakDeviations![4].peak).toBe(55);
       expect(normalizeOutput(result)).toMatchSnapshot();
     });
 

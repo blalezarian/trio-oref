@@ -8,11 +8,8 @@
  *   - NSNoiseString: maps noise level integer to human-readable string
  */
 
-import { createRequire } from 'node:module';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-
-const require = createRequire(import.meta.url);
-const glucoseStats = require('../../../lib/glucose-stats');
+import glucoseStats from '../../../lib/glucose-stats.js';
 
 const BASE_TIME = new Date('2025-01-15T12:00:00.000Z').getTime();
 
@@ -28,10 +25,10 @@ function makeGlucoseHist(
     unfiltered?: number[];
     startTime?: number;
   },
-) {
+): Array<{ glucose: number; readDateMills: number; unfiltered?: number; [key: string]: unknown }> {
   const startTime = options?.startTime ?? BASE_TIME;
   return values.map((glucose, i) => {
-    const entry: Record<string, unknown> = {
+    const entry: { glucose: number; readDateMills: number; unfiltered?: number; [key: string]: unknown } = {
       glucose,
       readDateMills: startTime - i * 5 * 60_000,
     };

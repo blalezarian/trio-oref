@@ -5,11 +5,8 @@
  * avgdelta, noise detection, and device filtering.
  */
 
-import { createRequire } from 'node:module';
 import { describe, it, expect } from 'vitest';
-
-const require = createRequire(import.meta.url);
-const getLastGlucose = require('../../../lib/glucose-get-last');
+import getLastGlucose from '../../../lib/glucose-get-last.js';
 
 const BASE_TIME = new Date('2025-01-15T12:00:00.000Z').getTime();
 

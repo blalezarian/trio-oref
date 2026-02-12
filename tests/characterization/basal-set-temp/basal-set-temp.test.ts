@@ -5,11 +5,8 @@
  * including rate clamping, neutral temp handling, and skip_neutral_temps.
  */
 
-import { createRequire } from 'node:module';
 import { describe, it, expect } from 'vitest';
-
-const require = createRequire(import.meta.url);
-const tempBasalFunctions = require('../../../lib/basal-set-temp');
+import tempBasalFunctions from '../../../lib/basal-set-temp.js';
 
 function makeProfile(overrides: Record<string, unknown> = {}) {
   return {

@@ -6,11 +6,8 @@
  * with a noise level value.
  */
 
-import { createRequire } from 'node:module';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-
-const require = createRequire(import.meta.url);
-const calcGlucoseStats = require('../../../lib/calc-glucose-stats');
+import calcGlucoseStats from '../../../lib/calc-glucose-stats.js';
 
 const BASE_TIME = new Date('2025-01-15T12:00:00.000Z').getTime();
 
@@ -18,7 +15,7 @@ const BASE_TIME = new Date('2025-01-15T12:00:00.000Z').getTime();
 function makeGlucoseHist(
   values: number[],
   overrides?: Record<string, unknown>,
-) {
+): Array<{ glucose: number; dateString: string; noise?: number; [key: string]: unknown }> {
   return values.map((glucose, i) => ({
     glucose,
     dateString: new Date(BASE_TIME - i * 5 * 60_000).toISOString(),

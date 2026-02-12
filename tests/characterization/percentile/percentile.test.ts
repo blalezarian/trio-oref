@@ -6,11 +6,8 @@
  * percentiles, mid-range interpolation, and unsorted input.
  */
 
-import { createRequire } from 'node:module';
 import { describe, it, expect } from 'vitest';
-
-const require = createRequire(import.meta.url);
-const percentile = require('../../../lib/percentile');
+import percentile from '../../../lib/percentile.js';
 
 describe('percentile characterization tests', () => {
   describe('empty array', () => {

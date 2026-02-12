@@ -12,11 +12,8 @@
  * current behavior. Do not update snapshots without understanding why they changed.
  */
 
-import { createRequire } from 'node:module';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-
-const require = createRequire(import.meta.url);
-const categorizeBGDatums = require('../../../lib/autotune-prep/categorize');
+import categorizeBGDatums from '../../../lib/autotune-prep/categorize';
 
 // ---------------------------------------------------------------------------
 // Constants & helpers

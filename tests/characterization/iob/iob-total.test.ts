@@ -6,12 +6,9 @@
  * function that sums individual insulin curve calculations.
  */
 
-import { createRequire } from 'node:module';
 import { describe, it, expect } from 'vitest';
-
-const require = createRequire(import.meta.url);
-const iobTotal = require('../../../lib/iob/total');
-const iobCalc = require('../../../lib/iob/calculate');
+import iobTotal from '../../../lib/iob/total.js';
+import iobCalc from '../../../lib/iob/calculate.js';
 
 const NOW = new Date('2025-01-15T12:00:00.000Z');
 

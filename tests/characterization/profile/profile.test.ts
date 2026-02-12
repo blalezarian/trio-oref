@@ -5,11 +5,8 @@
  * basal lookups, ISF/CR lookups, target processing, and temp targets.
  */
 
-import { createRequire } from 'node:module';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-
-const require = createRequire(import.meta.url);
-const profileModule = require('../../../lib/profile/index');
+import profileModule from '../../../lib/profile/index.js';
 
 // Pin clock to 12:00 UTC so basalLookup (which calls new Date()) is deterministic
 const FIXED_TIME = new Date('2025-01-15T12:00:00.000Z');

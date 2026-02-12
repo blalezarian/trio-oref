@@ -10,11 +10,8 @@
  * - Undefined carbratio data
  */
 
-import { createRequire } from 'node:module';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-
-const require = createRequire(import.meta.url);
-const carbRatioLookup = require('../../../lib/profile/carbs');
+import carbRatioLookup from '../../../lib/profile/carbs.js';
 
 const FIXED_TIME = '2025-01-15T12:00:00.000Z';
 

@@ -5,11 +5,8 @@
  * treatments from pump history and Nightscout carb history.
  */
 
-import { createRequire } from 'node:module';
 import { describe, it, expect } from 'vitest';
-
-const require = createRequire(import.meta.url);
-const findMealInputs = require('../../../lib/meal/history');
+import findMealInputs from '../../../lib/meal/history.js';
 
 const FIXED_TIME = '2025-01-15T12:00:00.000Z';
 const NOW = new Date(FIXED_TIME).getTime();

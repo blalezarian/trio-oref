@@ -9,11 +9,8 @@
  * - Various basal rate ranges
  */
 
-import { createRequire } from 'node:module';
 import { describe, it, expect } from 'vitest';
-
-const require = createRequire(import.meta.url);
-const round_basal = require('../../../lib/round-basal');
+import round_basal from '../../../lib/round-basal.js';
 
 describe('round-basal characterization tests', () => {
   // -------------------------------------------------------------------------
@@ -46,6 +43,7 @@ describe('round-basal characterization tests', () => {
     });
 
     it('rounds basal < 1 with default scale when model is a number (not string)', () => {
+      // @ts-expect-error testing defensive typeof check with wrong type
       const result = round_basal(0.567, { model: 123 });
       expect(result).toMatchSnapshot();
     });

@@ -6,11 +6,8 @@
  * Uses fake timers for deterministic snapshots.
  */
 
-import { createRequire } from 'node:module';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-
-const require = createRequire(import.meta.url);
-const getTime = require('../../../lib/medtronic-clock');
+import getTime from '../../../lib/medtronic-clock.js';
 
 const FIXED_DATE = new Date('2025-01-15T12:00:00.000Z');
 

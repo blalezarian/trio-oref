@@ -8,11 +8,8 @@
  * Provides full inputs: { clock, history, carbs, profile, glucose, basalprofile }
  */
 
-import { createRequire } from 'node:module';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-
-const require = createRequire(import.meta.url);
-const mealGenerate = require('../../../lib/meal/index');
+import mealGenerate from '../../../lib/meal/index.js';
 
 const FIXED_TIME = '2025-01-15T12:00:00.000Z';
 const NOW = new Date(FIXED_TIME).getTime();
@@ -69,7 +66,13 @@ function risingGlucose() {
   return makeGlucoseData(160, [5, 5, 5, 5, 5, 5]);
 }
 
-function makeInputs(overrides: Record<string, unknown> = {}) {
+function makeInputs(overrides: {
+  history?: unknown[];
+  carbs?: unknown[];
+  profile?: Record<string, unknown>;
+  glucose?: unknown[];
+  basalprofile?: unknown[];
+} = {}) {
   return {
     clock: FIXED_TIME,
     history: overrides.history ?? [],

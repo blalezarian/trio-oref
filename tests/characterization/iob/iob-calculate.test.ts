@@ -5,11 +5,8 @@
  * across all three curve types: bilinear, rapid-acting, ultra-rapid.
  */
 
-import { createRequire } from 'node:module';
 import { describe, it, expect } from 'vitest';
-
-const require = createRequire(import.meta.url);
-const iobCalc = require('../../../lib/iob/calculate');
+import iobCalc from '../../../lib/iob/calculate.js';
 
 const baseProfile = {
   dia: 5,

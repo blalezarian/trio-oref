@@ -9,11 +9,8 @@
  * enforces maxCOB, and zeroes COB when deviations are null/undefined.
  */
 
-import { createRequire } from 'node:module';
 import { describe, it, expect } from 'vitest';
-
-const require = createRequire(import.meta.url);
-const recentCarbs = require('../../../lib/meal/total');
+import recentCarbs from '../../../lib/meal/total.js';
 
 const FIXED_TIME = '2025-01-15T12:00:00.000Z';
 const NOW = new Date(FIXED_TIME).getTime();

@@ -5,11 +5,8 @@
  * a given time window (start, end]. Returns { insulin: roundedTotal }.
  */
 
-import { createRequire } from 'node:module';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-
-const require = createRequire(import.meta.url);
-const insulinDosed = require('../../../lib/autotune-prep/dosed');
+import insulinDosed from '../../../lib/autotune-prep/dosed';
 
 const BASE_TIME = new Date('2025-01-15T12:00:00.000Z').getTime();
 

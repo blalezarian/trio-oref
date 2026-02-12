@@ -10,11 +10,8 @@
  * - Bound clamping (min 80, max 200)
  */
 
-import { createRequire } from 'node:module';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-
-const require = createRequire(import.meta.url);
-const bgTargetsLookup = require('../../../lib/profile/targets');
+import bgTargetsLookup from '../../../lib/profile/targets.js';
 
 const FIXED_TIME = '2025-01-15T12:00:00.000Z';
 

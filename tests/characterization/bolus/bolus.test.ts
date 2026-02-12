@@ -9,11 +9,9 @@
  * filesystem read is skipped, isolating the pure logic.
  */
 
-import { createRequire } from 'node:module';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import fs from 'node:fs';
-
-const require = createRequire(import.meta.url);
+import reduce from '../../../lib/bolus.js';
 
 // We need to mock fs.existsSync before requiring the module, but since
 // bolus.js calls require('fs') at runtime (inside the bolus function),
@@ -31,10 +29,6 @@ beforeEach(() => {
 afterEach(() => {
   vi.restoreAllMocks();
 });
-
-// The module uses require('fs') at runtime — Node caches the fs module,
-// so our spies on the imported fs will apply to the module's calls too.
-const reduce = require('../../../lib/bolus');
 
 const TIMESTAMP_1 = '2025-01-15T12:00:00-05:00';
 const TIMESTAMP_2 = '2025-01-15T12:01:00-05:00';

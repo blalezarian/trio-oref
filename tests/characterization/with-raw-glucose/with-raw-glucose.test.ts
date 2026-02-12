@@ -7,11 +7,8 @@
  * This module has 'use strict' so it can be imported directly via createRequire.
  */
 
-import { createRequire } from 'node:module';
 import { describe, it, expect } from 'vitest';
-
-const require = createRequire(import.meta.url);
-const withRawGlucose = require('../../../lib/with-raw-glucose');
+import withRawGlucose from '../../../lib/with-raw-glucose.js';
 
 /** Create a standard calibration object */
 function makeCal(overrides: Record<string, unknown> = {}) {
