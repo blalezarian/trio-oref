@@ -7,7 +7,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import percentile from '../../../lib/percentile.js';
+import percentile from '../../../lib/percentile';
 
 describe('percentile characterization tests', () => {
   describe('empty array', () => {

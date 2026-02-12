@@ -6,7 +6,7 @@
  * it easy to understand what each test covers when reviewing diffs.
  */
 
-import type { DetermineBasalInputs } from '../../types/index.js';
+import type { DetermineBasalInputs } from '../../types/index';
 import {
   defaultGlucoseStatus,
   defaultCurrentTemp,
@@ -17,7 +17,7 @@ import {
   defaultTrioCustomVariables,
   defaultPreferences,
   defaultBasalProfile,
-} from './defaults.js';
+} from './defaults';
 
 interface FixtureSpec {
   name: string;

@@ -9,9 +9,8 @@
  * Do not update snapshots without understanding why they changed.
  */
 
-import { createRequire } from 'node:module';
 import { describe, it, expect } from 'vitest';
-import { generateAllFixtures } from '../helpers/fixtures.js';
+import { generateAllFixtures } from '../helpers/fixtures';
 import {
   defaultGlucoseStatus,
   defaultCurrentTemp,
@@ -22,15 +21,10 @@ import {
   defaultTrioCustomVariables,
   defaultPreferences,
   defaultBasalProfile,
-} from '../helpers/defaults.js';
+} from '../helpers/defaults';
 
-// Use createRequire to load the JS modules in CJS mode.
-// The original JS uses implicit globals (e.g. `tdd_before = tdd`) which
-// only work in CJS sloppy mode — ESM import would run them in strict mode
-// and throw ReferenceError.
-const require = createRequire(import.meta.url);
-const determine_basal = require('../../../lib/determine-basal/determine-basal');
-const tempBasalFunctions = require('../../../lib/basal-set-temp');
+import determine_basal from '../../../lib/determine-basal/determine-basal';
+import tempBasalFunctions from '../../../lib/basal-set-temp';
 
 /**
  * Normalize the output for stable snapshots:

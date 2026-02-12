@@ -7,7 +7,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import calcGlucoseStats from '../../../lib/calc-glucose-stats.js';
+import calcGlucoseStats from '../../../lib/calc-glucose-stats';
 
 const BASE_TIME = new Date('2025-01-15T12:00:00.000Z').getTime();
 

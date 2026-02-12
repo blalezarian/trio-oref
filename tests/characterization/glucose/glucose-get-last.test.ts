@@ -6,7 +6,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import getLastGlucose from '../../../lib/glucose-get-last.js';
+import getLastGlucose from '../../../lib/glucose-get-last';
 
 const BASE_TIME = new Date('2025-01-15T12:00:00.000Z').getTime();
 

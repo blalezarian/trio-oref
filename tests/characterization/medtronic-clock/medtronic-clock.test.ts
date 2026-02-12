@@ -7,7 +7,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import getTime from '../../../lib/medtronic-clock.js';
+import getTime from '../../../lib/medtronic-clock';
 
 const FIXED_DATE = new Date('2025-01-15T12:00:00.000Z');
 

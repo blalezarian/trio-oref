@@ -6,7 +6,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import iobCalc from '../../../lib/iob/calculate.js';
+import iobCalc from '../../../lib/iob/calculate';
 
 const baseProfile = {
   dia: 5,

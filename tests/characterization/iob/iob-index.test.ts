@@ -6,11 +6,8 @@
  * 5-minute intervals, and iobWithZeroTemp projections.
  */
 
-import { createRequire } from 'node:module';
 import { describe, it, expect } from 'vitest';
-
-const require = createRequire(import.meta.url);
-const iob = require('../../../lib/iob/index');
+import iob from '../../../lib/iob/index';
 
 const FIXED_TIME = '2025-01-15T12:00:00.000Z';
 const NOW = new Date(FIXED_TIME).getTime();
@@ -199,7 +196,7 @@ describe('iob/index (generate) characterization tests', () => {
       ]);
       const result = iob(inputs);
       expect(result[0].iobWithZeroTemp).toBeDefined();
-      expect(result[0].iobWithZeroTemp.iob).toBeTypeOf('number');
+      expect(result[0].iobWithZeroTemp!.iob).toBeTypeOf('number');
     });
 
     it('first entry has lastBolusTime and lastTemp', () => {

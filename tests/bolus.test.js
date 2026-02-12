@@ -30,7 +30,7 @@ describe('bolus', function () {
         }
     ];
     it('should not skip closely-timed boluses', function () {
-        var reduce_boluses = require('../lib/bolus');
+        var reduce_boluses = require('../lib/bolus').default;
         var vals = reduce_boluses(bolushistory);
         vals.length.should.equal(1);
         vals[0].insulin.should.equal('3.2');

@@ -9,11 +9,8 @@
  * current behavior. Do not update snapshots without understanding why they changed.
  */
 
-import { createRequire } from 'node:module';
 import { describe, it, expect } from 'vitest';
-
-const require = createRequire(import.meta.url);
-const detectSensitivity = require('../../../lib/determine-basal/autosens');
+import detectSensitivity from '../../../lib/determine-basal/autosens';
 
 // ---------------------------------------------------------------------------
 // Helpers

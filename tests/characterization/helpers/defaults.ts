@@ -16,7 +16,7 @@ import type {
   TrioCustomVariables,
   Preferences,
   BasalEntry,
-} from '../../types/index.js';
+} from '../../types/index';
 
 /** Steady-state, in-range glucose with no trend */
 export function defaultGlucoseStatus(overrides?: Partial<GlucoseStatus>): GlucoseStatus {

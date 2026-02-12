@@ -6,15 +6,12 @@
  * computes deviations (actual BG change vs expected from insulin), and tracks
  * carb absorption from those deviations.
  *
- * IMPORTANT: cob.js uses an implicit global `profile = inputs.iob_inputs.profile`
- * (line 16, no `var`). This only works in CJS sloppy mode via createRequire.
+ * Note: The implicit global `profile` in the original JS is now declared
+ * with `var` in the TypeScript version, so ESM import works correctly.
  */
 
-import { createRequire } from 'node:module';
 import { describe, it, expect } from 'vitest';
-
-const require = createRequire(import.meta.url);
-const detectCarbAbsorption = require('../../../lib/determine-basal/cob');
+import detectCarbAbsorption from '../../../lib/determine-basal/cob';
 
 const FIXED_TIME = '2025-01-15T12:00:00.000Z';
 const NOW = new Date(FIXED_TIME).getTime();
@@ -81,7 +78,7 @@ function makeInputs(
     basalprofile: BASAL_PROFILE,
     mealTime: NOW - mealTimeMinsAgo * 60_000,
     ...(overrides.ciTime !== undefined ? { ciTime: overrides.ciTime } : {}),
-  };
+  } as any;
 }
 
 describe('determine-basal/cob (detectCarbAbsorption) characterization tests', () => {

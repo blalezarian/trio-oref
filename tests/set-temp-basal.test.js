@@ -4,7 +4,7 @@ require('should');
 
 
 describe('tempBasalFunctions.setTempBasal', function ( ) {
-    var tempBasalFunctions = require('../lib/basal-set-temp');
+    var tempBasalFunctions = require('../lib/basal-set-temp').default;
 
    //function tempBasalFunctions.setTempBasal(rate, duration, profile, requestedTemp)
 

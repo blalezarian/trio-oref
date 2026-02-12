@@ -7,6 +7,9 @@ module.exports = {
   mode: 'production',
   resolve: {
     extensions: ['.ts', '.js'],
+    extensionAlias: {
+      '.js': ['.ts', '.js'],
+    },
   },
   module: {
     rules: [
@@ -21,15 +24,15 @@ module.exports = {
     ],
   },
   entry: {
-    iob: './lib/iob/index.js',
-    meal: './lib/meal/index.js',
-    "determineBasal": './lib/determine-basal/determine-basal.js',
-    "glucoseGetLast": './lib/glucose-get-last.js',
-    "basalSetTemp": './lib/basal-set-temp.js',
-    autosens: './lib/determine-basal/autosens.js',
-    profile: './lib/profile/index.js',
-    "autotunePrep": './lib/autotune-prep/index.js',
-    "autotuneCore": './lib/autotune/index.js'
+    iob: './lib/iob/index.ts',
+    meal: './lib/meal/index.ts',
+    "determineBasal": './lib/determine-basal/determine-basal.ts',
+    "glucoseGetLast": './lib/glucose-get-last.ts',
+    "basalSetTemp": './lib/basal-set-temp.ts',
+    autosens: './lib/determine-basal/autosens.ts',
+    profile: './lib/profile/index.ts',
+    "autotunePrep": './lib/autotune-prep/index.ts',
+    "autotuneCore": './lib/autotune/index.ts'
   },
   output: {
     path: path.resolve(__dirname, 'dist'),

@@ -11,7 +11,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import bgTargetsLookup from '../../../lib/profile/targets.js';
+import bgTargetsLookup from '../../../lib/profile/targets';
 
 const FIXED_TIME = '2025-01-15T12:00:00.000Z';
 
@@ -23,7 +23,7 @@ function makeInputs(overrides: Record<string, unknown> = {}) {
       ...(overrides.targets as Record<string, unknown> || {}),
     },
     temptargets: overrides.temptargets ?? [],
-  };
+  } as any;
 }
 
 describe('profile/targets (bgTargetsLookup) characterization tests', () => {

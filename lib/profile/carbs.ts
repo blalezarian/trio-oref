@@ -1,0 +1,60 @@
+
+import getTime from '../medtronic-clock';
+
+interface CarbRatioScheduleEntry {
+  offset: number;
+  ratio: number;
+}
+
+interface CarbRatioData {
+  units: string;
+  schedule?: CarbRatioScheduleEntry[];
+}
+
+interface CarbsInputs {
+  carbratio?: CarbRatioData;
+}
+
+function carbRatioLookup (inputs: CarbsInputs, profile: Record<string, unknown>, now?: Date): number | undefined {
+    if (typeof(now) === 'undefined') {
+        now = new Date();
+    }
+    var carbratio_data = inputs.carbratio;
+    if (typeof(carbratio_data) !== "undefined" && typeof(carbratio_data.schedule) !== "undefined") {
+        var carbRatio: CarbRatioScheduleEntry;
+        if ((carbratio_data.units === "grams") || (carbratio_data.units === "exchanges")) {
+            //carbratio_data.schedule.sort(function (a, b) { return a.offset > b.offset });
+            carbRatio = carbratio_data.schedule[carbratio_data.schedule.length - 1];
+
+            for (var i = 0; i < carbratio_data.schedule.length - 1; i++) {
+                if (((now as any) >= getTime(carbratio_data.schedule[i].offset)) && ((now as any) < getTime(carbratio_data.schedule[i + 1].offset))) {
+                    carbRatio = carbratio_data.schedule[i];
+                    break;
+                }
+            }
+            // disallow impossibly high/low carbRatios due to bad decoding
+            if (carbRatio!.ratio < 1 || carbRatio!.ratio > 150) {
+                console.error("Error: carbRatio of " + carbRatio!.ratio + " out of bounds.");
+                return;
+            }
+
+            if (carbratio_data.units === "exchanges") {
+                carbRatio!.ratio = 12 / carbRatio!.ratio
+            }
+            return carbRatio!.ratio;
+        } else {
+            console.error("Error: Unsupported carb_ratio units " + carbratio_data.units);
+            return;
+        }
+    //return carbRatio.ratio;
+    //profile.carbratio = carbRatio.ratio;
+    } else { return; }
+}
+
+interface CarbRatioLookupFn {
+  (inputs: CarbsInputs, profile: Record<string, unknown>, now?: Date): number | undefined;
+  carbRatioLookup: (inputs: CarbsInputs, profile: Record<string, unknown>, now?: Date) => number | undefined;
+}
+
+(carbRatioLookup as CarbRatioLookupFn).carbRatioLookup = carbRatioLookup;
+export default carbRatioLookup as CarbRatioLookupFn;

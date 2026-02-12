@@ -23,11 +23,8 @@
  * - autosens ratio adjustments
  */
 
-import { createRequire } from 'node:module';
 import { describe, it, expect } from 'vitest';
-
-const require = createRequire(import.meta.url);
-const calcTempTreatments = require('../../../lib/iob/history');
+import calcTempTreatments from '../../../lib/iob/history';
 
 const FIXED_TIME = '2025-01-15T12:00:00.000Z';
 const NOW = new Date(FIXED_TIME).getTime();
@@ -55,7 +52,7 @@ function makeInputs(
       ...profileOverrides,
     },
     ...extras,
-  } as Record<string, any>;
+  } as any;
 }
 
 /** Strip non-deterministic date objects for stable snapshots */
@@ -478,7 +475,7 @@ describe('iob/history (calcTempTreatments) characterization tests', () => {
           max_daily_basal: 1,
         },
       };
-      const result = calcTempTreatments(inputs);
+      const result = calcTempTreatments(inputs as any);
       expect(normalizeResults(result)).toMatchSnapshot();
     });
   });

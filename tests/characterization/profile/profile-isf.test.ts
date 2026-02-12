@@ -9,10 +9,7 @@
  * - Caching behavior (lastResult reuse)
  */
 
-import { createRequire } from 'node:module';
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-
-const require = createRequire(import.meta.url);
 
 const FIXED_TIME = '2025-01-15T12:00:00.000Z';
 
@@ -24,25 +21,22 @@ describe('profile/isf (isfLookup) characterization tests', () => {
 
   afterEach(() => {
     vi.useRealTimers();
-    // Re-require to reset the lastResult module-level cache
+    // Reset module cache so the module-level lastResult variable is cleared
     vi.resetModules();
   });
 
-  function getIsfLookup() {
-    // Clear Node's native require cache for the isf module
-    // so the module-level lastResult variable is reset
-    const nativeRequire = createRequire(import.meta.url);
-    const resolved = nativeRequire.resolve('../../../lib/profile/isf');
-    delete nativeRequire.cache[resolved];
-    return nativeRequire('../../../lib/profile/isf');
+  async function getIsfLookup() {
+    // Dynamic import after vi.resetModules() gives a fresh module instance
+    const mod = await import('../../../lib/profile/isf.js');
+    return mod.default;
   }
 
   // -------------------------------------------------------------------------
   // Single sensitivity entry
   // -------------------------------------------------------------------------
   describe('single sensitivity entry', () => {
-    it('returns the single sensitivity value', () => {
-      const isfLookup = getIsfLookup();
+    it('returns the single sensitivity value', async () => {
+      const isfLookup = await getIsfLookup();
       const isf_data = {
         sensitivities: [{ offset: 0, sensitivity: 40 }],
       };
@@ -55,8 +49,8 @@ describe('profile/isf (isfLookup) characterization tests', () => {
   // Multiple sensitivity entries — time-of-day lookup
   // -------------------------------------------------------------------------
   describe('multiple sensitivity entries with time-of-day lookup', () => {
-    it('selects the correct ISF for 12:00 UTC (720 min) with timestamp param', () => {
-      const isfLookup = getIsfLookup();
+    it('selects the correct ISF for 12:00 UTC (720 min) with timestamp param', async () => {
+      const isfLookup = await getIsfLookup();
       // 720 minutes should match entry at offset 480 (before 960)
       const isf_data = {
         sensitivities: [
@@ -69,8 +63,8 @@ describe('profile/isf (isfLookup) characterization tests', () => {
       expect(result).toMatchSnapshot();
     });
 
-    it('selects last entry when time is past all offsets', () => {
-      const isfLookup = getIsfLookup();
+    it('selects last entry when time is past all offsets', async () => {
+      const isfLookup = await getIsfLookup();
       // 23:00 UTC = 1380 minutes, past offset 960
       const isf_data = {
         sensitivities: [
@@ -83,8 +77,8 @@ describe('profile/isf (isfLookup) characterization tests', () => {
       expect(result).toMatchSnapshot();
     });
 
-    it('selects first entry when time is before second offset', () => {
-      const isfLookup = getIsfLookup();
+    it('selects first entry when time is before second offset', async () => {
+      const isfLookup = await getIsfLookup();
       // 02:00 UTC = 120 minutes, before offset 480
       const isf_data = {
         sensitivities: [
@@ -102,8 +96,8 @@ describe('profile/isf (isfLookup) characterization tests', () => {
   // First entry offset != 0 returns -1
   // -------------------------------------------------------------------------
   describe('first entry offset != 0', () => {
-    it('returns -1 when first sensitivity offset is not 0', () => {
-      const isfLookup = getIsfLookup();
+    it('returns -1 when first sensitivity offset is not 0', async () => {
+      const isfLookup = await getIsfLookup();
       const isf_data = {
         sensitivities: [
           { offset: 60, sensitivity: 50 },
@@ -119,8 +113,8 @@ describe('profile/isf (isfLookup) characterization tests', () => {
   // Timestamp parameter behavior
   // -------------------------------------------------------------------------
   describe('timestamp parameter', () => {
-    it('uses system time when timestamp is undefined', () => {
-      const isfLookup = getIsfLookup();
+    it('uses system time when timestamp is undefined', async () => {
+      const isfLookup = await getIsfLookup();
       // System time is set to 12:00 UTC = 720 minutes
       const isf_data = {
         sensitivities: [
@@ -133,8 +127,8 @@ describe('profile/isf (isfLookup) characterization tests', () => {
       expect(result).toMatchSnapshot();
     });
 
-    it('uses provided timestamp for lookup', () => {
-      const isfLookup = getIsfLookup();
+    it('uses provided timestamp for lookup', async () => {
+      const isfLookup = await getIsfLookup();
       // Provide a timestamp at 06:00 UTC = 360 minutes (before offset 480)
       const isf_data = {
         sensitivities: [
@@ -151,8 +145,8 @@ describe('profile/isf (isfLookup) characterization tests', () => {
   // Caching behavior (lastResult)
   // -------------------------------------------------------------------------
   describe('caching behavior', () => {
-    it('returns cached result on second call within same offset window', () => {
-      const isfLookup = getIsfLookup();
+    it('returns cached result on second call within same offset window', async () => {
+      const isfLookup = await getIsfLookup();
       const isf_data = {
         sensitivities: [
           { offset: 0, sensitivity: 50 },
@@ -175,8 +169,8 @@ describe('profile/isf (isfLookup) characterization tests', () => {
   // Unsorted sensitivities
   // -------------------------------------------------------------------------
   describe('unsorted sensitivities', () => {
-    it('sorts sensitivities by offset before lookup', () => {
-      const isfLookup = getIsfLookup();
+    it('sorts sensitivities by offset before lookup', async () => {
+      const isfLookup = await getIsfLookup();
       // Provide entries in reverse order — lodash sortBy should sort them
       const isf_data = {
         sensitivities: [
@@ -194,8 +188,8 @@ describe('profile/isf (isfLookup) characterization tests', () => {
   // Loop match in first entry (line 33: nowMinutes >= offset && < nextOffset)
   // -------------------------------------------------------------------------
   describe('loop match at first entry', () => {
-    it('matches the first entry when time is before the second offset', () => {
-      const isfLookup = getIsfLookup();
+    it('matches the first entry when time is before the second offset', async () => {
+      const isfLookup = await getIsfLookup();
       // Time is 02:00 UTC = 120 min, offsets at 0 and 480
       // 120 >= 0 && 120 < 480 => match at first entry
       const isf_data = {
@@ -213,8 +207,8 @@ describe('profile/isf (isfLookup) characterization tests', () => {
   // Many entries to exercise loop iterations with no match until later
   // -------------------------------------------------------------------------
   describe('multiple entries with match at third entry', () => {
-    it('iterates through entries and matches the third offset window', () => {
-      const isfLookup = getIsfLookup();
+    it('iterates through entries and matches the third offset window', async () => {
+      const isfLookup = await getIsfLookup();
       // 5 entries: 0, 360, 720, 1080, 1320
       // Time: 18:30 UTC = 1110 min => 1110 >= 1080 && 1110 < 1320 => match at entry[3]
       const isf_data = {
@@ -235,8 +229,8 @@ describe('profile/isf (isfLookup) characterization tests', () => {
   // Two-entry schedule: match middle entry in the loop (line 33 true branch)
   // -------------------------------------------------------------------------
   describe('two-entry schedule match in loop', () => {
-    it('matches in the for loop when nowMinutes falls in a middle window', () => {
-      const isfLookup = getIsfLookup();
+    it('matches in the for loop when nowMinutes falls in a middle window', async () => {
+      const isfLookup = await getIsfLookup();
       // 4 entries: at 06:00 (360 min), time is 12:00 (720 min)
       // 720 >= 360 && 720 < 960 => match at index 1
       const isf_data = {

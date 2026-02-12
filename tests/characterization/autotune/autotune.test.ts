@@ -16,11 +16,8 @@
  * current behavior. Do not update snapshots without understanding why they changed.
  */
 
-import { createRequire } from 'node:module';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-
-const require = createRequire(import.meta.url);
-const tuneAllTheThings = require('../../../lib/autotune/index');
+import tuneAllTheThings from '../../../lib/autotune/index';
 
 // ---------------------------------------------------------------------------
 // Constants & helpers
