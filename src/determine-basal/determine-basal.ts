@@ -651,94 +651,41 @@ function validateCGMData(
     return { bg, noise, tick, minDelta, minAvgDelta, maxDelta, minAgo, bgTime, deliverAt, profile_current_basal, basal, reason: result.reason };
 }
 
-const determine_basal = function determine_basal(glucose_status: GlucoseStatus, currenttemp: CurrentTemp, iob_data: IOBData, profile: Profile, autosens_data: AutosensData, meal_data: MealData, tempBasalFunctions: TempBasalFunctions, microBolusAllowed: boolean, reservoir_data: number | undefined, currentTime: Date | string | undefined, pumphistory: unknown[], preferences: Preferences, basalprofile: BasalEntry[] | undefined, trio_custom_variables?: TrioCustomVariables, middleWare?: (arg: DetermineBasalResult) => DetermineBasalResult): DetermineBasalResult {
+interface SensitivityAndTargetsResult {
+    max_iob: number;
+    target_bg: number;
+    min_bg: number;
+    max_bg: number;
+    high_bg: number;
+    sensitivityRatio: number;
+    basal: number;
+    threshold: number;
+    adjustedSens: number;
+    isfreason: string;
+    targetLog: number | string;
+}
 
-    if (!trio_custom_variables) {
-        trio_custom_variables = {
-            useOverride: false, overridePercentage: 100, overrideTarget: 0,
-            advancedSettings: false, isfAndCr: false, isf: 0, cr: 0,
-            smbIsOff: false, smbIsScheduledOff: false, start: 0, end: 0,
-            smbMinutes: 30, uamMinutes: 30, currentTDD: 0,
-            average_total_data: 0, weightedAverage: 0, past2hoursAverage: 0,
-            date: 0, overrideMaxIOB: 0, duration: 0
-        } as unknown as TrioCustomVariables;
-    }
-    if (!preferences) {
-        preferences = {} as Preferences;
-    }
-    if (profile === undefined || profile.current_basal === undefined) {
-        return { error: 'Error: could not get current basal rate' } as unknown as DetermineBasalResult;
-    }
-
-    let profileTarget = profile.min_bg;
-    const overrideTarget = trio_custom_variables.overrideTarget;
-    if (overrideTarget != 0 && overrideTarget != OVERRIDE_TARGET_SENTINEL && trio_custom_variables.useOverride && !profile.temptargetSet) {
-        profileTarget = overrideTarget;
-    }
-    const smbIsOff = trio_custom_variables.smbIsOff;
-    const advancedSettings = trio_custom_variables.advancedSettings;
-    const isfAndCr = trio_custom_variables.isfAndCr;
-    const isf = trio_custom_variables.isf;
-    const cr_ = trio_custom_variables.cr;
-    const smbMinutes = trio_custom_variables.smbMinutes;
-    const uamMinutes = trio_custom_variables.uamMinutes;
-    // tdd past 24 hour
-    let tdd = trio_custom_variables.currentTDD;
-
-    let dynISFenabled = preferences.useNewFormula
-
-    let insulinForManualBolus = 0;
-    const manualBolusErrorString = 0;
-    let threshold = profileTarget;
-
-    let systemTime = new Date();
-    if (currentTime) {
-        systemTime = new Date(currentTime);
-    }
-
-
-
-    const weightedAverage = trio_custom_variables.weightedAverage;
-    let overrideFactor = 1;
-    let sensitivity = profile.sens;
-    let carbRatio = profile.carb_ratio;
-    if (trio_custom_variables.useOverride) {
-        overrideFactor = trio_custom_variables.overridePercentage / 100;
-        if (isfAndCr) {
-            sensitivity /= overrideFactor;
-            carbRatio /= overrideFactor;
-        } else {
-            if (cr_) { carbRatio /= overrideFactor; }
-            if (isf) { sensitivity /= overrideFactor; }
-        }
-    }
-    const weightPercentage = profile.weightPercentage;
-    const average_total_data = trio_custom_variables.average_total_data;
-
-    const tdd_before = tdd;
-    const dynResult = calculateDynamicISF(
-        glucose_status, profile, preferences, autosens_data,
-        sensitivity, profileTarget, dynISFenabled, tdd,
-        weightedAverage, average_total_data, weightPercentage!, middleWare
-    );
-    dynISFenabled = dynResult.dynISFenabled;
-    tdd = dynResult.tdd;
-    const { tddReason, newRatio, insulinFactor, adjustmentFactor, enable_sigmoid, tdd24h_14d_Ratio } = dynResult;
-
-    const cgmValidation = validateCGMData(
-        glucose_status, profile, systemTime, overrideFactor,
-        currenttemp, trio_custom_variables.useOverride, trio_custom_variables.duration
-    );
-    if ('earlyReturn' in cgmValidation) return cgmValidation.earlyReturn;
-    const { bg, noise, tick, minDelta, minAvgDelta, maxDelta, minAgo, bgTime, deliverAt, profile_current_basal } = cgmValidation;
-    let basal = cgmValidation.basal;
-
-    let result = {} as DetermineBasalResult;
-    if (cgmValidation.reason) {
-        result.reason = cgmValidation.reason;
-    }
-
-
+function configureSensitivityAndTargets(
+    glucose_status: GlucoseStatus,
+    profile: Profile,
+    autosens_data: AutosensData,
+    profileTarget: number,
+    overrideTarget: number,
+    bg: number,
+    dynISFenabled: boolean,
+    newRatio: number,
+    tdd24h_14d_Ratio: number,
+    overrideFactor: number,
+    profile_current_basal: number,
+    tdd_before: number,
+    weightedAverage: number,
+    average_total_data: number,
+    weightPercentage: number,
+    sensitivity: number,
+    carbRatio: number,
+    basal: number,
+    cgmReason: string | undefined
+): { earlyReturn: DetermineBasalResult } | SensitivityAndTargetsResult {
 // Get configured target, and return if unable to do so.
 // This should occur after checking that we're not in one of the CGM-data-related error conditions handled above,
 // and before using target_bg to adjust sensitivityRatio below.
@@ -764,8 +711,12 @@ const determine_basal = function determine_basal(glucose_status: GlucoseStatus, 
         target_bg = profileTarget;
 
     } else {
+        const result = {} as DetermineBasalResult;
+        if (cgmReason) {
+            result.reason = cgmReason;
+        }
         result.error ='Error: could not determine target_bg. ';
-        return result;
+        return { earlyReturn: result };
     }
 
 
@@ -893,14 +844,10 @@ const determine_basal = function determine_basal(glucose_status: GlucoseStatus, 
     }
 
     // min_bg thresholds: 80->60, 90->65, 100->70, 110->75, 120->80
-    threshold = min_bg - THRESHOLD_FACTOR*(min_bg-THRESHOLD_BG_OFFSET);
+    const threshold = min_bg - THRESHOLD_FACTOR*(min_bg-THRESHOLD_BG_OFFSET);
     // Set threshold to the user's setting, as long as it's between 60-120 and above the default calculated threshold
-    threshold = Math.min(Math.max(profile.threshold_setting!, threshold, MIN_THRESHOLD_BG), MAX_THRESHOLD_BG);
-    console.error(`Threshold set to ${convert_bg(threshold, profile)}`);
-
-// If iob_data or its required properties are missing, return.
-// This has to be checked after checking that we're not in one of the CGM-data-related error conditions handled above,
-// and before attempting to use iob_data below.
+    const thresholdFinal = Math.min(Math.max(profile.threshold_setting!, threshold, MIN_THRESHOLD_BG), MAX_THRESHOLD_BG);
+    console.error(`Threshold set to ${convert_bg(thresholdFinal, profile)}`);
 
 // Adjust ISF based on sensitivityRatio
     let isfreason = ""
@@ -919,6 +866,105 @@ const determine_basal = function determine_basal(glucose_status: GlucoseStatus, 
 
     }
     console.error("CR:" + carbRatio);
+
+    return { max_iob, target_bg, min_bg, max_bg, high_bg, sensitivityRatio, basal, threshold: thresholdFinal, adjustedSens, isfreason, targetLog };
+}
+
+const determine_basal = function determine_basal(glucose_status: GlucoseStatus, currenttemp: CurrentTemp, iob_data: IOBData, profile: Profile, autosens_data: AutosensData, meal_data: MealData, tempBasalFunctions: TempBasalFunctions, microBolusAllowed: boolean, reservoir_data: number | undefined, currentTime: Date | string | undefined, pumphistory: unknown[], preferences: Preferences, basalprofile: BasalEntry[] | undefined, trio_custom_variables?: TrioCustomVariables, middleWare?: (arg: DetermineBasalResult) => DetermineBasalResult): DetermineBasalResult {
+
+    if (!trio_custom_variables) {
+        trio_custom_variables = {
+            useOverride: false, overridePercentage: 100, overrideTarget: 0,
+            advancedSettings: false, isfAndCr: false, isf: 0, cr: 0,
+            smbIsOff: false, smbIsScheduledOff: false, start: 0, end: 0,
+            smbMinutes: 30, uamMinutes: 30, currentTDD: 0,
+            average_total_data: 0, weightedAverage: 0, past2hoursAverage: 0,
+            date: 0, overrideMaxIOB: 0, duration: 0
+        } as unknown as TrioCustomVariables;
+    }
+    if (!preferences) {
+        preferences = {} as Preferences;
+    }
+    if (profile === undefined || profile.current_basal === undefined) {
+        return { error: 'Error: could not get current basal rate' } as unknown as DetermineBasalResult;
+    }
+
+    let profileTarget = profile.min_bg;
+    const overrideTarget = trio_custom_variables.overrideTarget;
+    if (overrideTarget != 0 && overrideTarget != OVERRIDE_TARGET_SENTINEL && trio_custom_variables.useOverride && !profile.temptargetSet) {
+        profileTarget = overrideTarget;
+    }
+    const smbIsOff = trio_custom_variables.smbIsOff;
+    const advancedSettings = trio_custom_variables.advancedSettings;
+    const isfAndCr = trio_custom_variables.isfAndCr;
+    const isf = trio_custom_variables.isf;
+    const cr_ = trio_custom_variables.cr;
+    const smbMinutes = trio_custom_variables.smbMinutes;
+    const uamMinutes = trio_custom_variables.uamMinutes;
+    // tdd past 24 hour
+    let tdd = trio_custom_variables.currentTDD;
+
+    let dynISFenabled = preferences.useNewFormula
+
+    let insulinForManualBolus = 0;
+    const manualBolusErrorString = 0;
+
+    let systemTime = new Date();
+    if (currentTime) {
+        systemTime = new Date(currentTime);
+    }
+
+
+
+    const weightedAverage = trio_custom_variables.weightedAverage;
+    let overrideFactor = 1;
+    let sensitivity = profile.sens;
+    let carbRatio = profile.carb_ratio;
+    if (trio_custom_variables.useOverride) {
+        overrideFactor = trio_custom_variables.overridePercentage / 100;
+        if (isfAndCr) {
+            sensitivity /= overrideFactor;
+            carbRatio /= overrideFactor;
+        } else {
+            if (cr_) { carbRatio /= overrideFactor; }
+            if (isf) { sensitivity /= overrideFactor; }
+        }
+    }
+    const weightPercentage = profile.weightPercentage;
+    const average_total_data = trio_custom_variables.average_total_data;
+
+    const tdd_before = tdd;
+    const dynResult = calculateDynamicISF(
+        glucose_status, profile, preferences, autosens_data,
+        sensitivity, profileTarget, dynISFenabled, tdd,
+        weightedAverage, average_total_data, weightPercentage!, middleWare
+    );
+    dynISFenabled = dynResult.dynISFenabled;
+    tdd = dynResult.tdd;
+    const { tddReason, newRatio, insulinFactor, adjustmentFactor, enable_sigmoid, tdd24h_14d_Ratio } = dynResult;
+
+    const cgmValidation = validateCGMData(
+        glucose_status, profile, systemTime, overrideFactor,
+        currenttemp, trio_custom_variables.useOverride, trio_custom_variables.duration
+    );
+    if ('earlyReturn' in cgmValidation) return cgmValidation.earlyReturn;
+    const { bg, noise, tick, minDelta, minAvgDelta, maxDelta, minAgo, bgTime, deliverAt, profile_current_basal } = cgmValidation;
+
+    const sensTargets = configureSensitivityAndTargets(
+        glucose_status, profile, autosens_data, profileTarget, overrideTarget,
+        bg, dynISFenabled, newRatio, tdd24h_14d_Ratio, overrideFactor,
+        profile_current_basal, tdd_before, weightedAverage, average_total_data,
+        weightPercentage!, sensitivity, carbRatio, cgmValidation.basal, cgmValidation.reason
+    );
+    if ('earlyReturn' in sensTargets) return sensTargets.earlyReturn;
+    const { max_iob, target_bg, min_bg, max_bg, high_bg, sensitivityRatio, adjustedSens, isfreason, targetLog } = sensTargets;
+    let basal = sensTargets.basal;
+    let threshold = sensTargets.threshold;
+
+    let result = {} as DetermineBasalResult;
+    if (cgmValidation.reason) {
+        result.reason = cgmValidation.reason;
+    }
 
     if (iob_data === undefined) {
         result.error ='Error: iob_data undefined. ';
