@@ -3,6 +3,7 @@
 
 import * as basal from './basal';
 import targets from './targets';
+import type { TempTarget, TargetsInputs } from './targets';
 import isf from './isf';
 import carb_ratios from './carbs';
 import _ from 'lodash';
@@ -112,7 +113,7 @@ interface ProfileInputs {
   };
   isf: { sensitivities: Array<{ offset: number; sensitivity: number }> };
   carbratio?: { units: CarbRatioUnits; schedule?: Array<{ offset: number; ratio: number }> };
-  temptargets: Array<Record<string, unknown>>;
+  temptargets: TempTarget[];
   skip_neutral_temps?: boolean;
   model?: string;
   [key: string]: unknown;
@@ -280,7 +281,7 @@ function generate (inputs: ProfileInputs, opts?: ProfileOpts): ProfileDefaults |
     return -1;
   }
 
-  const range = targets.bgTargetsLookup(inputs as unknown as Parameters<typeof targets.bgTargetsLookup>[0], profile as unknown as Parameters<typeof targets.bgTargetsLookup>[1]);
+  const range = targets.bgTargetsLookup(inputs as TargetsInputs, profile);
   profile.out_units = inputs.targets.user_preferred_units;
   profile.min_bg = Math.round(range.min_bg!);
   profile.max_bg = Math.round(range.max_bg!);

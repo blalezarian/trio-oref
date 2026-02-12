@@ -1,6 +1,7 @@
 import tz from 'moment-timezone';
 import { detectCarbAbsorption as calcMealCOB } from '../cob/index';
 import type { CarbTreatment, GlucoseEntry, PumpHistoryEvent } from '../types/index';
+import type { IobProfile, HistoryBasalProfileEntry } from '../iob/types';
 import { MS_PER_HOUR, DEFAULT_MAX_MEAL_ABSORPTION_HOURS } from '../constants';
 
 /** Rounding scale for 3 decimal places */
@@ -10,19 +11,19 @@ const ROUND_SCALE_2DP = 100;
 
 interface RecentCarbsOpts {
   treatments: CarbTreatment[] | null;
-  profile: Record<string, unknown>;
+  profile: IobProfile & Record<string, unknown>;
   pumphistory: PumpHistoryEvent[];
   glucose?: GlucoseEntry[];
-  basalprofile: Array<Record<string, unknown>>;
+  basalprofile: HistoryBasalProfileEntry[];
 }
 
 interface COBInputs {
   glucose_data: GlucoseEntry[] | undefined;
   iob_inputs: {
-    profile: Record<string, unknown>;
+    profile: IobProfile & Record<string, unknown>;
     history: PumpHistoryEvent[];
   };
-  basalprofile: Array<Record<string, unknown>>;
+  basalprofile: HistoryBasalProfileEntry[];
   mealTime: number;
   ciTime?: number;
 }

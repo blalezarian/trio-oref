@@ -11,6 +11,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import mealGenerate from '../../../src/meal/index';
 import type { PumpHistoryEvent, GlucoseEntry } from '../../../src/types/index';
+import type { IobProfile, HistoryBasalProfileEntry } from '../../../src/iob/types';
 
 const FIXED_TIME = '2025-01-15T12:00:00.000Z';
 const NOW = new Date(FIXED_TIME).getTime();
@@ -70,9 +71,9 @@ function risingGlucose() {
 function makeInputs(overrides: {
   history?: PumpHistoryEvent[];
   carbs?: PumpHistoryEvent[];
-  profile?: Record<string, unknown>;
+  profile?: IobProfile & Record<string, unknown>;
   glucose?: GlucoseEntry[];
-  basalprofile?: Array<Record<string, unknown>>;
+  basalprofile?: HistoryBasalProfileEntry[];
 } = {}) {
   return {
     clock: FIXED_TIME,

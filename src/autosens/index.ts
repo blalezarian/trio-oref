@@ -6,6 +6,8 @@ import find_meals from '../meal/history';
 import tz from 'moment-timezone';
 import { percentile } from '../utils/percentile';
 import type { PumpHistoryEvent, GlucoseEntry, CarbTreatment } from '../types/index';
+import type { IobProfile, HistoryBasalProfileEntry, IobInputs } from '../iob/types';
+import type { TempTarget } from '../profile/targets';
 import {
     MIN_VALID_GLUCOSE_MGDL,
     MS_PER_HOUR,
@@ -22,13 +24,13 @@ import {
 interface AutosensInputs {
   glucose_data: GlucoseEntry[];
   iob_inputs: {
-    profile: Record<string, unknown>;
+    profile: IobProfile & Record<string, unknown>;
     history: PumpHistoryEvent[];
     clock: string | Date;
   };
-  basalprofile: Array<Record<string, unknown>>;
+  basalprofile: HistoryBasalProfileEntry[];
   carbs: PumpHistoryEvent[];
-  temptargets?: Array<Record<string, unknown>>;
+  temptargets?: TempTarget[];
   retrospective?: boolean;
   deviations?: number;
 }
@@ -92,7 +94,7 @@ export function detectSensitivity(inputs: AutosensInputs): AutosensResult {
     }
 
     // get treatments from pumphistory once, not every time we get_iob()
-    const treatments = find_insulin(inputs.iob_inputs as unknown as Parameters<typeof find_insulin>[0]);
+    const treatments = find_insulin(inputs.iob_inputs as IobInputs);
 
     const mealinputs = {
         history: inputs.iob_inputs.history
@@ -232,12 +234,12 @@ export function detectSensitivity(inputs: AutosensInputs): AutosensResult {
 
         avgDelta = (avgDelta as number).toFixed(2);
         iob_inputs.clock=bgTime;
-        iob_inputs.profile.current_basal = basal.basalLookup(basalprofile as unknown as Parameters<typeof basal.basalLookup>[0], bgTime);
+        iob_inputs.profile.current_basal = basal.basalLookup(basalprofile, bgTime)!;
         // make sure autosens doesn't use temptarget-adjusted insulin calculations
         iob_inputs.profile.temptargetSet = false;
         //console.log(JSON.stringify(iob_inputs.profile));
         //console.error("Before: ", new Date().getTime());
-        const iob = get_iob(iob_inputs as unknown as Parameters<typeof get_iob>[0], true, treatments)[0];
+        const iob = get_iob(iob_inputs as IobInputs, true, treatments)[0];
         //console.error("After: ", new Date().getTime());
         //console.log(JSON.stringify(iob));
 
@@ -486,27 +488,27 @@ export function detectSensitivity(inputs: AutosensInputs): AutosensResult {
     }
 }
 
-function tempTargetRunning(temptargets_data: Array<Record<string, unknown>> | undefined, time: Date): number | undefined {
+function tempTargetRunning(temptargets_data: TempTarget[] | undefined, time: Date): number | undefined {
     // sort tempTargets by date so we can process most recent first
     try {
-        temptargets_data!.sort((a: Record<string, unknown>, b: Record<string, unknown>) => { return (new Date(a.created_at as string) < new Date(b.created_at as string)) as unknown as number });
+        temptargets_data!.sort((a: TempTarget, b: TempTarget) => { return (new Date(a.created_at) < new Date(b.created_at)) as unknown as number });
     } catch (e) {
         //console.error("Could not sort temptargets_data.  Optional feature temporary targets disabled.");
     }
     //console.error(temptargets_data);
     //console.error(time);
     for (let i = 0; i < temptargets_data!.length; i++) {
-        const start = new Date(temptargets_data![i].created_at as string);
+        const start = new Date(temptargets_data![i].created_at);
         //console.error(start);
-        const expires = new Date(start.getTime() + (temptargets_data![i].duration as number) * MS_PER_MINUTE);
+        const expires = new Date(start.getTime() + temptargets_data![i].duration * MS_PER_MINUTE);
         //console.error(expires);
-        if (time >= new Date(temptargets_data![i].created_at as string) && temptargets_data![i].duration === 0) {
+        if (time >= new Date(temptargets_data![i].created_at) && temptargets_data![i].duration === 0) {
             // cancel temp targets
             //console.error(temptargets_data[i]);
             return 0;
-        } else if (time >= new Date(temptargets_data![i].created_at as string) && time < expires ) {
+        } else if (time >= new Date(temptargets_data![i].created_at) && time < expires ) {
             //console.error(temptargets_data[i]);
-            const tempTarget = ( (temptargets_data![i].targetTop as number) + (temptargets_data![i].targetBottom as number) ) / 2;
+            const tempTarget = ( temptargets_data![i].targetTop! + temptargets_data![i].targetBottom! ) / 2;
             //console.error(tempTarget);
             return tempTarget;
         }

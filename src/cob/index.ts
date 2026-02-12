@@ -2,7 +2,8 @@ import basal from '../profile/basal';
 import get_iob from '../iob/index';
 import find_insulin from '../iob/history';
 import isf from '../profile/isf';
-import type { GlucoseEntry, BucketedGlucose } from '../types/index';
+import type { GlucoseEntry, BucketedGlucose, PumpHistoryEvent } from '../types/index';
+import type { IobProfile, HistoryBasalProfileEntry, IobInputs } from '../iob/types';
 import {
     MIN_VALID_GLUCOSE_MGDL,
     MS_PER_HOUR,
@@ -15,11 +16,11 @@ import {
 interface CarbAbsorptionInputs {
   glucose_data: GlucoseEntry[] | undefined;
   iob_inputs: {
-    profile: Record<string, unknown>;
-    history: Array<Record<string, unknown>>;
+    profile: IobProfile & Record<string, unknown>;
+    history: PumpHistoryEvent[];
     clock?: string | Date;
   };
-  basalprofile: Array<Record<string, unknown>>;
+  basalprofile: HistoryBasalProfileEntry[];
   mealTime: number | string | Date;
   ciTime?: number | string | Date;
 }
@@ -43,7 +44,7 @@ const BUCKETING_GAP_THRESHOLD_MIN = 8;
 
 export function detectCarbAbsorption(inputs: CarbAbsorptionInputs): CarbAbsorptionResult {
 
-    let profile: Record<string, unknown>;
+    let profile: IobProfile & Record<string, unknown>;
     const glucose_data = inputs.glucose_data!.map((obj: GlucoseEntry) => {
         //Support the NS sgv field to avoid having to convert in a custom way
         obj.glucose = obj.glucose || obj.sgv;
@@ -52,14 +53,14 @@ export function detectCarbAbsorption(inputs: CarbAbsorptionInputs): CarbAbsorpti
     const iob_inputs = inputs.iob_inputs;
     const basalprofile = inputs.basalprofile;
     /* TODO why does declaring profile break tests-command-behavior.tests.sh? */
-    profile = inputs.iob_inputs.profile as Record<string, unknown>;
+    profile = inputs.iob_inputs.profile;
     const mealTime = new Date(inputs.mealTime as string | number);
     const ciTime = new Date(inputs.ciTime as string | number);
 
     //console.error(mealTime, ciTime);
 
     // get treatments from pumphistory once, not every time we get_iob()
-    const treatments = find_insulin(inputs.iob_inputs as any);
+    const treatments = find_insulin(inputs.iob_inputs as IobInputs);
 
     const avgDeltas: string[] = [];
     const bgis: string[] = [];
@@ -176,10 +177,10 @@ export function detectCarbAbsorption(inputs: CarbAbsorptionInputs): CarbAbsorpti
 
         avgDelta = (avgDelta! as number).toFixed(2);
         iob_inputs.clock=bgTime;
-        (iob_inputs.profile as Record<string, unknown>).current_basal = basal.basalLookup(basalprofile as any, bgTime);
+        iob_inputs.profile.current_basal = basal.basalLookup(basalprofile, bgTime)!;
         //console.log(JSON.stringify(iob_inputs.profile));
         //console.error("Before: ", new Date().getTime());
-        const iob = get_iob(iob_inputs as any, true, treatments)[0];
+        const iob = get_iob(iob_inputs as IobInputs, true, treatments)[0];
         //console.error("After: ", new Date().getTime());
         //console.error(JSON.stringify(iob));
 

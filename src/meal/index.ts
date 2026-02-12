@@ -3,14 +3,15 @@ import tz from 'moment-timezone';
 import find_meals from './history';
 import sum from './total';
 import type { PumpHistoryEvent, GlucoseEntry } from '../types/index';
+import type { IobProfile, HistoryBasalProfileEntry } from '../iob/types';
 
 interface MealGenerateInputs {
   history: PumpHistoryEvent[];
   carbs: PumpHistoryEvent[];
-  profile: Record<string, unknown>;
+  profile: IobProfile & Record<string, unknown>;
   clock: string;
   glucose?: GlucoseEntry[];
-  basalprofile: Array<Record<string, unknown>>;
+  basalprofile: HistoryBasalProfileEntry[];
 }
 
 function generate (inputs: MealGenerateInputs): ReturnType<typeof sum> {

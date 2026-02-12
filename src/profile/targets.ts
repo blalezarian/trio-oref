@@ -18,20 +18,20 @@ interface BGTargetsData {
   raw?: unknown;
 }
 
-interface TempTarget {
+export interface TempTarget {
   created_at: string;
   duration: number;
   targetTop?: number;
   targetBottom?: number;
 }
 
-interface TargetsInputs {
+export interface TargetsInputs {
   targets: BGTargetsData;
   temptargets: TempTarget[];
 }
 
-interface TargetsProfile {
-  target_bg?: number;
+export interface TargetsProfile {
+  target_bg?: number | boolean;
   [key: string]: unknown;
 }
 
@@ -56,7 +56,7 @@ function lookup (inputs: TargetsInputs, profile: TargetsProfile): BGTarget {
     }
 
     if (profile.target_bg) {
-        bgTargets.low = profile.target_bg;
+        bgTargets.low = profile.target_bg as number;
     }
 
     bgTargets.high = bgTargets.low;
