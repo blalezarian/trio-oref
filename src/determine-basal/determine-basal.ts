@@ -1050,12 +1050,9 @@ function generateBGPredictions(
     let IOBpredBG = eventualBG;
     let maxIOBPredBG = bg;
     let maxCOBPredBG = bg;
-    let maxUAMPredBG = bg;
-    const eventualPredBG = bg;
     let lastIOBpredBG: number = undefined!;
     let lastCOBpredBG: number = undefined!;
     let lastUAMpredBG: number = undefined!;
-    let lastZTpredBG: number = undefined!;
     let UAMduration = 0;
     let remainingCItotal = 0;
     const remainingCIs: number[] = [];
@@ -1151,7 +1148,6 @@ function generateBGPredictions(
             if ( (carbImpactDuration || remainingCIpeak > 0) && COBpredBGs.length > insulinPeak5m && (COBpredBG < minCOBPredBG) ) { minCOBPredBG = round(COBpredBG); }
             if ( (carbImpactDuration || remainingCIpeak > 0) && COBpredBG > maxIOBPredBG ) { maxCOBPredBG = COBpredBG; }
             if ( enableUAM && UAMpredBGs.length > MIN_PRED_TRIM_POINTS && (UAMpredBG < minUAMPredBG) ) { minUAMPredBG = round(UAMpredBG); }
-            if ( enableUAM && UAMpredBG > maxIOBPredBG ) { maxUAMPredBG = UAMpredBG; }
         });
         // set eventualBG to include effect of carbs
         //console.error("PredBGs:",JSON.stringify(predBGs));
@@ -1183,7 +1179,6 @@ function generateBGPredictions(
         else { ZTpredBGs.pop(); }
     }
     predBGs.ZT = ZTpredBGs;
-    lastZTpredBG=round(ZTpredBGs[ZTpredBGs.length-1]);
     if (meal_data.mealCOB > 0 && ( carbImpact > 0 || remainingCIpeak > 0 )) {
         COBpredBGs.forEach((p: number, i: number, theArray: number[]) => {
             theArray[i] = round(Math.min(COB_PRED_BG_CAP,Math.max(MIN_VALID_GLUCOSE_MGDL,p)));
