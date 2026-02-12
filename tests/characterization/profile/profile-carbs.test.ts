@@ -213,7 +213,7 @@ describe('profile/carbs (carbRatioLookup) characterization tests', () => {
     it('returns undefined for unsupported carb_ratio units', () => {
       const inputs = {
         carbratio: {
-          units: 'ounces',
+          units: 'ounces' as unknown as 'grams',
           schedule: [{ offset: 0, ratio: 10 }],
         },
       };

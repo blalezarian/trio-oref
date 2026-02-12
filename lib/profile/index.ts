@@ -6,7 +6,7 @@ import targets from './targets';
 import isf from './isf';
 import carb_ratios from './carbs';
 import _ from 'lodash';
-import type { InsulinCurve } from '../types/index';
+import type { InsulinCurve, CarbRatioUnits, BGUnits } from '../types/index';
 import {
     DEFAULT_MAX_DAILY_SAFETY_MULTIPLIER,
     DEFAULT_CURRENT_BASAL_SAFETY_MULTIPLIER,
@@ -86,11 +86,11 @@ interface ProfileDefaults {
   basalprofile?: Array<{ minutes?: number; i?: number; rate: number }>;
   max_daily_basal?: number;
   max_basal?: number;
-  out_units?: string;
+  out_units?: BGUnits;
   min_bg?: number;
   max_bg?: number;
   bg_targets?: {
-    user_preferred_units?: string;
+    user_preferred_units?: BGUnits;
     targets: Array<{ offset: number; low: number; high: number; min_bg?: number; max_bg?: number }>;
     raw?: unknown;
   };
@@ -98,7 +98,7 @@ interface ProfileDefaults {
   sens?: number;
   isfProfile?: { sensitivities: Array<{ offset: number; sensitivity: number }> };
   carb_ratio?: number;
-  carb_ratios?: { units: 'grams' | 'exchanges' | (string & {}); schedule?: Array<{ offset: number; ratio: number }> };
+  carb_ratios?: { units: CarbRatioUnits; schedule?: Array<{ offset: number; ratio: number }> };
   [key: string]: unknown;
 }
 
@@ -106,12 +106,12 @@ interface ProfileInputs {
   settings: { insulin_action_curve: number; maxBasal: number };
   basals: Array<{ minutes?: number; i?: number; rate: number }>;
   targets: {
-    user_preferred_units?: string;
+    user_preferred_units?: BGUnits;
     targets: Array<{ offset: number; low: number; high: number; min_bg?: number; max_bg?: number }>;
     raw?: unknown;
   };
   isf: { sensitivities: Array<{ offset: number; sensitivity: number }> };
-  carbratio?: { units: 'grams' | 'exchanges' | (string & {}); schedule?: Array<{ offset: number; ratio: number }> };
+  carbratio?: { units: CarbRatioUnits; schedule?: Array<{ offset: number; ratio: number }> };
   temptargets: Array<Record<string, unknown>>;
   skip_neutral_temps?: boolean;
   model?: string;

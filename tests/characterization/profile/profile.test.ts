@@ -21,7 +21,7 @@ function makeInputs(overrides: Record<string, unknown> = {}) {
       { minutes: 1080, rate: 0.85 },
     ],
     targets: {
-      user_preferred_units: 'mg/dL',
+      user_preferred_units: 'mg/dL' as const,
       targets: [
         { offset: 0, low: 110, high: 120, min_bg: 110, max_bg: 120 },
       ],

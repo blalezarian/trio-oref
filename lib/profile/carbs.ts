@@ -1,6 +1,7 @@
 
 import getTime from '../medtronic-clock';
 import { MIN_CARB_RATIO, MAX_CARB_RATIO } from '../constants';
+import type { CarbRatioUnits } from '../types/index';
 
 interface CarbRatioScheduleEntry {
   offset: number;
@@ -8,7 +9,7 @@ interface CarbRatioScheduleEntry {
 }
 
 interface CarbRatioData {
-  units: 'grams' | 'exchanges' | (string & {});
+  units: CarbRatioUnits;
   schedule?: CarbRatioScheduleEntry[];
 }
 
