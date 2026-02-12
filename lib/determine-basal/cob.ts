@@ -3,6 +3,13 @@ import get_iob from '../iob/index';
 import find_insulin from '../iob/history';
 import isf from '../profile/isf';
 import type { GlucoseEntry, BucketedGlucose } from '../types/index';
+import {
+    MIN_VALID_GLUCOSE_MGDL,
+    MS_PER_HOUR,
+    MS_PER_MINUTE,
+    MS_PER_5_MIN,
+    PRED_INTERVAL_MINUTES,
+} from '../constants';
 
 interface CarbAbsorptionInputs {
   glucose_data: GlucoseEntry[] | undefined;
@@ -25,6 +32,15 @@ interface CarbAbsorptionResult {
   slopeFromMinDeviation: number;
   allDeviations: number[];
 }
+
+/** Time window for CI-mode lookback (45 minutes in ms) */
+const CI_LOOKBACK_MS = 45 * MS_PER_MINUTE;
+/** Maximum interpolation gap cap (4 hours in minutes) */
+const MAX_INTERPOLATION_GAP_MINUTES = 240;
+/** Elapsed-minutes gap above which BG data is interpolated */
+const BUCKETING_GAP_THRESHOLD_MIN = 8;
+/** Elapsed-minutes gap at or below which BG readings are merged into same bucket */
+const BUCKETING_MERGE_THRESHOLD_MIN = 2;
 
 function detectCarbAbsorption(inputs: CarbAbsorptionInputs): CarbAbsorptionResult {
 
@@ -57,7 +73,7 @@ function detectCarbAbsorption(inputs: CarbAbsorptionInputs): CarbAbsorptionResul
     var foundPreMealBG = false;
     var lastbgi = 0;
 
-    if (! glucose_data[0].glucose || glucose_data[0].glucose < 39) {
+    if (! glucose_data[0].glucose || glucose_data[0].glucose < MIN_VALID_GLUCOSE_MGDL) {
       lastbgi = -1;
     }
 
@@ -69,12 +85,12 @@ function detectCarbAbsorption(inputs: CarbAbsorptionInputs): CarbAbsorptionResul
         } else if (glucose_data[i].dateString) {
             bgTime = new Date(glucose_data[i].dateString!);
         } else { console.error("Could not determine BG time"); }
-        if (! glucose_data[i].glucose || glucose_data[i].glucose! < 39) {
+        if (! glucose_data[i].glucose || glucose_data[i].glucose! < MIN_VALID_GLUCOSE_MGDL) {
 //console.error("skipping:",glucose_data[i].glucose);
             continue;
         }
         // only consider BGs for 6h after a meal for calculating COB
-        var hoursAfterMeal = (Number(bgTime)-Number(mealTime))/(60*60*1000);
+        var hoursAfterMeal = (Number(bgTime)-Number(mealTime))/MS_PER_HOUR;
         if (hoursAfterMeal > (profile.maxMealAbsorptionTime as number) || foundPreMealBG) {
             continue;
         } else if (hoursAfterMeal < 0) {
@@ -85,7 +101,7 @@ function detectCarbAbsorption(inputs: CarbAbsorptionInputs): CarbAbsorptionResul
         // only consider last ~45m of data in CI mode
         // this allows us to calculate deviations for the last ~30m
         if (typeof ciTime !== 'undefined') {
-            var hoursAgo = (Number(ciTime)-Number(bgTime))/(45*60*1000);
+            var hoursAgo = (Number(ciTime)-Number(bgTime))/CI_LOOKBACK_MS;
             if (hoursAgo > 1 || hoursAgo < 0) {
                 continue;
             }
@@ -97,31 +113,31 @@ function detectCarbAbsorption(inputs: CarbAbsorptionInputs): CarbAbsorptionResul
         } else if ((lastbgi >= 0) && glucose_data[lastbgi].dateString) {
             lastbgTime = new Date(glucose_data[lastbgi].dateString!);
         } else { console.error("Could not determine last BG time"); }
-        var elapsed_minutes = (Number(bgTime) - Number(lastbgTime))/(60*1000);
+        var elapsed_minutes = (Number(bgTime) - Number(lastbgTime))/MS_PER_MINUTE;
     //console.error(bgTime, lastbgTime, elapsed_minutes);
-        if(Math.abs(elapsed_minutes) > 8) {
+        if(Math.abs(elapsed_minutes) > BUCKETING_GAP_THRESHOLD_MIN) {
             // interpolate missing data points
             var lastbg = glucose_data[lastbgi].glucose!;
             // cap interpolation at a maximum of 4h
-            elapsed_minutes = Math.min(240,Math.abs(elapsed_minutes));
+            elapsed_minutes = Math.min(MAX_INTERPOLATION_GAP_MINUTES,Math.abs(elapsed_minutes));
             //console.error(elapsed_minutes);
-            while(elapsed_minutes > 5) {
-                var previousbgTime = new Date(lastbgTime!.getTime() - 5 * 60*1000);
+            while(elapsed_minutes > PRED_INTERVAL_MINUTES) {
+                var previousbgTime = new Date(lastbgTime!.getTime() - MS_PER_5_MIN);
                 j++;
                 bucketed_data[j] = {} as BucketedGlucose;
                 bucketed_data[j].date = previousbgTime.getTime();
                 var gapDelta = glucose_data[i].glucose! - lastbg;
                 //console.error(gapDelta, lastbg, elapsed_minutes);
-                var previousbg = lastbg + (5/elapsed_minutes * gapDelta);
+                var previousbg = lastbg + (PRED_INTERVAL_MINUTES/elapsed_minutes * gapDelta);
                 bucketed_data[j].glucose = Math.round(previousbg);
                 //console.error("Interpolated", bucketed_data[j]);
 
-                elapsed_minutes = elapsed_minutes - 5;
+                elapsed_minutes = elapsed_minutes - PRED_INTERVAL_MINUTES;
                 lastbg = previousbg;
                 lastbgTime = new Date(previousbgTime);
             }
 
-        } else if(Math.abs(elapsed_minutes) > 2) {
+        } else if(Math.abs(elapsed_minutes) > BUCKETING_MERGE_THRESHOLD_MIN) {
             j++;
             bucketed_data[j]=glucose_data[i];
             bucketed_data[j].date = bgTime!.getTime();
@@ -150,7 +166,7 @@ function detectCarbAbsorption(inputs: CarbAbsorptionInputs): CarbAbsorptionResul
         var delta: number;
         if (typeof(bucketed_data[i].glucose) !== 'undefined') {
             bg = bucketed_data[i].glucose!;
-            if ( bg < 39 || bucketed_data[i+3].glucose! < 39) {
+            if ( bg < MIN_VALID_GLUCOSE_MGDL || bucketed_data[i+3].glucose! < MIN_VALID_GLUCOSE_MGDL) {
                 process.stderr.write("!");
                 continue;
             }
@@ -167,7 +183,7 @@ function detectCarbAbsorption(inputs: CarbAbsorptionInputs): CarbAbsorptionResul
         //console.error("After: ", new Date().getTime());
         //console.error(JSON.stringify(iob));
 
-        var bgi: number | string = Math.round(( -iob.activity * sens * 5 )*100)/100;
+        var bgi: number | string = Math.round(( -iob.activity * sens * PRED_INTERVAL_MINUTES )*100)/100;
         bgi = bgi.toFixed(2);
         //console.error(delta);
         var deviation: number | string = delta! - (bgi as unknown as number);
@@ -185,7 +201,7 @@ function detectCarbAbsorption(inputs: CarbAbsorptionInputs): CarbAbsorptionResul
             }
         } else if (ciTime > bgTime) {
             var avgDeviation = Math.round((Number(avgDelta)-(bgi as unknown as number))*1000)/1000;
-            var deviationSlope = (avgDeviation-currentDeviation!)/(bgTime.getTime()-ciTime.getTime())*1000*60*5;
+            var deviationSlope = (avgDeviation-currentDeviation!)/(bgTime.getTime()-ciTime.getTime())*MS_PER_5_MIN;
             //console.error(avgDeviation,currentDeviation,bgTime,ciTime)
             if (avgDeviation > maxDeviation) {
                 slopeFromMaxDeviation = Math.min(0, deviationSlope);
