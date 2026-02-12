@@ -3,7 +3,7 @@
 var should = require('should');
 
 describe('round_basal', function ( ) {
-    var round_basal = require('../src/round-basal').default;
+    var round_basal = require('../src/utils/round-basal').round_basal;
 
     it('should round correctly without profile being passed in', function() {
         var basal = 0.025;
