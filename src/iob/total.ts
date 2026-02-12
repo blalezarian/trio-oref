@@ -1,4 +1,5 @@
 import { Treatment, IOBContribution, InsulinCurve } from '../types/index';
+import type { IobCalcProfile, IobTotalOpts, IobTotalResult } from './types';
 import {
     MIN_DIA_HOURS,
     MIN_LONG_DIA_HOURS,
@@ -14,37 +15,6 @@ const BOLUS_DETECTION_THRESHOLD = 0.1;
 const ROUND_SCALE_3DP = 1000;
 /** Rounding scale for 4 decimal places */
 const ROUND_SCALE_4DP = 10000;
-
-interface IobCalcProfile {
-    dia: number;
-    curve?: InsulinCurve;
-    useCustomPeakTime?: boolean;
-    insulinPeakTime?: number;
-}
-
-interface IobTotalOpts {
-    treatments: Treatment[] | null;
-    profile: IobCalcProfile;
-    calculate: (
-        treatment: Treatment,
-        time: Date,
-        curve: InsulinCurve,
-        dia: number,
-        peak: number,
-        profile: IobCalcProfile,
-    ) => IOBContribution | Record<string, never>;
-}
-
-interface IobTotalResult {
-    [key: string]: unknown;
-    iob: number;
-    activity: number;
-    basaliob: number;
-    bolusiob: number;
-    netbasalinsulin: number;
-    bolusinsulin: number;
-    time: Date;
-}
 
 function iobTotal(opts: IobTotalOpts, time: Date): IobTotalResult | Record<string, never> {
 

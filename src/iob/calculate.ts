@@ -1,4 +1,5 @@
 import { Treatment, IOBContribution, InsulinCurve } from '../types/index';
+import type { IobCalcProfile } from './types';
 import {
     BILINEAR_DEFAULT_DIA_HOURS,
     BILINEAR_PEAK_MINUTES,
@@ -12,12 +13,6 @@ import {
     MS_PER_MINUTE,
     SECONDS_PER_MINUTE,
 } from '../constants';
-
-interface IobCalcProfile {
-    curve?: InsulinCurve;
-    useCustomPeakTime?: boolean;
-    insulinPeakTime?: number;
-}
 
 function iobCalc(treatment: Treatment, time: Date | undefined, curve: InsulinCurve, dia: number, peak: number, profile: IobCalcProfile): IOBContribution | Record<string, never> {
     // iobCalc returns two variables:

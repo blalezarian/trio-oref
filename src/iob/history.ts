@@ -3,7 +3,17 @@ import tz from 'moment-timezone';
 import basalprofile from '../profile/basal';
 import _ from 'lodash';
 import moment from 'moment';
-import type { PumpHistoryEvent, PumpHistoryEventType, InsulinCurve } from '../types/index';
+import type { PumpHistoryEvent } from '../types/index';
+import type {
+    IobProfile,
+    IobInputs,
+    IobTreatment,
+    TempEvent,
+    SplitterEvent,
+    SuspendEvent,
+    SuspendResumeData,
+    TempBasalsAndBoluses,
+} from './types';
 import {
     MS_PER_MINUTE,
     MS_PER_HOUR,
@@ -14,81 +24,6 @@ import {
     MAX_DIA_FOR_SUSPEND_HOURS,
     MINUTES_PER_HOUR,
 } from '../constants';
-
-interface HistoryBasalProfileEntry {
-    i: number;
-    start: string;
-    rate: number;
-    minutes: number;
-}
-
-interface HistoryProfile {
-    dia: number;
-    curve?: InsulinCurve;
-    basalprofile: HistoryBasalProfileEntry[];
-    current_basal: number;
-    max_daily_basal?: number;
-    min_bg?: number;
-    max_bg?: number;
-    exercise_mode?: boolean;
-    temptargetSet?: boolean;
-    half_basal_exercise_target?: number;
-    suspend_zeros_iob?: boolean;
-}
-
-interface HistoryInputs {
-    clock: string;
-    history: PumpHistoryEvent[];
-    history24?: PumpHistoryEvent[];
-    profile: HistoryProfile;
-    autosens?: { ratio: number };
-}
-
-interface HistoryTreatment {
-    insulin?: number;
-    date: number;
-    created_at?: Date;
-    started_at?: Date;
-    timestamp?: string;
-    rate?: number;
-    duration?: number;
-}
-
-interface TempEvent {
-    _type?: PumpHistoryEventType | (string & {});
-    rate?: number;
-    duration?: number;
-    date: number;
-    timestamp?: string;
-    started_at?: Date;
-    created_at?: Date;
-    insulin?: number;
-}
-
-interface SplitterEvent {
-    type: 'recurring';
-    minutes: number;
-}
-
-interface SuspendEvent {
-    timestamp?: string;
-    started_at?: Date;
-    date: number;
-    duration?: number;
-}
-
-interface SuspendResumeData {
-    pumpSuspends: SuspendEvent[];
-    suspendedPrior: boolean;
-    firstResumeTime: string;
-    lastSuspendTime: string;
-    currentlySuspended: number | false;
-}
-
-interface TempBasalsAndBoluses {
-    tempHistory: TempEvent[];
-    tempBoluses: TempEvent[];
-}
 
 function splitTimespanWithOneSplitter(event: TempEvent, splitter: SplitterEvent): TempEvent[] {
 
@@ -459,7 +394,7 @@ function extractTempBasalsAndBoluses(pumpHistory: PumpHistoryEvent[], now: Date,
     return { tempHistory, tempBoluses };
 }
 
-function convertNetBasalsToTreatments(splitHistory: TempEvent[], profile_data: HistoryProfile, autosens_data?: { ratio: number }): TempEvent[] {
+function convertNetBasalsToTreatments(splitHistory: TempEvent[], profile_data: IobProfile, autosens_data?: { ratio: number }): TempEvent[] {
     const tempBoluses: TempEvent[] = [];
     let tempBolusSize;
     let target_bg: number | undefined;
@@ -522,7 +457,7 @@ function convertNetBasalsToTreatments(splitHistory: TempEvent[], profile_data: H
     return tempBoluses;
 }
 
-function calcTempTreatments (inputs: HistoryInputs, zeroTempDuration?: number): HistoryTreatment[] {
+function calcTempTreatments (inputs: IobInputs, zeroTempDuration?: number): IobTreatment[] {
     let pumpHistory: PumpHistoryEvent[] = inputs.history;
     const profile_data = inputs.profile;
     const autosens_data = inputs.autosens;

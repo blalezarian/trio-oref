@@ -4,7 +4,12 @@ import find_insulin from './history';
 import calculate from './calculate';
 import sum from './total';
 
-import type { PumpHistoryEvent, Treatment, IOBContribution, InsulinCurve } from '../types/index';
+import type {
+    IobInputs,
+    IobTreatment,
+    IobIndexEntry,
+    IobGenerateOpts,
+} from './types';
 import { PRED_INTERVAL_MINUTES, MS_PER_MINUTE } from '../constants';
 
 /** Lookahead minutes for zero-temp IOB projection */
@@ -14,75 +19,9 @@ const IOB_PREDICTION_HORIZON_MINUTES = 4 * 60;
 /** Rounding scale for 2 decimal places */
 const ROUND_SCALE_2DP = 100;
 
-interface IobIndexBasalProfileEntry {
-    i: number;
-    start: string;
-    rate: number;
-    minutes: number;
-}
+function generate (inputs: IobInputs, currentIOBOnly?: boolean, treatments?: IobTreatment[]): IobIndexEntry[] {
 
-interface IobIndexProfile {
-    dia: number;
-    curve?: InsulinCurve;
-    basalprofile: IobIndexBasalProfileEntry[];
-    current_basal: number;
-    max_daily_basal?: number;
-    min_bg?: number;
-    max_bg?: number;
-    exercise_mode?: boolean;
-    temptargetSet?: boolean;
-    half_basal_exercise_target?: number;
-    suspend_zeros_iob?: boolean;
-    useCustomPeakTime?: boolean;
-    insulinPeakTime?: number;
-}
-
-interface IobIndexInputs {
-    clock: string;
-    history: PumpHistoryEvent[];
-    history24?: PumpHistoryEvent[];
-    profile: IobIndexProfile;
-    autosens?: { ratio: number };
-}
-
-interface IobIndexEntry {
-    iob: number;
-    activity: number;
-    basaliob: number;
-    bolusiob: number;
-    netbasalinsulin: number;
-    bolusinsulin: number;
-    time: Date;
-    iobWithZeroTemp?: IobIndexEntry;
-    lastBolusTime?: number;
-    lastTemp?: {
-        date: number;
-        rate?: number;
-        duration?: number;
-        started_at?: Date | string;
-    };
-}
-
-interface IobIndexTreatment {
-    insulin?: number;
-    date: number;
-    created_at?: Date;
-    started_at?: Date;
-    timestamp?: string;
-    rate?: number;
-    duration?: number;
-}
-
-interface IobGenerateOpts {
-    treatments: IobIndexTreatment[];
-    profile: IobIndexProfile;
-    calculate: typeof calculate;
-    autosens?: { ratio: number };
-}
-
-function generate (inputs: IobIndexInputs, currentIOBOnly?: boolean, treatments?: IobIndexTreatment[]): IobIndexEntry[] {
-
-    let treatmentsWithZeroTemp: IobIndexTreatment[];
+    let treatmentsWithZeroTemp: IobTreatment[];
     if (!treatments) {
         treatments = find_insulin(inputs);
         // calculate IOB based on continuous future zero temping as well
@@ -115,9 +54,9 @@ function generate (inputs: IobIndexInputs, currentIOBOnly?: boolean, treatments?
     const clock = new Date(tz(inputs.clock));
 
     let lastBolusTime: number = new Date(0).getTime(); //clock.getTime());
-    let lastTemp: IobIndexTreatment = { date: new Date(0).getTime() } as IobIndexTreatment;
+    let lastTemp: IobTreatment = { date: new Date(0).getTime() } as IobTreatment;
     //console.error(treatments[treatments.length-1]);
-    treatments.forEach((treatment: IobIndexTreatment) => {
+    treatments.forEach((treatment: IobTreatment) => {
         if (treatment.insulin && treatment.started_at) {
             lastBolusTime = Math.max(lastBolusTime, treatment.started_at.getTime());
             //console.error(treatment.insulin,treatment.started_at,lastBolusTime);
