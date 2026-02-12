@@ -77,6 +77,19 @@ interface SuspendEvent {
     duration?: number;
 }
 
+interface SuspendResumeData {
+    pumpSuspends: SuspendEvent[];
+    suspendedPrior: boolean;
+    firstResumeTime: string;
+    lastSuspendTime: string;
+    currentlySuspended: number | false;
+}
+
+interface TempBasalsAndBoluses {
+    tempHistory: TempEvent[];
+    tempBoluses: TempEvent[];
+}
+
 function splitTimespanWithOneSplitter(event: TempEvent, splitter: SplitterEvent): TempEvent[] {
 
     let resultArray: TempEvent[] = [event];
@@ -230,28 +243,14 @@ function splitAroundSuspends (currentEvent: TempEvent, pumpSuspends: SuspendEven
     return events;
 }
 
-function calcTempTreatments (inputs: HistoryInputs, zeroTempDuration?: number): HistoryTreatment[] {
-    let pumpHistory: PumpHistoryEvent[] = inputs.history;
-    const pumpHistory24 = inputs.history24;
-    const profile_data = inputs.profile;
-    const autosens_data = inputs.autosens;
-    let tempHistory: TempEvent[] = [];
-    const tempBoluses: TempEvent[] = [];
+function extractSuspendResumeData(pumpHistory: PumpHistoryEvent[]): SuspendResumeData {
     let pumpSuspends: SuspendEvent[] = [];
     let pumpResumes: SuspendEvent[] = [];
     let suspendedPrior = false;
     let firstResumeTime: string = undefined!;
     let lastSuspendTime: string = undefined!;
     let currentlySuspended: number | false = false;
-    const now = new Date(tz(inputs.clock));
 
-    if(inputs.history24) {
-        pumpHistory =  ([] as PumpHistoryEvent[]).concat(inputs.history).concat(inputs.history24);
-    }
-
-    let lastRecordTime = now;
-
-    // Gather the times the pump was suspended and resumed
     for (let i=0; i < pumpHistory.length; i++) {
         const temp: TempEvent = {} as TempEvent;
 
@@ -330,7 +329,13 @@ function calcTempTreatments (inputs: HistoryInputs, zeroTempDuration?: number): 
         pumpSuspends.splice(i+1, pumpSuspends.length-i-1);
     }
 
-    // Pick relevant events for processing and clean the data
+    return { pumpSuspends, suspendedPrior, firstResumeTime, lastSuspendTime, currentlySuspended };
+}
+
+function extractTempBasalsAndBoluses(pumpHistory: PumpHistoryEvent[], now: Date, zeroTempDuration?: number): TempBasalsAndBoluses {
+    const tempHistory: TempEvent[] = [];
+    const tempBoluses: TempEvent[] = [];
+    let lastRecordTime = now;
 
     for (let i=0; i < pumpHistory.length; i++) {
         let current: PumpHistoryEvent = pumpHistory[i];
@@ -451,9 +456,91 @@ function calcTempTreatments (inputs: HistoryInputs, zeroTempDuration?: number): 
         tempHistory.push(cancelTemp);
     }
 
+    return { tempHistory, tempBoluses };
+}
+
+function convertNetBasalsToTreatments(splitHistory: TempEvent[], profile_data: HistoryProfile, autosens_data?: { ratio: number }): TempEvent[] {
+    const tempBoluses: TempEvent[] = [];
+    let tempBolusSize;
+    let target_bg: number | undefined;
+
+    for (let i=0; i < splitHistory.length; i++) {
+
+        const currentItem = splitHistory[i];
+
+        if (currentItem.duration! > 0) {
+
+            let currentRate: number = profile_data.current_basal;
+            if (!_.isEmpty(profile_data.basalprofile)) {
+                currentRate = basalprofile.basalLookup(profile_data.basalprofile,new Date(currentItem.timestamp!))!;
+            }
+
+            if (profile_data.min_bg !== undefined && profile_data.max_bg !== undefined) {
+                target_bg = (profile_data.min_bg + profile_data.max_bg) / 2;
+            }
+            //if (profile_data.temptargetSet && target_bg > 110) {
+                //sensitivityRatio = 2/(2+(target_bg-100)/40);
+                //currentRate = profile_data.current_basal * sensitivityRatio;
+            //}
+            let sensitivityRatio: number | undefined;
+            const profile = profile_data;
+            const normalTarget = EXERCISE_NORMAL_TARGET; // evaluate high/low temptarget against 100, not scheduled basal (which might change)
+            let halfBasalTarget: number;
+            if ( profile.half_basal_exercise_target ) {
+                halfBasalTarget = profile.half_basal_exercise_target;
+            } else {
+                halfBasalTarget = EXERCISE_HALF_BASAL_TARGET; // when temptarget is 160 mg/dL, run 50% basal (120 = 75%; 140 = 60%)
+            }
+            if ( profile.exercise_mode && profile.temptargetSet && target_bg! >= normalTarget + 5 ) {
+                // w/ target 100, temp target 110 = .89, 120 = 0.8, 140 = 0.67, 160 = .57, and 200 = .44
+                // e.g.: Sensitivity ratio set to 0.8 based on temp target of 120; Adjusting basal from 1.65 to 1.35; ISF from 58.9 to 73.6
+                const c = halfBasalTarget - normalTarget;
+                sensitivityRatio = c/(c+target_bg!-normalTarget);
+            } else if (autosens_data !== undefined ) {
+                sensitivityRatio = autosens_data.ratio;
+                //process.stderr.write("Autosens ratio: "+sensitivityRatio+"; ");
+            }
+            if ( sensitivityRatio ) {
+                currentRate = currentRate * sensitivityRatio;
+            }
+
+            const netBasalRate = currentItem.rate! - currentRate;
+            if (netBasalRate < 0) { tempBolusSize = -0.05; }
+            else { tempBolusSize = 0.05; }
+            const netBasalAmount = Math.round(netBasalRate*currentItem.duration!*10/6)/100
+            const tempBolusCount = Math.round(netBasalAmount / tempBolusSize);
+            const tempBolusSpacing = currentItem.duration! / tempBolusCount;
+            for (let j=0; j < tempBolusCount; j++) {
+                const tempBolus: TempEvent = {} as TempEvent;
+                tempBolus.insulin = tempBolusSize;
+                tempBolus.date = currentItem.date + j * tempBolusSpacing*MS_PER_MINUTE;
+                tempBolus.created_at = new Date(tempBolus.date);
+                tempBoluses.push(tempBolus);
+            }
+        }
+    }
+    return tempBoluses;
+}
+
+function calcTempTreatments (inputs: HistoryInputs, zeroTempDuration?: number): HistoryTreatment[] {
+    let pumpHistory: PumpHistoryEvent[] = inputs.history;
+    const profile_data = inputs.profile;
+    const autosens_data = inputs.autosens;
+    const now = new Date(tz(inputs.clock));
+
+    if(inputs.history24) {
+        pumpHistory =  ([] as PumpHistoryEvent[]).concat(inputs.history).concat(inputs.history24);
+    }
+
+    // Gather suspend/resume events and compute durations
+    const { pumpSuspends, suspendedPrior, firstResumeTime, lastSuspendTime, currentlySuspended } = extractSuspendResumeData(pumpHistory);
+
+    // Parse temp basals and boluses from pump history
+    const { tempHistory: rawTempHistory, tempBoluses } = extractTempBasalsAndBoluses(pumpHistory, now, zeroTempDuration);
+
     // Check for overlapping events and adjust event lengths in case of overlap
 
-    tempHistory = _.sortBy(tempHistory, 'date');
+    let tempHistory = _.sortBy(rawTempHistory, 'date');
 
     for (let i=0; i+1 < tempHistory.length; i++) {
         if (tempHistory[i].date + tempHistory[i].duration!*MS_PER_MINUTE > tempHistory[i+1].date) {
@@ -578,69 +665,10 @@ function calcTempTreatments (inputs: HistoryInputs, zeroTempDuration?: number): 
 
     splitHistory = _.sortBy(splitHistory, (o) => { return o.date; });
 
-    // tempHistory = splitHistory;
+    // Convert net basals to treatment boluses
+    const netBasalBoluses = convertNetBasalsToTreatments(splitHistory, profile_data, autosens_data);
 
-    // iterate through the temp basals and create bolus events from temps that affect IOB
-
-    let tempBolusSize;
-    let target_bg: number | undefined;
-
-    for (let i=0; i < splitHistory.length; i++) {
-
-        const currentItem = splitHistory[i];
-
-        if (currentItem.duration! > 0) {
-
-            let currentRate: number = profile_data.current_basal;
-            if (!_.isEmpty(profile_data.basalprofile)) {
-                currentRate = basalprofile.basalLookup(profile_data.basalprofile,new Date(currentItem.timestamp!))!;
-            }
-
-            if (profile_data.min_bg !== undefined && profile_data.max_bg !== undefined) {
-                target_bg = (profile_data.min_bg + profile_data.max_bg) / 2;
-            }
-            //if (profile_data.temptargetSet && target_bg > 110) {
-                //sensitivityRatio = 2/(2+(target_bg-100)/40);
-                //currentRate = profile_data.current_basal * sensitivityRatio;
-            //}
-            let sensitivityRatio: number | undefined;
-            const profile = profile_data;
-            const normalTarget = EXERCISE_NORMAL_TARGET; // evaluate high/low temptarget against 100, not scheduled basal (which might change)
-            let halfBasalTarget: number;
-            if ( profile.half_basal_exercise_target ) {
-                halfBasalTarget = profile.half_basal_exercise_target;
-            } else {
-                halfBasalTarget = EXERCISE_HALF_BASAL_TARGET; // when temptarget is 160 mg/dL, run 50% basal (120 = 75%; 140 = 60%)
-            }
-            if ( profile.exercise_mode && profile.temptargetSet && target_bg! >= normalTarget + 5 ) {
-                // w/ target 100, temp target 110 = .89, 120 = 0.8, 140 = 0.67, 160 = .57, and 200 = .44
-                // e.g.: Sensitivity ratio set to 0.8 based on temp target of 120; Adjusting basal from 1.65 to 1.35; ISF from 58.9 to 73.6
-                const c = halfBasalTarget - normalTarget;
-                sensitivityRatio = c/(c+target_bg!-normalTarget);
-            } else if (autosens_data !== undefined ) {
-                sensitivityRatio = autosens_data.ratio;
-                //process.stderr.write("Autosens ratio: "+sensitivityRatio+"; ");
-            }
-            if ( sensitivityRatio ) {
-                currentRate = currentRate * sensitivityRatio;
-            }
-
-            const netBasalRate = currentItem.rate! - currentRate;
-            if (netBasalRate < 0) { tempBolusSize = -0.05; }
-            else { tempBolusSize = 0.05; }
-            const netBasalAmount = Math.round(netBasalRate*currentItem.duration!*10/6)/100
-            const tempBolusCount = Math.round(netBasalAmount / tempBolusSize);
-            const tempBolusSpacing = currentItem.duration! / tempBolusCount;
-            for (let j=0; j < tempBolusCount; j++) {
-                const tempBolus: TempEvent = {} as TempEvent;
-                tempBolus.insulin = tempBolusSize;
-                tempBolus.date = currentItem.date + j * tempBolusSpacing*MS_PER_MINUTE;
-                tempBolus.created_at = new Date(tempBolus.date);
-                tempBoluses.push(tempBolus);
-            }
-        }
-    }
-    let all_data: TempEvent[] =  ([] as TempEvent[]).concat(tempBoluses).concat(tempHistory);
+    let all_data: TempEvent[] =  ([] as TempEvent[]).concat(tempBoluses).concat(netBasalBoluses).concat(tempHistory);
     all_data = _.sortBy(all_data, 'date');
     return all_data;
 }
