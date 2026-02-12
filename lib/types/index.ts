@@ -16,6 +16,48 @@
 /** Insulin absorption curve model used across all modules */
 export type InsulinCurve = 'bilinear' | 'rapid-acting' | 'ultra-rapid';
 
+/** Medtronic pump history event types */
+export type PumpHistoryEventType =
+  | 'Bolus'
+  | 'BolusWizard'
+  | 'TempBasal'
+  | 'TempBasalDuration'
+  | 'PumpSuspend'
+  | 'PumpResume'
+  | 'JournalEntryMealMarker'
+  | 'Rewind';
+
+/** Nightscout Care Portal event types */
+export type NightscoutEventType =
+  | 'Meal Bolus'
+  | 'Correction Bolus'
+  | 'Snack Bolus'
+  | 'Bolus Wizard'
+  | 'Carb Correction'
+  | 'Temp Basal';
+
+/** Data entry source identifiers */
+export type EnteredBySource =
+  | 'xdrip'
+  | 'HAPP_App'
+  | 'openaps://AndroidAPS'
+  | (string & {});
+
+/** Temp basal type */
+export type TempBasalType = 'percent' | 'absolute';
+
+/** Glucose entry type */
+export type GlucoseEntryType = 'cal' | 'mbg' | (string & {});
+
+/** Carb ratio units */
+export type CarbRatioUnits = 'grams' | 'exchanges';
+
+/** BG display units */
+export type BGUnits = 'mg/dL' | 'mmol/L';
+
+/** Meal absorption phase marker */
+export type MealAbsorptionPhase = 'start' | 'end';
+
 // ---------------------------------------------------------------------------
 // Pump History Event — raw events from Medtronic pump or Nightscout
 // ---------------------------------------------------------------------------
@@ -27,9 +69,9 @@ export type InsulinCurve = 'bilinear' | 'rapid-acting' | 'ultra-rapid';
 export interface PumpHistoryEvent {
   // -- Event type discriminators --
   /** Medtronic event type (e.g. "Bolus", "TempBasal", "PumpSuspend") */
-  _type?: string;
+  _type?: PumpHistoryEventType | (string & {});
   /** Nightscout event type (e.g. "Meal Bolus", "Correction Bolus") */
-  eventType?: string;
+  eventType?: NightscoutEventType | (string & {});
 
   // -- Timestamps --
   /** ISO timestamp string */
@@ -55,7 +97,7 @@ export interface PumpHistoryEvent {
   /** Percentage temp basal */
   percent?: number;
   /** Temp type: "percent" or "absolute" */
-  temp?: string;
+  temp?: TempBasalType;
 
   // -- Carb fields --
   /** Carbs in grams (Nightscout) */
@@ -83,11 +125,11 @@ export interface PumpHistoryEvent {
 
   // -- Metadata --
   /** Entry source (e.g. "xdrip", "HAPP_App", "openaps://AndroidAPS") */
-  enteredBy?: string;
+  enteredBy?: EnteredBySource;
 
   // -- Nested objects --
   /** Nested bolus object (Medtronic compound events) */
-  bolus?: { _type?: string; amount?: number; programmed?: number; timestamp?: string; duration?: number };
+  bolus?: { _type?: PumpHistoryEventType; amount?: number; programmed?: number; timestamp?: string; duration?: number };
 
   /** Allow additional fields present in pump data */
   [key: string]: unknown;
@@ -114,7 +156,7 @@ export interface GlucoseEntry {
   /** CGM noise level */
   noise?: number;
   /** Entry type (e.g. "cal" for calibration) */
-  type?: string;
+  type?: GlucoseEntryType;
   /** xDrip start timestamp */
   xDrip_started_at?: string;
 }
@@ -191,7 +233,7 @@ export interface CurrentTemp {
   /** Current temp basal rate in U/hr */
   rate: number;
   /** Temp basal type — Trio always uses 'absolute' */
-  temp?: 'absolute' | 'percent';
+  temp?: TempBasalType;
 }
 
 // ---------------------------------------------------------------------------
@@ -375,9 +417,9 @@ export interface Profile {
   /** Maximum BG target in mg/dL */
   max_bg: number;
   /** Display units preference */
-  out_units?: 'mg/dL' | 'mmol/L';
+  out_units?: BGUnits;
   /** Full BG target schedule */
-  bg_targets?: { targets: BGTargetEntry[]; user_preferred_units?: string };
+  bg_targets?: { targets: BGTargetEntry[]; user_preferred_units?: BGUnits };
   /** Whether a temporary target is currently active */
   temptargetSet?: boolean;
 
@@ -391,7 +433,7 @@ export interface Profile {
   /** Current carb ratio in grams per Unit */
   carb_ratio: number;
   /** Full carb ratio schedule */
-  carb_ratios?: { units: string; schedule: CarbRatioEntry[] };
+  carb_ratios?: { units: CarbRatioUnits; schedule: CarbRatioEntry[] };
 
   // -- Meal absorption --
   /** Maximum COB the algorithm will consider (safety cap, g) */
