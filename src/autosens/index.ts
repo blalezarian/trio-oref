@@ -53,7 +53,7 @@ const ROUND_SCALE_2DP = 100;
 /** Percentage multiplier */
 const PERCENT = 100;
 
-function detectSensitivity(inputs: AutosensInputs): AutosensResult {
+export function detectSensitivity(inputs: AutosensInputs): AutosensResult {
 
     //console.error(inputs.glucose_data[0]);
     const glucose_data = inputs.glucose_data.map((obj: GlucoseEntry) => {
@@ -485,7 +485,6 @@ function detectSensitivity(inputs: AutosensInputs): AutosensResult {
         "newisf": newisf
     }
 }
-export default detectSensitivity;
 
 function tempTargetRunning(temptargets_data: Array<Record<string, unknown>> | undefined, time: Date): number | undefined {
     // sort tempTargets by date so we can process most recent first

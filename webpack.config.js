@@ -29,7 +29,7 @@ module.exports = {
     "determineBasal": './src/determine-basal/determine-basal.ts',
     "glucoseGetLast": './src/glucose-get-last.ts',
     "basalSetTemp": './src/basal-set-temp.ts',
-    autosens: './src/determine-basal/autosens.ts',
+    autosens: './src/autosens/index.ts',
     profile: './src/profile/index.ts',
     "autotunePrep": './src/autotune-prep/index.ts',
     "autotuneCore": './src/autotune/index.ts'
