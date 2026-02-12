@@ -15,9 +15,9 @@ interface MealGenerateInputs {
 
 function generate (inputs: MealGenerateInputs): ReturnType<typeof sum> {
 
-  var treatments = find_meals(inputs);
+  const treatments = find_meals(inputs);
 
-  var opts = {
+  const opts = {
     treatments: treatments
   , profile: inputs.profile
   , pumphistory: inputs.history
@@ -25,7 +25,7 @@ function generate (inputs: MealGenerateInputs): ReturnType<typeof sum> {
   , basalprofile: inputs.basalprofile
   };
 
-  var clock = new Date(tz(inputs.clock).toDate());
+  const clock = new Date(tz(inputs.clock).toDate());
 
   return /* meal_data */ sum(opts, clock);
 }

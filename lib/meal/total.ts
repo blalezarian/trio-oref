@@ -45,52 +45,52 @@ interface RecentCarbsResult {
 
 function round(value: number, digits?: number): number {
     if (! digits) { digits = 0; }
-    var scale = Math.pow(10, digits);
+    const scale = Math.pow(10, digits);
     return Math.round(value * scale) / scale;
 }
 
 function recentCarbs(opts: RecentCarbsOpts, time: Date): RecentCarbsResult | Record<string, never> {
-    var treatments = opts.treatments;
-    var profile_data = opts.profile;
-    var glucose_data: GlucoseEntry[] | undefined;
-    if (typeof(opts.glucose) !== 'undefined') {
+    const treatments = opts.treatments;
+    const profile_data = opts.profile;
+    let glucose_data: GlucoseEntry[] | undefined;
+    if (opts.glucose !== undefined) {
         glucose_data = opts.glucose;
     }
-    var carbs = 0;
-    var nsCarbs = 0;
-    var bwCarbs = 0;
-    var journalCarbs = 0;
-    var bwFound = false;
-    var mealCarbTime = time.getTime();
-    var lastCarbTime = 0;
+    let carbs = 0;
+    let nsCarbs = 0;
+    let bwCarbs = 0;
+    let journalCarbs = 0;
+    let bwFound = false;
+    const mealCarbTime = time.getTime();
+    let lastCarbTime = 0;
     if (!treatments) return {};
 
     //console.error(glucose_data);
-    var iob_inputs = {
+    const iob_inputs = {
         profile: profile_data
     ,   history: opts.pumphistory
     };
-    var COB_inputs: COBInputs = {
+    const COB_inputs: COBInputs = {
         glucose_data: glucose_data
     ,   iob_inputs: iob_inputs
     ,   basalprofile: opts.basalprofile
     ,   mealTime: mealCarbTime
     };
-    var mealCOB = 0;
+    let mealCOB = 0;
 
     // this sorts the treatments collection in order.
-    treatments.sort(function (a: CarbTreatment, b: CarbTreatment) {
-        var aDate = new Date(tz(a.timestamp).toDate());
-        var bDate = new Date(tz(b.timestamp).toDate());
+    treatments.sort((a: CarbTreatment, b: CarbTreatment) => {
+        const aDate = new Date(tz(a.timestamp).toDate());
+        const bDate = new Date(tz(b.timestamp).toDate());
         //console.error(aDate);
         return bDate.getTime() - aDate.getTime();
     });
 
-    var carbsToRemove = 0;
-    var nsCarbsToRemove = 0;
-    var bwCarbsToRemove = 0;
-    var journalCarbsToRemove = 0;
-    var maxMealAbsorptionTime = DEFAULT_MAX_MEAL_ABSORPTION_HOURS;
+    let carbsToRemove = 0;
+    let nsCarbsToRemove = 0;
+    let bwCarbsToRemove = 0;
+    let journalCarbsToRemove = 0;
+    let maxMealAbsorptionTime = DEFAULT_MAX_MEAL_ABSORPTION_HOURS;
 
     if (typeof(profile_data.maxMealAbsorptionTime) === 'number' && ! isNaN(profile_data.maxMealAbsorptionTime)) {
         maxMealAbsorptionTime = profile_data.maxMealAbsorptionTime;
@@ -98,12 +98,12 @@ function recentCarbs(opts: RecentCarbsOpts, time: Date): RecentCarbsResult | Rec
         console.error("Bad profile.maxMealAbsorptionTime:",profile_data.maxMealAbsorptionTime);
     }
 
-    treatments.forEach(function(treatment: CarbTreatment) {
-        var now = time.getTime();
+    treatments.forEach((treatment: CarbTreatment) => {
+        const now = time.getTime();
         // consider carbs from up to the meal preference maxMealAbsorptionTime hours ago in calculating COB
-        var carbWindow = now - maxMealAbsorptionTime * MS_PER_HOUR;
-        var treatmentDate = new Date(tz(treatment.timestamp).toDate());
-        var treatmentTime = treatmentDate.getTime();
+        const carbWindow = now - maxMealAbsorptionTime * MS_PER_HOUR;
+        const treatmentDate = new Date(tz(treatment.timestamp).toDate());
+        const treatmentTime = treatmentDate.getTime();
         if (treatmentTime > carbWindow && treatmentTime <= now) {
             if (treatment.carbs! >= 1) {
                 if (treatment.nsCarbs! >= 1) {
@@ -120,8 +120,8 @@ function recentCarbs(opts: RecentCarbsOpts, time: Date): RecentCarbsResult | Rec
                 carbs += parseFloat(treatment.carbs as unknown as string);
                 COB_inputs.mealTime = treatmentTime;
                 lastCarbTime = Math.max(lastCarbTime,treatmentTime);
-                var myCarbsAbsorbed = calcMealCOB(COB_inputs).carbsAbsorbed;
-                var myMealCOB = Math.max(0, carbs - myCarbsAbsorbed);
+                const myCarbsAbsorbed = calcMealCOB(COB_inputs).carbsAbsorbed;
+                const myMealCOB = Math.max(0, carbs - myCarbsAbsorbed);
                 if (typeof(myMealCOB) === 'number' && ! isNaN(myMealCOB)) {
                     mealCOB = Math.max(mealCOB, myMealCOB);
                 } else {
@@ -156,7 +156,7 @@ function recentCarbs(opts: RecentCarbsOpts, time: Date): RecentCarbsResult | Rec
     COB_inputs.ciTime = time.getTime();
     // set mealTime to 6h ago for Deviation calculations
     COB_inputs.mealTime = time.getTime() - maxMealAbsorptionTime * MS_PER_HOUR;
-    var c = calcMealCOB(COB_inputs);
+    const c = calcMealCOB(COB_inputs);
     //console.error(c.currentDeviation, c.slopeFromMaxDeviation);
 
     // set a hard upper limit on COB to mitigate impact of erroneous or malicious carb entry
@@ -168,12 +168,12 @@ function recentCarbs(opts: RecentCarbsOpts, time: Date): RecentCarbsResult | Rec
     }
 
     // if currentDeviation is null or maxDeviation is 0, set mealCOB to 0 for zombie-carb safety
-    if (typeof(c.currentDeviation) === 'undefined' || c.currentDeviation === null) {
+    if (c.currentDeviation === undefined || c.currentDeviation === null) {
         console.error("");
         console.error("Warning: setting mealCOB to 0 because currentDeviation is null/undefined");
         mealCOB = 0;
     }
-    if (typeof(c.maxDeviation) === 'undefined' || c.maxDeviation === null) {
+    if (c.maxDeviation === undefined || c.maxDeviation === null) {
         console.error("");
         console.error("Warning: setting mealCOB to 0 because maxDeviation is 0 or undefined");
         mealCOB = 0;

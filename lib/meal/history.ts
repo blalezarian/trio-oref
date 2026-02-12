@@ -10,14 +10,14 @@ interface MealHistoryInputs {
 }
 
 function arrayHasElementWithSameTimestampAndProperty(array: CarbTreatment[],t: string,propname: string): boolean {
-    for (var j=0; j < array.length; j++) {
-        var element = array[j];
+    for (let j=0; j < array.length; j++) {
+        const element = array[j];
         if (element.timestamp === t && (element as unknown as Record<string, unknown>)[propname] !== undefined) return true;
         if ( (element as unknown as Record<string, unknown>)[propname] !== undefined ) {
-            var eDate = new Date(element.timestamp);
-            var tDate = new Date(t);
-            var tMin = new Date(tDate.getTime() - TIMESTAMP_MATCH_TOLERANCE_MS);
-            var tMax = new Date(tDate.getTime() + TIMESTAMP_MATCH_TOLERANCE_MS);
+            const eDate = new Date(element.timestamp);
+            const tDate = new Date(t);
+            const tMin = new Date(tDate.getTime() - TIMESTAMP_MATCH_TOLERANCE_MS);
+            const tMax = new Date(tDate.getTime() + TIMESTAMP_MATCH_TOLERANCE_MS);
             //console.error(tDate, tMin, tMax);
             if (eDate > tMin && eDate < tMax) return true;
         }
@@ -26,17 +26,19 @@ function arrayHasElementWithSameTimestampAndProperty(array: CarbTreatment[],t: s
 }
 
 function findMealInputs (inputs: MealHistoryInputs): CarbTreatment[] {
-    var pumpHistory = inputs.history;
-    var carbHistory = inputs.carbs;
-    var profile_data = inputs.profile;
-    var mealInputs: CarbTreatment[] = [];
-    var bolusWizardInputs: PumpHistoryEvent[] = [];
-    var duplicates = 0;
+    const pumpHistory = inputs.history;
+    const carbHistory = inputs.carbs;
+    const profile_data = inputs.profile;
+    const mealInputs: CarbTreatment[] = [];
+    const bolusWizardInputs: PumpHistoryEvent[] = [];
+    let duplicates = 0;
+    let current: PumpHistoryEvent;
+    let temp: CarbTreatment;
 
-    for (var i=0; i < carbHistory.length; i++) {
-        var current: PumpHistoryEvent = carbHistory[i];
+    for (let i=0; i < carbHistory.length; i++) {
+        current = carbHistory[i];
         if (current.carbs && current.created_at) {
-            var temp: CarbTreatment = {
+            temp = {
                 timestamp: current.created_at,
                 carbs: current.carbs,
                 nsCarbs: current.carbs,
@@ -49,7 +51,7 @@ function findMealInputs (inputs: MealHistoryInputs): CarbTreatment[] {
         }
     }
 
-    for (i=0; i < pumpHistory.length; i++) {
+    for (let i=0; i < pumpHistory.length; i++) {
         current = pumpHistory[i];
         if (current._type === "Bolus" && current.timestamp) {
             //console.log(pumpHistory[i]);
@@ -121,7 +123,7 @@ function findMealInputs (inputs: MealHistoryInputs): CarbTreatment[] {
         }
     }
 
-    for(i=0; i < bolusWizardInputs.length; i++) {
+    for(let i=0; i < bolusWizardInputs.length; i++) {
       current = bolusWizardInputs[i];
       //console.log(bolusWizardInputs[i]);
       temp = {
