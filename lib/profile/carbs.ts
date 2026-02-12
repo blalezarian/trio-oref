@@ -20,17 +20,17 @@ interface CarbsInputs {
 }
 
 function carbRatioLookup (inputs: CarbsInputs, profile: Record<string, unknown>, now?: Date): number | undefined {
-    if (typeof(now) === 'undefined') {
+    if (now === undefined) {
         now = new Date();
     }
-    var carbratio_data = inputs.carbratio;
-    if (typeof(carbratio_data) !== "undefined" && typeof(carbratio_data.schedule) !== "undefined") {
-        var carbRatio: CarbRatioScheduleEntry;
+    const carbratio_data = inputs.carbratio;
+    if (carbratio_data !== undefined && carbratio_data.schedule !== undefined) {
+        let carbRatio: CarbRatioScheduleEntry;
         if ((carbratio_data.units === "grams") || (carbratio_data.units === "exchanges")) {
             //carbratio_data.schedule.sort(function (a, b) { return a.offset > b.offset });
             carbRatio = carbratio_data.schedule[carbratio_data.schedule.length - 1];
 
-            for (var i = 0; i < carbratio_data.schedule.length - 1; i++) {
+            for (let i = 0; i < carbratio_data.schedule.length - 1; i++) {
                 if ((now.getTime() >= getTime(carbratio_data.schedule[i].offset)) && (now.getTime() < getTime(carbratio_data.schedule[i + 1].offset))) {
                     carbRatio = carbratio_data.schedule[i];
                     break;

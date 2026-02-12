@@ -1,5 +1,6 @@
 
 
+
 import * as basal from './basal';
 import targets from './targets';
 import isf from './isf';
@@ -197,8 +198,8 @@ function defaults ( ): ProfileDefaults {
 }
 
 function displayedDefaults (): Partial<ProfileDefaults> {
-    var allDefaults = defaults();
-    var profile: Record<string, unknown> = { };
+    const allDefaults = defaults();
+    const profile: Record<string, unknown> = { };
 
     profile.max_iob = allDefaults.max_iob;
     profile.max_daily_safety_multiplier = allDefaults.max_daily_safety_multiplier;
@@ -234,17 +235,17 @@ function displayedDefaults (): Partial<ProfileDefaults> {
 }
 
 function generate (inputs: ProfileInputs, opts?: ProfileOpts): ProfileDefaults | -1 {
-  var profile: ProfileDefaults = opts && opts.type ? opts as ProfileDefaults : defaults( );
+  const profile: ProfileDefaults = opts && opts.type ? opts as ProfileDefaults : defaults( );
 
   // check if inputs has overrides for any of the default prefs
   // and apply if applicable
-  for (var pref in profile) {
+  for (const pref in profile) {
     if (inputs.hasOwnProperty(pref)) {
       (profile as Record<string, unknown>)[pref] = (inputs as Record<string, unknown>)[pref];
     }
   }
 
-  var pumpsettings_data = inputs.settings;
+  const pumpsettings_data = inputs.settings;
   if (inputs.settings.insulin_action_curve > 1) {
     profile.dia =  pumpsettings_data.insulin_action_curve;
   } else {
@@ -260,7 +261,7 @@ function generate (inputs: ProfileInputs, opts?: ProfileOpts): ProfileDefaults |
   profile.current_basal = basal.basalLookup(inputs.basals);
   profile.basalprofile = inputs.basals;
 
-  _.forEach(profile.basalprofile, function(basalentry: { rate: number; [key: string]: unknown }) {
+  _.forEach(profile.basalprofile, (basalentry: { rate: number; [key: string]: unknown }) => {
     basalentry.rate = +(Math.round(basalentry.rate + "e+3" as unknown as number)  + "e-3");
   });
 
@@ -279,13 +280,13 @@ function generate (inputs: ProfileInputs, opts?: ProfileOpts): ProfileDefaults |
     return -1;
   }
 
-  var range = targets.bgTargetsLookup(inputs as unknown as Parameters<typeof targets.bgTargetsLookup>[0], profile as unknown as Parameters<typeof targets.bgTargetsLookup>[1]);
+  const range = targets.bgTargetsLookup(inputs as unknown as Parameters<typeof targets.bgTargetsLookup>[0], profile as unknown as Parameters<typeof targets.bgTargetsLookup>[1]);
   profile.out_units = inputs.targets.user_preferred_units;
   profile.min_bg = Math.round(range.min_bg!);
   profile.max_bg = Math.round(range.max_bg!);
   profile.bg_targets = inputs.targets;
 
-  _.forEach(profile.bg_targets!.targets, function(bg_entry: { offset: number; low: number; high: number; min_bg?: number; max_bg?: number }) {
+  _.forEach(profile.bg_targets!.targets, (bg_entry: { offset: number; low: number; high: number; min_bg?: number; max_bg?: number }) => {
     bg_entry.high = Math.round(bg_entry.high);
     bg_entry.low = Math.round(bg_entry.low);
     bg_entry.min_bg = Math.round(bg_entry.min_bg!);
@@ -301,7 +302,7 @@ function generate (inputs: ProfileInputs, opts?: ProfileOpts): ProfileDefaults |
     console.error("ISF of",profile.sens,"is not supported");
     return -1;
   }
-  if (typeof(inputs.carbratio) !== "undefined") {
+  if (inputs.carbratio !== undefined) {
     profile.carb_ratio = carb_ratios.carbRatioLookup(inputs, profile);
     profile.carb_ratios = inputs.carbratio;
   } else {

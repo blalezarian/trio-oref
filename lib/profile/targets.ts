@@ -39,15 +39,15 @@ function bgTargetsLookup (inputs: TargetsInputs, profile: TargetsProfile): BGTar
 }
 
 function lookup (inputs: TargetsInputs, profile: TargetsProfile): BGTarget {
-    var bgtargets_data = inputs.targets;
-    var temptargets_data = inputs.temptargets;
-    var now = new Date();
+    const bgtargets_data = inputs.targets;
+    const temptargets_data = inputs.temptargets;
+    const now = new Date();
 
     //bgtargets_data.targets.sort(function (a, b) { return a.offset > b.offset });
 
-    var bgTargets = bgtargets_data.targets[bgtargets_data.targets.length - 1];
+    let bgTargets = bgtargets_data.targets[bgtargets_data.targets.length - 1];
 
-    for (var i = 0; i < bgtargets_data.targets.length - 1; i++) {
+    for (let i = 0; i < bgtargets_data.targets.length - 1; i++) {
         if ((now.getTime() >= getTime(bgtargets_data.targets[i].offset!)) && (now.getTime() < getTime(bgtargets_data.targets[i + 1].offset!))) {
             bgTargets = bgtargets_data.targets[i];
             break;
@@ -60,20 +60,20 @@ function lookup (inputs: TargetsInputs, profile: TargetsProfile): BGTarget {
 
     bgTargets.high = bgTargets.low;
 
-    var tempTargets = bgTargets;
+    let tempTargets = bgTargets;
 
     // sort tempTargets by date so we can process most recent first
     try {
-        temptargets_data.sort(function (a, b) { return new Date(b.created_at).getTime() - new Date(a.created_at).getTime() });
+        temptargets_data.sort((a, b) => { return new Date(b.created_at).getTime() - new Date(a.created_at).getTime() });
     } catch (e) {
         console.error("No temptargets found.");
     }
     //console.error(temptargets_data);
     //console.error(now);
-    for (i = 0; i < temptargets_data.length; i++) {
-        var start = new Date(temptargets_data[i].created_at);
+    for (let i = 0; i < temptargets_data.length; i++) {
+        const start = new Date(temptargets_data[i].created_at);
         //console.error(start);
-        var expires = new Date(start.getTime() + temptargets_data[i].duration * MS_PER_MINUTE);
+        const expires = new Date(start.getTime() + temptargets_data[i].duration * MS_PER_MINUTE);
         //console.error(expires);
         if (now >= start && temptargets_data[i].duration === 0) {
             // cancel temp targets
