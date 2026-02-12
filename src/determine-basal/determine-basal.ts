@@ -978,10 +978,15 @@ function calculateCarbAbsorption(
     return { carbImpact, carbImpactDuration, uamCarbImpact, carbSensFactor, remainingCATime, remainingCIpeak, slopeFromDeviations };
 }
 
+/** Predicted BG arrays for each scenario. Keys are part of the external API consumed by the Trio iOS app. */
 interface PredBGs {
+    /** Predicted BG based on insulin-on-board decay */
     IOB: number[];
+    /** Zero Temp: predicted BG if all insulin delivery were suspended */
     ZT: number[];
+    /** Predicted BG accounting for carbs-on-board absorption */
     COB?: number[];
+    /** Unannounced Meal: predicted BG accounting for detected but unannounced carb absorption */
     UAM?: number[];
 }
 
