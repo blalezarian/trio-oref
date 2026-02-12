@@ -4,6 +4,7 @@ import getIOB from '../iob/index';
 import ISF from '../profile/isf';
 import find_insulin from '../iob/history';
 import dosed from './dosed';
+import type { PumpHistoryEvent, CarbTreatment } from '../types/index';
 
 interface CategorizeGlucoseEntry {
   glucose?: number;
@@ -11,6 +12,13 @@ interface CategorizeGlucoseEntry {
   date?: number;
   displayTime?: string;
   dateString?: string;
+  // Fields added during processing in the main loop:
+  avgDelta?: string;
+  BGI?: number;
+  deviation?: string;
+  mealAbsorption?: string;
+  mealCarbs?: number;
+  uamAbsorption?: string;
 }
 
 interface CategorizeBasalProfileEntry {
@@ -44,13 +52,31 @@ interface CategorizeProfile {
 }
 
 interface CategorizeOpts {
-  treatments: Array<Record<string, any>>;
+  treatments: CarbTreatment[];
   profile: CategorizeProfile;
-  pumpHistory: unknown[];
+  pumpHistory: PumpHistoryEvent[];
   glucose: CategorizeGlucoseEntry[];
   basalprofile: CategorizeBasalProfileEntry[];
   pumpbasalprofile: CategorizeBasalProfileEntry[];
   categorize_uam_as_basal?: boolean;
+}
+
+interface CategorizeIOBInputs {
+  profile: CategorizeProfile;
+  history: PumpHistoryEvent[];
+  clock?: string;
+}
+
+interface CategorizeDosedTreatment {
+  insulin?: number | null;
+  date: number;
+}
+
+interface CategorizeDosedOpts {
+  start: Date;
+  end: Date;
+  treatments: CategorizeDosedTreatment[] | undefined;
+  profile: Record<string, unknown>;
 }
 
 interface CategorizeGlucoseDatum {
@@ -88,7 +114,7 @@ interface CategorizeResult {
 function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
     var treatments = opts.treatments;
     // this sorts the treatments collection in order.
-    treatments.sort(function (a: Record<string, any>, b: Record<string, any>) {
+    treatments.sort(function (a: CarbTreatment, b: CarbTreatment) {
         var aDate = new Date(tz(a.timestamp));
         var bDate = new Date(tz(b.timestamp));
         //console.error(aDate);
@@ -96,10 +122,10 @@ function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
     });
     var profileData = opts.profile;
 
-    var glucoseData: any[] = [ ];
+    var glucoseData: CategorizeGlucoseEntry[] = [ ];
     if (typeof(opts.glucose) !== 'undefined') {
         //var glucoseData = opts.glucose;
-        glucoseData = opts.glucose.map(function prepGlucose (obj: any) {
+        glucoseData = opts.glucose.map(function prepGlucose (obj: CategorizeGlucoseEntry) {
             //Support the NS sgv field to avoid having to convert in a custom way
             obj.glucose = obj.glucose || obj.sgv;
 
@@ -118,13 +144,13 @@ function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
                 obj.dateString = new Date(tz(obj.date)).toISOString();
             }
             return obj;
-        }).filter(function filterRecords(obj: any) {
+        }).filter(function filterRecords(obj: CategorizeGlucoseEntry) {
             // Only take records with a valid date record
             // and a glucose value, which is also above 39
             return (obj.date && obj.glucose && obj.glucose >=39);
-        }).sort(function (a: any, b: any) {
+        }).sort(function (a: CategorizeGlucoseEntry, b: CategorizeGlucoseEntry) {
             // sort the collection in order
-            return b.date - a.date;
+            return b.date! - a.date!;
         });
     }
     // if (typeof(opts.preppedGlucose) !== 'undefined') {
@@ -137,25 +163,25 @@ function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
     if (!treatments) return {} as CategorizeResult;
 
     //console.error(glucoseData);
-    var IOBInputs: any = {
+    var IOBInputs: CategorizeIOBInputs = {
         profile: profileData
     ,   history: opts.pumpHistory
     };
-    var CSFGlucoseData: any[] = [];
-    var ISFGlucoseData: any[] = [];
-    var basalGlucoseData: any[] = [];
-    var UAMGlucoseData: any[] = [];
+    var CSFGlucoseData: CategorizeGlucoseDatum[] = [];
+    var ISFGlucoseData: CategorizeGlucoseDatum[] = [];
+    var basalGlucoseData: CategorizeGlucoseDatum[] = [];
+    var UAMGlucoseData: CategorizeGlucoseDatum[] = [];
     var CRData: CRDatum[] = [];
 
-    var bucketedData: any[] = [];
+    var bucketedData: CategorizeGlucoseEntry[] = [];
     bucketedData[0] = JSON.parse(JSON.stringify(glucoseData[0]));
     var j=0;
     var k=0; // index of first value used by bucket
     //for loop to validate and bucket the data
     for (var i=1; i < glucoseData.length; ++i) {
-        var BGTime: any = glucoseData[i].date;
-        var lastBGTime = glucoseData[k].date;
-        var elapsedMinutes = (BGTime - lastBGTime)/(60*1000);
+        var BGTime: number | string = glucoseData[i].date!;
+        var lastBGTime = glucoseData[k].date!;
+        var elapsedMinutes = ((BGTime as number) - lastBGTime)/(60*1000);
 
         if(Math.abs(elapsedMinutes) >= 2) {
             j++; // move to next bucket
@@ -163,8 +189,8 @@ function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
             bucketedData[j]=JSON.parse(JSON.stringify(glucoseData[i]));
         } else {
             // average all readings within time deadband
-            var glucoseTotal = glucoseData.slice(k, i+1).reduce(function(total: number, entry: any) {
-                return total + entry.glucose;
+            var glucoseTotal = glucoseData.slice(k, i+1).reduce(function(total: number, entry: CategorizeGlucoseEntry) {
+                return total + entry.glucose!;
             }, 0);
             bucketedData[j].glucose = glucoseTotal / (i-k+1);
         }
@@ -174,15 +200,15 @@ function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
     // go through the treatments and remove any that are older than the oldest glucose value
     //console.error(treatments);
     for (i=treatments.length-1; i>0; --i) {
-        var treatment: any = treatments[i];
+        var treatment: CarbTreatment = treatments[i];
         //console.error(treatment);
         if (treatment) {
-            var treatmentDate: any = new Date(tz(treatment.timestamp));
-            var treatmentTime: any = treatmentDate.getTime();
-            var glucoseDatum: any = bucketedData[bucketedData.length-1];
+            var treatmentDate: Date = new Date(tz(treatment.timestamp));
+            var treatmentTime: number = treatmentDate.getTime();
+            var glucoseDatum: CategorizeGlucoseEntry = bucketedData[bucketedData.length-1];
             //console.error(glucoseDatum);
             if (glucoseDatum) {
-                var BGDate: any = new Date(glucoseDatum.date);
+                var BGDate: Date = new Date(glucoseDatum.date!);
                 BGTime = BGDate.getTime();
                 if ( treatmentTime < BGTime ) {
                     treatments.splice(i,1);
@@ -198,15 +224,15 @@ function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
     var mealCarbs = 0;
     var CRCarbs = 0;
     var type="";
-    var CRInitialIOB: any;
-    var CRInitialBG: any;
-    var CRInitialCarbTime: any;
+    var CRInitialIOB: number = undefined as unknown as number;
+    var CRInitialBG: number = undefined as unknown as number;
+    var CRInitialCarbTime: Date = undefined as unknown as Date;
     // main for loop
     var fullHistory = IOBInputs.history;
     for (i=bucketedData.length-5; i > 0; --i) {
         glucoseDatum = bucketedData[i];
         //console.error(glucoseDatum);
-        BGDate = new Date(glucoseDatum.date);
+        BGDate = new Date(glucoseDatum.date!);
         BGTime = BGDate.getTime();
         // As we're processing each data point, go through the treatment.carbs and see if any of them are older than
         // the current BG data point.  If so, add those carbs to COB.
@@ -217,32 +243,32 @@ function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
             treatmentTime = treatmentDate.getTime();
             //console.error(treatmentDate);
             if ( treatmentTime < BGTime ) {
-                if (treatment.carbs >= 1) {
-                    mealCOB += parseFloat(treatment.carbs);
-                    mealCarbs += parseFloat(treatment.carbs);
-                    myCarbs = treatment.carbs;
+                if (treatment.carbs! >= 1) {
+                    mealCOB += parseFloat(treatment.carbs as unknown as string);
+                    mealCarbs += parseFloat(treatment.carbs as unknown as string);
+                    myCarbs = treatment.carbs!;
                 }
                 treatments.pop();
             }
         }
 
-        var BG: any;
-        var delta: any;
-        var avgDelta: any;
+        var BG: number = undefined as unknown as number;
+        var delta: number = undefined as unknown as number;
+        var avgDelta: number | string = undefined as unknown as number;
         // TODO: re-implement interpolation to avoid issues here with gaps
         // calculate avgDelta as last 4 datapoints to better catch more rises after COB hits zero
         if (typeof(bucketedData[i].glucose) !== 'undefined' && typeof(bucketedData[i+4].glucose) !== 'undefined') {
             //console.error(bucketedData[i]);
-            BG = bucketedData[i].glucose;
-            if ( BG < 40 || bucketedData[i+4].glucose < 40) {
+            BG = bucketedData[i].glucose!;
+            if ( BG < 40 || bucketedData[i+4].glucose! < 40) {
                 //process.stderr.write("!");
                 continue;
             }
-            delta = (BG - bucketedData[i+1].glucose);
-            avgDelta = (BG - bucketedData[i+4].glucose)/4;
+            delta = (BG - bucketedData[i+1].glucose!);
+            avgDelta = (BG - bucketedData[i+4].glucose!)/4;
         } else { console.error("Could not find glucose data"); }
 
-        avgDelta = avgDelta.toFixed(2);
+        avgDelta = (avgDelta as unknown as number).toFixed(2);
         glucoseDatum.avgDelta = avgDelta;
 
         //sens = ISF
@@ -250,14 +276,14 @@ function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
         IOBInputs.clock=BGDate.toISOString();
         // trim down IOBInputs.history to just the data for 6h prior to BGDate
         //console.error(IOBInputs.history[0].created_at);
-        var newHistory: any[] = [];
+        var newHistory: PumpHistoryEvent[] = [];
         for (var h=0; h<fullHistory.length; h++) {
-            var hDate: any = new Date(fullHistory[h].created_at)
+            var hDate: Date = new Date(fullHistory[h].created_at as string)
             //console.error(fullHistory[i].created_at, hDate, BGDate, BGDate-hDate);
             //if (h == 0 || h == fullHistory.length - 1) {
                 //console.error(hDate, BGDate, hDate-BGDate)
             //}
-            if ((BGDate as any)-hDate < 6*60*60*1000 && (BGDate as any)-hDate > 0) {
+            if (BGDate.getTime()-hDate.getTime() < 6*60*60*1000 && BGDate.getTime()-hDate.getTime() > 0) {
                 //process.stderr.write("i");
                 //console.error(hDate);
                 newHistory.push(fullHistory[h]);
@@ -272,24 +298,24 @@ function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
         // this helps since the basal this hour could be different from previous, especially if with autotune they start to diverge.
         // use the pumpbasalprofile to properly calculate IOB during periods where no temp basal is set
         var currentPumpBasal = basal.basalLookup(opts.pumpbasalprofile, BGDate);
-        var BGDate1hAgo = new Date(BGTime-1*60*60*1000);
-        var BGDate2hAgo = new Date(BGTime-2*60*60*1000);
-        var BGDate3hAgo = new Date(BGTime-3*60*60*1000);
+        var BGDate1hAgo = new Date((BGTime as number)-1*60*60*1000);
+        var BGDate2hAgo = new Date((BGTime as number)-2*60*60*1000);
+        var BGDate3hAgo = new Date((BGTime as number)-3*60*60*1000);
         var basal1hAgo = basal.basalLookup(opts.pumpbasalprofile, BGDate1hAgo);
         var basal2hAgo = basal.basalLookup(opts.pumpbasalprofile, BGDate2hAgo);
         var basal3hAgo = basal.basalLookup(opts.pumpbasalprofile, BGDate3hAgo);
-        var sum = [currentPumpBasal,basal1hAgo,basal2hAgo,basal3hAgo].reduce(function(a: any, b: any) { return a + b; });
-        IOBInputs.profile.currentBasal = Math.round(((sum as any)/4)*1000)/1000;
+        var sum = [currentPumpBasal,basal1hAgo,basal2hAgo,basal3hAgo].reduce(function(a, b) { return a! + b!; })!;
+        IOBInputs.profile.currentBasal = Math.round(((sum as number)/4)*1000)/1000;
 
         // this is the current autotuned basal, used for everything else besides IOB calculations
-        var currentBasal: any = basal.basalLookup(opts.basalprofile, BGDate);
+        var currentBasal: number = basal.basalLookup(opts.basalprofile, BGDate)!;
 
         //console.error(currentBasal,basal1hAgo,basal2hAgo,basal3hAgo,IOBInputs.profile.currentBasal);
         // basalBGI is BGI of basal insulin activity.
         var basalBGI = Math.round(( currentBasal * sens / 60 * 5 )*100)/100; // U/hr * mg/dL/U * 1 hr / 60 minutes * 5 = mg/dL/5m
         //console.log(JSON.stringify(IOBInputs.profile));
         // call iob since calculated elsewhere
-        var iob = getIOB(IOBInputs)[0];
+        var iob = getIOB(IOBInputs as unknown as Parameters<typeof getIOB>[0])[0];
         //console.error(JSON.stringify(iob));
 
         // activity times ISF times 5 minutes is BGI
@@ -297,8 +323,8 @@ function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
         // datum = one glucose data point (being prepped to store in output)
         glucoseDatum.BGI = BGI;
         // calculating deviation
-        var deviation: any = avgDelta-BGI;
-        var dev5m: any = delta-BGI;
+        var deviation: number | string = (avgDelta as unknown as number)-BGI;
+        var dev5m: number | string = delta-BGI;
         //console.error(deviation,avgDelta,BG,bucketedData[i].glucose);
 
         // set positive deviations to zero if BG is below 80
@@ -315,7 +341,7 @@ function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
         // Then, calculate carb absorption for that 5m interval using the deviation.
         if ( mealCOB > 0 ) {
             var profile = profileData;
-            var ci = Math.max(deviation, profile.min_5m_carbimpact);
+            var ci = Math.max(deviation as unknown as number, profile.min_5m_carbimpact);
             var absorbed = ci * profile.carb_ratio / sens;
             // Store the COB, and use it as the starting point for the next data point.
             mealCOB = Math.max(0, mealCOB-absorbed);
@@ -333,8 +359,8 @@ function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
             CRCarbs += myCarbs;
             if (!calculatingCR) {
                 CRInitialIOB = iob.iob;
-                CRInitialBG = glucoseDatum.glucose;
-                CRInitialCarbTime = new Date(glucoseDatum.date);
+                CRInitialBG = glucoseDatum.glucose!;
+                CRInitialCarbTime = new Date(glucoseDatum.date!);
                 console.error("CRInitialIOB:",CRInitialIOB,"CRInitialBG:",CRInitialBG,"CRInitialCarbTime:",CRInitialCarbTime);
             }
             // keep calculatingCR as long as we have COB or enough IOB
@@ -345,10 +371,10 @@ function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
             // when COB=0 and IOB drops low enough, record end values and be done calculatingCR
             } else {
                 var CREndIOB = iob.iob;
-                var CREndBG = glucoseDatum.glucose;
-                var CREndTime: any = new Date(glucoseDatum.date);
+                var CREndBG = glucoseDatum.glucose!;
+                var CREndTime: Date = new Date(glucoseDatum.date!);
                 console.error("CREndIOB:",CREndIOB,"CREndBG:",CREndBG,"CREndTime:",CREndTime);
-                var CRDatum: any = {
+                var crDatum: CRDatum = {
                     CRInitialIOB: CRInitialIOB
                 ,   CRInitialBG: CRInitialBG
                 ,   CRInitialCarbTime: CRInitialCarbTime
@@ -357,14 +383,14 @@ function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
                 ,   CREndTime: CREndTime
                 ,   CRCarbs: CRCarbs
                 };
-                //console.error(CRDatum);
+                //console.error(crDatum);
 
-                var CRElapsedMinutes = Math.round((CREndTime - CRInitialCarbTime) / 1000 / 60);
+                var CRElapsedMinutes = Math.round((CREndTime.getTime() - CRInitialCarbTime.getTime()) / 1000 / 60);
                 //console.error(CREndTime - CRInitialCarbTime, CRElapsedMinutes);
                 if ( CRElapsedMinutes < 60 || ( i===1 && mealCOB > 0 ) ) {
                     console.error("Ignoring",CRElapsedMinutes,"m CR period.");
                 } else {
-                    CRData.push(CRDatum);
+                    CRData.push(crDatum);
                 }
 
                 CRCarbs = 0;
@@ -380,7 +406,7 @@ function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
             if ( iob.iob < currentBasal/2 ) {
                 absorbing = 0;
             // otherwise, as long as deviations are positive, keep tracking carb deviations
-            } else if (deviation > 0) {
+            } else if ((deviation as unknown as number) > 0) {
                 absorbing = 1;
             } else {
                 absorbing = 0;
@@ -397,7 +423,7 @@ function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
             type="csf";
             glucoseDatum.mealCarbs = mealCarbs;
             //if (i == 0) { glucoseDatum.mealAbsorption = "end"; }
-            CSFGlucoseData.push(glucoseDatum);
+            CSFGlucoseData.push(glucoseDatum as unknown as CategorizeGlucoseDatum);
         } else {
           // check previous "type" value, and if it was csf, set a mealAbsorption end flag
           if ( type === "csf" ) {
@@ -405,8 +431,8 @@ function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
             console.error(CSFGlucoseData[CSFGlucoseData.length-1].mealAbsorption,"carb absorption");
           }
 
-          if ((iob.iob > 2 * currentBasal || deviation > 6 || uam) ) {
-            if (deviation > 0) {
+          if ((iob.iob > 2 * currentBasal || (deviation as unknown as number) > 6 || uam) ) {
+            if ((deviation as unknown as number) > 0) {
                 uam = 1;
             } else {
                 uam = 0;
@@ -416,7 +442,7 @@ function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
                 console.error(glucoseDatum.uamAbsorption,"uannnounced meal absorption");
             }
             type="uam";
-            UAMGlucoseData.push(glucoseDatum);
+            UAMGlucoseData.push(glucoseDatum as unknown as CategorizeGlucoseDatum);
           } else {
             if ( type === "uam" ) {
                 console.error("end unannounced meal absorption");
@@ -430,15 +456,15 @@ function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
             // unless avgDelta is positive: then that's some sort of unexplained rise we don't want to use for ISF, so that means basals
             if (basalBGI > -4 * BGI) {
                 type="basal";
-                basalGlucoseData.push(glucoseDatum);
+                basalGlucoseData.push(glucoseDatum as unknown as CategorizeGlucoseDatum);
             } else {
-                if ( avgDelta > 0 && avgDelta > -2*BGI ) {
+                if ( (avgDelta as unknown as number) > 0 && (avgDelta as unknown as number) > -2*BGI ) {
                     //type="unknown"
                     type="basal"
-                    basalGlucoseData.push(glucoseDatum);
+                    basalGlucoseData.push(glucoseDatum as unknown as CategorizeGlucoseDatum);
                 } else {
                     type="ISF";
-                    ISFGlucoseData.push(glucoseDatum);
+                    ISFGlucoseData.push(glucoseDatum as unknown as CategorizeGlucoseDatum);
                 }
             }
           }
@@ -454,17 +480,17 @@ function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
         profile: profileData
     ,   history: opts.pumpHistory
     };
-    treatments = find_insulin(IOBInputs);
-    CRData.forEach(function(CRDatum: any) {
-        var dosedOpts: any = {
-            treatments: treatments
-            , profile: opts.profile
-            , start: CRDatum.CRInitialCarbTime
-            , end: CRDatum.CREndTime
+    var dosedTreatments = find_insulin(IOBInputs as unknown as Parameters<typeof find_insulin>[0]);
+    CRData.forEach(function(crEntry: CRDatum) {
+        var dosedOpts: CategorizeDosedOpts = {
+            treatments: dosedTreatments as unknown as CategorizeDosedTreatment[]
+            , profile: opts.profile as unknown as Record<string, unknown>
+            , start: crEntry.CRInitialCarbTime
+            , end: crEntry.CREndTime
         };
-        var insulinDosed = dosed(dosedOpts);
-        CRDatum.CRInsulin = (insulinDosed as any).insulin;
-        //console.error(CRDatum);
+        var insulinDosed = dosed(dosedOpts as unknown as Parameters<typeof dosed>[0]);
+        crEntry.CRInsulin = (insulinDosed as unknown as { insulin?: number }).insulin;
+        //console.error(crEntry);
     });
 
     var CSFLength = CSFGlucoseData.length;
@@ -486,8 +512,8 @@ function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
             basalGlucoseData = basalGlucoseData.concat(UAMGlucoseData);
             //console.error(basalGlucoseData);
             // if too much data is excluded as UAM, add in the UAM deviations to basal, but then discard the highest 50%
-            basalGlucoseData.sort(function (a: any, b: any) {
-                return a.deviation - b.deviation;
+            basalGlucoseData.sort(function (a: CategorizeGlucoseDatum, b: CategorizeGlucoseDatum) {
+                return (a.deviation as unknown as number) - (b.deviation as unknown as number);
             });
             var newBasalGlucose = basalGlucoseData.slice(0,basalGlucoseData.length/2);
             //console.error(newBasalGlucose);
@@ -499,8 +525,8 @@ function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
             console.error("Adding",UAMLength,"UAM deviations to",ISFLength,"ISF ones");
             ISFGlucoseData = ISFGlucoseData.concat(UAMGlucoseData);
             // if too much data is excluded as UAM, add in the UAM deviations to ISF, but then discard the highest 50%
-            ISFGlucoseData.sort(function (a: any, b: any) {
-                return a.deviation - b.deviation;
+            ISFGlucoseData.sort(function (a: CategorizeGlucoseDatum, b: CategorizeGlucoseDatum) {
+                return (a.deviation as unknown as number) - (b.deviation as unknown as number);
             });
             var newISFGlucose = ISFGlucoseData.slice(0,ISFGlucoseData.length/2);
             //console.error(newISFGlucose);

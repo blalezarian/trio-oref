@@ -67,6 +67,7 @@ interface AutotunePrepGlucoseDatum {
   glucose: number;
   date: number;
   dateString: string;
+  displayTime?: string;
   avgDelta: string;
   BGI: number;
   deviation: string;
@@ -99,7 +100,7 @@ function generate (inputs: AutotunePrepInputs): AutotunePrepResult {
   //console.error(inputs);
   var treatments = find_meals(inputs);
 
-  var opts: any = {
+  var opts: Parameters<typeof categorize>[0] = {
     treatments: treatments
   , profile: inputs.profile
   , pumpHistory: inputs.history
@@ -110,7 +111,7 @@ function generate (inputs: AutotunePrepInputs): AutotunePrepResult {
   , categorize_uam_as_basal: inputs.categorize_uam_as_basal
   };
 
-  var autotune_prep_output: any = categorize(opts);
+  var autotune_prep_output: AutotunePrepResult = categorize(opts) as unknown as AutotunePrepResult;
 
   if (inputs.tune_insulin_curve) {
     if (opts.profile.curve === 'bilinear') {
@@ -135,27 +136,27 @@ function generate (inputs: AutotunePrepInputs): AutotunePrepResult {
 
         opts.profile.dia = dia;
 
-        var curve_output: any = categorize(opts);
+        var curve_output: AutotunePrepResult = categorize(opts) as unknown as AutotunePrepResult;
         var basalGlucose = curve_output.basalGlucoseData;
 
         for (var hour=0; hour < 24; ++hour) {
           for (var i=0; i < basalGlucose.length; ++i) {
-            var BGTime: any;
+            var BGTime: Date | undefined;
 
             if (basalGlucose[i].date) {
               BGTime = new Date(basalGlucose[i].date);
             } else if (basalGlucose[i].displayTime) {
-              BGTime = new Date(basalGlucose[i].displayTime.replace('T', ' '));
+              BGTime = new Date(basalGlucose[i].displayTime!.replace('T', ' '));
             } else if (basalGlucose[i].dateString) {
               BGTime = new Date(basalGlucose[i].dateString);
             } else {
               consoleError("Could not determine last BG time");
             }
 
-            var myHour = BGTime.getHours();
+            var myHour = BGTime!.getHours();
             if (hour === myHour) {
               //console.error(basalGlucose[i].deviation);
-              sqrtDeviations += Math.pow(parseFloat(Math.abs(basalGlucose[i].deviation) as any), 0.5);
+              sqrtDeviations += Math.pow(parseFloat(String(Math.abs(Number(basalGlucose[i].deviation)))), 0.5);
               deviations += Math.abs(parseFloat(basalGlucose[i].deviation));
               deviationsSq += Math.pow(parseFloat(basalGlucose[i].deviation), 2);
             }
@@ -196,8 +197,8 @@ function generate (inputs: AutotunePrepInputs): AutotunePrepResult {
       }
       opts.profile.useCustomPeakTime = true;
 
-      var startPeak=opts.profile.insulinPeakTime - 10;
-      var endPeak=opts.profile.insulinPeakTime + 10;
+      var startPeak=opts.profile.insulinPeakTime! - 10;
+      var endPeak=opts.profile.insulinPeakTime! + 10;
       for (var peak=startPeak; peak <= endPeak; peak=(peak+5)) {
         sqrtDeviations = 0;
         deviations = 0;
@@ -214,17 +215,17 @@ function generate (inputs: AutotunePrepInputs): AutotunePrepResult {
             if (basalGlucose[i].date) {
               BGTime = new Date(basalGlucose[i].date);
             } else if (basalGlucose[i].displayTime) {
-              BGTime = new Date(basalGlucose[i].displayTime.replace('T', ' '));
+              BGTime = new Date(basalGlucose[i].displayTime!.replace('T', ' '));
             } else if (basalGlucose[i].dateString) {
               BGTime = new Date(basalGlucose[i].dateString);
             } else {
               consoleError("Could not determine last BG time");
             }
 
-            myHour = BGTime.getHours();
+            myHour = BGTime!.getHours();
             if (hour === myHour) {
               //console.error(basalGlucose[i].deviation);
-              sqrtDeviations += Math.pow(parseFloat(Math.abs(basalGlucose[i].deviation) as any), 0.5);
+              sqrtDeviations += Math.pow(parseFloat(String(Math.abs(Number(basalGlucose[i].deviation)))), 0.5);
               deviations += Math.abs(parseFloat(basalGlucose[i].deviation));
               deviationsSq += Math.pow(parseFloat(basalGlucose[i].deviation), 2);
             }

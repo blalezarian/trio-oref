@@ -116,7 +116,7 @@ function tuneAllTheThings (inputs: AutotuneInputs): AutotunePreviousProfile | un
     var CSF = ISF / carbRatio;
     var DIA = previousAutotune.dia;
     var peak = previousAutotune.insulinPeakTime;
-    if (! (previousAutotune as any).useCustomPeakTime === true) {
+    if (! previousAutotune.useCustomPeakTime === true) {
         if ( previousAutotune.curve === "ultra-rapid" ) {
             peak = 55;
         } else {
@@ -268,8 +268,8 @@ function tuneAllTheThings (inputs: AutotuneInputs): AutotunePreviousProfile | un
     console.error("CRTotalCarbs:",CRTotalCarbs,"CRTotalInsulin:",CRTotalInsulin,"totalCR:",totalCR);
 
     // convert the basal profile to hourly if it isn't already
-    var hourlyBasalProfile: any[] = [];
-    var hourlyPumpProfile: any[] = [];
+    var hourlyBasalProfile: AutotuneBasalProfileEntry[] = [];
+    var hourlyPumpProfile: AutotuneBasalProfileEntry[] = [];
     for (i=0; i < 24; i++) {
         // autotuned basal profile
         for (var j=0; j < basalProfile.length; ++j) {
@@ -305,15 +305,15 @@ function tuneAllTheThings (inputs: AutotuneInputs): AutotunePreviousProfile | un
     }
     //console.error(hourlyPumpProfile);
     //console.error(hourlyBasalProfile);
-    var newHourlyBasalProfile: any[] = JSON.parse(JSON.stringify(hourlyBasalProfile));
+    var newHourlyBasalProfile: AutotuneBasalProfileEntry[] = JSON.parse(JSON.stringify(hourlyBasalProfile));
 
     // look at net deviations for each hour
     var autotuneMax: number;
     var autotuneMin: number;
     for (var hour=0; hour < 24; hour++) {
-        var deviations: any = 0;
+        var deviations: number | number[] = 0;
         for (i=0; i < basalGlucose.length; ++i) {
-            var BGTime: any;
+            var BGTime: Date | undefined;
 
             if (basalGlucose[i].date) {
                 BGTime = new Date(basalGlucose[i].date!);
@@ -325,7 +325,7 @@ function tuneAllTheThings (inputs: AutotuneInputs): AutotunePreviousProfile | un
                 console.error("Could not determine last BG time");
             }
 
-            var myHour = BGTime.getHours();
+            var myHour = BGTime!.getHours();
             if (hour === myHour) {
                 //console.error(basalGlucose[i].deviation);
                 deviations += parseFloat(basalGlucose[i].deviation);
@@ -415,7 +415,7 @@ function tuneAllTheThings (inputs: AutotuneInputs): AutotunePreviousProfile | un
             //console.error(hour, newHourlyBasalProfile);
             newHourlyBasalProfile[hour].rate = Math.round( (0.8*hourlyBasalProfile[hour].rate + 0.1*newHourlyBasalProfile[lastAdjustedHour].rate + 0.1*newHourlyBasalProfile[nextAdjustedHour].rate)*basal_scale)/basal_scale;
 			if (newHourlyBasalProfile[hour].untuned)
-				newHourlyBasalProfile[hour].untuned++;
+				newHourlyBasalProfile[hour].untuned!++;
 			else
 				newHourlyBasalProfile[hour].untuned = 1;
             console.error("Adjusting hour",hour,"basal from",hourlyBasalProfile[hour].rate,"to",newHourlyBasalProfile[hour].rate,"based on hour",lastAdjustedHour,"=",newHourlyBasalProfile[lastAdjustedHour].rate,"and hour",nextAdjustedHour,"=",newHourlyBasalProfile[nextAdjustedHour].rate);
@@ -438,7 +438,7 @@ function tuneAllTheThings (inputs: AutotuneInputs): AutotunePreviousProfile | un
     // calculate net deviations while carbs are absorbing
     // measured from carb entry until COB and deviations both drop to zero
 
-    var deviations: any = 0;
+    var deviations: number | number[] = 0;
     var mealCarbs = 0;
     var totalMealCarbs = 0;
     var totalDeviations = 0;
@@ -449,7 +449,7 @@ function tuneAllTheThings (inputs: AutotuneInputs): AutotunePreviousProfile | un
         //console.error(CSFGlucose[i].mealAbsorption, i);
         if ( CSFGlucose[i].mealAbsorption === "start" ) {
             deviations = 0;
-            mealCarbs = parseInt(CSFGlucose[i].mealCarbs as any);
+            mealCarbs = parseInt(String(CSFGlucose[i].mealCarbs));
         } else if (CSFGlucose[i].mealAbsorption === "end") {
             deviations += parseFloat(CSFGlucose[i].deviation);
             // compare the sum of deviations from start to end vs. current CSF * mealCarbs
@@ -462,7 +462,7 @@ function tuneAllTheThings (inputs: AutotuneInputs): AutotunePreviousProfile | un
 
         } else {
             deviations += Math.max(0*previousAutotune.min_5m_carbimpact!,parseFloat(CSFGlucose[i].deviation));
-            mealCarbs = Math.max(mealCarbs, parseInt(CSFGlucose[i].mealCarbs as any));
+            mealCarbs = Math.max(mealCarbs, parseInt(String(CSFGlucose[i].mealCarbs)));
         }
     }
     // at midnight, write down the mealcarbs as total meal carbs (to prevent special case of when only one meal and it not finishing absorbing by midnight)
@@ -546,7 +546,7 @@ function tuneAllTheThings (inputs: AutotuneInputs): AutotunePreviousProfile | un
 
 
     // calculate median deviation and bgi in data attributable to ISF
-    var deviations: any = [];
+    var deviations: number | number[] = [];
     var BGIs: number[] = [];
     var avgDeltas: number[] = [];
     var ratios: number[] = [];
@@ -554,7 +554,7 @@ function tuneAllTheThings (inputs: AutotuneInputs): AutotunePreviousProfile | un
     for (i=0; i < ISFGlucose.length; ++i) {
         deviation = parseFloat(ISFGlucose[i].deviation);
         deviations.push(deviation);
-        var BGI = parseFloat(ISFGlucose[i].BGI as any);
+        var BGI = parseFloat(String(ISFGlucose[i].BGI));
         BGIs.push(BGI);
         var avgDelta = parseFloat(ISFGlucose[i].avgDelta);
         avgDeltas.push(avgDelta);
