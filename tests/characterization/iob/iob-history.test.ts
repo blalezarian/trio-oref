@@ -45,7 +45,7 @@ function makeInputs(
     history,
     profile: {
       dia: 5,
-      curve: 'rapid-acting',
+      curve: 'rapid-acting' as const,
       basalprofile: BASAL_PROFILE,
       current_basal: 1,
       max_daily_basal: 1,
@@ -469,7 +469,7 @@ describe('iob/history (calcTempTreatments) characterization tests', () => {
         ],
         profile: {
           dia: 5,
-          curve: 'rapid-acting',
+          curve: 'rapid-acting' as const,
           basalprofile: BASAL_PROFILE,
           current_basal: 1,
           max_daily_basal: 1,

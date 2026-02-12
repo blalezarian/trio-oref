@@ -1,12 +1,25 @@
-import { Treatment, IOBContribution } from '../types/index';
+import { Treatment, IOBContribution, InsulinCurve } from '../types/index';
+import {
+    BILINEAR_DEFAULT_DIA_HOURS,
+    BILINEAR_PEAK_MINUTES,
+    BILINEAR_END_MINUTES,
+    RAPID_ACTING_PEAK,
+    ULTRA_RAPID_PEAK,
+    RAPID_ACTING_MAX_PEAK,
+    RAPID_ACTING_MIN_PEAK,
+    ULTRA_RAPID_MAX_PEAK,
+    ULTRA_RAPID_MIN_PEAK,
+    MS_PER_MINUTE,
+    SECONDS_PER_MINUTE,
+} from '../constants';
 
 interface IobCalcProfile {
-    curve?: string;
+    curve?: InsulinCurve;
     useCustomPeakTime?: boolean;
     insulinPeakTime?: number;
 }
 
-function iobCalc(treatment: Treatment, time: Date | undefined, curve: string, dia: number, peak: number, profile: IobCalcProfile): IOBContribution | Record<string, never> {
+function iobCalc(treatment: Treatment, time: Date | undefined, curve: InsulinCurve, dia: number, peak: number, profile: IobCalcProfile): IOBContribution | Record<string, never> {
     // iobCalc returns two variables:
     //   activityContrib = units of treatment.insulin used in previous minute
     //   iobContrib = units of treatment.insulin still remaining at a given point in time
@@ -24,7 +37,7 @@ function iobCalc(treatment: Treatment, time: Date | undefined, curve: string, di
             time = new Date();
         }
         var bolusTime = new Date(treatment.date);
-        var minsAgo = Math.round((time.getTime() - bolusTime.getTime()) / 1000 / 60);
+        var minsAgo = Math.round((time.getTime() - bolusTime.getTime()) / MS_PER_MINUTE);
 
 
         if (curve === 'bilinear') {
@@ -41,9 +54,9 @@ function iobCalc(treatment: Treatment, time: Date | undefined, curve: string, di
 
 function iobCalcBilinear(treatment: Treatment, minsAgo: number, dia: number): IOBContribution {
 
-    var default_dia = 3.0 // assumed duration of insulin activity, in hours
-    var peak = 75;        // assumed peak insulin activity, in minutes
-    var end = 180;        // assumed end of insulin activity, in minutes
+    var default_dia = BILINEAR_DEFAULT_DIA_HOURS; // assumed duration of insulin activity, in hours
+    var peak = BILINEAR_PEAK_MINUTES;            // assumed peak insulin activity, in minutes
+    var end = BILINEAR_END_MINUTES;              // assumed end of insulin activity, in minutes
 
     // Scale minsAgo by the ratio of the default dia / the user's dia
     // so the calculations for activityContrib and iobContrib work for
@@ -91,36 +104,36 @@ function iobCalcExponential(treatment: Treatment, minsAgo: number, dia: number, 
     // Use custom peak time (in minutes) if value is valid
     if ( profile.curve === "rapid-acting" ) {
         if (profile.useCustomPeakTime === true && profile.insulinPeakTime !== undefined) {
-            if ( profile.insulinPeakTime > 120 ) {
-                console.error('Setting maximum Insulin Peak Time of 120m for',profile.curve,'insulin');
-                peak = 120;
-            } else if ( profile.insulinPeakTime < 50 ) {
-                console.error('Setting minimum Insulin Peak Time of 50m for',profile.curve,'insulin');
-                peak = 50;
+            if ( profile.insulinPeakTime > RAPID_ACTING_MAX_PEAK ) {
+                console.error('Setting maximum Insulin Peak Time of '+RAPID_ACTING_MAX_PEAK+'m for',profile.curve,'insulin');
+                peak = RAPID_ACTING_MAX_PEAK;
+            } else if ( profile.insulinPeakTime < RAPID_ACTING_MIN_PEAK ) {
+                console.error('Setting minimum Insulin Peak Time of '+RAPID_ACTING_MIN_PEAK+'m for',profile.curve,'insulin');
+                peak = RAPID_ACTING_MIN_PEAK;
             } else {
                 peak = profile.insulinPeakTime;
             }
         } else {
-            peak = 75;
+            peak = RAPID_ACTING_PEAK;
         }
     } else if ( profile.curve === "ultra-rapid" ) {
         if (profile.useCustomPeakTime === true && profile.insulinPeakTime !== undefined) {
-            if ( profile.insulinPeakTime > 100 ) {
-                console.error('Setting maximum Insulin Peak Time of 100m for',profile.curve,'insulin');
-                peak = 100;
-            } else if ( profile.insulinPeakTime < 35 ) {
-                console.error('Setting minimum Insulin Peak Time of 35m for',profile.curve,'insulin');
-                peak = 35;
+            if ( profile.insulinPeakTime > ULTRA_RAPID_MAX_PEAK ) {
+                console.error('Setting maximum Insulin Peak Time of '+ULTRA_RAPID_MAX_PEAK+'m for',profile.curve,'insulin');
+                peak = ULTRA_RAPID_MAX_PEAK;
+            } else if ( profile.insulinPeakTime < ULTRA_RAPID_MIN_PEAK ) {
+                console.error('Setting minimum Insulin Peak Time of '+ULTRA_RAPID_MIN_PEAK+'m for',profile.curve,'insulin');
+                peak = ULTRA_RAPID_MIN_PEAK;
             } else {
                 peak = profile.insulinPeakTime;
             }
         } else {
-            peak = 55;
+            peak = ULTRA_RAPID_PEAK;
         }
     } else {
         console.error('Curve of',profile.curve,'is not supported.');
     }
-    var end = dia * 60;  // end of insulin activity, in minutes
+    var end = dia * SECONDS_PER_MINUTE;  // end of insulin activity, in minutes
 
 
     var activityContrib = 0;

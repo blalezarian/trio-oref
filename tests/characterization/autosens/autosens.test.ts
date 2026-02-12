@@ -65,7 +65,7 @@ function makeInputs(
     iob_inputs: {
       profile: {
         dia: 5,
-        curve: 'rapid-acting',
+        curve: 'rapid-acting' as const,
         useCustomPeakTime: false,
         insulinPeakTime: 75,
         current_basal: 1,
@@ -1193,7 +1193,7 @@ describe('determine-basal/autosens (detectSensitivity) characterization tests', 
         iob_inputs: {
           profile: {
             dia: 5,
-            curve: 'rapid-acting',
+            curve: 'rapid-acting' as const,
             useCustomPeakTime: false,
             insulinPeakTime: 75,
             current_basal: 0.5,

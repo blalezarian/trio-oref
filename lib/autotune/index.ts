@@ -1,4 +1,5 @@
 import percentile from '../percentile';
+import type { InsulinCurve } from '../types/index';
 //rounding of basals for pumps
 //20 for omnipod to 0.05
 //40 for medtronic to 0.025
@@ -28,7 +29,7 @@ interface AutotunePreviousProfile {
   carb_ratio: number;
   csf?: number;
   dia: number;
-  curve?: string;
+  curve?: Exclude<InsulinCurve, 'bilinear'>;
   useCustomPeakTime?: boolean;
   insulinPeakTime?: number;
   min_5m_carbimpact?: number;

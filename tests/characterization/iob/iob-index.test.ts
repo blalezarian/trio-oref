@@ -25,7 +25,7 @@ function makeInputs(history: PumpHistoryEvent[], profileOverrides: Record<string
     history,
     profile: {
       dia: 5,
-      curve: 'rapid-acting',
+      curve: 'rapid-acting' as const,
       basalprofile: BASAL_PROFILE,
       current_basal: 1,
       max_daily_basal: 1,
@@ -168,7 +168,7 @@ describe('iob/index (generate) characterization tests', () => {
     it('ultra-rapid DIA=5: 1U bolus now', () => {
       const inputs = makeInputs(
         [{ _type: 'Bolus', amount: 1, timestamp: FIXED_TIME }],
-        { curve: 'ultra-rapid' },
+        { curve: 'ultra-rapid' as const },
       );
       const result = iob(inputs);
       expect(normalizeArray([result[0]])).toMatchSnapshot('ultra-rapid t=0');

@@ -3,7 +3,7 @@
 
 import find_meals from '../meal/history';
 import categorize from './categorize';
-import type { PumpHistoryEvent } from '../types/index';
+import type { PumpHistoryEvent, InsulinCurve } from '../types/index';
 
 interface AutotunePrepBasalProfileEntry {
   i: number;
@@ -22,7 +22,7 @@ interface AutotunePrepISFProfile {
 
 interface AutotunePrepProfile {
   dia: number;
-  curve?: string;
+  curve?: InsulinCurve;
   useCustomPeakTime?: boolean;
   insulinPeakTime?: number;
   current_basal?: number;

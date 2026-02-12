@@ -1,8 +1,16 @@
-import { Treatment, IOBContribution } from '../types/index';
+import { Treatment, IOBContribution, InsulinCurve } from '../types/index';
+import {
+    MIN_DIA_HOURS,
+    MIN_LONG_DIA_HOURS,
+    RAPID_ACTING_PEAK,
+    ULTRA_RAPID_PEAK,
+    EXPONENTIAL_MIN_TD,
+    MS_PER_HOUR,
+} from '../constants';
 
 interface IobCalcProfile {
     dia: number;
-    curve?: string;
+    curve?: InsulinCurve;
     useCustomPeakTime?: boolean;
     insulinPeakTime?: number;
 }
@@ -13,7 +21,7 @@ interface IobTotalOpts {
     calculate: (
         treatment: Treatment,
         time: Date,
-        curve: string,
+        curve: InsulinCurve,
         dia: number,
         peak: number,
         profile: IobCalcProfile,
@@ -52,32 +60,32 @@ function iobTotal(opts: IobTotalOpts, time: Date): IobTotalResult | Record<strin
     //}
 
     // force minimum DIA of 3h
-    if (dia < 3) {
+    if (dia < MIN_DIA_HOURS) {
         //console.error("Warning; adjusting DIA from",dia,"to minimum of 3 hours");
-        dia = 3;
+        dia = MIN_DIA_HOURS;
     }
 
-    var curveDefaults = {
+    var curveDefaults: Record<InsulinCurve, { requireLongDia: boolean; peak: number; tdMin?: number }> = {
         'bilinear': {
             requireLongDia: false,
-            peak: 75 // not really used, but prevents having to check later
+            peak: RAPID_ACTING_PEAK // not really used, but prevents having to check later
         },
         'rapid-acting': {
             requireLongDia: true,
-            peak: 75,
-            tdMin: 300
+            peak: RAPID_ACTING_PEAK,
+            tdMin: EXPONENTIAL_MIN_TD
         },
         'ultra-rapid': {
             requireLongDia: true,
-            peak: 55,
-            tdMin: 300
+            peak: ULTRA_RAPID_PEAK,
+            tdMin: EXPONENTIAL_MIN_TD
         },
     };
 
-    var curve = 'bilinear';
+    var curve: InsulinCurve = 'bilinear';
 
     if (profile_data.curve !== undefined) {
-        curve = profile_data.curve.toLowerCase();
+        curve = profile_data.curve.toLowerCase() as InsulinCurve;
     }
 
     if (!(curve in curveDefaults)) {
@@ -85,19 +93,19 @@ function iobTotal(opts: IobTotalOpts, time: Date): IobTotalResult | Record<strin
         curve = 'rapid-acting';
     }
 
-    var defaults = curveDefaults[curve as keyof typeof curveDefaults];
+    var defaults = curveDefaults[curve];
 
     // Force minimum of 5 hour DIA when default requires a Long DIA.
-    if (defaults.requireLongDia && dia < 5) {
+    if (defaults.requireLongDia && dia < MIN_LONG_DIA_HOURS) {
         //console.error('Pump DIA must be set to 5 hours or more with the new curves, please adjust your pump. Defaulting to 5 hour DIA.');
-        dia = 5;
+        dia = MIN_LONG_DIA_HOURS;
     }
 
     peak = defaults.peak;
 
     treatments.forEach(function(treatment) {
         if( treatment.date <= now ) {
-            var dia_ago = now - dia*60*60*1000;
+            var dia_ago = now - dia*MS_PER_HOUR;
             if( treatment.date > dia_ago ) {
                 // tIOB = total IOB
                 var tIOB = iobCalc(treatment, time, curve, dia, peak, profile_data);

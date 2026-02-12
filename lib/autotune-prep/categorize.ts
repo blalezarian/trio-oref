@@ -4,7 +4,7 @@ import getIOB from '../iob/index';
 import ISF from '../profile/isf';
 import find_insulin from '../iob/history';
 import dosed from './dosed';
-import type { PumpHistoryEvent, CarbTreatment } from '../types/index';
+import type { PumpHistoryEvent, CarbTreatment, InsulinCurve } from '../types/index';
 
 interface CategorizeGlucoseEntry {
   glucose?: number;
@@ -38,7 +38,7 @@ interface CategorizeISFProfile {
 
 interface CategorizeProfile {
   dia: number;
-  curve?: string;
+  curve?: InsulinCurve;
   useCustomPeakTime?: boolean;
   insulinPeakTime?: number;
   current_basal?: number;

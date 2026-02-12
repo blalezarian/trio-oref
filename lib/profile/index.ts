@@ -5,6 +5,7 @@ import targets from './targets';
 import isf from './isf';
 import carb_ratios from './carbs';
 import _ from 'lodash';
+import type { InsulinCurve } from '../types/index';
 
 interface ProfileDefaults {
   max_iob: number;
@@ -41,7 +42,7 @@ interface ProfileDefaults {
   SMBInterval: number;
   bolus_increment: number;
   maxDelta_bg_threshold: number;
-  curve: string;
+  curve: InsulinCurve;
   useCustomPeakTime: boolean;
   insulinPeakTime: number;
   carbsReqThreshold: number;

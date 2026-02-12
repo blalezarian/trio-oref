@@ -42,7 +42,7 @@ function makePreviousAutotune(overrides: Record<string, unknown> = {}) {
     carb_ratio: 10,
     csf: 10, // ISF / carb_ratio
     dia: 5,
-    curve: 'rapid-acting',
+    curve: 'rapid-acting' as const,
     useCustomPeakTime: false,
     insulinPeakTime: 75,
     min_5m_carbimpact: 8,
@@ -60,7 +60,7 @@ function makePumpProfile(overrides: Record<string, unknown> = {}) {
     sens: 100,
     carb_ratio: 10,
     dia: 5,
-    curve: 'rapid-acting',
+    curve: 'rapid-acting' as const,
     useCustomPeakTime: false,
     insulinPeakTime: 75,
     autosens_min: 0.7,
@@ -830,7 +830,7 @@ describe('autotune/index (tuneAllTheThings) characterization tests', () => {
     it('uses peak=55 for ultra-rapid when useCustomPeakTime is false', () => {
       const inputs = makeInputs({
         previousAutotune: makePreviousAutotune({
-          curve: 'ultra-rapid',
+          curve: 'ultra-rapid' as const,
           useCustomPeakTime: false,
         }),
       });

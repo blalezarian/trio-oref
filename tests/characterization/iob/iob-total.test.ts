@@ -28,7 +28,7 @@ function makeOpts(
     treatments,
     profile: {
       dia: 5,
-      curve: 'rapid-acting',
+      curve: 'rapid-acting' as const,
       useCustomPeakTime: false,
       insulinPeakTime: 75,
       ...profileOverrides,
@@ -133,7 +133,7 @@ describe('iob/total characterization tests', () => {
 
   describe('different insulin curves', () => {
     it('ultra-rapid: 1U at 60m ago', () => {
-      const opts = makeOpts([makeTreatment(1, 60)], { curve: 'ultra-rapid' });
+      const opts = makeOpts([makeTreatment(1, 60)], { curve: 'ultra-rapid' as const });
       expect(normalize(iobTotal(opts, NOW))).toMatchSnapshot();
     });
 
@@ -160,7 +160,7 @@ describe('iob/total characterization tests', () => {
     });
 
     it('rapid-acting DIA < 5 is forced to 5', () => {
-      const opts = makeOpts([makeTreatment(1, 60)], { curve: 'rapid-acting', dia: 3 });
+      const opts = makeOpts([makeTreatment(1, 60)], { curve: 'rapid-acting' as const, dia: 3 });
       expect(normalize(iobTotal(opts, NOW))).toMatchSnapshot();
     });
   });
@@ -172,7 +172,7 @@ describe('iob/total characterization tests', () => {
     });
 
     it('null treatments returns empty object', () => {
-      const opts = { treatments: null, profile: { dia: 5, curve: 'rapid-acting' }, calculate: iobCalc };
+      const opts = { treatments: null, profile: { dia: 5, curve: 'rapid-acting' as const }, calculate: iobCalc };
       expect(iobTotal(opts, NOW)).toMatchSnapshot();
     });
 

@@ -4,7 +4,7 @@ import find_insulin from './history';
 import calculate from './calculate';
 import sum from './total';
 
-import type { PumpHistoryEvent, Treatment, IOBContribution } from '../types/index';
+import type { PumpHistoryEvent, Treatment, IOBContribution, InsulinCurve } from '../types/index';
 
 interface IobIndexBasalProfileEntry {
     i: number;
@@ -15,7 +15,7 @@ interface IobIndexBasalProfileEntry {
 
 interface IobIndexProfile {
     dia: number;
-    curve?: string;
+    curve?: InsulinCurve;
     basalprofile: IobIndexBasalProfileEntry[];
     current_basal: number;
     max_daily_basal?: number;

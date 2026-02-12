@@ -105,7 +105,7 @@ export function defaultProfile(overrides?: Partial<Profile>): Profile {
 
     // Insulin dynamics
     dia: 5,
-    curve: 'rapid-acting',
+    curve: 'rapid-acting' as const,
     useCustomPeakTime: false,
     insulinPeakTime: 75,
 
@@ -221,7 +221,7 @@ export function defaultPreferences(overrides?: Partial<Preferences>): Preference
     adjustmentFactor: 0.8,
     adjustmentFactorSigmoid: 0.5,
     sigmoid: false,
-    curve: 'rapid-acting',
+    curve: 'rapid-acting' as const,
     useCustomPeakTime: false,
     ...overrides,
   };

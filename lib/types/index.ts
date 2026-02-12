@@ -10,6 +10,13 @@
  */
 
 // ---------------------------------------------------------------------------
+// Shared type aliases
+// ---------------------------------------------------------------------------
+
+/** Insulin absorption curve model used across all modules */
+export type InsulinCurve = 'bilinear' | 'rapid-acting' | 'ultra-rapid';
+
+// ---------------------------------------------------------------------------
 // Pump History Event — raw events from Medtronic pump or Nightscout
 // ---------------------------------------------------------------------------
 
@@ -346,7 +353,7 @@ export interface Profile {
   /** Duration of insulin action in hours */
   dia: number;
   /** Insulin absorption curve model */
-  curve: 'bilinear' | 'rapid-acting' | 'ultra-rapid';
+  curve: InsulinCurve;
   /** Whether to use a custom insulin peak time */
   useCustomPeakTime: boolean;
   /** Minutes after bolus when insulin activity peaks */
@@ -548,7 +555,7 @@ export interface Preferences {
   /** Use sigmoid instead of logarithmic */
   sigmoid: boolean;
   /** Insulin curve type */
-  curve: string;
+  curve: InsulinCurve;
   /** Use custom insulin peak time */
   useCustomPeakTime: boolean;
 }
@@ -692,7 +699,7 @@ export interface IOBInputs {
   history: unknown[];
   profile: {
     dia: number;
-    curve: string;
+    curve: InsulinCurve;
     useCustomPeakTime?: boolean;
     insulinPeakTime?: number;
     current_basal?: number;

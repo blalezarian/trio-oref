@@ -75,7 +75,7 @@ const ISF_PROFILE = {
 function makeProfile(overrides: Record<string, unknown> = {}) {
   return {
     dia: 5,
-    curve: 'rapid-acting',
+    curve: 'rapid-acting' as const,
     useCustomPeakTime: false,
     insulinPeakTime: 75,
     current_basal: 1.0,

@@ -61,7 +61,7 @@ const ISF_PROFILE = {
 function makeProfile(overrides: Record<string, unknown> = {}) {
   return {
     dia: 5,
-    curve: 'rapid-acting',
+    curve: 'rapid-acting' as const,
     useCustomPeakTime: false,
     insulinPeakTime: 75,
     current_basal: 1.0,
@@ -81,7 +81,7 @@ function makePumpProfile(overrides: Record<string, unknown> = {}) {
   return {
     basalprofile: BASAL_PROFILE,
     dia: 5,
-    curve: 'rapid-acting',
+    curve: 'rapid-acting' as const,
     useCustomPeakTime: false,
     insulinPeakTime: 75,
     current_basal: 1.0,
@@ -328,12 +328,12 @@ describe('autotune-prep/index (generate) characterization tests', () => {
         glucose,
         tune_insulin_curve: true,
         profile: makeProfile({
-          curve: 'rapid-acting',
+          curve: 'rapid-acting' as const,
           dia: 5,
           useCustomPeakTime: false,
           insulinPeakTime: 75,
         }),
-        pumpprofile: makePumpProfile({ curve: 'rapid-acting', dia: 5 }),
+        pumpprofile: makePumpProfile({ curve: 'rapid-acting' as const, dia: 5 }),
       });
       const result = generate(inputs);
       // Should have diaDeviations and peakDeviations arrays
@@ -348,12 +348,12 @@ describe('autotune-prep/index (generate) characterization tests', () => {
         glucose,
         tune_insulin_curve: true,
         profile: makeProfile({
-          curve: 'rapid-acting',
+          curve: 'rapid-acting' as const,
           dia: 6,
           useCustomPeakTime: false,
           insulinPeakTime: 75,
         }),
-        pumpprofile: makePumpProfile({ curve: 'rapid-acting', dia: 6 }),
+        pumpprofile: makePumpProfile({ curve: 'rapid-acting' as const, dia: 6 }),
       });
       const result = generate(inputs);
       expect(result.diaDeviations).toBeDefined();
@@ -378,12 +378,12 @@ describe('autotune-prep/index (generate) characterization tests', () => {
         history,
         tune_insulin_curve: true,
         profile: makeProfile({
-          curve: 'rapid-acting',
+          curve: 'rapid-acting' as const,
           dia: 5,
           useCustomPeakTime: false,
           insulinPeakTime: 75,
         }),
-        pumpprofile: makePumpProfile({ curve: 'rapid-acting', dia: 5 }),
+        pumpprofile: makePumpProfile({ curve: 'rapid-acting' as const, dia: 5 }),
       });
       const result = generate(inputs);
       expect(result.diaDeviations).toBeDefined();
@@ -409,12 +409,12 @@ describe('autotune-prep/index (generate) characterization tests', () => {
         history,
         tune_insulin_curve: true,
         profile: makeProfile({
-          curve: 'rapid-acting',
+          curve: 'rapid-acting' as const,
           dia: 7,
           useCustomPeakTime: false,
           insulinPeakTime: 75,
         }),
-        pumpprofile: makePumpProfile({ curve: 'rapid-acting', dia: 7 }),
+        pumpprofile: makePumpProfile({ curve: 'rapid-acting' as const, dia: 7 }),
       });
       const result = generate(inputs);
       expect(result.diaDeviations).toBeDefined();
@@ -441,13 +441,13 @@ describe('autotune-prep/index (generate) characterization tests', () => {
         glucose,
         tune_insulin_curve: true,
         profile: makeProfile({
-          curve: 'ultra-rapid',
+          curve: 'ultra-rapid' as const,
           dia: 5,
           useCustomPeakTime: false,
           insulinPeakTime: 55,
         }),
         pumpprofile: makePumpProfile({
-          curve: 'ultra-rapid',
+          curve: 'ultra-rapid' as const,
           dia: 5,
           insulinPeakTime: 55,
         }),
@@ -472,13 +472,13 @@ describe('autotune-prep/index (generate) characterization tests', () => {
         glucose,
         tune_insulin_curve: true,
         profile: makeProfile({
-          curve: 'rapid-acting',
+          curve: 'rapid-acting' as const,
           dia: 5,
           useCustomPeakTime: false,
           insulinPeakTime: 75,
         }),
         pumpprofile: makePumpProfile({
-          curve: 'rapid-acting',
+          curve: 'rapid-acting' as const,
           dia: 5,
           insulinPeakTime: 75,
         }),
@@ -496,13 +496,13 @@ describe('autotune-prep/index (generate) characterization tests', () => {
         glucose,
         tune_insulin_curve: true,
         profile: makeProfile({
-          curve: 'rapid-acting',
+          curve: 'rapid-acting' as const,
           dia: 5,
           useCustomPeakTime: true,
           insulinPeakTime: 60,
         }),
         pumpprofile: makePumpProfile({
-          curve: 'rapid-acting',
+          curve: 'rapid-acting' as const,
           dia: 5,
           insulinPeakTime: 60,
         }),
@@ -535,13 +535,13 @@ describe('autotune-prep/index (generate) characterization tests', () => {
         history,
         tune_insulin_curve: true,
         profile: makeProfile({
-          curve: 'rapid-acting',
+          curve: 'rapid-acting' as const,
           dia: 5,
           useCustomPeakTime: false,
           insulinPeakTime: 75,
         }),
         pumpprofile: makePumpProfile({
-          curve: 'rapid-acting',
+          curve: 'rapid-acting' as const,
           dia: 5,
           insulinPeakTime: 75,
         }),
@@ -576,13 +576,13 @@ describe('autotune-prep/index (generate) characterization tests', () => {
         carbs: carbHistory,
         tune_insulin_curve: true,
         profile: makeProfile({
-          curve: 'rapid-acting',
+          curve: 'rapid-acting' as const,
           dia: 5,
           useCustomPeakTime: false,
           insulinPeakTime: 75,
         }),
         pumpprofile: makePumpProfile({
-          curve: 'rapid-acting',
+          curve: 'rapid-acting' as const,
           dia: 5,
           insulinPeakTime: 75,
         }),
@@ -618,13 +618,13 @@ describe('autotune-prep/index (generate) characterization tests', () => {
         history,
         tune_insulin_curve: true,
         profile: makeProfile({
-          curve: 'rapid-acting',
+          curve: 'rapid-acting' as const,
           dia: 5,
           useCustomPeakTime: false,
           insulinPeakTime: 75,
         }),
         pumpprofile: makePumpProfile({
-          curve: 'rapid-acting',
+          curve: 'rapid-acting' as const,
           dia: 5,
           insulinPeakTime: 75,
         }),
@@ -642,13 +642,13 @@ describe('autotune-prep/index (generate) characterization tests', () => {
         categorize_uam_as_basal: true,
         tune_insulin_curve: true,
         profile: makeProfile({
-          curve: 'rapid-acting',
+          curve: 'rapid-acting' as const,
           dia: 5,
           useCustomPeakTime: false,
           insulinPeakTime: 75,
         }),
         pumpprofile: makePumpProfile({
-          curve: 'rapid-acting',
+          curve: 'rapid-acting' as const,
           dia: 5,
           insulinPeakTime: 75,
         }),
@@ -680,13 +680,13 @@ describe('autotune-prep/index (generate) characterization tests', () => {
         glucose,
         tune_insulin_curve: true,
         profile: makeProfile({
-          curve: 'rapid-acting',
+          curve: 'rapid-acting' as const,
           dia: 5,
           useCustomPeakTime: false,
           insulinPeakTime: 75,
         }),
         pumpprofile: makePumpProfile({
-          curve: 'rapid-acting',
+          curve: 'rapid-acting' as const,
           dia: 5,
           insulinPeakTime: 75,
         }),
@@ -706,12 +706,12 @@ describe('autotune-prep/index (generate) characterization tests', () => {
         glucose,
         tune_insulin_curve: true,
         profile: makeProfile({
-          curve: 'rapid-acting',
+          curve: 'rapid-acting' as const,
           dia: 3,
           useCustomPeakTime: false,
           insulinPeakTime: 75,
         }),
-        pumpprofile: makePumpProfile({ curve: 'rapid-acting', dia: 3 }),
+        pumpprofile: makePumpProfile({ curve: 'rapid-acting' as const, dia: 3 }),
       });
       const result = generate(inputs);
       expect(result.diaDeviations).toBeDefined();
@@ -728,12 +728,12 @@ describe('autotune-prep/index (generate) characterization tests', () => {
         glucose,
         tune_insulin_curve: true,
         profile: makeProfile({
-          curve: 'rapid-acting',
+          curve: 'rapid-acting' as const,
           dia: 10,
           useCustomPeakTime: false,
           insulinPeakTime: 75,
         }),
-        pumpprofile: makePumpProfile({ curve: 'rapid-acting', dia: 10 }),
+        pumpprofile: makePumpProfile({ curve: 'rapid-acting' as const, dia: 10 }),
       });
       const result = generate(inputs);
       expect(result.diaDeviations).toBeDefined();
@@ -750,13 +750,13 @@ describe('autotune-prep/index (generate) characterization tests', () => {
         glucose,
         tune_insulin_curve: true,
         profile: makeProfile({
-          curve: 'ultra-rapid',
+          curve: 'ultra-rapid' as const,
           dia: 5,
           useCustomPeakTime: true,
           insulinPeakTime: 45,
         }),
         pumpprofile: makePumpProfile({
-          curve: 'ultra-rapid',
+          curve: 'ultra-rapid' as const,
           dia: 5,
           insulinPeakTime: 45,
         }),
@@ -783,13 +783,13 @@ describe('autotune-prep/index (generate) characterization tests', () => {
         glucose,
         tune_insulin_curve: true,
         profile: makeProfile({
-          curve: 'rapid-acting',
+          curve: 'rapid-acting' as const,
           dia: 5,
           useCustomPeakTime: false,
           insulinPeakTime: 75,
         }),
         pumpprofile: makePumpProfile({
-          curve: 'rapid-acting',
+          curve: 'rapid-acting' as const,
           dia: 5,
           insulinPeakTime: 75,
         }),
@@ -825,13 +825,13 @@ describe('autotune-prep/index (generate) characterization tests', () => {
         history,
         tune_insulin_curve: true,
         profile: makeProfile({
-          curve: 'rapid-acting',
+          curve: 'rapid-acting' as const,
           dia: 5,
           useCustomPeakTime: false,
           insulinPeakTime: 75,
         }),
         pumpprofile: makePumpProfile({
-          curve: 'rapid-acting',
+          curve: 'rapid-acting' as const,
           dia: 5,
           insulinPeakTime: 75,
         }),
@@ -897,14 +897,14 @@ describe('autotune-prep/index (generate) characterization tests', () => {
         glucose,
         tune_insulin_curve: true,
         profile: makeProfile({
-          curve: 'rapid-acting',
+          curve: 'rapid-acting' as const,
           dia: 5,
           basalprofile: multiBasal,
           useCustomPeakTime: false,
           insulinPeakTime: 75,
         }),
         pumpprofile: makePumpProfile({
-          curve: 'rapid-acting',
+          curve: 'rapid-acting' as const,
           dia: 5,
           basalprofile: multiBasal,
           insulinPeakTime: 75,

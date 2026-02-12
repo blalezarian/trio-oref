@@ -7,10 +7,11 @@
 
 import { describe, it, expect } from 'vitest';
 import iobCalc from '../../../lib/iob/calculate';
+import type { InsulinCurve } from '../../../lib/types/index';
 
 const baseProfile = {
   dia: 5,
-  curve: 'rapid-acting',
+  curve: 'rapid-acting' as const,
   useCustomPeakTime: false,
   insulinPeakTime: 75,
 };
@@ -26,7 +27,7 @@ const NOW = new Date('2025-01-15T12:00:00.000Z');
 
 describe('iob/calculate characterization tests', () => {
   describe('rapid-acting curve', () => {
-    const profile = { ...baseProfile, curve: 'rapid-acting' };
+    const profile = { ...baseProfile, curve: 'rapid-acting' as const };
     const timePoints = [0, 5, 15, 30, 45, 60, 75, 90, 120, 150, 180, 240, 300];
 
     for (const minsAgo of timePoints) {
@@ -51,7 +52,7 @@ describe('iob/calculate characterization tests', () => {
   });
 
   describe('ultra-rapid curve', () => {
-    const profile = { ...baseProfile, curve: 'ultra-rapid', insulinPeakTime: 55 };
+    const profile = { ...baseProfile, curve: 'ultra-rapid' as const, insulinPeakTime: 55 };
     const timePoints = [0, 15, 30, 55, 75, 120, 180, 300];
 
     for (const minsAgo of timePoints) {
@@ -64,7 +65,7 @@ describe('iob/calculate characterization tests', () => {
   });
 
   describe('bilinear curve', () => {
-    const profile = { ...baseProfile, curve: 'bilinear', dia: 3 };
+    const profile = { ...baseProfile, curve: 'bilinear' as const, dia: 3 };
     const timePoints = [0, 15, 30, 45, 60, 75, 90, 120, 150, 180];
 
     for (const minsAgo of timePoints) {
@@ -98,7 +99,7 @@ describe('iob/calculate characterization tests', () => {
     });
 
     it('ultra-rapid with custom peak 35m', () => {
-      const profile = { ...baseProfile, curve: 'ultra-rapid', useCustomPeakTime: true, insulinPeakTime: 35 };
+      const profile = { ...baseProfile, curve: 'ultra-rapid' as const, useCustomPeakTime: true, insulinPeakTime: 35 };
       const treatment = makeTreatment(1, 60, NOW);
       const result = iobCalc(treatment, NOW, 'ultra-rapid', 5, 35, profile);
       expect(result).toMatchSnapshot();
@@ -145,42 +146,42 @@ describe('iob/calculate characterization tests', () => {
 
     describe('ultra-rapid out-of-range peak clamping', () => {
       it('peak > 100 is clamped to 100', () => {
-        const profile = { ...baseProfile, curve: 'ultra-rapid', useCustomPeakTime: true, insulinPeakTime: 130 };
+        const profile = { ...baseProfile, curve: 'ultra-rapid' as const, useCustomPeakTime: true, insulinPeakTime: 130 };
         const treatment = makeTreatment(1, 60, NOW);
         const result = iobCalc(treatment, NOW, 'ultra-rapid', 5, 130, profile);
         expect(result).toMatchSnapshot();
       });
 
       it('peak < 35 is clamped to 35', () => {
-        const profile = { ...baseProfile, curve: 'ultra-rapid', useCustomPeakTime: true, insulinPeakTime: 20 };
+        const profile = { ...baseProfile, curve: 'ultra-rapid' as const, useCustomPeakTime: true, insulinPeakTime: 20 };
         const treatment = makeTreatment(1, 60, NOW);
         const result = iobCalc(treatment, NOW, 'ultra-rapid', 5, 20, profile);
         expect(result).toMatchSnapshot();
       });
 
       it('peak exactly at 35 (minimum boundary)', () => {
-        const profile = { ...baseProfile, curve: 'ultra-rapid', useCustomPeakTime: true, insulinPeakTime: 35 };
+        const profile = { ...baseProfile, curve: 'ultra-rapid' as const, useCustomPeakTime: true, insulinPeakTime: 35 };
         const treatment = makeTreatment(1, 30, NOW);
         const result = iobCalc(treatment, NOW, 'ultra-rapid', 5, 35, profile);
         expect(result).toMatchSnapshot();
       });
 
       it('peak exactly at 100 (maximum boundary)', () => {
-        const profile = { ...baseProfile, curve: 'ultra-rapid', useCustomPeakTime: true, insulinPeakTime: 100 };
+        const profile = { ...baseProfile, curve: 'ultra-rapid' as const, useCustomPeakTime: true, insulinPeakTime: 100 };
         const treatment = makeTreatment(1, 30, NOW);
         const result = iobCalc(treatment, NOW, 'ultra-rapid', 5, 100, profile);
         expect(result).toMatchSnapshot();
       });
 
       it('peak at 55 (default ultra-rapid peak)', () => {
-        const profile = { ...baseProfile, curve: 'ultra-rapid', useCustomPeakTime: true, insulinPeakTime: 55 };
+        const profile = { ...baseProfile, curve: 'ultra-rapid' as const, useCustomPeakTime: true, insulinPeakTime: 55 };
         const treatment = makeTreatment(1, 60, NOW);
         const result = iobCalc(treatment, NOW, 'ultra-rapid', 5, 55, profile);
         expect(result).toMatchSnapshot();
       });
 
       it('peak at 45 (Fiasp-like)', () => {
-        const profile = { ...baseProfile, curve: 'ultra-rapid', useCustomPeakTime: true, insulinPeakTime: 45 };
+        const profile = { ...baseProfile, curve: 'ultra-rapid' as const, useCustomPeakTime: true, insulinPeakTime: 45 };
         const treatment = makeTreatment(1, 60, NOW);
         const result = iobCalc(treatment, NOW, 'ultra-rapid', 5, 45, profile);
         expect(result).toMatchSnapshot();
@@ -202,7 +203,7 @@ describe('iob/calculate characterization tests', () => {
     });
 
     describe('ultra-rapid with useCustomPeakTime: true at various time points', () => {
-      const profile = { ...baseProfile, curve: 'ultra-rapid', useCustomPeakTime: true, insulinPeakTime: 45 };
+      const profile = { ...baseProfile, curve: 'ultra-rapid' as const, useCustomPeakTime: true, insulinPeakTime: 45 };
       const timePoints = [0, 15, 30, 45, 60, 90, 120, 180, 240, 300];
 
       for (const minsAgo of timePoints) {
@@ -223,7 +224,7 @@ describe('iob/calculate characterization tests', () => {
       });
 
       it('ultra-rapid falls back to default peak 55', () => {
-        const profile = { ...baseProfile, curve: 'ultra-rapid', useCustomPeakTime: true, insulinPeakTime: undefined };
+        const profile = { ...baseProfile, curve: 'ultra-rapid' as const, useCustomPeakTime: true, insulinPeakTime: undefined };
         const treatment = makeTreatment(1, 60, NOW);
         const result = iobCalc(treatment, NOW, 'ultra-rapid', 5, 55, profile);
         expect(result).toMatchSnapshot();
@@ -239,7 +240,7 @@ describe('iob/calculate characterization tests', () => {
       });
 
       it('ultra-rapid default peak 55', () => {
-        const profile = { ...baseProfile, curve: 'ultra-rapid', useCustomPeakTime: false, insulinPeakTime: 45 };
+        const profile = { ...baseProfile, curve: 'ultra-rapid' as const, useCustomPeakTime: false, insulinPeakTime: 45 };
         const treatment = makeTreatment(1, 60, NOW);
         const result = iobCalc(treatment, NOW, 'ultra-rapid', 5, 55, profile);
         expect(result).toMatchSnapshot();
@@ -248,16 +249,16 @@ describe('iob/calculate characterization tests', () => {
 
     describe('unsupported curve type', () => {
       it('unknown curve logs error and uses exponential without peak override', () => {
-        const profile = { ...baseProfile, curve: 'some-unknown-curve' };
+        const profile = { ...baseProfile, curve: 'some-unknown-curve' as unknown as InsulinCurve };
         const treatment = makeTreatment(1, 60, NOW);
-        const result = iobCalc(treatment, NOW, 'some-unknown-curve', 5, 75, profile);
+        const result = iobCalc(treatment, NOW, 'some-unknown-curve' as unknown as InsulinCurve, 5, 75, profile);
         expect(result).toMatchSnapshot();
       });
     });
 
     describe('bilinear with custom peak time (peak is ignored for bilinear)', () => {
       it('bilinear ignores useCustomPeakTime', () => {
-        const profile = { ...baseProfile, curve: 'bilinear', useCustomPeakTime: true, insulinPeakTime: 45 };
+        const profile = { ...baseProfile, curve: 'bilinear' as const, useCustomPeakTime: true, insulinPeakTime: 45 };
         const treatment = makeTreatment(1, 60, NOW);
         const result = iobCalc(treatment, NOW, 'bilinear', 5, 45, profile);
         expect(result).toMatchSnapshot();
