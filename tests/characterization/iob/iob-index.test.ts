@@ -35,25 +35,26 @@ function makeInputs(history: PumpHistoryEvent[], profileOverrides: Record<string
 }
 
 /** Normalize the IOB array for stable snapshots (replace Date objects) */
-function normalizeArray(arr: any[]) {
+function normalizeArray(arr: object[]) {
   return arr.map((entry, i) => {
+    const rec = entry as Record<string, unknown>;
     const out: Record<string, unknown> = {};
-    for (const key of Object.keys(entry)) {
+    for (const key of Object.keys(rec)) {
       if (key === 'time') {
         out[key] = `[TIME+${i * 5}m]`;
       } else if (key === 'iobWithZeroTemp') {
-        const zt = entry[key];
+        const zt = rec[key] as Record<string, unknown>;
         out[key] = {
           ...zt,
           time: `[TIME+${i * 5}m]`,
         };
       } else if (key === 'lastTemp') {
-        const lt = entry[key];
-        out[key] = lt.date === 0
+        const lt = rec[key] as Record<string, unknown>;
+        out[key] = (lt as { date: number }).date === 0
           ? { date: 0 }
           : { ...lt, started_at: '[STARTED_AT]' };
       } else {
-        out[key] = entry[key];
+        out[key] = rec[key];
       }
     }
     return out;
