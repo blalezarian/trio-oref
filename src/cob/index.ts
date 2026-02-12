@@ -40,7 +40,8 @@ const CI_LOOKBACK_MS = 45 * MS_PER_MINUTE;
 const MAX_INTERPOLATION_GAP_MINUTES = 240;
 /** Elapsed-minutes gap above which BG data is interpolated */
 const BUCKETING_GAP_THRESHOLD_MIN = 8;
-function detectCarbAbsorption(inputs: CarbAbsorptionInputs): CarbAbsorptionResult {
+
+export function detectCarbAbsorption(inputs: CarbAbsorptionInputs): CarbAbsorptionResult {
 
     let profile: Record<string, unknown>;
     const glucose_data = inputs.glucose_data!.map((obj: GlucoseEntry) => {
@@ -242,4 +243,3 @@ function detectCarbAbsorption(inputs: CarbAbsorptionInputs): CarbAbsorptionResul
     ,   "allDeviations": allDeviations
     }
 }
-export default detectCarbAbsorption;

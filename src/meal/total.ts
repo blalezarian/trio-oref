@@ -1,5 +1,5 @@
 import tz from 'moment-timezone';
-import calcMealCOB from '../determine-basal/cob';
+import { detectCarbAbsorption as calcMealCOB } from '../cob/index';
 import type { CarbTreatment, GlucoseEntry, PumpHistoryEvent } from '../types/index';
 import { MS_PER_HOUR, DEFAULT_MAX_MEAL_ABSORPTION_HOURS } from '../constants';
 
