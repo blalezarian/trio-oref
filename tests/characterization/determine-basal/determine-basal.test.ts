@@ -25,6 +25,7 @@ import {
 
 import determine_basal from '../../../lib/determine-basal/determine-basal';
 import tempBasalFunctions from '../../../lib/basal-set-temp';
+import type { TempBasalFunctions, DetermineBasalResult } from '../../../lib/types/index';
 
 /**
  * Normalize the output for stable snapshots:
@@ -104,15 +105,15 @@ describe('determine-basal characterization tests', () => {
             profile,
             autosens_data,
             meal_data,
-            tempBasalFunctions,
+            tempBasalFunctions as unknown as TempBasalFunctions,
             microBolusAllowed,
             reservoir_data,
             currentTime,
-            pumphistory,
+            pumphistory ?? [],
             preferences,
             basalprofile,
             trio_custom_variables,
-            middleWare,
+            middleWare as ((arg: DetermineBasalResult) => DetermineBasalResult) | undefined,
           );
 
           const normalized = normalizeOutput(output);
@@ -163,10 +164,10 @@ function callDetermineBasal(overrides: {
     overrides.profile_raw ? overrides.profile : (overrides.profile ?? defaultProfile()),
     overrides.autosens_data_raw ? overrides.autosens_data : (overrides.autosens_data ?? defaultAutosensData()),
     overrides.meal_data ?? defaultMealData(),
-    tempBasalFunctions,
+    tempBasalFunctions as unknown as TempBasalFunctions,
     overrides.microBolusAllowed ?? false,
     overrides.reservoir_data ?? 100,
-    overrides.currentTime_raw ? overrides.currentTime : (overrides.currentTime ?? FIXED_TIME),
+    overrides.currentTime_raw ? (overrides.currentTime ?? undefined) : (overrides.currentTime ?? FIXED_TIME),
     [],
     overrides.preferences ?? defaultPreferences(),
     defaultBasalProfile(),

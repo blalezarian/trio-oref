@@ -59,6 +59,26 @@ interface ProfileDefaults {
   weightPercentage: number;
   tddAdjBasal: boolean;
   threshold_setting: number;
+  // Fields added by generate():
+  dia?: number;
+  model?: string;
+  current_basal?: number;
+  basalprofile?: Array<{ minutes?: number; i?: number; rate: number }>;
+  max_daily_basal?: number;
+  max_basal?: number;
+  out_units?: string;
+  min_bg?: number;
+  max_bg?: number;
+  bg_targets?: {
+    user_preferred_units?: string;
+    targets: Array<{ offset: number; low: number; high: number; min_bg?: number; max_bg?: number }>;
+    raw?: unknown;
+  };
+  temptargetSet?: boolean;
+  sens?: number;
+  isfProfile?: { sensitivities: Array<{ offset: number; sensitivity: number }> };
+  carb_ratio?: number;
+  carb_ratios?: { units: 'grams' | 'exchanges' | (string & {}); schedule?: Array<{ offset: number; ratio: number }> };
   [key: string]: unknown;
 }
 
@@ -201,70 +221,70 @@ function generate (inputs: ProfileInputs, opts?: ProfileOpts): ProfileDefaults |
   // and apply if applicable
   for (var pref in profile) {
     if (inputs.hasOwnProperty(pref)) {
-      (profile as any)[pref] = (inputs as any)[pref];
+      (profile as Record<string, unknown>)[pref] = (inputs as Record<string, unknown>)[pref];
     }
   }
 
   var pumpsettings_data = inputs.settings;
   if (inputs.settings.insulin_action_curve > 1) {
-    (profile as any).dia =  pumpsettings_data.insulin_action_curve;
+    profile.dia =  pumpsettings_data.insulin_action_curve;
   } else {
-    console.error('DIA of', (profile as any).dia, 'is not supported');
+    console.error('DIA of', profile.dia, 'is not supported');
     return -1;
   }
 
   if (inputs.model) {
-    (profile as any).model = inputs.model;
+    profile.model = inputs.model;
   }
-  (profile as any).skip_neutral_temps = inputs.skip_neutral_temps;
+  profile.skip_neutral_temps = inputs.skip_neutral_temps!;
 
-  (profile as any).current_basal = basal.basalLookup(inputs.basals);
-  (profile as any).basalprofile = inputs.basals;
+  profile.current_basal = basal.basalLookup(inputs.basals);
+  profile.basalprofile = inputs.basals;
 
-  _.forEach((profile as any).basalprofile, function(basalentry: any) {
-    basalentry.rate = +(Math.round(basalentry.rate + "e+3" as any)  + "e-3");
+  _.forEach(profile.basalprofile, function(basalentry: { rate: number; [key: string]: unknown }) {
+    basalentry.rate = +(Math.round(basalentry.rate + "e+3" as unknown as number)  + "e-3");
   });
 
-  (profile as any).max_daily_basal = basal.maxDailyBasal(inputs);
-  (profile as any).max_basal = basal.maxBasalLookup(inputs);
-  if ((profile as any).current_basal === 0) {
-    console.error("current_basal of",(profile as any).current_basal,"is not supported");
+  profile.max_daily_basal = basal.maxDailyBasal(inputs);
+  profile.max_basal = basal.maxBasalLookup(inputs);
+  if (profile.current_basal === 0) {
+    console.error("current_basal of",profile.current_basal,"is not supported");
     return -1;
   }
-  if ((profile as any).max_daily_basal === 0) {
-    console.error("max_daily_basal of",(profile as any).max_daily_basal,"is not supported");
+  if (profile.max_daily_basal === 0) {
+    console.error("max_daily_basal of",profile.max_daily_basal,"is not supported");
     return -1;
   }
-  if ((profile as any).max_basal < 0.1) {
-    console.error("max_basal of",(profile as any).max_basal,"is not supported");
+  if (profile.max_basal! < 0.1) {
+    console.error("max_basal of",profile.max_basal,"is not supported");
     return -1;
   }
 
-  var range = targets.bgTargetsLookup(inputs as any, profile as any);
-  (profile as any).out_units = inputs.targets.user_preferred_units;
-  (profile as any).min_bg = Math.round(range.min_bg!);
-  (profile as any).max_bg = Math.round(range.max_bg!);
-  (profile as any).bg_targets = inputs.targets;
+  var range = targets.bgTargetsLookup(inputs as unknown as Parameters<typeof targets.bgTargetsLookup>[0], profile as unknown as Parameters<typeof targets.bgTargetsLookup>[1]);
+  profile.out_units = inputs.targets.user_preferred_units;
+  profile.min_bg = Math.round(range.min_bg!);
+  profile.max_bg = Math.round(range.max_bg!);
+  profile.bg_targets = inputs.targets;
 
-  _.forEach((profile as any).bg_targets.targets, function(bg_entry: any) {
+  _.forEach(profile.bg_targets!.targets, function(bg_entry: { offset: number; low: number; high: number; min_bg?: number; max_bg?: number }) {
     bg_entry.high = Math.round(bg_entry.high);
     bg_entry.low = Math.round(bg_entry.low);
-    bg_entry.min_bg = Math.round(bg_entry.min_bg);
-    bg_entry.max_bg = Math.round(bg_entry.max_bg);
+    bg_entry.min_bg = Math.round(bg_entry.min_bg!);
+    bg_entry.max_bg = Math.round(bg_entry.max_bg!);
   });
 
-  delete (profile as any).bg_targets.raw;
+  delete profile.bg_targets!.raw;
 
-  (profile as any).temptargetSet = range.temptargetSet;
-  (profile as any).sens = isf.isfLookup(inputs.isf);
-  (profile as any).isfProfile = inputs.isf;
-  if ((profile as any).sens < 5) {
-    console.error("ISF of",(profile as any).sens,"is not supported");
+  profile.temptargetSet = range.temptargetSet;
+  profile.sens = isf.isfLookup(inputs.isf);
+  profile.isfProfile = inputs.isf;
+  if (profile.sens! < 5) {
+    console.error("ISF of",profile.sens,"is not supported");
     return -1;
   }
   if (typeof(inputs.carbratio) !== "undefined") {
-    (profile as any).carb_ratio = carb_ratios.carbRatioLookup(inputs, profile);
-    (profile as any).carb_ratios = inputs.carbratio;
+    profile.carb_ratio = carb_ratios.carbRatioLookup(inputs, profile);
+    profile.carb_ratios = inputs.carbratio;
   } else {
     console.error("Profile wasn't given carb ratio data, cannot calculate carb_ratio");
   }

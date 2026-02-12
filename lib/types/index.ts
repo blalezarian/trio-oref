@@ -282,6 +282,8 @@ export interface MealData {
   lastCarbTime?: number;
   /** True if Bolus Wizard was used in the last 6 hours */
   bwFound: boolean;
+  /** Status reason string (e.g. "Could not parse clock data") */
+  reason?: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -439,6 +441,8 @@ export interface Profile {
   maxDelta_bg_threshold?: number;
   /** Multiplier for target when CGM is noisy */
   noisyCGMTargetMultiplier?: number;
+  /** Maximum raw BG value (mg/dL) used in noisy CGM target adjustment */
+  maxRaw?: number;
   /** Whether pump suspends should zero out IOB */
   suspend_zeros_iob?: boolean;
   /** Reset autosens on pump rewind */
