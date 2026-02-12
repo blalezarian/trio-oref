@@ -243,8 +243,6 @@ function calcTempTreatments (inputs: HistoryInputs, zeroTempDuration?: number): 
     let firstResumeTime: string = undefined!;
     let lastSuspendTime: string = undefined!;
     let currentlySuspended: number | false = false;
-    const suspendError = false;
-
     const now = new Date(tz(inputs.clock));
 
     if(inputs.history24) {

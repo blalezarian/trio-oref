@@ -171,9 +171,6 @@ function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
     // if (typeof(opts.preppedGlucose) !== 'undefined') {
         // var preppedGlucoseData = opts.preppedGlucose;
     // }
-    //starting variable at 0
-    const boluses = 0;
-    const maxCarbs = 0;
     //console.error(treatments);
     if (!treatments) return {} as CategorizeResult;
 
