@@ -33,11 +33,11 @@ function iobCalc(treatment: Treatment, time: Date | undefined, curve: InsulinCur
     if (treatment.insulin) {
 
         // Calc minutes since bolus (minsAgo)
-        if (typeof time === 'undefined') {
+        if (time === undefined) {
             time = new Date();
         }
-        var bolusTime = new Date(treatment.date);
-        var minsAgo = Math.round((time.getTime() - bolusTime.getTime()) / MS_PER_MINUTE);
+        const bolusTime = new Date(treatment.date);
+        const minsAgo = Math.round((time.getTime() - bolusTime.getTime()) / MS_PER_MINUTE);
 
 
         if (curve === 'bilinear') {
@@ -54,41 +54,41 @@ function iobCalc(treatment: Treatment, time: Date | undefined, curve: InsulinCur
 
 function iobCalcBilinear(treatment: Treatment, minsAgo: number, dia: number): IOBContribution {
 
-    var default_dia = BILINEAR_DEFAULT_DIA_HOURS; // assumed duration of insulin activity, in hours
-    var peak = BILINEAR_PEAK_MINUTES;            // assumed peak insulin activity, in minutes
-    var end = BILINEAR_END_MINUTES;              // assumed end of insulin activity, in minutes
+    const default_dia = BILINEAR_DEFAULT_DIA_HOURS; // assumed duration of insulin activity, in hours
+    const peak = BILINEAR_PEAK_MINUTES;            // assumed peak insulin activity, in minutes
+    const end = BILINEAR_END_MINUTES;              // assumed end of insulin activity, in minutes
 
     // Scale minsAgo by the ratio of the default dia / the user's dia
     // so the calculations for activityContrib and iobContrib work for
     // other dia values (while using the constants specified above)
-    var timeScalar = default_dia / dia;
-    var scaled_minsAgo = timeScalar * minsAgo;
+    const timeScalar = default_dia / dia;
+    const scaled_minsAgo = timeScalar * minsAgo;
 
 
-    var activityContrib = 0;
-    var iobContrib = 0;
+    let activityContrib = 0;
+    let iobContrib = 0;
 
     // Calc percent of insulin activity at peak, and slopes up to and down from peak
     // Based on area of triangle, because area under the insulin action "curve" must sum to 1
     // (length * height) / 2 = area of triangle (1), therefore height (activityPeak) = 2 / length (which in this case is dia, in minutes)
     // activityPeak scales based on user's dia even though peak and end remain fixed
-    var activityPeak = 2 / (dia * 60)
-    var slopeUp = activityPeak / peak
-    var slopeDown = -1 * (activityPeak / (end - peak))
+    const activityPeak = 2 / (dia * 60)
+    const slopeUp = activityPeak / peak
+    const slopeDown = -1 * (activityPeak / (end - peak))
 
     if (scaled_minsAgo < peak) {
 
         activityContrib = treatment.insulin! * (slopeUp * scaled_minsAgo);
 
-        var x1 = (scaled_minsAgo / 5) + 1;  // scaled minutes since bolus, pre-peak; divided by 5 to work with coefficients estimated based on 5 minute increments
+        const x1 = (scaled_minsAgo / 5) + 1;  // scaled minutes since bolus, pre-peak; divided by 5 to work with coefficients estimated based on 5 minute increments
         iobContrib = treatment.insulin! * ( (-0.001852*x1*x1) + (0.001852*x1) + 1.000000 );
 
     } else if (scaled_minsAgo < end) {
 
-        var minsPastPeak = scaled_minsAgo - peak
+        const minsPastPeak = scaled_minsAgo - peak
         activityContrib = treatment.insulin! * (activityPeak + (slopeDown * minsPastPeak));
 
-        var x2 = ((scaled_minsAgo - peak) / 5);  // scaled minutes past peak; divided by 5 to work with coefficients estimated based on 5 minute increments
+        const x2 = ((scaled_minsAgo - peak) / 5);  // scaled minutes past peak; divided by 5 to work with coefficients estimated based on 5 minute increments
         iobContrib = treatment.insulin! * ( (0.001323*x2*x2) + (-0.054233*x2) + 0.555560 );
     }
 
@@ -133,11 +133,11 @@ function iobCalcExponential(treatment: Treatment, minsAgo: number, dia: number, 
     } else {
         console.error('Curve of',profile.curve,'is not supported.');
     }
-    var end = dia * SECONDS_PER_MINUTE;  // end of insulin activity, in minutes
+    const end = dia * SECONDS_PER_MINUTE;  // end of insulin activity, in minutes
 
 
-    var activityContrib = 0;
-    var iobContrib = 0;
+    let activityContrib = 0;
+    let iobContrib = 0;
 
     if (minsAgo < end) {
 
@@ -146,9 +146,9 @@ function iobCalcExponential(treatment: Treatment, minsAgo: number, dia: number, 
         //   td = end
         //   tp = peak
         //   t  = minsAgo
-        var tau = peak * (1 - peak / end) / (1 - 2 * peak / end);  // time constant of exponential decay
-        var a = 2 * tau / end;                                     // rise time factor
-        var S = 1 / (1 - a + (1 + a) * Math.exp(-end / tau));      // auxiliary scale factor
+        const tau = peak * (1 - peak / end) / (1 - 2 * peak / end);  // time constant of exponential decay
+        const a = 2 * tau / end;                                     // rise time factor
+        const S = 1 / (1 - a + (1 + a) * Math.exp(-end / tau));      // auxiliary scale factor
 
         activityContrib = treatment.insulin! * (S / Math.pow(tau, 2)) * minsAgo * (1 - minsAgo / end) * Math.exp(-minsAgo / tau);
         iobContrib = treatment.insulin! * (1 - S * (1 - a) * ((Math.pow(minsAgo, 2) / (tau * end * (1 - a)) - minsAgo / tau - 1) * Math.exp(-minsAgo / tau) + 1));

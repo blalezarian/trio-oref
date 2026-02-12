@@ -48,19 +48,19 @@ interface IobTotalResult {
 
 function iobTotal(opts: IobTotalOpts, time: Date): IobTotalResult | Record<string, never> {
 
-    var now = time.getTime();
-    var iobCalc = opts.calculate;
-    var treatments = opts.treatments;
-    var profile_data = opts.profile;
-    var dia = profile_data.dia;
-    var peak = 0;
-    var iob = 0;
-    var basaliob = 0;
-    var bolusiob = 0;
-    var netbasalinsulin = 0;
-    var bolusinsulin = 0;
+    const now = time.getTime();
+    const iobCalc = opts.calculate;
+    const treatments = opts.treatments;
+    const profile_data = opts.profile;
+    let dia = profile_data.dia;
+    let peak = 0;
+    let iob = 0;
+    let basaliob = 0;
+    let bolusiob = 0;
+    let netbasalinsulin = 0;
+    let bolusinsulin = 0;
     //var bolussnooze = 0;
-    var activity = 0;
+    let activity = 0;
     if (!treatments) return {};
     //if (typeof time === 'undefined') {
         //var time = new Date();
@@ -72,7 +72,7 @@ function iobTotal(opts: IobTotalOpts, time: Date): IobTotalResult | Record<strin
         dia = MIN_DIA_HOURS;
     }
 
-    var curveDefaults: Record<InsulinCurve, { requireLongDia: boolean; peak: number; tdMin?: number }> = {
+    const curveDefaults: Record<InsulinCurve, { requireLongDia: boolean; peak: number; tdMin?: number }> = {
         'bilinear': {
             requireLongDia: false,
             peak: RAPID_ACTING_PEAK // not really used, but prevents having to check later
@@ -89,7 +89,7 @@ function iobTotal(opts: IobTotalOpts, time: Date): IobTotalResult | Record<strin
         },
     };
 
-    var curve: InsulinCurve = 'bilinear';
+    let curve: InsulinCurve = 'bilinear';
 
     if (profile_data.curve !== undefined) {
         curve = profile_data.curve.toLowerCase() as InsulinCurve;
@@ -100,7 +100,7 @@ function iobTotal(opts: IobTotalOpts, time: Date): IobTotalResult | Record<strin
         curve = 'rapid-acting';
     }
 
-    var defaults = curveDefaults[curve];
+    const defaults = curveDefaults[curve];
 
     // Force minimum of 5 hour DIA when default requires a Long DIA.
     if (defaults.requireLongDia && dia < MIN_LONG_DIA_HOURS) {
@@ -110,12 +110,12 @@ function iobTotal(opts: IobTotalOpts, time: Date): IobTotalResult | Record<strin
 
     peak = defaults.peak;
 
-    treatments.forEach(function(treatment) {
+    treatments.forEach((treatment) => {
         if( treatment.date <= now ) {
-            var dia_ago = now - dia*MS_PER_HOUR;
+            const dia_ago = now - dia*MS_PER_HOUR;
             if( treatment.date > dia_ago ) {
                 // tIOB = total IOB
-                var tIOB = iobCalc(treatment, time, curve, dia, peak, profile_data);
+                const tIOB = iobCalc(treatment, time, curve, dia, peak, profile_data);
                 if (tIOB && tIOB.iobContrib) { iob += tIOB.iobContrib; }
                 if (tIOB && tIOB.activityContrib) { activity += tIOB.activityContrib; }
                 // basals look like either of these:

@@ -82,7 +82,7 @@ interface IobGenerateOpts {
 
 function generate (inputs: IobIndexInputs, currentIOBOnly?: boolean, treatments?: IobIndexTreatment[]): IobIndexEntry[] {
 
-    var treatmentsWithZeroTemp: IobIndexTreatment[];
+    let treatmentsWithZeroTemp: IobIndexTreatment[];
     if (!treatments) {
         treatments = find_insulin(inputs);
         // calculate IOB based on continuous future zero temping as well
@@ -93,7 +93,7 @@ function generate (inputs: IobIndexInputs, currentIOBOnly?: boolean, treatments?
     //console.error(treatments.length, treatmentsWithZeroTemp.length);
     //console.error(treatments[treatments.length-1], treatmentsWithZeroTemp[treatmentsWithZeroTemp.length-1])
 
-    var opts: IobGenerateOpts = {
+    const opts: IobGenerateOpts = {
         treatments: treatments
     , profile: inputs.profile
     , calculate: calculate
@@ -101,23 +101,23 @@ function generate (inputs: IobIndexInputs, currentIOBOnly?: boolean, treatments?
     if ( inputs.autosens ) {
         opts.autosens = inputs.autosens;
     }
-    var optsWithZeroTemp: IobGenerateOpts = {
+    const optsWithZeroTemp: IobGenerateOpts = {
         treatments: treatmentsWithZeroTemp
     , profile: inputs.profile
     , calculate: calculate
     };
 
-    var iobArray: IobIndexEntry[] = [];
+    const iobArray: IobIndexEntry[] = [];
     //console.error(inputs.clock);
     if (! /(Z|[+-][0-2][0-9]:?[034][05])+/.test(inputs.clock) ) {
         console.error("Warning: clock input " + inputs.clock + " is unzoned; please pass clock-zoned.json instead");
     }
-    var clock = new Date(tz(inputs.clock));
+    const clock = new Date(tz(inputs.clock));
 
-    var lastBolusTime: number = new Date(0).getTime(); //clock.getTime());
-    var lastTemp: IobIndexTreatment = { date: new Date(0).getTime() } as IobIndexTreatment;
+    let lastBolusTime: number = new Date(0).getTime(); //clock.getTime());
+    let lastTemp: IobIndexTreatment = { date: new Date(0).getTime() } as IobIndexTreatment;
     //console.error(treatments[treatments.length-1]);
-    treatments.forEach(function(treatment: IobIndexTreatment) {
+    treatments.forEach((treatment: IobIndexTreatment) => {
         if (treatment.insulin && treatment.started_at) {
             lastBolusTime = Math.max(lastBolusTime, treatment.started_at.getTime());
             //console.error(treatment.insulin,treatment.started_at,lastBolusTime);
@@ -132,7 +132,7 @@ function generate (inputs: IobIndexInputs, currentIOBOnly?: boolean, treatments?
         //console.error(treatment.rate, treatment.duration, treatment.started_at,lastTemp.started_at)
         //if (treatment.insulin && treatment.started_at) { console.error(treatment.insulin,treatment.started_at,lastBolusTime); }
     });
-    var iStop;
+    let iStop;
     if (currentIOBOnly) {
         // for COB calculation, we only need the zeroth element of iobArray
         iStop=1
@@ -140,12 +140,12 @@ function generate (inputs: IobIndexInputs, currentIOBOnly?: boolean, treatments?
         // predict IOB out to 4h, regardless of DIA
         iStop=IOB_PREDICTION_HORIZON_MINUTES;
     }
-    var t: Date;
-    for (var i=0; i<iStop; i+=PRED_INTERVAL_MINUTES){
+    let t: Date;
+    for (let i=0; i<iStop; i+=PRED_INTERVAL_MINUTES){
         t = new Date(clock.getTime() + i*MS_PER_MINUTE);
         //console.error(t);
-        var iob = sum(opts as Parameters<typeof sum>[0], t) as IobIndexEntry;
-        var iobWithZeroTemp = sum(optsWithZeroTemp as Parameters<typeof sum>[0], t) as IobIndexEntry;
+        const iob = sum(opts as Parameters<typeof sum>[0], t) as IobIndexEntry;
+        const iobWithZeroTemp = sum(optsWithZeroTemp as Parameters<typeof sum>[0], t) as IobIndexEntry;
         //console.error(opts.treatments[opts.treatments.length-1], optsWithZeroTemp.treatments[optsWithZeroTemp.treatments.length-1])
         iobArray.push(iob);
         //console.error(iob.iob, iobWithZeroTemp.iob);
