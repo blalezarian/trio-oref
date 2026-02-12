@@ -3,7 +3,7 @@
 
 import find_meals from '../meal/history';
 import categorize from './categorize';
-import type { PumpHistoryEvent, InsulinCurve } from '../types/index';
+import type { PumpHistoryEvent, InsulinCurve, MealAbsorptionPhase } from '../types/index';
 import { ULTRA_RAPID_PEAK, RAPID_ACTING_PEAK, HOURS_PER_DAY } from '../constants';
 
 /** Sentinel value for minimum-deviations search initialization */
@@ -83,7 +83,7 @@ interface AutotunePrepGlucoseDatum {
   avgDelta: string;
   BGI: number;
   deviation: string;
-  mealAbsorption?: string;
+  mealAbsorption?: MealAbsorptionPhase;
   mealCarbs?: number;
 }
 

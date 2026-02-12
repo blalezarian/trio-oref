@@ -1,5 +1,5 @@
 import percentile from '../percentile';
-import type { InsulinCurve } from '../types/index';
+import type { InsulinCurve, MealAbsorptionPhase } from '../types/index';
 import {
     ULTRA_RAPID_PEAK,
     RAPID_ACTING_PEAK,
@@ -66,7 +66,7 @@ interface AutotuneGlucoseDatum {
   deviation: string;
   BGI: number;
   avgDelta: string;
-  mealAbsorption?: string;
+  mealAbsorption?: MealAbsorptionPhase;
   mealCarbs?: number;
 }
 

@@ -4,7 +4,7 @@ import getIOB from '../iob/index';
 import ISF from '../profile/isf';
 import find_insulin from '../iob/history';
 import dosed from './dosed';
-import type { PumpHistoryEvent, CarbTreatment, InsulinCurve } from '../types/index';
+import type { PumpHistoryEvent, CarbTreatment, InsulinCurve, MealAbsorptionPhase } from '../types/index';
 import {
     MIN_VALID_GLUCOSE_MGDL,
     MS_PER_MINUTE,
@@ -31,9 +31,9 @@ interface CategorizeGlucoseEntry {
   avgDelta?: string;
   BGI?: number;
   deviation?: string;
-  mealAbsorption?: string;
+  mealAbsorption?: MealAbsorptionPhase;
   mealCarbs?: number;
-  uamAbsorption?: string;
+  uamAbsorption?: 'start';
 }
 
 interface CategorizeBasalProfileEntry {
@@ -101,9 +101,9 @@ interface CategorizeGlucoseDatum {
   avgDelta: string;
   BGI: number;
   deviation: string;
-  mealAbsorption?: string;
+  mealAbsorption?: MealAbsorptionPhase;
   mealCarbs?: number;
-  uamAbsorption?: string;
+  uamAbsorption?: 'start';
 }
 
 interface CRDatum {
