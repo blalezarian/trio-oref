@@ -112,9 +112,9 @@ export function detectSensitivity(inputs: AutosensInputs): AutosensResult {
     });
     //console.error(meals);
 
-    const avgDeltas: (number | string)[] = [];
-    const bgis: (number | string)[] = [];
-    const deviations: (number | string)[] = [];
+    const avgDeltas: number[] = [];
+    const bgis: number[] = [];
+    const deviations: number[] = [];
     let deviationSum = 0;
     const bucketed_data: (GlucoseEntry & { mealCarbs?: number })[] = [];
     glucose_data.reverse();
@@ -215,7 +215,7 @@ export function detectSensitivity(inputs: AutosensInputs): AutosensResult {
 
         //console.error(bgTime , bucketed_data[i].glucose);
         let bg: number;
-        let avgDelta: number | string;
+        let avgDelta: number;
         let delta: number;
         if (bucketed_data[i].glucose !== undefined) {
             bg = bucketed_data[i].glucose!;
@@ -232,7 +232,7 @@ export function detectSensitivity(inputs: AutosensInputs): AutosensResult {
             continue;
         }
 
-        avgDelta = (avgDelta as number).toFixed(2);
+        avgDelta = parseFloat(avgDelta.toFixed(2));
         iob_inputs.clock=bgTime;
         iob_inputs.profile.current_basal = basal.basalLookup(basalprofile, bgTime)!;
         // make sure autosens doesn't use temptarget-adjusted insulin calculations
@@ -243,21 +243,20 @@ export function detectSensitivity(inputs: AutosensInputs): AutosensResult {
         //console.error("After: ", new Date().getTime());
         //console.log(JSON.stringify(iob));
 
-        let bgImpact: number | string = Math.round(( -iob.activity * sens * PRED_INTERVAL_MINUTES )*ROUND_SCALE_2DP)/ROUND_SCALE_2DP;
-        bgImpact = (bgImpact as number).toFixed(2);
+        const bgImpact: number = Math.round(( -iob.activity * sens * PRED_INTERVAL_MINUTES )*ROUND_SCALE_2DP)/ROUND_SCALE_2DP;
         //console.error(delta);
-        let deviation: number | string;
+        let deviation: number;
         if (isNaN(delta) ) {
             console.error("Bad delta: ",delta, bg, last_bg, old_bg);
         } else {
-            deviation = delta-(bgImpact as unknown as number);
+            deviation = delta-bgImpact;
         }
         //if (!deviation) { console.error(deviation, delta, bgImpact); }
         // set positive deviations to zero if BG is below 80
-        if ( bg < MIN_BG_TARGET && (deviation! as number) > 0 ) {
+        if ( bg < MIN_BG_TARGET && deviation! > 0 ) {
             deviation = 0;
         }
-        deviation = (deviation! as number).toFixed(2);
+        deviation = parseFloat(deviation!.toFixed(2));
 
         glucoseDatum = bucketed_data[i];
         //console.error(glucoseDatum);
@@ -272,11 +271,11 @@ export function detectSensitivity(inputs: AutosensInputs): AutosensResult {
             if ( treatmentTime < BGTime ) {
                 if (treatment.carbs! >= 1) {
             //console.error(treatmentDate, treatmentTime, BGTime, BGTime-treatmentTime);
-                    mealCOB += parseFloat(treatment.carbs as unknown as string);
-                    mealCarbs += parseFloat(treatment.carbs as unknown as string);
+                    mealCOB += treatment.carbs!;
+                    mealCarbs += treatment.carbs!;
                     displayCOB = Math.round(mealCOB);
                     //console.error(displayCOB, mealCOB, treatment.carbs);
-                    process.stderr.write(displayCOB.toString()+"g");
+                    process.stderr.write(`${displayCOB}g`);
                 }
                 meals.pop();
             }
@@ -285,7 +284,7 @@ export function detectSensitivity(inputs: AutosensInputs): AutosensResult {
         // calculate carb absorption for that 5m interval using the deviation.
         if ( mealCOB > 0 ) {
             //var profile = profileData;
-            const carbImpact = Math.max(deviation as unknown as number, profile.min_5m_carbimpact as number);
+            const carbImpact = Math.max(deviation, profile.min_5m_carbimpact as number);
             const absorbed = carbImpact * (profile.carb_ratio as number) / sens;
             if (absorbed) {
                 mealCOB = Math.max(0, mealCOB-absorbed);
@@ -297,7 +296,7 @@ export function detectSensitivity(inputs: AutosensInputs): AutosensResult {
         // If mealCOB is zero but all deviations since hitting COB=0 are positive, exclude from autosens
         //console.error(mealCOB, absorbing, mealCarbs);
         if (mealCOB > 0 || absorbing || mealCarbs > 0) {
-            if ((deviation as unknown as number) > 0 ) {
+            if (deviation > 0 ) {
                 absorbing = 1;
             } else {
                 absorbing = 0;
@@ -305,7 +304,7 @@ export function detectSensitivity(inputs: AutosensInputs): AutosensResult {
             // stop excluding positive deviations as soon as mealCOB=0 if meal has been absorbing for >5h
             if ( mealStartCounter > MEAL_ABSORPTION_LONG_COUNTER && mealCOB < 0.5 ) {
                 displayCOB = Math.round(mealCOB);
-                process.stderr.write(displayCOB.toString()+"g");
+                process.stderr.write(`${displayCOB}g`);
                 absorbing = 0;
             }
             if ( ! absorbing && mealCOB < 0.5 ) {
@@ -337,7 +336,7 @@ export function detectSensitivity(inputs: AutosensInputs): AutosensResult {
           //if (iob.iob > currentBasal || uam ) {
           if ((!inputs.retrospective && iob.iob > 2 * currentBasal) || uam || mealStartCounter < MEAL_EXCLUSION_COUNTER ) {
             mealStartCounter++;
-            if ((deviation as unknown as number) > 0) {
+            if (deviation > 0) {
                 uam = 1;
             } else {
                 uam = 0;
@@ -360,19 +359,19 @@ export function detectSensitivity(inputs: AutosensInputs): AutosensResult {
 
         // Exclude meal-related deviations (carb absorption) from autosens
         if ( type === "non-meal" ) {
-            if ( (deviation as unknown as number) > 0 ) {
-                //process.stderr.write(" "+bg.toString());
+            if ( deviation > 0 ) {
+                //process.stderr.write(` ${bg}`);
                 process.stderr.write("+");
-            } else if ( (deviation as unknown as number) === 0 ) {
+            } else if ( deviation === 0 ) {
                 process.stderr.write("=");
             } else {
-                //process.stderr.write(" "+bg.toString());
+                //process.stderr.write(` ${bg}`);
                 process.stderr.write("-");
             }
             avgDeltas.push(avgDelta);
             bgis.push(bgImpact);
             deviations.push(deviation);
-            deviationSum += parseFloat(deviation as string);
+            deviationSum += deviation;
         } else {
             process.stderr.write("x");
         }
@@ -395,7 +394,7 @@ export function detectSensitivity(inputs: AutosensInputs): AutosensResult {
         const hours = bgTime!.getHours();
         if ( minutes >= 0 && minutes < 5 ) {
             //console.error(bgTime);
-            process.stderr.write(hours.toString()+"h");
+            process.stderr.write(`${hours}h`);
             // add one neutral deviation every 2 hours to help decay over long exclusion periods
             if ( hours % 2 === 0 ) {
                 deviations.push(0);
@@ -425,31 +424,31 @@ export function detectSensitivity(inputs: AutosensInputs): AutosensResult {
             deviations.push(0);
         }
     }
-    avgDeltas.sort((a: number | string, b: number | string) => {return (a as number)-(b as number)});
-    bgis.sort((a: number | string, b: number | string) => {return (a as number)-(b as number)});
-    deviations.sort((a: number | string, b: number | string) => {return (a as number)-(b as number)});
+    avgDeltas.sort((a: number, b: number) => {return a-b});
+    bgis.sort((a: number, b: number) => {return a-b});
+    deviations.sort((a: number, b: number) => {return a-b});
     for (let i=0.9; i > 0.1; i = i - 0.01) {
-        //console.error("p="+i.toFixed(2)+": "+percentile(avgDeltas, i).toFixed(2)+", "+percentile(bgis, i).toFixed(2)+", "+percentile(deviations, i).toFixed(2));
-        if ( percentile(deviations as number[], (i+0.01)) >= 0 && percentile(deviations as number[], i) < 0 ) {
-            //console.error("p="+i.toFixed(2)+": "+percentile(avgDeltas, i).toFixed(2)+", "+percentile(bgis, i).toFixed(2)+", "+percentile(deviations, i).toFixed(2));
+        //console.error(`p=${i.toFixed(2)}: ${percentile(avgDeltas, i).toFixed(2)}, ${percentile(bgis, i).toFixed(2)}, ${percentile(deviations, i).toFixed(2)}`);
+        if ( percentile(deviations, (i+0.01)) >= 0 && percentile(deviations, i) < 0 ) {
+            //console.error(`p=${i.toFixed(2)}: ${percentile(avgDeltas, i).toFixed(2)}, ${percentile(bgis, i).toFixed(2)}, ${percentile(deviations, i).toFixed(2)}`);
             const lessThanZero = Math.round(PERCENT*i);
-            console.error(lessThanZero+"% of non-meal deviations negative (>50% = sensitivity)");
+            console.error(`${lessThanZero}% of non-meal deviations negative (>50% = sensitivity)`);
         }
-        if ( percentile(deviations as number[], (i+0.01)) > 0 && percentile(deviations as number[], i) <= 0 ) {
-            //console.error("p="+i.toFixed(2)+": "+percentile(avgDeltas, i).toFixed(2)+", "+percentile(bgis, i).toFixed(2)+", "+percentile(deviations, i).toFixed(2));
+        if ( percentile(deviations, (i+0.01)) > 0 && percentile(deviations, i) <= 0 ) {
+            //console.error(`p=${i.toFixed(2)}: ${percentile(avgDeltas, i).toFixed(2)}, ${percentile(bgis, i).toFixed(2)}, ${percentile(deviations, i).toFixed(2)}`);
             const greaterThanZero = PERCENT-Math.round(PERCENT*i);
-            console.error(greaterThanZero+"% of non-meal deviations positive (>50% = resistance)");
+            console.error(`${greaterThanZero}% of non-meal deviations positive (>50% = resistance)`);
         }
     }
-    const pSensitive = percentile(deviations as number[], 0.50);
-    const pResistant = percentile(deviations as number[], 0.50);
+    const pSensitive = percentile(deviations, 0.50);
+    const pResistant = percentile(deviations, 0.50);
 
     const average = deviationSum / deviations.length;
-    //console.error("Mean deviation: "+average.toFixed(2));
+    //console.error(`Mean deviation: ${average.toFixed(2)}`);
 
-    const squareDeviations = deviations.reduce((acc: number, dev: number | string) => {const dev_f = parseFloat(dev as string); return acc + dev_f * dev_f}, 0);
+    const squareDeviations = deviations.reduce((acc: number, dev: number) => acc + dev * dev, 0);
     const rmsDev = Math.sqrt(squareDeviations / deviations.length);
-    console.error("RMS deviation: "+rmsDev.toFixed(2));
+    console.error(`RMS deviation: ${rmsDev.toFixed(2)}`);
 
     let basalOff = 0;
 
@@ -472,16 +471,16 @@ export function detectSensitivity(inputs: AutosensInputs): AutosensResult {
     ratio = Math.min(ratio, profile.autosens_max as number);
 
     if (ratio !== rawRatio) {
-      console.error('Ratio limited from ' + rawRatio + ' to ' + ratio);
+      console.error(`Ratio limited from ${rawRatio} to ${ratio}`);
     }
 
     ratio = Math.round(ratio*ROUND_SCALE_2DP)/ROUND_SCALE_2DP;
     let newisf: number;
     newisf = Math.round((profile.sens as number) / ratio);
     //console.error(profile, newisf, ratio);
-    console.error("ISF adjusted from "+(profile.sens as number)+" to "+newisf);
-    //console.error("Basal adjustment "+basalOff.toFixed(2)+"U/hr");
-    //console.error("Ratio: "+ratio*100+"%: new ISF: "+newisf.toFixed(1)+"mg/dL/U");
+    console.error(`ISF adjusted from ${profile.sens as number} to ${newisf}`);
+    //console.error(`Basal adjustment ${basalOff.toFixed(2)}U/hr`);
+    //console.error(`Ratio: ${ratio*100}%: new ISF: ${newisf.toFixed(1)}mg/dL/U`);
     return {
         "ratio": ratio,
         "newisf": newisf
