@@ -19,6 +19,8 @@ function getFileFormat(filename)
         return "sh";
     } else if(filename.endsWith(".js")) {
         return "js";
+    } else if(filename.endsWith(".ts") && !filename.endsWith(".d.ts")) {
+        return "ts";
     } else if(filename.endsWith(".py")) {
         return "py";
     } else {
@@ -47,8 +49,17 @@ function checkFile(filename, type)
             timeout: 4000, //milliseconds
             encoding: "UTF-8",
         });
-        
+
         should.equal(js.status, 0, "Javascript file "+filename+" contains a syntax error.");
+        break;
+
+    case "ts":
+        var ts = child_process.spawnSync("./node_modules/.bin/tsx", ["--eval", "require('./"+filename+"')"], {
+            timeout: 4000, //milliseconds
+            encoding: "UTF-8",
+        });
+
+        should.equal(ts.status, 0, "TypeScript file "+filename+" contains a syntax error.");
         break;
     
     case "py":

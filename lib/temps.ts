@@ -1,12 +1,12 @@
 /** @deprecated Not used by the Trio algorithm pipeline. Candidate for removal. */
 
-function filter (treatments) {
+function filter (treatments: any[]) {
 
-  var results = [ ];
+  var results: any[] = [ ];
 
-  var state = { };
-  
-  function temp (ev) {
+  var state: any = { };
+
+  function temp (ev: any) {
     if ('duration (min)' in ev) {
       state.duration = ev['duration (min)'].toString( );
       state.raw_duration = ev;
@@ -31,7 +31,7 @@ function filter (treatments) {
     }
   }
 
-  function step (current) {
+  function step (current: any) {
     switch (current._type) {
       case 'TempBasalDuration':
       case 'TempBasal':
@@ -46,4 +46,4 @@ function filter (treatments) {
   return results;
 }
 
-exports = module.exports = filter;
+export default filter;

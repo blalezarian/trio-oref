@@ -3,7 +3,7 @@
 
 var fs = require('fs');
 
-function safeRequire (path) {
+function safeRequire (path: string) {
   var resolved;
 
   try {
@@ -15,7 +15,7 @@ function safeRequire (path) {
   return resolved;
 }
 
-function safeLoadFile(path) {
+function safeLoadFile(path: string) {
   
   var resolved;
 
@@ -28,7 +28,7 @@ function safeLoadFile(path) {
   return resolved;
 }
 
-function requireWithTimestamp (path) {
+function requireWithTimestamp (path: string) {
   var resolved = safeLoadFile(path);
 
   if (resolved) {
@@ -39,7 +39,7 @@ function requireWithTimestamp (path) {
 
 // Functions that are needed in order to test the module. Can be removed in the future.
 
-function compareMethods(path) {
+function compareMethods(path: string) {
   var new_data = safeLoadFile(path);
   var old_data = safeRequire(path);
   if (JSON.stringify(new_data) === JSON.stringify(old_data) ) {
@@ -75,7 +75,7 @@ if (!module.parent) {
 
 }
 
-module.exports = {
+export default {
   safeRequire: safeRequire
   , requireWithTimestamp: requireWithTimestamp
   , safeLoadFile: safeLoadFile

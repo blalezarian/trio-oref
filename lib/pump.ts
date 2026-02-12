@@ -1,10 +1,10 @@
 /** @deprecated Not used by the Trio algorithm pipeline. Candidate for removal. */
 
-function translate (treatments) {
+function translate (treatments: any[]) {
 
-  var results = [ ];
-  
-  function step (current) {
+  var results: any[] = [ ];
+
+  function step (current: any) {
     var invalid = false;
     switch (current._type) {
       case 'CalBGForPH':
@@ -33,4 +33,4 @@ function translate (treatments) {
   return results;
 }
 
-exports = module.exports = translate;
+export default translate;
