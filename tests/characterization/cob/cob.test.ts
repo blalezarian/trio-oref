@@ -11,7 +11,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import detectCarbAbsorption from '../../../lib/determine-basal/cob';
+import detectCarbAbsorption from '../../../src/determine-basal/cob';
 
 const FIXED_TIME = '2025-01-15T12:00:00.000Z';
 const NOW = new Date(FIXED_TIME).getTime();

@@ -15,8 +15,8 @@
   THE SOFTWARE.
 */
 
-var basal = require('../lib/profile/basal');
-var detect = require('../lib/determine-basal/autosens');
+var basal = require('../src/profile/basal');
+var detect = require('../src/determine-basal/autosens');
 
 if (!module.parent) {
     var detectsensitivity = init();

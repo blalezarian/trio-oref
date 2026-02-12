@@ -3,7 +3,7 @@
 require('should');
 
 var moment = require('moment');
-var stats = require('../lib/calc-glucose-stats').default;
+var stats = require('../src/calc-glucose-stats').default;
 
 describe('NOISE', function() {
   it('should calculate Clean Sensor Noise', () => {

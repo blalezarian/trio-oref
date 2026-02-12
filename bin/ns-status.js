@@ -5,7 +5,7 @@ var os = require("os");
 var fs = require('fs');
 var moment = require("moment");
 
-var requireUtils = require('../lib/require-utils');
+var requireUtils = require('../src/require-utils');
 var requireWithTimestamp = requireUtils.requireWithTimestamp;
 var safeLoadFile = requireUtils.safeLoadFile;
 

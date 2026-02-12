@@ -281,7 +281,7 @@ function enable_smb(profile: Profile, microBolusAllowed: boolean, meal_data: Mea
     }
 
     // enable SMB/UAM (if enabled in preferences) for a full 6 hours after any carb entry
-    // (6 hours is defined in carbWindow in lib/meal/total.js)
+    // (6 hours is defined in carbWindow in src/meal/total.ts)
     if (profile.enableSMB_after_carbs === true && meal_data.carbs ) {
         if (meal_data.bwCarbs) {
             console.error("Warning: SMB enabled with Bolus Wizard carbs: be sure to easy bolus 30s before using Bolus Wizard");

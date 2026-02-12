@@ -7,8 +7,8 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import iobTotal from '../../../lib/iob/total';
-import iobCalc from '../../../lib/iob/calculate';
+import iobTotal from '../../../src/iob/total';
+import iobCalc from '../../../src/iob/calculate';
 
 const NOW = new Date('2025-01-15T12:00:00.000Z');
 

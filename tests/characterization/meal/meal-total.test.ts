@@ -10,8 +10,8 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import recentCarbs from '../../../lib/meal/total';
-import type { CarbTreatment, GlucoseEntry } from '../../../lib/types/index';
+import recentCarbs from '../../../src/meal/total';
+import type { CarbTreatment, GlucoseEntry } from '../../../src/types/index';
 
 const FIXED_TIME = '2025-01-15T12:00:00.000Z';
 const NOW = new Date(FIXED_TIME).getTime();

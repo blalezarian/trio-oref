@@ -6,7 +6,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import profileModule from '../../../lib/profile/index';
+import profileModule from '../../../src/profile/index';
 
 // Pin clock to 12:00 UTC so basalLookup (which calls new Date()) is deterministic
 const FIXED_TIME = new Date('2025-01-15T12:00:00.000Z');

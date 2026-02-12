@@ -6,7 +6,7 @@ var os = require("os");
 var ns_status = require("./ns-status");
 var oref0_normalize_temps = require("./oref0-normalize-temps");
 var fs = require('fs');
-var requireUtils = require('../lib/require-utils');
+var requireUtils = require('../src/require-utils');
 
 function createRetVal(stdout, return_val) {
     var returnObj = {

@@ -4,7 +4,7 @@ require('should');
 
 
 describe('getLastGlucose', function ( ) {
-    var getLastGlucose = require('../lib/glucose-get-last').default;
+    var getLastGlucose = require('../src/glucose-get-last').default;
     
     it('should handle NS sgv fields', function () {
       var glucose_status = getLastGlucose([{date: 1467942845000, sgv: 100}, {date: 1467942544500, sgv: 95}, {date: 1467942244000, sgv: 85}, {date: 1467941944000, sgv: 70}]);

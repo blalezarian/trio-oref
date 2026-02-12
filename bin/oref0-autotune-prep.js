@@ -20,7 +20,7 @@
 
 */
 
-var generate = require('../lib/autotune-prep');
+var generate = require('../src/autotune-prep');
 var _ = require('lodash');
 var moment = require('moment');
 

@@ -24,15 +24,15 @@ module.exports = {
     ],
   },
   entry: {
-    iob: './lib/iob/index.ts',
-    meal: './lib/meal/index.ts',
-    "determineBasal": './lib/determine-basal/determine-basal.ts',
-    "glucoseGetLast": './lib/glucose-get-last.ts',
-    "basalSetTemp": './lib/basal-set-temp.ts',
-    autosens: './lib/determine-basal/autosens.ts',
-    profile: './lib/profile/index.ts',
-    "autotunePrep": './lib/autotune-prep/index.ts',
-    "autotuneCore": './lib/autotune/index.ts'
+    iob: './src/iob/index.ts',
+    meal: './src/meal/index.ts',
+    "determineBasal": './src/determine-basal/determine-basal.ts',
+    "glucoseGetLast": './src/glucose-get-last.ts',
+    "basalSetTemp": './src/basal-set-temp.ts',
+    autosens: './src/determine-basal/autosens.ts',
+    profile: './src/profile/index.ts',
+    "autotunePrep": './src/autotune-prep/index.ts',
+    "autotuneCore": './src/autotune/index.ts'
   },
   output: {
     path: path.resolve(__dirname, 'dist'),

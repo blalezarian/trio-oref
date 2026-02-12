@@ -14,7 +14,7 @@
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
   THE SOFTWARE.
 */
-var detect = require('../lib/determine-basal/autosens');
+var detect = require('../src/determine-basal/autosens');
 
 if (!module.parent) {
     var argv = require('yargs')

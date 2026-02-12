@@ -6,8 +6,8 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import iobCalc from '../../../lib/iob/calculate';
-import type { InsulinCurve } from '../../../lib/types/index';
+import iobCalc from '../../../src/iob/calculate';
+import type { InsulinCurve } from '../../../src/types/index';
 
 const baseProfile = {
   dia: 5,

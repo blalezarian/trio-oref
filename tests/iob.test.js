@@ -3,7 +3,7 @@
 require('should');
 
 var moment = require('moment');
-var iob = require('../lib/iob').default;
+var iob = require('../src/iob').default;
 
 describe('IOB', function() {
 

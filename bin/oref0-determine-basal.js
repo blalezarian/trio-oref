@@ -14,8 +14,8 @@
   OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
   THE SOFTWARE.
 */
-var getLastGlucose = require('../lib/glucose-get-last');
-var determine_basal = require('../lib/determine-basal/determine-basal');
+var getLastGlucose = require('../src/glucose-get-last');
+var determine_basal = require('../src/determine-basal/determine-basal');
 
 /* istanbul ignore next */
 if (!module.parent) {
@@ -210,7 +210,7 @@ if (!module.parent) {
     //console.error(JSON.stringify(currenttemp));
     //console.error(JSON.stringify(profile));
 
-    var tempBasalFunctions = require('../lib/basal-set-temp');
+    var tempBasalFunctions = require('../src/basal-set-temp');
 
     var rT = determine_basal(glucose_status, currenttemp, iob_data, profile, autosens_data, meal_data, tempBasalFunctions, params['microbolus'], reservoir_data, currentTime);
 

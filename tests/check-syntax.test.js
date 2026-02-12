@@ -6,7 +6,7 @@
 // program pass a syntax check as Python 3 and this is something that should
 // be done anyways.
 
-var dirsToCheck = [ "bin", "lib", "www" ];
+var dirsToCheck = [ "bin", "src", "www" ];
 
 var fs = require("fs");
 var path = require("path");

@@ -13,7 +13,7 @@ let mockGetTime = function(minutes) {
 
 // Use proxyquire to load the carb_ratios module with our mock
 // TS import compiles to require(...).default, so mock must provide .default
-let carb_ratios_mod = proxyquire('../lib/profile/carbs', {
+let carb_ratios_mod = proxyquire('../src/profile/carbs', {
     '../medtronic-clock': { default: mockGetTime }
 });
 let carb_ratios = { carbRatioLookup: carb_ratios_mod.default };

@@ -3,7 +3,7 @@
 var should = require('should');
 
 describe('round_basal', function ( ) {
-    var round_basal = require('../lib/round-basal').default;
+    var round_basal = require('../src/round-basal').default;
 
     it('should round correctly without profile being passed in', function() {
         var basal = 0.025;
@@ -52,8 +52,8 @@ describe('round_basal', function ( ) {
 });
 
 describe('determine-basal', function ( ) {
-    var determine_basal = require('../lib/determine-basal/determine-basal').default;
-    var tempBasalFunctions = require('../lib/basal-set-temp').default;
+    var determine_basal = require('../src/determine-basal/determine-basal').default;
+    var tempBasalFunctions = require('../src/basal-set-temp').default;
 
    //function determine_basal(glucose_status, currenttemp, iob_data, profile)
 

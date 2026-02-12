@@ -9,8 +9,8 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import mealGenerate from '../../../lib/meal/index';
-import type { PumpHistoryEvent, GlucoseEntry } from '../../../lib/types/index';
+import mealGenerate from '../../../src/meal/index';
+import type { PumpHistoryEvent, GlucoseEntry } from '../../../src/types/index';
 
 const FIXED_TIME = '2025-01-15T12:00:00.000Z';
 const NOW = new Date(FIXED_TIME).getTime();

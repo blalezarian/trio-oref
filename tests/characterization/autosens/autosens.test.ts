@@ -10,7 +10,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import detectSensitivity from '../../../lib/determine-basal/autosens';
+import detectSensitivity from '../../../src/determine-basal/autosens';
 
 // ---------------------------------------------------------------------------
 // Helpers

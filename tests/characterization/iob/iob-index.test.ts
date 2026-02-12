@@ -7,8 +7,8 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import iob from '../../../lib/iob/index';
-import type { PumpHistoryEvent } from '../../../lib/types/index';
+import iob from '../../../src/iob/index';
+import type { PumpHistoryEvent } from '../../../src/types/index';
 
 const FIXED_TIME = '2025-01-15T12:00:00.000Z';
 const NOW = new Date(FIXED_TIME).getTime();

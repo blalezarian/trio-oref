@@ -11,8 +11,8 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import carbRatioLookup from '../../../lib/profile/carbs';
-import type { CarbRatioUnits } from '../../../lib/types/index';
+import carbRatioLookup from '../../../src/profile/carbs';
+import type { CarbRatioUnits } from '../../../src/types/index';
 
 const FIXED_TIME = '2025-01-15T12:00:00.000Z';
 

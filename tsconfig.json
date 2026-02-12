@@ -11,12 +11,12 @@
     "forceConsistentCasingInFileNames": true,
     "baseUrl": ".",
     "paths": {
-      "@lib/*": ["lib/*"],
+      "@lib/*": ["src/*"],
       "@tests/*": ["tests/*"]
     }
   },
   "include": [
-    "lib/**/*.ts",
+    "src/**/*.ts",
     "tests/characterization/**/*.ts",
     "tests/types/**/*.ts"
   ],

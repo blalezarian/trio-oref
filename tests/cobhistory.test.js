@@ -3,7 +3,7 @@
 var should = require('should');
 
 describe('cobhistory', function ( ) {
-    var find_cob_iob_entries = require('../lib/meal/history').default;
+    var find_cob_iob_entries = require('../src/meal/history').default;
 
 	var pumpHistory = [
 		{"_type": "BolusWizard","timestamp": "2016-06-19T12:51:36-04:00","carb_input": 40},

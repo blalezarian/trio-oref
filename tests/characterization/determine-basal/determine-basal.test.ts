@@ -23,9 +23,9 @@ import {
   defaultBasalProfile,
 } from '../helpers/defaults';
 
-import determine_basal from '../../../lib/determine-basal/determine-basal';
-import tempBasalFunctions from '../../../lib/basal-set-temp';
-import type { TempBasalFunctions, DetermineBasalResult } from '../../../lib/types/index';
+import determine_basal from '../../../src/determine-basal/determine-basal';
+import tempBasalFunctions from '../../../src/basal-set-temp';
+import type { TempBasalFunctions, DetermineBasalResult } from '../../../src/types/index';
 
 /**
  * Normalize the output for stable snapshots:

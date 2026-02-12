@@ -18,7 +18,7 @@
 
 */
 
-var find_insulin = require('../lib/iob/history');
+var find_insulin = require('../src/iob/history');
 
 if (!module.parent) {
   var argv = require('yargs')
