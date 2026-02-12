@@ -110,9 +110,9 @@ interface AutotunePrepResult {
 function generate (inputs: AutotunePrepInputs): AutotunePrepResult {
 
   //console.error(inputs);
-  var treatments = find_meals(inputs);
+  const treatments = find_meals(inputs);
 
-  var opts: Parameters<typeof categorize>[0] = {
+  const opts: Parameters<typeof categorize>[0] = {
     treatments: treatments
   , profile: inputs.profile
   , pumpHistory: inputs.history
@@ -123,37 +123,46 @@ function generate (inputs: AutotunePrepInputs): AutotunePrepResult {
   , categorize_uam_as_basal: inputs.categorize_uam_as_basal
   };
 
-  var autotune_prep_output: AutotunePrepResult = categorize(opts) as unknown as AutotunePrepResult;
+  const autotune_prep_output: AutotunePrepResult = categorize(opts) as unknown as AutotunePrepResult;
 
   if (inputs.tune_insulin_curve) {
     if (opts.profile.curve === 'bilinear') {
       console.error('--tune-insulin-curve is set but only valid for exponential curves');
     } else {
-      var minDeviations = DEVIATION_SENTINEL;
-      var newDIA = 0;
-      var diaDeviations: DiaDeviation[] = [];
-      var peakDeviations: PeakDeviation[] = [];
-      var currentDIA = opts.profile.dia;
-      var currentPeak = opts.profile.insulinPeakTime;
+      let minDeviations = DEVIATION_SENTINEL;
+      let newDIA = 0;
+      const diaDeviations: DiaDeviation[] = [];
+      const peakDeviations: PeakDeviation[] = [];
+      const currentDIA = opts.profile.dia;
+      const currentPeak = opts.profile.insulinPeakTime;
 
-      var consoleError = console.error;
+      const consoleError = console.error;
       console.error = function() {};
 
-      var startDIA=currentDIA - DIA_SEARCH_RANGE;
-      var endDIA=currentDIA + DIA_SEARCH_RANGE;
-      for (var dia=startDIA; dia <= endDIA; ++dia) {
-        var sqrtDeviations = 0;
-        var deviations = 0;
-        var deviationsSq = 0;
+      const startDIA=currentDIA - DIA_SEARCH_RANGE;
+      const endDIA=currentDIA + DIA_SEARCH_RANGE;
+      // variables shared across dia and peak loops (were function-scoped with var)
+      let sqrtDeviations: number;
+      let deviations: number;
+      let deviationsSq: number;
+      let curve_output: AutotunePrepResult;
+      let basalGlucose: AutotunePrepGlucoseDatum[];
+      let meanDeviation: number;
+      let SMRDeviation: number;
+      let RMSDeviation: number;
+      for (let dia=startDIA; dia <= endDIA; ++dia) {
+        sqrtDeviations = 0;
+        deviations = 0;
+        deviationsSq = 0;
 
         opts.profile.dia = dia;
 
-        var curve_output: AutotunePrepResult = categorize(opts) as unknown as AutotunePrepResult;
-        var basalGlucose = curve_output.basalGlucoseData;
+        curve_output = categorize(opts) as unknown as AutotunePrepResult;
+        basalGlucose = curve_output.basalGlucoseData;
 
-        for (var hour=0; hour < HOURS_PER_DAY; ++hour) {
-          for (var i=0; i < basalGlucose.length; ++i) {
-            var BGTime: Date | undefined;
+        for (let hour=0; hour < HOURS_PER_DAY; ++hour) {
+          for (let i=0; i < basalGlucose.length; ++i) {
+            let BGTime: Date | undefined;
 
             if (basalGlucose[i].date) {
               BGTime = new Date(basalGlucose[i].date);
@@ -165,7 +174,7 @@ function generate (inputs: AutotunePrepInputs): AutotunePrepResult {
               consoleError("Could not determine last BG time");
             }
 
-            var myHour = BGTime!.getHours();
+            const myHour = BGTime!.getHours();
             if (hour === myHour) {
               //console.error(basalGlucose[i].deviation);
               sqrtDeviations += Math.pow(parseFloat(String(Math.abs(Number(basalGlucose[i].deviation)))), 0.5);
@@ -175,9 +184,9 @@ function generate (inputs: AutotunePrepInputs): AutotunePrepResult {
           }
         }
 
-        var meanDeviation = Math.round(Math.abs(deviations/basalGlucose.length)*ROUND_SCALE_3DP)/ROUND_SCALE_3DP;
-        var SMRDeviation = Math.round(Math.pow(sqrtDeviations/basalGlucose.length,2)*ROUND_SCALE_3DP)/ROUND_SCALE_3DP;
-        var RMSDeviation = Math.round(Math.pow(deviationsSq/basalGlucose.length,0.5)*ROUND_SCALE_3DP)/ROUND_SCALE_3DP;
+        meanDeviation = Math.round(Math.abs(deviations/basalGlucose.length)*ROUND_SCALE_3DP)/ROUND_SCALE_3DP;
+        SMRDeviation = Math.round(Math.pow(sqrtDeviations/basalGlucose.length,2)*ROUND_SCALE_3DP)/ROUND_SCALE_3DP;
+        RMSDeviation = Math.round(Math.pow(deviationsSq/basalGlucose.length,0.5)*ROUND_SCALE_3DP)/ROUND_SCALE_3DP;
         consoleError('insulinEndTime', dia, 'meanDeviation:', meanDeviation, 'SMRDeviation:', SMRDeviation, 'RMSDeviation:',RMSDeviation, '(mg/dL)');
         diaDeviations.push({
             dia: dia,
@@ -199,7 +208,7 @@ function generate (inputs: AutotunePrepInputs): AutotunePrepResult {
 
       minDeviations = DEVIATION_SENTINEL;
 
-      var newPeak = 0;
+      let newPeak = 0;
       opts.profile.dia = currentDIA;
       //consoleError(opts.profile.useCustomPeakTime, opts.profile.insulinPeakTime);
       if ( ! opts.profile.useCustomPeakTime === true && opts.profile.curve === "ultra-rapid" ) {
@@ -209,9 +218,9 @@ function generate (inputs: AutotunePrepInputs): AutotunePrepResult {
       }
       opts.profile.useCustomPeakTime = true;
 
-      var startPeak=opts.profile.insulinPeakTime! - PEAK_SEARCH_RANGE;
-      var endPeak=opts.profile.insulinPeakTime! + PEAK_SEARCH_RANGE;
-      for (var peak=startPeak; peak <= endPeak; peak=(peak+PEAK_SEARCH_STEP)) {
+      const startPeak=opts.profile.insulinPeakTime! - PEAK_SEARCH_RANGE;
+      const endPeak=opts.profile.insulinPeakTime! + PEAK_SEARCH_RANGE;
+      for (let peak=startPeak; peak <= endPeak; peak=(peak+PEAK_SEARCH_STEP)) {
         sqrtDeviations = 0;
         deviations = 0;
         deviationsSq = 0;
@@ -222,8 +231,10 @@ function generate (inputs: AutotunePrepInputs): AutotunePrepResult {
         curve_output = categorize(opts);
         basalGlucose = curve_output.basalGlucoseData;
 
-        for (hour=0; hour < HOURS_PER_DAY; ++hour) {
-          for (i=0; i < basalGlucose.length; ++i) {
+        for (let hour=0; hour < HOURS_PER_DAY; ++hour) {
+          for (let i=0; i < basalGlucose.length; ++i) {
+            let BGTime: Date | undefined;
+
             if (basalGlucose[i].date) {
               BGTime = new Date(basalGlucose[i].date);
             } else if (basalGlucose[i].displayTime) {
@@ -234,7 +245,7 @@ function generate (inputs: AutotunePrepInputs): AutotunePrepResult {
               consoleError("Could not determine last BG time");
             }
 
-            myHour = BGTime!.getHours();
+            const myHour = BGTime!.getHours();
             if (hour === myHour) {
               //console.error(basalGlucose[i].deviation);
               sqrtDeviations += Math.pow(parseFloat(String(Math.abs(Number(basalGlucose[i].deviation)))), 0.5);

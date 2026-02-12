@@ -15,7 +15,7 @@ import {
 //rounding of basals for pumps
 //20 for omnipod to 0.05
 //40 for medtronic to 0.025
-var basal_scale: number = BASAL_SCALE_DEFAULT;
+const basal_scale: number = BASAL_SCALE_DEFAULT;
 // does three things - tunes basals, ISF, and CSF
 
 interface AutotuneBasalProfileEntry {
@@ -113,22 +113,22 @@ interface AutotuneInputs {
 
 function tuneAllTheThings (inputs: AutotuneInputs): AutotunePreviousProfile | undefined {
 
-    var previousAutotune = inputs.previousAutotune;
+    const previousAutotune = inputs.previousAutotune;
     //console.error(previousAutotune);
-    var pumpProfile = inputs.pumpProfile;
-    var pumpBasalProfile = pumpProfile.basalprofile;
+    const pumpProfile = inputs.pumpProfile;
+    const pumpBasalProfile = pumpProfile.basalprofile;
     //console.error(pumpBasalProfile);
-    var basalProfile = previousAutotune.basalprofile;
+    let basalProfile = previousAutotune.basalprofile;
     //console.error(basalProfile);
-    var isfProfile = previousAutotune.isfProfile;
+    const isfProfile = previousAutotune.isfProfile;
     //console.error(isfProfile);
-    var ISF = isfProfile.sensitivities[0].sensitivity;
+    let ISF = isfProfile.sensitivities[0].sensitivity;
     //console.error(ISF);
-    var carbRatio = previousAutotune.carb_ratio;
+    let carbRatio = previousAutotune.carb_ratio;
     //console.error(carbRatio);
-    var CSF = ISF / carbRatio;
-    var DIA = previousAutotune.dia;
-    var peak = previousAutotune.insulinPeakTime;
+    let CSF = ISF / carbRatio;
+    const DIA = previousAutotune.dia;
+    let peak = previousAutotune.insulinPeakTime;
     if (! previousAutotune.useCustomPeakTime === true) {
         if ( previousAutotune.curve === "ultra-rapid" ) {
             peak = ULTRA_RAPID_PEAK;
@@ -139,11 +139,11 @@ function tuneAllTheThings (inputs: AutotuneInputs): AutotunePreviousProfile | un
     //console.error(DIA, peak);
 
     // conditional on there being a pump profile; if not then skip
-    var pumpISFProfile: AutotuneISFProfile | undefined;
+    let pumpISFProfile: AutotuneISFProfile | undefined;
     if (pumpProfile) { pumpISFProfile = pumpProfile.isfProfile; }
-    var pumpISF: number | undefined;
-    var pumpCarbRatio: number | undefined;
-    var pumpCSF: number | undefined;
+    let pumpISF: number | undefined;
+    let pumpCarbRatio: number | undefined;
+    let pumpCSF: number | undefined;
     if (pumpISFProfile && pumpISFProfile.sensitivities[0]) {
         pumpISF = pumpISFProfile.sensitivities[0].sensitivity;
         pumpCarbRatio = pumpProfile.carb_ratio;
@@ -153,33 +153,41 @@ function tuneAllTheThings (inputs: AutotuneInputs): AutotunePreviousProfile | un
     if (! CSF) { CSF = pumpCSF!; }
     if (! ISF) { ISF = pumpISF!; }
     //console.error(CSF);
-    var preppedGlucose = inputs.preppedGlucose;
-    var CSFGlucose = preppedGlucose.CSFGlucoseData;
+    const preppedGlucose = inputs.preppedGlucose;
+    const CSFGlucose = preppedGlucose.CSFGlucoseData;
     //console.error(CSFGlucose[0]);
-    var ISFGlucose = preppedGlucose.ISFGlucoseData;
+    const ISFGlucose = preppedGlucose.ISFGlucoseData;
     //console.error(ISFGlucose[0]);
-    var basalGlucose = preppedGlucose.basalGlucoseData;
+    const basalGlucose = preppedGlucose.basalGlucoseData;
     //console.error(basalGlucose[0]);
-    var CRData = preppedGlucose.CRData;
+    const CRData = preppedGlucose.CRData;
     //console.error(CRData);
-    var diaDeviations = preppedGlucose.diaDeviations;
+    const diaDeviations = preppedGlucose.diaDeviations;
     //console.error(diaDeviations);
-    var peakDeviations = preppedGlucose.peakDeviations;
+    const peakDeviations = preppedGlucose.peakDeviations;
     //console.error(peakDeviations);
 
     // tune DIA
-    var newDIA = DIA;
+    let newDIA = DIA;
+    // variables shared across multiple for-loops (were function-scoped with var)
+    let i: number;
+    let minMeanDeviations: number;
+    let minRMSDeviations: number;
+    let meanBest: number;
+    let RMSBest: number;
+    let meanDeviations: number;
+    let RMSDeviations: number;
     if (diaDeviations) {
-        var currentDIAMeanDev = diaDeviations[2].meanDeviation;
-        var currentDIARMSDev = diaDeviations[2].RMSDeviation;
+        const currentDIAMeanDev = diaDeviations[2].meanDeviation;
+        const currentDIARMSDev = diaDeviations[2].RMSDeviation;
         //console.error(DIA,currentDIAMeanDev,currentDIARMSDev);
-        var minMeanDeviations: number = 1000000;
-        var minRMSDeviations: number = 1000000;
-        var meanBest: number = 2;
-        var RMSBest: number = 2;
-        for (var i=0; i < diaDeviations.length; i++) {
-            var meanDeviations: number = diaDeviations[i].meanDeviation;
-            var RMSDeviations: number = diaDeviations[i].RMSDeviation;
+        minMeanDeviations = 1000000;
+        minRMSDeviations = 1000000;
+        meanBest = 2;
+        RMSBest = 2;
+        for (i=0; i < diaDeviations.length; i++) {
+            meanDeviations = diaDeviations[i].meanDeviation;
+            RMSDeviations = diaDeviations[i].RMSDeviation;
             if (meanDeviations < minMeanDeviations) {
                 minMeanDeviations = Math.round(meanDeviations*1000)/1000;
                 meanBest = i;
@@ -212,10 +220,10 @@ function tuneAllTheThings (inputs: AutotuneInputs): AutotunePreviousProfile | un
     }
 
     // tune insulinPeakTime
-    var newPeak = peak;
+    let newPeak = peak;
     if (peakDeviations && peakDeviations[2]) {
-        var currentPeakMeanDev = peakDeviations[2].meanDeviation;
-        var currentPeakRMSDev = peakDeviations[2].RMSDeviation;
+        const currentPeakMeanDev = peakDeviations[2].meanDeviation;
+        const currentPeakRMSDev = peakDeviations[2].RMSDeviation;
         //console.error(currentPeakMeanDev);
         minMeanDeviations = 1000000;
         minRMSDeviations = 1000000;
@@ -259,15 +267,15 @@ function tuneAllTheThings (inputs: AutotuneInputs): AutotunePreviousProfile | un
     // Compare beginning and ending BGs, and calculate how much more/less insulin is needed to neutralize
     // Use entered carbs vs. starting IOB + delivered insulin + needed-at-end insulin to directly calculate CR.
 
-    var CRTotalCarbs = 0;
-    var CRTotalInsulin = 0;
-    CRData.forEach(function(CRDatum: AutotuneCRDatum) {
-        var CRBGChange = CRDatum.CREndBG - CRDatum.CRInitialBG;
-        var CRInsulinReq = CRBGChange / ISF;
-        var CRIOBChange = CRDatum.CREndIOB - CRDatum.CRInitialIOB;
+    let CRTotalCarbs = 0;
+    let CRTotalInsulin = 0;
+    CRData.forEach((CRDatum: AutotuneCRDatum) => {
+        const CRBGChange = CRDatum.CREndBG - CRDatum.CRInitialBG;
+        const CRInsulinReq = CRBGChange / ISF;
+        const CRIOBChange = CRDatum.CREndIOB - CRDatum.CRInitialIOB;
         CRDatum.CRInsulinTotal = CRDatum.CRInitialIOB + CRDatum.CRInsulin + CRInsulinReq;
         //console.error(CRDatum.CRInitialIOB, CRDatum.CRInsulin, CRInsulinReq, CRDatum.CRInsulinTotal);
-        var CR = Math.round( CRDatum.CRCarbs / CRDatum.CRInsulinTotal * 1000 )/1000;
+        const CR = Math.round( CRDatum.CRCarbs / CRDatum.CRInsulinTotal * 1000 )/1000;
         //console.error(CRBGChange, CRInsulinReq, CRIOBChange, CRDatum.CRInsulinTotal);
         //console.error("CRCarbs:",CRDatum.CRCarbs,"CRInsulin:",CRDatum.CRInsulin,"CRDatum.CRInsulinTotal:",CRDatum.CRInsulinTotal,"CR:",CR);
         if (CRDatum.CRInsulinTotal > 0) {
@@ -277,15 +285,15 @@ function tuneAllTheThings (inputs: AutotuneInputs): AutotunePreviousProfile | un
         }
     });
     CRTotalInsulin = Math.round(CRTotalInsulin*1000)/1000;
-    var totalCR = Math.round( CRTotalCarbs / CRTotalInsulin * 1000 )/1000;
+    const totalCR = Math.round( CRTotalCarbs / CRTotalInsulin * 1000 )/1000;
     console.error("CRTotalCarbs:",CRTotalCarbs,"CRTotalInsulin:",CRTotalInsulin,"totalCR:",totalCR);
 
     // convert the basal profile to hourly if it isn't already
-    var hourlyBasalProfile: AutotuneBasalProfileEntry[] = [];
-    var hourlyPumpProfile: AutotuneBasalProfileEntry[] = [];
+    const hourlyBasalProfile: AutotuneBasalProfileEntry[] = [];
+    const hourlyPumpProfile: AutotuneBasalProfileEntry[] = [];
     for (i=0; i < 24; i++) {
         // autotuned basal profile
-        for (var j=0; j < basalProfile.length; ++j) {
+        for (let j=0; j < basalProfile.length; ++j) {
             if (basalProfile[j].minutes <= i * 60) {
                 if (basalProfile[j].rate === 0) {
                     console.error("ERROR: bad basalProfile",basalProfile[j]);
@@ -296,12 +304,12 @@ function tuneAllTheThings (inputs: AutotuneInputs): AutotunePreviousProfile | un
         }
         hourlyBasalProfile[i].i=i;
         hourlyBasalProfile[i].minutes=i*60;
-        var zeroPadHour = ("000"+i).slice(-2);
+        const zeroPadHour = ("000"+i).slice(-2);
         hourlyBasalProfile[i].start=zeroPadHour + ":00:00";
         hourlyBasalProfile[i].rate=Math.round(hourlyBasalProfile[i].rate*1000)/1000
         // pump basal profile
         if (pumpBasalProfile && pumpBasalProfile[0]) {
-            for (j=0; j < pumpBasalProfile.length; ++j) {
+            for (let j=0; j < pumpBasalProfile.length; ++j) {
                 //console.error(pumpBasalProfile[j]);
                 if (pumpBasalProfile[j].rate === 0) {
                     console.error("ERROR: bad pumpBasalProfile",pumpBasalProfile[j]);
@@ -318,15 +326,18 @@ function tuneAllTheThings (inputs: AutotuneInputs): AutotunePreviousProfile | un
     }
     //console.error(hourlyPumpProfile);
     //console.error(hourlyBasalProfile);
-    var newHourlyBasalProfile: AutotuneBasalProfileEntry[] = JSON.parse(JSON.stringify(hourlyBasalProfile));
+    const newHourlyBasalProfile: AutotuneBasalProfileEntry[] = JSON.parse(JSON.stringify(hourlyBasalProfile));
 
     // look at net deviations for each hour
-    var autotuneMax: number;
-    var autotuneMin: number;
-    for (var hour=0; hour < 24; hour++) {
-        var deviations: number | number[] = 0;
+    let autotuneMax: number;
+    let autotuneMin: number;
+    // variables shared across hour loops (were function-scoped with var)
+    let hour: number;
+    let BGTime: Date | undefined;
+    let myHour: number;
+    for (hour=0; hour < 24; hour++) {
+        let deviations: number = 0;
         for (i=0; i < basalGlucose.length; ++i) {
-            var BGTime: Date | undefined;
 
             if (basalGlucose[i].date) {
                 BGTime = new Date(basalGlucose[i].date!);
@@ -338,7 +349,7 @@ function tuneAllTheThings (inputs: AutotuneInputs): AutotunePreviousProfile | un
                 console.error("Could not determine last BG time");
             }
 
-            var myHour = BGTime!.getHours();
+            myHour = BGTime!.getHours();
             if (hour === myHour) {
                 //console.error(basalGlucose[i].deviation);
                 deviations += parseFloat(basalGlucose[i].deviation);
@@ -348,13 +359,13 @@ function tuneAllTheThings (inputs: AutotuneInputs): AutotunePreviousProfile | un
         console.error("Hour",hour.toString(),"total deviations:",deviations,"mg/dL");
         // calculate how much less or additional basal insulin would have been required to eliminate the deviations
         // only apply 20% of the needed adjustment to keep things relatively stable
-        var basalNeeded = AUTOTUNE_ADJUSTMENT_FRACTION * deviations / ISF;
+        let basalNeeded = AUTOTUNE_ADJUSTMENT_FRACTION * deviations / ISF;
         basalNeeded = Math.round( basalNeeded * 100 ) / 100
         // if basalNeeded is positive, adjust each of the 1-3 hour prior basals by 10% of the needed adjustment
         console.error("Hour",hour,"basal adjustment needed:",basalNeeded,"U/hr");
         if (basalNeeded > 0 ) {
-            for (var offset=-3; offset < 0; offset++) {
-                var offsetHour = hour + offset;
+            for (let offset=-3; offset < 0; offset++) {
+                let offsetHour = hour + offset;
                 if (offsetHour < 0) { offsetHour += 24; }
                 //console.error(offsetHour);
                 newHourlyBasalProfile[offsetHour].rate += basalNeeded / 3;
@@ -363,16 +374,16 @@ function tuneAllTheThings (inputs: AutotuneInputs): AutotunePreviousProfile | un
         // otherwise, figure out the percentage reduction required to the 1-3 hour prior basals
         // and adjust all of them downward proportionally
         } else if (basalNeeded < 0) {
-            var threeHourBasal = 0;
-            for (offset=-3; offset < 0; offset++) {
-                offsetHour = hour + offset;
+            let threeHourBasal = 0;
+            for (let offset=-3; offset < 0; offset++) {
+                let offsetHour = hour + offset;
                 if (offsetHour < 0) { offsetHour += 24; }
                 threeHourBasal += newHourlyBasalProfile[offsetHour].rate;
             }
-            var adjustmentRatio = 1.0 + basalNeeded / threeHourBasal;
+            const adjustmentRatio = 1.0 + basalNeeded / threeHourBasal;
             //console.error(adjustmentRatio);
-            for (offset=-3; offset < 0; offset++) {
-                offsetHour = hour + offset;
+            for (let offset=-3; offset < 0; offset++) {
+                let offsetHour = hour + offset;
                 if (offsetHour < 0) { offsetHour += 24; }
                 newHourlyBasalProfile[offsetHour].rate = newHourlyBasalProfile[offsetHour].rate * adjustmentRatio;
                 newHourlyBasalProfile[offsetHour].rate=Math.round(newHourlyBasalProfile[offsetHour].rate*1000)/1000
@@ -383,18 +394,18 @@ function tuneAllTheThings (inputs: AutotuneInputs): AutotunePreviousProfile | un
         for (hour=0; hour < 24; hour++) {
             //console.error(newHourlyBasalProfile[hour],hourlyPumpProfile[hour].rate*1.2);
             // cap adjustments at autosens_max and autosens_min
-            if (typeof pumpProfile.autosens_max !== 'undefined') {
+            if (pumpProfile.autosens_max !== undefined) {
                 autotuneMax = pumpProfile.autosens_max;
             } else {
                 autotuneMax = DEFAULT_AUTOSENS_MAX;
             }
-            if (typeof pumpProfile.autosens_min !== 'undefined') {
+            if (pumpProfile.autosens_min !== undefined) {
                 autotuneMin = pumpProfile.autosens_min;
             } else {
                 autotuneMin = DEFAULT_AUTOSENS_MIN;
             }
-            var maxRate = hourlyPumpProfile[hour].rate * autotuneMax;
-            var minRate = hourlyPumpProfile[hour].rate * autotuneMin;
+            const maxRate = hourlyPumpProfile[hour].rate * autotuneMax;
+            const minRate = hourlyPumpProfile[hour].rate * autotuneMin;
             if (newHourlyBasalProfile[hour].rate > maxRate ) {
                 console.error("Limiting hour",hour,"basal to",maxRate.toFixed(2),"(which is",autotuneMax,"* pump basal of",hourlyPumpProfile[hour].rate,")");
                 //console.error("Limiting hour",hour,"basal to",maxRate.toFixed(2),"(which is 20% above pump basal of",hourlyPumpProfile[hour].rate,")");
@@ -412,12 +423,12 @@ function tuneAllTheThings (inputs: AutotuneInputs): AutotunePreviousProfile | un
     // when no adjustments are needed to a particular hour, we should adjust it toward the average of the
     // periods before and after it that do have data to be tuned
 
-    var lastAdjustedHour = 0;
+    let lastAdjustedHour = 0;
     // scan through newHourlyBasalProfile and find hours where the rate is unchanged
     for (hour=0; hour < 24; hour++) {
         if (hourlyBasalProfile[hour].rate === newHourlyBasalProfile[hour].rate) {
-            var nextAdjustedHour = 23;
-            for (var nextHour = hour; nextHour < 24; nextHour++) {
+            let nextAdjustedHour = 23;
+            for (let nextHour = hour; nextHour < 24; nextHour++) {
                 if (! (hourlyBasalProfile[nextHour].rate === newHourlyBasalProfile[nextHour].rate)) {
                     nextAdjustedHour = nextHour;
                     break;
@@ -451,11 +462,11 @@ function tuneAllTheThings (inputs: AutotuneInputs): AutotunePreviousProfile | un
     // calculate net deviations while carbs are absorbing
     // measured from carb entry until COB and deviations both drop to zero
 
-    var deviations: number | number[] = 0;
-    var mealCarbs = 0;
-    var totalMealCarbs = 0;
-    var totalDeviations = 0;
-    var fullNewCSF: number;
+    let deviations: number | number[] = 0;
+    let mealCarbs = 0;
+    let totalMealCarbs = 0;
+    let totalDeviations = 0;
+    let fullNewCSF: number;
     //console.error(CSFGlucose[0].mealAbsorption);
     //console.error(CSFGlucose[0]);
     for (i=0; i < CSFGlucose.length; ++i) {
@@ -467,7 +478,7 @@ function tuneAllTheThings (inputs: AutotuneInputs): AutotunePreviousProfile | un
             deviations += parseFloat(CSFGlucose[i].deviation);
             // compare the sum of deviations from start to end vs. current CSF * mealCarbs
             //console.error(CSF,mealCarbs);
-            var csfRise = CSF * mealCarbs;
+            const csfRise = CSF * mealCarbs;
             //console.error(deviations,ISF);
             //console.error("csfRise:",csfRise,"deviations:",deviations);
             totalMealCarbs += mealCarbs;
@@ -491,11 +502,11 @@ function tuneAllTheThings (inputs: AutotuneInputs): AutotunePreviousProfile | un
         fullNewCSF = Math.round( (totalDeviations / totalMealCarbs)*100 )/100;
     }
     // only adjust by 20%
-    var newCSF = ( (1 - AUTOTUNE_ADJUSTMENT_FRACTION) * CSF ) + ( AUTOTUNE_ADJUSTMENT_FRACTION * fullNewCSF );
+    let newCSF = ( (1 - AUTOTUNE_ADJUSTMENT_FRACTION) * CSF ) + ( AUTOTUNE_ADJUSTMENT_FRACTION * fullNewCSF );
     // safety cap CSF
-    if (typeof(pumpCSF) !== 'undefined') {
-        var maxCSF = pumpCSF * autotuneMax!;
-        var minCSF = pumpCSF * autotuneMin!;
+    if (pumpCSF !== undefined) {
+        const maxCSF = pumpCSF * autotuneMax!;
+        const minCSF = pumpCSF * autotuneMin!;
         if (newCSF > maxCSF) {
             console.error("Limiting CSF to",maxCSF.toFixed(2),"(which is",autotuneMax!,"* pump CSF of",pumpCSF,")");
             newCSF = maxCSF;
@@ -504,7 +515,7 @@ function tuneAllTheThings (inputs: AutotuneInputs): AutotunePreviousProfile | un
             newCSF = minCSF;
         } //else { console.error("newCSF",newCSF,"is close enough to",pumpCSF); }
     }
-    var oldCSF = Math.round( CSF * 1000 ) / 1000;
+    const oldCSF = Math.round( CSF * 1000 ) / 1000;
     newCSF = Math.round( newCSF * 1000 ) / 1000;
     totalDeviations = Math.round ( totalDeviations * 1000 )/1000;
     console.error("totalMealCarbs:",totalMealCarbs,"totalDeviations:",totalDeviations,"oldCSF",oldCSF,"fullNewCSF:",fullNewCSF,"newCSF:",newCSF);
@@ -513,20 +524,21 @@ function tuneAllTheThings (inputs: AutotuneInputs): AutotunePreviousProfile | un
         CSF = newCSF;
     }
 
+    let fullNewCR: number;
     if (totalCR === 0) {
         // if no meals today, CR is unchanged
-        var fullNewCR: number = carbRatio;
+        fullNewCR = carbRatio;
     } else {
         // how much change would be required to account for all of the deviations
         fullNewCR = totalCR;
     }
     // don't tune CR out of bounds
-    var maxCR = pumpCarbRatio! * autotuneMax!;
+    let maxCR = pumpCarbRatio! * autotuneMax!;
     if (maxCR > MAX_CARB_RATIO) { maxCR = MAX_CARB_RATIO }
-    var minCR = pumpCarbRatio! * autotuneMin!;
+    let minCR = pumpCarbRatio! * autotuneMin!;
     if (minCR < MIN_CARB_RATIO) { minCR = MIN_CARB_RATIO }
     // safety cap fullNewCR
-    if (typeof(pumpCarbRatio) !== 'undefined') {
+    if (pumpCarbRatio !== undefined) {
         if (fullNewCR > maxCR) {
             console.error("Limiting fullNewCR from",fullNewCR,"to",maxCR.toFixed(2),"(which is",autotuneMax!,"* pump CR of",pumpCarbRatio,")");
             fullNewCR = maxCR;
@@ -536,9 +548,9 @@ function tuneAllTheThings (inputs: AutotuneInputs): AutotunePreviousProfile | un
         } //else { console.error("newCR",newCR,"is close enough to",pumpCarbRatio); }
     }
     // only adjust by 20%
-    var newCR = ( (1 - AUTOTUNE_ADJUSTMENT_FRACTION) * carbRatio ) + ( AUTOTUNE_ADJUSTMENT_FRACTION * fullNewCR );
+    let newCR = ( (1 - AUTOTUNE_ADJUSTMENT_FRACTION) * carbRatio ) + ( AUTOTUNE_ADJUSTMENT_FRACTION * fullNewCR );
     // safety cap newCR
-    if (typeof(pumpCarbRatio) !== 'undefined') {
+    if (pumpCarbRatio !== undefined) {
         if (newCR > maxCR) {
             console.error("Limiting CR to",maxCR.toFixed(2),"(which is",autotuneMax!,"* pump CR of",pumpCarbRatio,")");
             newCR = maxCR;
@@ -559,30 +571,30 @@ function tuneAllTheThings (inputs: AutotuneInputs): AutotunePreviousProfile | un
 
 
     // calculate median deviation and bgi in data attributable to ISF
-    var deviations: number | number[] = [];
-    var BGIs: number[] = [];
-    var avgDeltas: number[] = [];
-    var ratios: number[] = [];
-    var deviation: number;
+    deviations = [];
+    const BGIs: number[] = [];
+    const avgDeltas: number[] = [];
+    const ratios: number[] = [];
+    let deviation: number;
     for (i=0; i < ISFGlucose.length; ++i) {
         deviation = parseFloat(ISFGlucose[i].deviation);
         deviations.push(deviation);
-        var BGI = parseFloat(String(ISFGlucose[i].BGI));
+        const BGI = parseFloat(String(ISFGlucose[i].BGI));
         BGIs.push(BGI);
-        var avgDelta = parseFloat(ISFGlucose[i].avgDelta);
+        const avgDelta = parseFloat(ISFGlucose[i].avgDelta);
         avgDeltas.push(avgDelta);
-        var ratio = 1 + deviation / BGI;
+        const ratio = 1 + deviation / BGI;
         //console.error("Deviation:",deviation,"BGI:",BGI,"avgDelta:",avgDelta,"ratio:",ratio);
         ratios.push(ratio);
     }
-    avgDeltas.sort(function(a: number, b: number){return a-b});
-    BGIs.sort(function(a: number, b: number){return a-b});
-    deviations.sort(function(a: number, b: number){return a-b});
-    ratios.sort(function(a: number, b: number){return a-b});
-    var p50deviation = percentile(deviations, 0.50);
-    var p50BGI = percentile(BGIs, 0.50);
-    var p50ratios = Math.round( percentile(ratios, 0.50) * 1000)/1000;
-    var fullNewISF = ISF;
+    avgDeltas.sort((a: number, b: number) => a-b);
+    BGIs.sort((a: number, b: number) => a-b);
+    deviations.sort((a: number, b: number) => a-b);
+    ratios.sort((a: number, b: number) => a-b);
+    let p50deviation = percentile(deviations, 0.50);
+    let p50BGI = percentile(BGIs, 0.50);
+    const p50ratios = Math.round( percentile(ratios, 0.50) * 1000)/1000;
+    let fullNewISF = ISF;
     if (ISFGlucose.length < 10) {
         // leave ISF unchanged if fewer than 10 ISF data points
         console.error ("Only found",ISFGlucose.length,"ISF data points, leaving ISF unchanged at",ISF);
@@ -593,21 +605,21 @@ function tuneAllTheThings (inputs: AutotuneInputs): AutotunePreviousProfile | un
     fullNewISF = Math.round( fullNewISF * 1000 ) / 1000;
     //console.error("p50ratios:",p50ratios,"fullNewISF:",fullNewISF,ratios[Math.floor(ratios.length/2)]);
     // adjust the target ISF to be a weighted average of fullNewISF and pumpISF
-    var adjustmentFraction: number;
+    let adjustmentFraction: number;
 
-    if (typeof(pumpProfile.autotune_isf_adjustmentFraction) !== 'undefined') {
+    if (pumpProfile.autotune_isf_adjustmentFraction !== undefined) {
         adjustmentFraction = pumpProfile.autotune_isf_adjustmentFraction;
     } else {
         adjustmentFraction = 1.0;
     }
 
     // low autosens ratio = high ISF
-    var maxISF = pumpISF! / autotuneMin!;
+    const maxISF = pumpISF! / autotuneMin!;
     // high autosens ratio = low ISF
-    var minISF = pumpISF! / autotuneMax!;
-    var adjustedISF: number;
-    var newISF: number;
-    if (typeof(pumpISF) !== 'undefined') {
+    const minISF = pumpISF! / autotuneMax!;
+    let adjustedISF: number;
+    let newISF: number;
+    if (pumpISF !== undefined) {
         if ( fullNewISF < 0 ) {
             adjustedISF = ISF;
         } else {
@@ -648,7 +660,7 @@ function tuneAllTheThings (inputs: AutotuneInputs): AutotunePreviousProfile | un
 
 
     // reconstruct updated version of previousAutotune as autotuneOutput
-    var autotuneOutput = previousAutotune;
+    const autotuneOutput = previousAutotune;
     autotuneOutput.basalprofile = basalProfile;
     isfProfile.sensitivities[0].sensitivity = ISF;
     autotuneOutput.isfProfile = isfProfile;

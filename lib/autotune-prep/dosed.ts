@@ -16,17 +16,17 @@ interface DosedResult {
 
 function insulinDosed(opts: DosedOpts): DosedResult | Record<string, never> {
 
-    var start = opts.start.getTime();
-    var end = opts.end.getTime();
-    var treatments = opts.treatments;
-    var profile_data = opts.profile;
-    var insulinDosed = 0;
+    const start = opts.start.getTime();
+    const end = opts.end.getTime();
+    const treatments = opts.treatments;
+    const profile_data = opts.profile;
+    let insulinDosed = 0;
     if (!treatments) {
         console.error("No treatments to process.");
         return {};
     }
 
-    treatments.forEach(function(treatment: DosedTreatment) {
+    treatments.forEach((treatment: DosedTreatment) => {
         //console.error(treatment);
         if(treatment.insulin && treatment.date > start && treatment.date <= end) {
             insulinDosed += treatment.insulin;
