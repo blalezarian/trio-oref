@@ -53,7 +53,7 @@ export function generate (
     const iobArray: IobIndexEntry[] = [];
     //console.error(inputs.clock);
     if (! /(Z|[+-][0-2][0-9]:?[034][05])+/.test(inputs.clock) ) {
-        console.error("Warning: clock input " + inputs.clock + " is unzoned; please pass clock-zoned.json instead");
+        console.error(`Warning: clock input ${inputs.clock} is unzoned; please pass clock-zoned.json instead`);
     }
     const clock = new Date(tz(inputs.clock));
 

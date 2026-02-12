@@ -54,7 +54,7 @@ export function convertNetBasalsToTreatments(
                 sensitivityRatio = c/(c+target_bg!-normalTarget);
             } else if (autosens_data !== undefined ) {
                 sensitivityRatio = autosens_data.ratio;
-                //process.stderr.write("Autosens ratio: "+sensitivityRatio+"; ");
+                //process.stderr.write(`Autosens ratio: ${sensitivityRatio}; `);
             }
             if ( sensitivityRatio ) {
                 currentRate = currentRate * sensitivityRatio;

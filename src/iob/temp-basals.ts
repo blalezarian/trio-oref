@@ -45,7 +45,7 @@ export function extractTempBasalsAndBoluses(
             temp.started_at = new Date(tz(current.timestamp));
             if (temp.started_at > now) {
                 //console.error("Warning: ignoring",current.amount,"U bolus in the future at",temp.started_at);
-                process.stderr.write(" "+current.amount+"U @ "+temp.started_at);
+                process.stderr.write(` ${current.amount}U @ ${temp.started_at}`);
             } else {
                 temp.date = temp.started_at.getTime();
                 temp.insulin = current.amount;
@@ -113,7 +113,7 @@ export function extractTempBasalsAndBoluses(
                 }
 
                 if (duration === undefined) {
-                    console.error("No duration found for "+rate+" U/hr basal "+timestamp, pumpHistory[i - 1], current, pumpHistory[i + 1]);
+                    console.error(`No duration found for ${rate} U/hr basal ${timestamp}`, pumpHistory[i - 1], current, pumpHistory[i + 1]);
                 }
             }
             const temp: TempEvent = {} as TempEvent;
