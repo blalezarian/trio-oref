@@ -18,7 +18,7 @@ const FIXED_TIME = '2025-01-15T12:00:00.000Z';
 function makeInputs(overrides: Record<string, unknown> = {}) {
   return {
     carbratio: {
-      units: 'grams',
+      units: 'grams' as const,
       schedule: [{ offset: 0, ratio: 10 }],
       ...(overrides.carbratio as Record<string, unknown> || {}),
     },
@@ -55,7 +55,7 @@ describe('profile/carbs (carbRatioLookup) characterization tests', () => {
       // At 12:00 UTC = 720 minutes. Should match entry at offset 480 (before 960).
       const inputs = {
         carbratio: {
-          units: 'grams',
+          units: 'grams' as const,
           schedule: [
             { offset: 0, ratio: 8 },
             { offset: 480, ratio: 12 },
@@ -72,7 +72,7 @@ describe('profile/carbs (carbRatioLookup) characterization tests', () => {
       vi.setSystemTime(new Date('2025-01-15T23:00:00.000Z'));
       const inputs = {
         carbratio: {
-          units: 'grams',
+          units: 'grams' as const,
           schedule: [
             { offset: 0, ratio: 8 },
             { offset: 480, ratio: 12 },
@@ -89,7 +89,7 @@ describe('profile/carbs (carbRatioLookup) characterization tests', () => {
       vi.setSystemTime(new Date('2025-01-15T02:00:00.000Z'));
       const inputs = {
         carbratio: {
-          units: 'grams',
+          units: 'grams' as const,
           schedule: [
             { offset: 0, ratio: 8 },
             { offset: 480, ratio: 12 },
@@ -110,7 +110,7 @@ describe('profile/carbs (carbRatioLookup) characterization tests', () => {
       const customTime = new Date('2025-01-15T06:00:00.000Z'); // 360 minutes
       const inputs = {
         carbratio: {
-          units: 'grams',
+          units: 'grams' as const,
           schedule: [
             { offset: 0, ratio: 8 },
             { offset: 480, ratio: 12 },
@@ -131,7 +131,7 @@ describe('profile/carbs (carbRatioLookup) characterization tests', () => {
     it('converts exchanges to grams using 12 / ratio', () => {
       const inputs = {
         carbratio: {
-          units: 'exchanges',
+          units: 'exchanges' as const,
           schedule: [{ offset: 0, ratio: 2 }],
         },
       };
@@ -143,7 +143,7 @@ describe('profile/carbs (carbRatioLookup) characterization tests', () => {
     it('converts exchanges with multiple schedule entries', () => {
       const inputs = {
         carbratio: {
-          units: 'exchanges',
+          units: 'exchanges' as const,
           schedule: [
             { offset: 0, ratio: 1.5 },
             { offset: 720, ratio: 3 },
@@ -164,7 +164,7 @@ describe('profile/carbs (carbRatioLookup) characterization tests', () => {
     it('returns undefined for ratio < 1', () => {
       const inputs = {
         carbratio: {
-          units: 'grams',
+          units: 'grams' as const,
           schedule: [{ offset: 0, ratio: 0.5 }],
         },
       };
@@ -175,7 +175,7 @@ describe('profile/carbs (carbRatioLookup) characterization tests', () => {
     it('returns undefined for ratio > 150', () => {
       const inputs = {
         carbratio: {
-          units: 'grams',
+          units: 'grams' as const,
           schedule: [{ offset: 0, ratio: 200 }],
         },
       };
@@ -186,7 +186,7 @@ describe('profile/carbs (carbRatioLookup) characterization tests', () => {
     it('accepts ratio exactly equal to 1', () => {
       const inputs = {
         carbratio: {
-          units: 'grams',
+          units: 'grams' as const,
           schedule: [{ offset: 0, ratio: 1 }],
         },
       };
@@ -197,7 +197,7 @@ describe('profile/carbs (carbRatioLookup) characterization tests', () => {
     it('accepts ratio exactly equal to 150', () => {
       const inputs = {
         carbratio: {
-          units: 'grams',
+          units: 'grams' as const,
           schedule: [{ offset: 0, ratio: 150 }],
         },
       };
@@ -232,7 +232,7 @@ describe('profile/carbs (carbRatioLookup) characterization tests', () => {
     });
 
     it('returns undefined when carbratio.schedule is undefined', () => {
-      const inputs = { carbratio: { units: 'grams' } };
+      const inputs = { carbratio: { units: 'grams' as const } };
       const result = carbRatioLookup(inputs, {});
       expect(result).toMatchSnapshot();
     });

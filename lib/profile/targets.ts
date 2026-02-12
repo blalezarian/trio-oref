@@ -47,7 +47,7 @@ function lookup (inputs: TargetsInputs, profile: TargetsProfile): BGTarget {
     var bgTargets = bgtargets_data.targets[bgtargets_data.targets.length - 1];
 
     for (var i = 0; i < bgtargets_data.targets.length - 1; i++) {
-        if (((now as any) >= getTime(bgtargets_data.targets[i].offset!)) && ((now as any) < getTime(bgtargets_data.targets[i + 1].offset!))) {
+        if ((now.getTime() >= getTime(bgtargets_data.targets[i].offset!)) && (now.getTime() < getTime(bgtargets_data.targets[i + 1].offset!))) {
             bgTargets = bgtargets_data.targets[i];
             break;
         }
@@ -63,7 +63,7 @@ function lookup (inputs: TargetsInputs, profile: TargetsProfile): BGTarget {
 
     // sort tempTargets by date so we can process most recent first
     try {
-        temptargets_data.sort(function (a, b) { return (new Date(b.created_at) as any) - (new Date(a.created_at) as any) });
+        temptargets_data.sort(function (a, b) { return new Date(b.created_at).getTime() - new Date(a.created_at).getTime() });
     } catch (e) {
         console.error("No temptargets found.");
     }

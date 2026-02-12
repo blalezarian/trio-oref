@@ -71,7 +71,7 @@ interface ProfileInputs {
     raw?: unknown;
   };
   isf: { sensitivities: Array<{ offset: number; sensitivity: number }> };
-  carbratio?: { units: string; schedule?: Array<{ offset: number; ratio: number }> };
+  carbratio?: { units: 'grams' | 'exchanges' | (string & {}); schedule?: Array<{ offset: number; ratio: number }> };
   temptargets: Array<Record<string, unknown>>;
   skip_neutral_temps?: boolean;
   model?: string;

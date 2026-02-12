@@ -7,7 +7,7 @@ interface CarbRatioScheduleEntry {
 }
 
 interface CarbRatioData {
-  units: string;
+  units: 'grams' | 'exchanges' | (string & {});
   schedule?: CarbRatioScheduleEntry[];
 }
 
@@ -27,7 +27,7 @@ function carbRatioLookup (inputs: CarbsInputs, profile: Record<string, unknown>,
             carbRatio = carbratio_data.schedule[carbratio_data.schedule.length - 1];
 
             for (var i = 0; i < carbratio_data.schedule.length - 1; i++) {
-                if (((now as any) >= getTime(carbratio_data.schedule[i].offset)) && ((now as any) < getTime(carbratio_data.schedule[i + 1].offset))) {
+                if ((now.getTime() >= getTime(carbratio_data.schedule[i].offset)) && (now.getTime() < getTime(carbratio_data.schedule[i + 1].offset))) {
                     carbRatio = carbratio_data.schedule[i];
                     break;
                 }

@@ -30,7 +30,7 @@ function makeInputs(overrides: Record<string, unknown> = {}) {
       sensitivities: [{ offset: 0, sensitivity: 40 }],
     },
     carbratio: {
-      units: 'grams',
+      units: 'grams' as const,
       schedule: [{ offset: 0, ratio: 10 }],
     },
     temptargets: [],

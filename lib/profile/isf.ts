@@ -27,22 +27,22 @@ function isfLookup(isf_data: ISFData, timestamp?: Date): number {
         return lastResult.sensitivity;
     }
 
-    isf_data = _.sortBy(isf_data.sensitivities, function(o: ISFScheduleEntry) { return o.offset; }) as any;
+    var sorted = _.sortBy(isf_data.sensitivities, function(o: ISFScheduleEntry) { return o.offset; });
 
-    var isfSchedule = (isf_data as any)[(isf_data as any).length - 1];
+    var isfSchedule = sorted[sorted.length - 1];
 
-    if ((isf_data as any)[0].offset !== 0) {
+    if (sorted[0].offset !== 0) {
         return -1;
     }
 
     var endMinutes = 1440;
 
-    for (var i = 0; i < (isf_data as any).length - 1; i++) {
-        var currentISF = (isf_data as any)[i];
-        var nextISF = (isf_data as any)[i+1];
+    for (var i = 0; i < sorted.length - 1; i++) {
+        var currentISF = sorted[i];
+        var nextISF = sorted[i+1];
         if (nowMinutes >= currentISF.offset && nowMinutes < nextISF.offset) {
             endMinutes = nextISF.offset;
-            isfSchedule = (isf_data as any)[i];
+            isfSchedule = sorted[i];
             break;
         }
     }
