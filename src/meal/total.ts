@@ -108,17 +108,17 @@ function recentCarbs(opts: RecentCarbsOpts, time: Date): RecentCarbsResult | Rec
         if (treatmentTime > carbWindow && treatmentTime <= now) {
             if (treatment.carbs! >= 1) {
                 if (treatment.nsCarbs! >= 1) {
-                    nsCarbs += parseFloat(treatment.nsCarbs as unknown as string);
+                    nsCarbs += treatment.nsCarbs!;
                 } else if (treatment.bwCarbs! >= 1) {
-                    bwCarbs += parseFloat(treatment.bwCarbs as unknown as string);
+                    bwCarbs += treatment.bwCarbs!;
                     bwFound = true;
                 } else if (treatment.journalCarbs! >= 1) {
-                    journalCarbs += parseFloat(treatment.journalCarbs as unknown as string);
+                    journalCarbs += treatment.journalCarbs!;
                 } else {
                     console.error("Treatment carbs unclassified:",treatment);
                 }
                 //console.error(treatment.carbs, maxCarbs, treatmentDate);
-                carbs += parseFloat(treatment.carbs as unknown as string);
+                carbs += treatment.carbs!;
                 COB_inputs.mealTime = treatmentTime;
                 lastCarbTime = Math.max(lastCarbTime,treatmentTime);
                 const myCarbsAbsorbed = calcMealCOB(COB_inputs).carbsAbsorbed;
@@ -129,13 +129,13 @@ function recentCarbs(opts: RecentCarbsOpts, time: Date): RecentCarbsResult | Rec
                     console.error("Bad myMealCOB:",myMealCOB, "mealCOB:",mealCOB, "carbs:",carbs,"myCarbsAbsorbed:",myCarbsAbsorbed);
                 }
                 if (myMealCOB < mealCOB) {
-                    carbsToRemove += parseFloat(treatment.carbs as unknown as string);
+                    carbsToRemove += treatment.carbs!;
                     if (treatment.nsCarbs! >= 1) {
-                        nsCarbsToRemove += parseFloat(treatment.nsCarbs as unknown as string);
+                        nsCarbsToRemove += treatment.nsCarbs!;
                     } else if (treatment.bwCarbs! >= 1) {
-                        bwCarbsToRemove += parseFloat(treatment.bwCarbs as unknown as string);
+                        bwCarbsToRemove += treatment.bwCarbs!;
                     } else if (treatment.journalCarbs! >= 1) {
-                        journalCarbsToRemove += parseFloat(treatment.journalCarbs as unknown as string);
+                        journalCarbsToRemove += treatment.journalCarbs!;
                     }
                 } else {
                     carbsToRemove = 0;
@@ -163,7 +163,7 @@ function recentCarbs(opts: RecentCarbsOpts, time: Date): RecentCarbsResult | Rec
     // set a hard upper limit on COB to mitigate impact of erroneous or malicious carb entry
     if (typeof(profile_data.maxCOB) === 'number' && ! isNaN(profile_data.maxCOB)) {
         mealCOB = Math.min( profile_data.maxCOB, mealCOB );
-        console.error("mealCOB: " + round(mealCOB,1) + " with maxCOB " + profile_data.maxCOB + "g and maxMealAbsorptionTime " + maxMealAbsorptionTime + "hrs.");
+        console.error(`mealCOB: ${round(mealCOB,1)} with maxCOB ${profile_data.maxCOB}g and maxMealAbsorptionTime ${maxMealAbsorptionTime}hrs.`);
     } else {
         console.error("Bad profile.maxCOB:",profile_data.maxCOB);
     }

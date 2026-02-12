@@ -9,11 +9,11 @@ interface MealHistoryInputs {
   profile: Record<string, unknown>;
 }
 
-function arrayHasElementWithSameTimestampAndProperty(array: CarbTreatment[],t: string,propname: string): boolean {
+function arrayHasElementWithSameTimestampAndProperty(array: CarbTreatment[],t: string,propname: keyof CarbTreatment): boolean {
     for (let j=0; j < array.length; j++) {
         const element = array[j];
-        if (element.timestamp === t && (element as unknown as Record<string, unknown>)[propname] !== undefined) return true;
-        if ( (element as unknown as Record<string, unknown>)[propname] !== undefined ) {
+        if (element.timestamp === t && element[propname] !== undefined) return true;
+        if ( element[propname] !== undefined ) {
             const eDate = new Date(element.timestamp);
             const tDate = new Date(t);
             const tMin = new Date(tDate.getTime() - TIMESTAMP_MATCH_TOLERANCE_MS);
