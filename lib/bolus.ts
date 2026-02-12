@@ -1,5 +1,5 @@
 
-import type { PumpHistoryEvent } from './types/index';
+import type { PumpHistoryEvent, PumpHistoryEventType } from './types/index';
 import { MS_PER_MINUTE } from './constants';
 
 /** Minutes window for grouping related bolus events */
@@ -8,7 +8,7 @@ const BOLUS_GROUPING_MINUTES = 2;
 const PERCENT = 100;
 
 interface BolusTreatment {
-  _type: string;
+  _type: PumpHistoryEventType | (string & {});
   timestamp: string;
   [key: string]: unknown;
 }

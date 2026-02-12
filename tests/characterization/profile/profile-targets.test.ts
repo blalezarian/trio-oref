@@ -18,7 +18,7 @@ const FIXED_TIME = '2025-01-15T12:00:00.000Z';
 function makeInputs(overrides: Record<string, unknown> = {}) {
   return {
     targets: {
-      user_preferred_units: 'mg/dL',
+      user_preferred_units: 'mg/dL' as const,
       targets: [{ offset: 0, low: 110, high: 120, min_bg: 110, max_bg: 120 }],
       ...(overrides.targets as Record<string, unknown> || {}),
     },
@@ -55,7 +55,7 @@ describe('profile/targets (bgTargetsLookup) characterization tests', () => {
       // At 12:00 UTC = 720 minutes. Should match the entry at offset 480 (before 960).
       const inputs = {
         targets: {
-          user_preferred_units: 'mg/dL',
+          user_preferred_units: 'mg/dL' as const,
           targets: [
             { offset: 0, low: 100, high: 110 },
             { offset: 480, low: 105, high: 115 },
@@ -73,7 +73,7 @@ describe('profile/targets (bgTargetsLookup) characterization tests', () => {
       vi.setSystemTime(new Date('2025-01-15T23:00:00.000Z'));
       const inputs = {
         targets: {
-          user_preferred_units: 'mg/dL',
+          user_preferred_units: 'mg/dL' as const,
           targets: [
             { offset: 0, low: 100, high: 110 },
             { offset: 480, low: 105, high: 115 },
@@ -91,7 +91,7 @@ describe('profile/targets (bgTargetsLookup) characterization tests', () => {
       vi.setSystemTime(new Date('2025-01-15T02:00:00.000Z'));
       const inputs = {
         targets: {
-          user_preferred_units: 'mg/dL',
+          user_preferred_units: 'mg/dL' as const,
           targets: [
             { offset: 0, low: 100, high: 110 },
             { offset: 480, low: 105, high: 115 },
@@ -212,7 +212,7 @@ describe('profile/targets (bgTargetsLookup) characterization tests', () => {
     it('converts low and high from mmol/L to mg/dL when both < 20', () => {
       const inputs = {
         targets: {
-          user_preferred_units: 'mmol/L',
+          user_preferred_units: 'mmol/L' as const,
           targets: [{ offset: 0, low: 5.5, high: 6.5 }],
         },
         temptargets: [],
@@ -224,7 +224,7 @@ describe('profile/targets (bgTargetsLookup) characterization tests', () => {
     it('does not convert values already >= 20 (mg/dL)', () => {
       const inputs = {
         targets: {
-          user_preferred_units: 'mg/dL',
+          user_preferred_units: 'mg/dL' as const,
           targets: [{ offset: 0, low: 110, high: 120 }],
         },
         temptargets: [],
@@ -242,7 +242,7 @@ describe('profile/targets (bgTargetsLookup) characterization tests', () => {
       // Even with very low values, bound_target_range clamps to 80
       const inputs = {
         targets: {
-          user_preferred_units: 'mg/dL',
+          user_preferred_units: 'mg/dL' as const,
           targets: [{ offset: 0, low: 50, high: 50 }],
         },
         temptargets: [],
@@ -254,7 +254,7 @@ describe('profile/targets (bgTargetsLookup) characterization tests', () => {
     it('clamps min_bg and max_bg to at most 200', () => {
       const inputs = {
         targets: {
-          user_preferred_units: 'mg/dL',
+          user_preferred_units: 'mg/dL' as const,
           targets: [{ offset: 0, low: 250, high: 250 }],
         },
         temptargets: [],
@@ -289,7 +289,7 @@ describe('profile/targets (bgTargetsLookup) characterization tests', () => {
       // Then ({}).length is undefined, so the for-loop condition (0 < undefined) is false, loop skips.
       const inputs = {
         targets: {
-          user_preferred_units: 'mg/dL',
+          user_preferred_units: 'mg/dL' as const,
           targets: [{ offset: 0, low: 110, high: 120 }],
         },
         temptargets: {} as any,

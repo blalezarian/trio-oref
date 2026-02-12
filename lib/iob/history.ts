@@ -3,7 +3,7 @@ import tz from 'moment-timezone';
 import basalprofile from '../profile/basal';
 import _ from 'lodash';
 import moment from 'moment';
-import type { PumpHistoryEvent, InsulinCurve } from '../types/index';
+import type { PumpHistoryEvent, PumpHistoryEventType, InsulinCurve } from '../types/index';
 import {
     MS_PER_MINUTE,
     MS_PER_HOUR,
@@ -55,7 +55,7 @@ interface HistoryTreatment {
 }
 
 interface TempEvent {
-    _type?: string;
+    _type?: PumpHistoryEventType | (string & {});
     rate?: number;
     duration?: number;
     date: number;

@@ -1,6 +1,7 @@
 
 import getTime from '../medtronic-clock';
 import { MS_PER_MINUTE, MMOL_L_DETECTION_THRESHOLD, MIN_BG_TARGET, MAX_BG_TARGET, MMOL_TO_MGDL_FACTOR } from '../constants';
+import type { BGUnits } from '../types/index';
 
 interface BGTarget {
   offset?: number;
@@ -12,7 +13,7 @@ interface BGTarget {
 }
 
 interface BGTargetsData {
-  user_preferred_units?: string;
+  user_preferred_units?: BGUnits;
   targets: BGTarget[];
   raw?: unknown;
 }
