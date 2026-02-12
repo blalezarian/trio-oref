@@ -5,6 +5,7 @@ import isf from '../profile/isf';
 import find_meals from '../meal/history';
 import tz from 'moment-timezone';
 import { percentile } from '../utils/percentile';
+import { normalizeGlucoseData, calculateBGImpact, calculateDeviation } from '../utils/glucose-math';
 import type { PumpHistoryEvent, GlucoseEntry, CarbTreatment } from '../types/index';
 import type { IobProfile, HistoryBasalProfileEntry, IobInputs } from '../iob/types';
 import type { TempTarget } from '../profile/targets';
@@ -16,7 +17,6 @@ import {
     MIN_BG_TARGET,
     EXERCISE_NORMAL_TARGET,
     DEFAULT_AUTOSENS_LOOKBACK,
-    PRED_INTERVAL_MINUTES,
     AUTOSENS_MIN_VALID_BG,
     BUCKETING_MERGE_THRESHOLD_MIN,
 } from '../constants';
@@ -58,11 +58,7 @@ const PERCENT = 100;
 export function detectSensitivity(inputs: AutosensInputs): AutosensResult {
 
     //console.error(inputs.glucose_data[0]);
-    const glucose_data = inputs.glucose_data.map((obj: GlucoseEntry) => {
-        //Support the NS sgv field to avoid having to convert in a custom way
-        obj.glucose = obj.glucose || obj.sgv;
-        return obj;
-    });
+    const glucose_data = normalizeGlucoseData(inputs.glucose_data);
     //console.error(glucose_data[0]);
     const iob_inputs = inputs.iob_inputs;
     const basalprofile = inputs.basalprofile;
@@ -243,20 +239,14 @@ export function detectSensitivity(inputs: AutosensInputs): AutosensResult {
         //console.error("After: ", new Date().getTime());
         //console.log(JSON.stringify(iob));
 
-        const bgImpact: number = Math.round(( -iob.activity * sens * PRED_INTERVAL_MINUTES )*ROUND_SCALE_2DP)/ROUND_SCALE_2DP;
+        const bgImpact = calculateBGImpact(iob.activity, sens);
         //console.error(delta);
-        let deviation: number;
-        if (isNaN(delta) ) {
+        let deviation!: number;
+        if (isNaN(delta)) {
             console.error("Bad delta: ",delta, bg, last_bg, old_bg);
         } else {
-            deviation = delta-bgImpact;
+            deviation = calculateDeviation(delta, bgImpact, bg, MIN_BG_TARGET);
         }
-        //if (!deviation) { console.error(deviation, delta, bgImpact); }
-        // set positive deviations to zero if BG is below 80
-        if ( bg < MIN_BG_TARGET && deviation! > 0 ) {
-            deviation = 0;
-        }
-        deviation = parseFloat(deviation!.toFixed(2));
 
         glucoseDatum = bucketed_data[i];
         //console.error(glucoseDatum);

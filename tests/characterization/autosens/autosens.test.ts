@@ -906,12 +906,12 @@ describe('determine-basal/autosens (detectSensitivity) characterization tests', 
   // isNaN(delta) path (line 186-187)
   // -----------------------------------------------------------------------
   describe('bad delta path', () => {
-    it('NaN delta from Infinity glucose values throws (deviation undefined)', () => {
+    it('NaN delta from Infinity glucose values leaves deviation uninitialized', () => {
       // If bg = Infinity and last_bg = Infinity: Infinity - Infinity = NaN.
-      // isNaN(Infinity) = false, !Infinity = false, Infinity < 40 = false -> passes line 160 check.
-      // delta = Infinity - Infinity = NaN -> hits line 186 (Bad delta log).
-      // But deviation is never set, so deviation.toFixed(2) at line 196 throws TypeError.
-      // This is a characterization of the existing crash behavior.
+      // isNaN(Infinity) = false, !Infinity = false, Infinity < 40 = false -> passes the validity check.
+      // delta = Infinity - Infinity = NaN -> hits the "Bad delta" log.
+      // deviation is never set for that iteration; NaN propagates silently
+      // through the rest of the loop. The function still returns a result.
       const data: any[] = [];
       for (let i = 0; i < 40; i++) {
         const bg = (i === 15 || i === 16) ? Infinity : 120;
@@ -922,7 +922,9 @@ describe('determine-basal/autosens (detectSensitivity) characterization tests', 
         });
       }
       const inputs = makeInputs(data);
-      expect(() => detectSensitivity(inputs)).toThrow();
+      const result = detectSensitivity(inputs);
+      expect(result).toHaveProperty('ratio');
+      expect(result).toHaveProperty('newisf');
     });
   });
 

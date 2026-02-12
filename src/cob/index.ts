@@ -2,6 +2,7 @@ import basal from '../profile/basal';
 import get_iob from '../iob/index';
 import find_insulin from '../iob/history';
 import isf from '../profile/isf';
+import { normalizeGlucoseData, calculateBGImpact, calculateDeviation } from '../utils/glucose-math';
 import type { GlucoseEntry, BucketedGlucose, PumpHistoryEvent } from '../types/index';
 import type { IobProfile, HistoryBasalProfileEntry, IobInputs } from '../iob/types';
 import {
@@ -45,11 +46,7 @@ const BUCKETING_GAP_THRESHOLD_MIN = 8;
 export function detectCarbAbsorption(inputs: CarbAbsorptionInputs): CarbAbsorptionResult {
 
     let profile: IobProfile & Record<string, unknown>;
-    const glucose_data = inputs.glucose_data!.map((obj: GlucoseEntry) => {
-        //Support the NS sgv field to avoid having to convert in a custom way
-        obj.glucose = obj.glucose || obj.sgv;
-        return obj;
-    });
+    const glucose_data = normalizeGlucoseData(inputs.glucose_data!);
     const iob_inputs = inputs.iob_inputs;
     const basalprofile = inputs.basalprofile;
     /* TODO why does declaring profile break tests-command-behavior.tests.sh? */
@@ -184,9 +181,9 @@ export function detectCarbAbsorption(inputs: CarbAbsorptionInputs): CarbAbsorpti
         //console.error("After: ", new Date().getTime());
         //console.error(JSON.stringify(iob));
 
-        const bgImpact: number = Math.round(( -iob.activity * sens * PRED_INTERVAL_MINUTES )*100)/100;
+        const bgImpact = calculateBGImpact(iob.activity, sens);
         //console.error(delta);
-        const deviation: number = Math.round((delta! - bgImpact) * 100) / 100;
+        const deviation = calculateDeviation(delta!, bgImpact);
         //if (deviation < 0 && deviation > -2) { console.error("BG: "+bg+", avgDelta: "+avgDelta+", BGI: "+bgi+", deviation: "+deviation); }
         // calculate the deviation right now, for use in min_5m
         if (i===0) {
