@@ -1,5 +1,6 @@
 
 import getTime from '../medtronic-clock';
+import { MIN_CARB_RATIO, MAX_CARB_RATIO } from '../constants';
 
 interface CarbRatioScheduleEntry {
   offset: number;
@@ -10,6 +11,9 @@ interface CarbRatioData {
   units: 'grams' | 'exchanges' | (string & {});
   schedule?: CarbRatioScheduleEntry[];
 }
+
+/** Grams of carbs per exchange unit */
+const GRAMS_PER_EXCHANGE = 12;
 
 interface CarbsInputs {
   carbratio?: CarbRatioData;
@@ -33,13 +37,13 @@ function carbRatioLookup (inputs: CarbsInputs, profile: Record<string, unknown>,
                 }
             }
             // disallow impossibly high/low carbRatios due to bad decoding
-            if (carbRatio!.ratio < 1 || carbRatio!.ratio > 150) {
+            if (carbRatio!.ratio < MIN_CARB_RATIO || carbRatio!.ratio > MAX_CARB_RATIO) {
                 console.error("Error: carbRatio of " + carbRatio!.ratio + " out of bounds.");
                 return;
             }
 
             if (carbratio_data.units === "exchanges") {
-                carbRatio!.ratio = 12 / carbRatio!.ratio
+                carbRatio!.ratio = GRAMS_PER_EXCHANGE / carbRatio!.ratio
             }
             return carbRatio!.ratio;
         } else {

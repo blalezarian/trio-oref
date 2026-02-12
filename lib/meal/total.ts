@@ -1,6 +1,7 @@
 import tz from 'moment-timezone';
 import calcMealCOB from '../determine-basal/cob';
 import type { CarbTreatment, GlucoseEntry, PumpHistoryEvent } from '../types/index';
+import { MS_PER_HOUR, DEFAULT_MAX_MEAL_ABSORPTION_HOURS } from '../constants';
 
 interface RecentCarbsOpts {
   treatments: CarbTreatment[] | null;
@@ -84,7 +85,7 @@ function recentCarbs(opts: RecentCarbsOpts, time: Date): RecentCarbsResult | Rec
     var nsCarbsToRemove = 0;
     var bwCarbsToRemove = 0;
     var journalCarbsToRemove = 0;
-    var maxMealAbsorptionTime = 6;
+    var maxMealAbsorptionTime = DEFAULT_MAX_MEAL_ABSORPTION_HOURS;
 
     if (typeof(profile_data.maxMealAbsorptionTime) === 'number' && ! isNaN(profile_data.maxMealAbsorptionTime)) {
         maxMealAbsorptionTime = profile_data.maxMealAbsorptionTime;
@@ -95,7 +96,7 @@ function recentCarbs(opts: RecentCarbsOpts, time: Date): RecentCarbsResult | Rec
     treatments.forEach(function(treatment: CarbTreatment) {
         var now = time.getTime();
         // consider carbs from up to the meal preference maxMealAbsorptionTime hours ago in calculating COB
-        var carbWindow = now - maxMealAbsorptionTime * 60*60*1000;
+        var carbWindow = now - maxMealAbsorptionTime * MS_PER_HOUR;
         var treatmentDate = new Date(tz(treatment.timestamp).toDate());
         var treatmentTime = treatmentDate.getTime();
         if (treatmentTime > carbWindow && treatmentTime <= now) {
@@ -149,7 +150,7 @@ function recentCarbs(opts: RecentCarbsOpts, time: Date): RecentCarbsResult | Rec
     // calculate the current deviation and steepest deviation downslope over the last hour
     COB_inputs.ciTime = time.getTime();
     // set mealTime to 6h ago for Deviation calculations
-    COB_inputs.mealTime = time.getTime() - maxMealAbsorptionTime * 60 * 60 * 1000;
+    COB_inputs.mealTime = time.getTime() - maxMealAbsorptionTime * MS_PER_HOUR;
     var c = calcMealCOB(COB_inputs);
     //console.error(c.currentDeviation, c.slopeFromMaxDeviation);
 
