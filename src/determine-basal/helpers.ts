@@ -8,16 +8,18 @@ import { EXPECTED_DELTA_HOURS } from './constants';
 
 import type { Profile } from '../types/index';
 
-// Rounds value to 'digits' decimal places
+/** Rounds value to the given number of decimal places (default 0). */
 export function round(value: number, digits?: number): number {
     if (! digits) { digits = 0; }
     const scale = Math.pow(10, digits);
     return Math.round(value * scale) / scale;
 }
 
-// we expect BG to rise or fall at the rate of BGI,
-// adjusted by the rate at which BG would need to rise /
-// fall to get eventualBG to target over 2 hours
+/**
+ * Calculate expected BG delta: we expect BG to rise or fall at the rate of BGI,
+ * adjusted by the rate at which BG would need to rise / fall to get eventualBG
+ * to target over 2 hours.
+ */
 export function calculate_expected_delta(
     target_bg: number,
     eventual_bg: number,
@@ -29,9 +31,9 @@ export function calculate_expected_delta(
     return /* expectedDelta */ round(bgi + (target_delta / five_min_blocks), 1);
 }
 
-
+/** Converts a BG value from mg/dL to the profile's output units. */
 export function convert_bg(value: number, profile: Profile): number {
-    if (profile.out_units === "mmol/L") return round(value * MGDL_TO_MMOL,1);   
-    
+    if (profile.out_units === "mmol/L") return round(value * MGDL_TO_MMOL, 1);
+
     return Math.round(value);
 }

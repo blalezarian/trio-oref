@@ -48,7 +48,7 @@ import type { DosingDecisionInputs } from './types';
 
 import { round, convert_bg } from './helpers';
 
-
+/** Calculates the final dosing decision (temp basal rate/duration, SMB, or no change) based on predictions, targets, and safety checks. */
 export function calculateDosingDecision(inputs: DosingDecisionInputs): DetermineBasalResult {
     const {
         result, iob_data, meal_data, profile, glucose_status, currenttemp,
@@ -77,12 +77,12 @@ export function calculateDosingDecision(inputs: DosingDecisionInputs): Determine
     result.CR=round(carbRatio, 1);
     result.target_bg=convert_bg(target_bg, profile);
     result.current_target=round(target_bg, 0);
-    result.reason = isfreason + ", COB: " + result.COB + ", Dev: " + result.deviation + ", BGI: " + result.BGI + ", CR: " + result.CR + ", Target: " + targetLog + ", minPredBG " + convert_bg(minPredBG, profile) + ", minGuardBG " + convert_bg(minGuardBG, profile) + ", IOBpredBG " + convert_bg(lastIOBpredBG, profile);
+    result.reason = `${isfreason}, COB: ${result.COB}, Dev: ${result.deviation}, BGI: ${result.BGI}, CR: ${result.CR}, Target: ${targetLog}, minPredBG ${convert_bg(minPredBG, profile)}, minGuardBG ${convert_bg(minGuardBG, profile)}, IOBpredBG ${convert_bg(lastIOBpredBG, profile)}`;
     if (lastCOBpredBG > 0) {
-        result.reason += ", COBpredBG " + convert_bg(lastCOBpredBG, profile);
+        result.reason += `, COBpredBG ${convert_bg(lastCOBpredBG, profile)}`;
     }
     if (lastUAMpredBG > 0) {
-        result.reason += ", UAMpredBG " + convert_bg(lastUAMpredBG, profile);
+        result.reason += `, UAMpredBG ${convert_bg(lastUAMpredBG, profile)}`;
     }
     result.reason += tddReason;
 
@@ -128,7 +128,7 @@ export function calculateDosingDecision(inputs: DosingDecisionInputs): Determine
     }
 
     if (enableSMB && minGuardBG < threshold) {
-        console.error("minGuardBG " + convert_bg(minGuardBG, profile) + " projected below " + convert_bg(threshold, profile) + " - disabling SMB");
+        console.error(`minGuardBG ${convert_bg(minGuardBG, profile)} projected below ${convert_bg(threshold, profile)} - disabling SMB`);
         result.manualBolusErrorString = BOLUS_ERR_GUARD_BELOW_THRESHOLD;
         result.minGuardBG = minGuardBG;
         result.insulinForManualBolus = round(((result.eventualBG as number) - (result.target_bg as number)) / adjustedSens, 2);
@@ -141,15 +141,15 @@ export function calculateDosingDecision(inputs: DosingDecisionInputs): Determine
         ? Math.min(profile.maxDelta_bg_threshold, MAX_DELTA_BG_THRESHOLD_CAP)
         : DEFAULT_MAX_DELTA_BG_THRESHOLD;
     if ( maxDelta > maxDelta_bg_threshold * bg ) {
-        console.error("maxDelta " + convert_bg(maxDelta, profile)+ " > " + 100 * maxDelta_bg_threshold + "% of BG " + convert_bg(bg, profile) + " - disabling SMB");
-        result.reason += "maxDelta " + convert_bg(maxDelta, profile) + " > " + 100 * maxDelta_bg_threshold + "% of BG " + convert_bg(bg, profile) + " - SMB disabled!, ";
+        console.error(`maxDelta ${convert_bg(maxDelta, profile)} > ${100 * maxDelta_bg_threshold}% of BG ${convert_bg(bg, profile)} - disabling SMB`);
+        result.reason += `maxDelta ${convert_bg(maxDelta, profile)} > ${100 * maxDelta_bg_threshold}% of BG ${convert_bg(bg, profile)} - SMB disabled!, `;
         enableSMB = false;
     }
 
 // Calculate carbsReq (carbs required to avoid a hypo)
-    console.error("BG projected to remain above " + convert_bg(min_bg, profile) + " for " + minutesAboveMinBG + "minutes");
+    console.error(`BG projected to remain above ${convert_bg(min_bg, profile)} for ${minutesAboveMinBG}minutes`);
     if ( minutesAboveThreshold < PRED_HORIZON_MAX_MINUTES || minutesAboveMinBG < MINUTES_ABOVE_MIN_BG_THRESHOLD ) {
-        console.error("BG projected to remain above " + convert_bg(threshold,profile) + " for " + minutesAboveThreshold + "minutes");
+        console.error(`BG projected to remain above ${convert_bg(threshold, profile)} for ${minutesAboveThreshold}minutes`);
     }
     // include at least minutesAboveThreshold worth of zero temps in calculating carbsReq
     // always include at least 30m worth of zero temp (carbs to 80, low temp up to target)
@@ -161,12 +161,12 @@ export function calculateDosingDecision(inputs: DosingDecisionInputs): Determine
     let carbsReq = (bgUndershoot - zeroTempEffect) / carbSensFactor - COBforCarbsReq;
     zeroTempEffect = round(zeroTempEffect);
     carbsReq = round(carbsReq);
-    console.error("naive_eventualBG:",naive_eventualBG,"bgUndershoot:",bgUndershoot,"zeroTempDuration:",zeroTempDuration,"zeroTempEffect:",zeroTempEffect,"carbsReq:",carbsReq);
+    console.error(`naive_eventualBG: ${naive_eventualBG} bgUndershoot: ${bgUndershoot} zeroTempDuration: ${zeroTempDuration} zeroTempEffect: ${zeroTempEffect} carbsReq: ${carbsReq}`);
     if ( meal_data.reason == "Could not parse clock data" ) {
         console.error("carbsReq unknown: Could not parse clock data");
-    } else if ( carbsReq >= profile.carbsReqThreshold! && minutesAboveThreshold <= CARBS_REQ_WINDOW_MINUTES ) {
+    } else if ( carbsReq >= (profile.carbsReqThreshold as number) && minutesAboveThreshold <= CARBS_REQ_WINDOW_MINUTES ) {
         result.carbsReq = carbsReq;
-        result.reason += carbsReq + " add'l carbs req w/in " + minutesAboveThreshold + "m; ";
+        result.reason += `${carbsReq} add'l carbs req w/in ${minutesAboveThreshold}m; `;
     }
 
 // Begin core dosing logic: check for situations requiring low or high temps, and return appropriate temp after first match
@@ -175,11 +175,11 @@ export function calculateDosingDecision(inputs: DosingDecisionInputs): Determine
     let worstCaseInsulinReq = 0;
     let durationReq = 0;
     if (bg < threshold && iob_data.iob < -profile.current_basal*overrideFactor*IOB_NEG_CHECK_MINUTES/MINUTES_PER_HOUR && minDelta > 0 && minDelta > expectedDelta) {
-        result.reason += "IOB "+iob_data.iob+" < " + round(-profile.current_basal*overrideFactor*IOB_NEG_CHECK_MINUTES/MINUTES_PER_HOUR,2);
-        result.reason += " and minDelta " + convert_bg(minDelta, profile) + " > " + "expectedDelta " + convert_bg(expectedDelta, profile) + "; ";
+        result.reason += `IOB ${iob_data.iob} < ${round(-profile.current_basal * overrideFactor * IOB_NEG_CHECK_MINUTES / MINUTES_PER_HOUR, 2)}`;
+        result.reason += ` and minDelta ${convert_bg(minDelta, profile)} > expectedDelta ${convert_bg(expectedDelta, profile)}; `;
      // predictive low glucose suspend mode: BG is / is projected to be < threshold
     } else if ( bg < threshold || minGuardBG < threshold ) {
-        result.reason += "minGuardBG " + convert_bg(minGuardBG, profile) + "<" + convert_bg(threshold, profile);
+        result.reason += `minGuardBG ${convert_bg(minGuardBG, profile)}<${convert_bg(threshold, profile)}`;
         bgUndershoot = target_bg - minGuardBG;
 
         if (minGuardBG < threshold) {
@@ -199,10 +199,10 @@ export function calculateDosingDecision(inputs: DosingDecisionInputs): Determine
     // if not in LGS mode, cancel temps before the top of the hour to reduce beeping/vibration
     if ( profile.skip_neutral_temps && (result.deliverAt as unknown as Date).getMinutes() >= TOP_OF_HOUR_WINDOW_MINUTES ) {
         if (!enableSMB) {
-            result.reason += "; Canceling temp at " + (MINUTES_PER_HOUR - (result.deliverAt as unknown as Date).getMinutes()) + "min before turn of the hour to avoid beeping of MDT. SMB are disabled anyways.";
+            result.reason += `; Canceling temp at ${MINUTES_PER_HOUR - (result.deliverAt as unknown as Date).getMinutes()}min before turn of the hour to avoid beeping of MDT. SMB are disabled anyways.`;
             return tempBasalFunctions.setTempBasal(0, 0, profile, result, currenttemp);
         } else {
-             console.error((MINUTES_PER_HOUR - (result.deliverAt as unknown as Date).getMinutes()) + "min before turn of the hour, but SMB's are enabled - not skipping neutral temps.")
+             console.error(`${MINUTES_PER_HOUR - (result.deliverAt as unknown as Date).getMinutes()}min before turn of the hour, but SMB's are enabled - not skipping neutral temps.`);
         }
     }
 
@@ -210,7 +210,7 @@ export function calculateDosingDecision(inputs: DosingDecisionInputs): Determine
     let rate = basal;
     let insulinScheduled = 0;
     if (eventualBG < min_bg) { // if eventual BG is below target:
-        result.reason += "Eventual BG " + convert_bg(eventualBG, profile) + " < " + convert_bg(min_bg, profile);
+        result.reason += `Eventual BG ${convert_bg(eventualBG, profile)} < ${convert_bg(min_bg, profile)}`;
         // if 5m or 30m avg BG is rising faster than expected delta
         if ( minDelta > expectedDelta && minDelta > 0 && !carbsReq ) {
             // if naive_eventualBG < 40, set a 30m zero temp (oref0-pump-loop will let any longer SMB zero temp run)
@@ -219,15 +219,15 @@ export function calculateDosingDecision(inputs: DosingDecisionInputs): Determine
                 return tempBasalFunctions.setTempBasal(0, TEMP_BASAL_DURATION_MINUTES, profile, result, currenttemp);
             }
             if (glucose_status.delta > minDelta) {
-                result.reason += ", but Delta " + convert_bg(tick as number, profile) + " > expectedDelta " + convert_bg(expectedDelta, profile);
+                result.reason += `, but Delta ${convert_bg(tick as number, profile)} > expectedDelta ${convert_bg(expectedDelta, profile)}`;
             } else {
-                result.reason += ", but Min. Delta " + minDelta.toFixed(2) + " > Exp. Delta " + convert_bg(expectedDelta, profile);
+                result.reason += `, but Min. Delta ${minDelta.toFixed(2)} > Exp. Delta ${convert_bg(expectedDelta, profile)}`;
             }
             if (currenttemp.duration > TEMP_ACTIVE_DURATION_MINUTES && (round_basal(basal, profile) === round_basal(currenttemp.rate, profile))) {
-                result.reason += ", temp " + currenttemp.rate + " ~ req " + basal + "U/hr. ";
+                result.reason += `, temp ${currenttemp.rate} ~ req ${basal}U/hr. `;
                 return result;
             } else {
-                result.reason += "; setting current basal of " + basal + " as temp. ";
+                result.reason += `; setting current basal of ${basal} as temp. `;
                 return tempBasalFunctions.setTempBasal(basal, TEMP_BASAL_DURATION_MINUTES, profile, result, currenttemp);
             }
         }
@@ -254,14 +254,14 @@ export function calculateDosingDecision(inputs: DosingDecisionInputs): Determine
         // by both normal and naive calculations, then raise the rate
         const minInsulinReq = Math.min(insulinReq,naiveInsulinReq);
 
-        console.log("naiveInsulinReq:" + naiveInsulinReq);
+        console.log(`naiveInsulinReq:${naiveInsulinReq}`);
 
         if (insulinScheduled < minInsulinReq - basal*BASAL_SHORTFALL_FRACTION) {
-            result.reason += ", " + currenttemp.duration + "m@" + (currenttemp.rate).toFixed(2) + " is a lot less than needed. ";
+            result.reason += `, ${currenttemp.duration}m@${(currenttemp.rate).toFixed(2)} is a lot less than needed. `;
             return tempBasalFunctions.setTempBasal(rate, TEMP_BASAL_DURATION_MINUTES, profile, result, currenttemp);
         }
         if (currenttemp.rate !== undefined && (currenttemp.duration > TEMP_SHORT_DURATION_MINUTES && rate >= currenttemp.rate * RATE_TOLERANCE_LOW)) {
-            result.reason += ", temp " + currenttemp.rate + " ~< req " + rate + "U/hr. ";
+            result.reason += `, temp ${currenttemp.rate} ~< req ${rate}U/hr. `;
             return result;
         }
 
@@ -279,13 +279,13 @@ export function calculateDosingDecision(inputs: DosingDecisionInputs): Determine
                     durationReq = Math.min(MAX_TEMP_BASAL_DURATION_MINUTES,Math.max(0,durationReq));
                 }
                 if (durationReq > 0) {
-                    result.reason += ", setting " + durationReq + "m zero temp. ";
+                    result.reason += `, setting ${durationReq}m zero temp. `;
                     return tempBasalFunctions.setTempBasal(rate, durationReq, profile, result, currenttemp);
                 }
             }
 
             else {
-                result.reason += ", setting " + rate + "U/hr. ";
+                result.reason += `, setting ${rate}U/hr. `;
             }
             return tempBasalFunctions.setTempBasal(rate, TEMP_BASAL_DURATION_MINUTES, profile, result, currenttemp);
         }
@@ -315,15 +315,15 @@ export function calculateDosingDecision(inputs: DosingDecisionInputs): Determine
         // if in SMB mode, don't cancel SMB zero temp
         if (! (microBolusAllowed && enableSMB)) {
             if (glucose_status.delta < minDelta) {
-                result.reason += "Eventual BG " + convert_bg(eventualBG, profile) + " > " + convert_bg(min_bg, profile) + " but Delta " + convert_bg(tick as number, profile) + " < Exp. Delta " + convert_bg(expectedDelta, profile);
+                result.reason += `Eventual BG ${convert_bg(eventualBG, profile)} > ${convert_bg(min_bg, profile)} but Delta ${convert_bg(tick as number, profile)} < Exp. Delta ${convert_bg(expectedDelta, profile)}`;
             } else {
-                result.reason += "Eventual BG " + convert_bg(eventualBG, profile) + " > " + convert_bg(min_bg, profile) + " but Min. Delta " + minDelta.toFixed(2) + " < Exp. Delta " + convert_bg(expectedDelta, profile);
+                result.reason += `Eventual BG ${convert_bg(eventualBG, profile)} > ${convert_bg(min_bg, profile)} but Min. Delta ${minDelta.toFixed(2)} < Exp. Delta ${convert_bg(expectedDelta, profile)}`;
             }
             if (currenttemp.duration > TEMP_ACTIVE_DURATION_MINUTES && (round_basal(basal, profile) === round_basal(currenttemp.rate, profile))) {
-                result.reason += ", temp " + currenttemp.rate + " ~ req " + basal + "U/hr. ";
+                result.reason += `, temp ${currenttemp.rate} ~ req ${basal}U/hr. `;
                 return result;
             } else {
-                result.reason += "; setting current basal of " + basal + " as temp. ";
+                result.reason += `; setting current basal of ${basal} as temp. `;
                 return tempBasalFunctions.setTempBasal(basal, TEMP_BASAL_DURATION_MINUTES, profile, result, currenttemp);
             }
         }
@@ -340,12 +340,12 @@ export function calculateDosingDecision(inputs: DosingDecisionInputs): Determine
 
         // if in SMB mode, don't cancel SMB zero temp
         if (! (microBolusAllowed && enableSMB )) {
-            result.reason += convert_bg(eventualBG, profile)+ "-" + convert_bg(minPredBG, profile) + " in range: no temp required";
+            result.reason += `${convert_bg(eventualBG, profile)}-${convert_bg(minPredBG, profile)} in range: no temp required`;
             if (currenttemp.duration > TEMP_ACTIVE_DURATION_MINUTES && (round_basal(basal, profile) === round_basal(currenttemp.rate, profile))) {
-                result.reason += ", temp " + currenttemp.rate + " ~ req " + basal + "U/hr. ";
+                result.reason += `, temp ${currenttemp.rate} ~ req ${basal}U/hr. `;
                 return result;
             } else {
-                result.reason += "; setting current basal of " + basal + " as temp. ";
+                result.reason += `; setting current basal of ${basal} as temp. `;
                 return tempBasalFunctions.setTempBasal(basal, TEMP_BASAL_DURATION_MINUTES, profile, result, currenttemp);
             }
         }
@@ -354,18 +354,18 @@ export function calculateDosingDecision(inputs: DosingDecisionInputs): Determine
     // eventual BG is at/above target
     // if iob is over max, just cancel any temps
     if ( eventualBG >= max_bg ) {
-        result.reason += "Eventual BG " + convert_bg(eventualBG, profile) + " >= " +  convert_bg(max_bg, profile) + ", ";
+        result.reason += `Eventual BG ${convert_bg(eventualBG, profile)} >= ${convert_bg(max_bg, profile)}, `;
         if (eventualBG > max_bg) {
         result.insulinForManualBolus = round((eventualBG - target_bg) / adjustedSens, 2);
         }
     }
     if (iob_data.iob > max_iob) {
-        result.reason += "IOB " + round(iob_data.iob,2) + " > max_iob " + max_iob;
+        result.reason += `IOB ${round(iob_data.iob, 2)} > max_iob ${max_iob}`;
         if (currenttemp.duration > TEMP_ACTIVE_DURATION_MINUTES && (round_basal(basal, profile) === round_basal(currenttemp.rate, profile))) {
-            result.reason += ", temp " + currenttemp.rate + " ~ req " + basal + "U/hr. ";
+            result.reason += `, temp ${currenttemp.rate} ~ req ${basal}U/hr. `;
             return result;
         } else {
-            result.reason += "; setting current basal of " + basal + " as temp. ";
+            result.reason += `; setting current basal of ${basal} as temp. `;
             return tempBasalFunctions.setTempBasal(basal, TEMP_BASAL_DURATION_MINUTES, profile, result, currenttemp);
         }
     }
@@ -377,14 +377,14 @@ export function calculateDosingDecision(inputs: DosingDecisionInputs): Determine
         // if that would put us over max_iob, then reduce accordingly
         if (insulinReq > max_iob-iob_data.iob) {
             console.error(`SMB limited by maxIOB: ${max_iob - iob_data.iob} (. insulinReq: ${insulinReq} U)`);
-            result.reason += "max_iob " + max_iob + ", ";
+            result.reason += `max_iob ${max_iob}, `;
             insulinReq = max_iob-iob_data.iob;
-        } else { console.error("SMB not limited by maxIOB ( insulinReq: " + insulinReq + " U).");}
+        } else { console.error(`SMB not limited by maxIOB ( insulinReq: ${insulinReq} U).`); }
 
         if (insulinForManualBolus > max_iob-iob_data.iob) {
             console.error(`Ev. Bolus limited by maxIOB: ${max_iob - iob_data.iob} (. insulinForManualBolus: ${insulinForManualBolus} U)`);
-            result.reason += "max_iob " + max_iob + ", ";
-        } else { console.error("Ev. Bolus would not be limited by maxIOB ( insulinForManualBolus: " + insulinForManualBolus + " U).");}
+            result.reason += `max_iob ${max_iob}, `;
+        } else { console.error(`Ev. Bolus would not be limited by maxIOB ( insulinForManualBolus: ${insulinForManualBolus} U).`); }
 
         // rate required to deliver insulinReq more insulin over 30m:
         rate = basal + (LOW_TEMP_CORRECTION_FACTOR * insulinReq);
@@ -392,13 +392,11 @@ export function calculateDosingDecision(inputs: DosingDecisionInputs): Determine
         insulinReq = round(insulinReq,3);
         result.insulinReq = insulinReq;
         // minutes since last bolus
-        const lastBolusAge = round(( new Date(systemTime).getTime() - iob_data.lastBolusTime! ) / MS_PER_MINUTE,1);
+        const lastBolusAge = round(( new Date(systemTime).getTime() - (iob_data.lastBolusTime as number) ) / MS_PER_MINUTE, 1);
 
         // only allow microboluses with COB or low temp targets, or within DIA hours of a bolus
         if (microBolusAllowed && enableSMB && bg > threshold) {
             // never bolus more than maxSMBBasalMinutes worth of basal
-
-
             let smbMinutesSetting =  DEFAULT_MAX_SMB_BASAL_MINUTES;
             if (profile.maxSMBBasalMinutes !== undefined) {
                 smbMinutesSetting = profile.maxSMBBasalMinutes;
@@ -409,11 +407,11 @@ export function calculateDosingDecision(inputs: DosingDecisionInputs): Determine
             }
 
             if (trio_custom_variables.useOverride && advancedSettings && smbMinutes !== smbMinutesSetting) {
-                console.error("SMB Max Minutes - setting overriden from " + smbMinutesSetting + " to " + smbMinutes);
+                console.error(`SMB Max Minutes - setting overriden from ${smbMinutesSetting} to ${smbMinutes}`);
                 smbMinutesSetting = smbMinutes;
             }
             if (trio_custom_variables.useOverride && advancedSettings && uamMinutes !== uamMinutesSetting) {
-                console.error("UAM Max Minutes - setting overriden from " + uamMinutesSetting + " to " + uamMinutes);
+                console.error(`UAM Max Minutes - setting overriden from ${uamMinutesSetting} to ${uamMinutes}`);
                 uamMinutesSetting = uamMinutes;
             }
 
@@ -424,26 +422,26 @@ export function calculateDosingDecision(inputs: DosingDecisionInputs): Determine
                 console.error("smbMinutesSetting undefined: defaulting to 30m");
 
                 if( insulinReq > maxBolus ) {
-                  console.error("SMB limited by maxBolus: " + maxBolus + " ( " + insulinReq + " U)");
+                  console.error(`SMB limited by maxBolus: ${maxBolus} ( ${insulinReq} U)`);
                 }
             } else if ( iob_data.iob > mealInsulinReq && iob_data.iob > 0 ) {
-                console.error("IOB" + iob_data.iob + "> COB" + meal_data.mealCOB + "; mealInsulinReq =" + mealInsulinReq);
+                console.error(`IOB${iob_data.iob}> COB${meal_data.mealCOB}; mealInsulinReq =${mealInsulinReq}`);
                 if (uamMinutesSetting) {
-                    console.error("maxUAMSMBBasalMinutes: " + uamMinutesSetting + ", profile.current_basal: " + profile.current_basal * overrideFactor);
+                    console.error(`maxUAMSMBBasalMinutes: ${uamMinutesSetting}, profile.current_basal: ${profile.current_basal * overrideFactor}`);
                     maxBolus = round(profile.current_basal * overrideFactor * uamMinutesSetting / MINUTES_PER_HOUR ,1);
                 } else {
                     console.error("maxUAMSMBBasalMinutes undefined: defaulting to 30m");
                     maxBolus = round( profile.current_basal  * overrideFactor * DEFAULT_MAX_SMB_BASAL_MINUTES / MINUTES_PER_HOUR ,1);
                 }
                 if( insulinReq > maxBolus ) {
-                  console.error("SMB limited by maxUAMSMBBasalMinutes [ " + uamMinutesSetting + "m ]: " + maxBolus + "U ( " + insulinReq + "U )");
-                } else { console.error("SMB is not limited by maxUAMSMBBasalMinutes. ( insulinReq: " + insulinReq + "U )"); }
+                  console.error(`SMB limited by maxUAMSMBBasalMinutes [ ${uamMinutesSetting}m ]: ${maxBolus}U ( ${insulinReq}U )`);
+                } else { console.error(`SMB is not limited by maxUAMSMBBasalMinutes. ( insulinReq: ${insulinReq}U )`); }
             } else {
-                console.error(".maxSMBBasalMinutes: " + smbMinutesSetting + ", profile.current_basal: " + profile.current_basal * overrideFactor);
+                console.error(`.maxSMBBasalMinutes: ${smbMinutesSetting}, profile.current_basal: ${profile.current_basal * overrideFactor}`);
                 maxBolus = round(profile.current_basal  * overrideFactor * smbMinutesSetting / MINUTES_PER_HOUR ,1);
                 if( insulinReq > maxBolus ) {
-                  console.error("SMB limited by maxSMBBasalMinutes: " + smbMinutesSetting + "m ]: " + maxBolus + "U ( insulinReq: " + insulinReq + "U )");
-                } else { console.error("SMB is not limited by maxSMBBasalMinutes. ( insulinReq: " + insulinReq + "U )"); }
+                  console.error(`SMB limited by maxSMBBasalMinutes: ${smbMinutesSetting}m ]: ${maxBolus}U ( insulinReq: ${insulinReq}U )`);
+                } else { console.error(`SMB is not limited by maxSMBBasalMinutes. ( insulinReq: ${insulinReq}U )`); }
             }
             // bolus 1/2 the insulinReq, up to maxBolus, rounding down to nearest bolus increment
             const bolusIncrement = profile.bolus_increment as number;
@@ -452,7 +450,7 @@ export function calculateDosingDecision(inputs: DosingDecisionInputs): Determine
             const smb_ratio = Math.min(profile.smb_delivery_ratio as number, 1);
 
             if (smb_ratio != DEFAULT_SMB_DELIVERY_RATIO) {
-                console.error("SMB Delivery Ratio changed from default 0.5 to " + round(smb_ratio,2))
+                console.error(`SMB Delivery Ratio changed from default 0.5 to ${round(smb_ratio, 2)}`);
             }
             let microBolus = Math.min(insulinReq*smb_ratio, maxBolus);
 
@@ -479,12 +477,12 @@ export function calculateDosingDecision(inputs: DosingDecisionInputs): Determine
                 smbLowTempReq = round( basal * durationReq/TEMP_BASAL_DURATION_MINUTES ,2);
                 durationReq = TEMP_BASAL_DURATION_MINUTES;
             }
-            result.reason += " insulinReq " + insulinReq;
+            result.reason += ` insulinReq ${insulinReq}`;
             if (microBolus >= maxBolus) {
-                result.reason +=  "; maxBolus " + maxBolus;
+                result.reason += `; maxBolus ${maxBolus}`;
             }
             if (durationReq > 0) {
-                result.reason += "; setting " + durationReq + "m low temp of " + smbLowTempReq + "U/h";
+                result.reason += `; setting ${durationReq}m low temp of ${smbLowTempReq}U/h`;
             }
             result.reason += ". ";
 
@@ -496,15 +494,15 @@ export function calculateDosingDecision(inputs: DosingDecisionInputs): Determine
             }
             const nextBolusMins = round(SMBInterval-lastBolusAge,0);
             const nextBolusSeconds = round((SMBInterval - lastBolusAge) * SECONDS_PER_MINUTE, 0) % SECONDS_PER_MINUTE;
-            console.error("naive_eventualBG " + naive_eventualBG + "," + durationReq + "m " + smbLowTempReq + "U/h temp needed; last bolus " + lastBolusAge +"m ago; maxBolus: " + maxBolus);
+            console.error(`naive_eventualBG ${naive_eventualBG},${durationReq}m ${smbLowTempReq}U/h temp needed; last bolus ${lastBolusAge}m ago; maxBolus: ${maxBolus}`);
 
             if (lastBolusAge > SMBInterval) {
                 if (microBolus > 0) {
                     result.units = microBolus;
-                    result.reason += "Microbolusing " + microBolus + "U. ";
+                    result.reason += `Microbolusing ${microBolus}U. `;
                 }
             } else {
-                result.reason += "Waiting " + nextBolusMins + "m " + nextBolusSeconds + "s to microbolus again. ";
+                result.reason += `Waiting ${nextBolusMins}m ${nextBolusSeconds}s to microbolus again. `;
             }
             // if no zero temp is required, don't return yet; allow later code to set a high temp
             if (durationReq > 0) {
@@ -518,28 +516,28 @@ export function calculateDosingDecision(inputs: DosingDecisionInputs): Determine
         const maxSafeBasal = tempBasalFunctions.getMaxSafeBasal(profile);
 
         if (rate > maxSafeBasal) {
-            result.reason += "adj. req. rate: " + rate + " to maxSafeBasal: " + round(maxSafeBasal,2) + ", ";
+            result.reason += `adj. req. rate: ${rate} to maxSafeBasal: ${round(maxSafeBasal, 2)}, `;
             rate = round_basal(maxSafeBasal, profile);
         }
 
         insulinScheduled = currenttemp.duration * (currenttemp.rate - basal) / MINUTES_PER_HOUR;
         if (insulinScheduled >= insulinReq * INSULIN_OVERSHOOT_FACTOR) { // if current temp would deliver >2x more than the required insulin, lower the rate
-            result.reason += currenttemp.duration + "m@" + (currenttemp.rate).toFixed(2) + " > 2 * insulinReq. Setting temp basal of " + rate + "U/hr. ";
+            result.reason += `${currenttemp.duration}m@${(currenttemp.rate).toFixed(2)} > 2 * insulinReq. Setting temp basal of ${rate}U/hr. `;
             return tempBasalFunctions.setTempBasal(rate, TEMP_BASAL_DURATION_MINUTES, profile, result, currenttemp);
         }
 
         if (currenttemp.duration === undefined || currenttemp.duration === 0) { // no temp is set
-            result.reason += "no temp, setting " + rate + "U/hr. ";
+            result.reason += `no temp, setting ${rate}U/hr. `;
             return tempBasalFunctions.setTempBasal(rate, TEMP_BASAL_DURATION_MINUTES, profile, result, currenttemp);
         }
 
         if (currenttemp.duration > TEMP_SHORT_DURATION_MINUTES && (round_basal(rate, profile) <= round_basal(currenttemp.rate, profile))) { // if required temp <~ existing temp basal
-            result.reason += "temp " + currenttemp.rate + " >~ req " + rate + "U/hr. ";
+            result.reason += `temp ${currenttemp.rate} >~ req ${rate}U/hr. `;
             return result;
         }
 
         // required temp > existing temp basal
-        result.reason += "temp " + currenttemp.rate + "<" + rate + "U/hr. ";
+        result.reason += `temp ${currenttemp.rate}<${rate}U/hr. `;
         return tempBasalFunctions.setTempBasal(rate, TEMP_BASAL_DURATION_MINUTES, profile, result, currenttemp);
     }
 }

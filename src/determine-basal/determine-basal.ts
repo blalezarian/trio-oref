@@ -49,7 +49,7 @@ import { calculateCarbAbsorption } from './carb-absorption';
 import { generateBGPredictions } from './bg-predictions';
 import { calculateDosingDecision } from './dosing-decision';
 
-
+/** Main determine-basal entry point: calculates the recommended temp basal / SMB dosing action. */
 export function determine_basal(
     glucose_status: GlucoseStatus,
     currenttemp: CurrentTemp,
@@ -99,8 +99,6 @@ export function determine_basal(
     if (currentTime) {
         systemTime = new Date(currentTime);
     }
-
-
 
     const weightedAverage = trio_custom_variables.weightedAverage;
     let overrideFactor = 1;
@@ -178,17 +176,17 @@ export function determine_basal(
         lastTempAge = 0;
     }
     const tempModulus = (lastTempAge + currenttemp.duration) % TEMP_BASAL_DURATION_MINUTES;
-    console.error("currenttemp:" + currenttemp.rate + " lastTempAge:" + lastTempAge + "m, tempModulus:" + tempModulus + "m");
+    console.error(`currenttemp:${currenttemp.rate} lastTempAge:${lastTempAge}m, tempModulus:${tempModulus}m`);
     result.temp = 'absolute';
     result.deliverAt = deliverAt as unknown as string;
     if ( microBolusAllowed && currenttemp && iob_data.lastTemp && currenttemp.rate !== iob_data.lastTemp.rate && lastTempAge > TEMP_AGE_STALE_MINUTES && currenttemp.duration ) {
-        result.reason = "Warning: currenttemp rate " + currenttemp.rate + " != lastTemp rate " + iob_data.lastTemp.rate + " from pumphistory; canceling temp"; // reason.conclusion started
+        result.reason = `Warning: currenttemp rate ${currenttemp.rate} != lastTemp rate ${iob_data.lastTemp.rate} from pumphistory; canceling temp`; // reason.conclusion started
         return tempBasalFunctions.setTempBasal(0, 0, profile, result, currenttemp);
     }
     if ( currenttemp && iob_data.lastTemp && currenttemp.duration > 0 ) {
         const lastTempEnded = lastTempAge - iob_data.lastTemp.duration;
         if ( lastTempEnded > TEMP_END_GAP_MINUTES && lastTempAge > TEMP_AGE_STALE_MINUTES ) {
-            result.reason = "Warning: currenttemp running but lastTemp from pumphistory ended " + lastTempEnded + "m ago; canceling temp"; // reason.conclusion started
+            result.reason = `Warning: currenttemp running but lastTemp from pumphistory ended ${lastTempEnded}m ago; canceling temp`; // reason.conclusion started
             return tempBasalFunctions.setTempBasal(0, 0, profile, result, currenttemp);
         }
     }
@@ -220,12 +218,10 @@ export function determine_basal(
     let eventualBG = naive_eventualBG + deviation;
 
     if (eventualBG === undefined || isNaN(eventualBG)) {
-        result.error ='Error: could not calculate eventualBG. Sensitivity: ' + adjustedSens + ' Deviation: ' + deviation;
+        result.error = `Error: could not calculate eventualBG. Sensitivity: ${adjustedSens} Deviation: ${deviation}`;
         return result;
     }
     const expectedDelta = calculate_expected_delta(target_bg, eventualBG, bgImpact);
-
-
 
 // Initialize result (requestedTemp) object. Has to be done after eventualBG is calculated.
     result = {
@@ -280,7 +276,7 @@ export function determine_basal(
         carbImpact, carbImpactDuration, uamCarbImpact,
         remainingCATime, remainingCIpeak, slopeFromDeviations,
         dynISFenabled, enable_sigmoid, tdd, adjustmentFactor, insulinFactor,
-        enableUAM, target_bg, threshold, meal_data, profile
+        enableUAM, target_bg, threshold, meal_data
     );
     eventualBG = bgPred.eventualBG;
     result.eventualBG = eventualBG;

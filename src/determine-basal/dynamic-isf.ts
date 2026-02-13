@@ -23,7 +23,7 @@ import type { DynamicISFResult } from './types';
 
 import { round } from './helpers';
 
-
+/** Calculates dynamic ISF ratio and related TDD-based adjustments for insulin sensitivity. */
 export function calculateDynamicISF(
     glucose_status: GlucoseStatus,
     profile: Profile,
@@ -62,7 +62,6 @@ export function calculateDynamicISF(
     let tdd24h_14d_Ratio = 1;
     let basal_ratio_log = "";
 
-
     if (average_total_data > 0) {
         tdd24h_14d_Ratio = weightedAverage / average_total_data;
     }
@@ -77,7 +76,7 @@ export function calculateDynamicISF(
         tdd24h_14d_Ratio = round(tdd24h_14d_Ratio,2);
     }
 
-    basal_ratio_log = ", Basal ratio: " + tdd24h_14d_Ratio;
+    basal_ratio_log = `, Basal ratio: ${tdd24h_14d_Ratio}`;
 
     // One of two exercise settings (they share the same purpose)
 
@@ -88,16 +87,17 @@ export function calculateDynamicISF(
     // Turn off Chris' formula when using a temp target >= 118 (6.5 mol/l) and if an exercise setting is enabled.
     if (currentMinTarget >= DYNISF_EXERCISE_THRESHOLD && exerciseSetting) {
         dynISFenabled = false;
-        log = "Dynamic ISF temporarily off due to a high temp target/exercising. Current min target: " + currentMinTarget;
+        log = `Dynamic ISF temporarily off due to a high temp target/exercising. Current min target: ${currentMinTarget}`;
     }
 
     const startLog = ", Dynamic ratios log: ";
-    const afLog = ", AF: " + (enable_sigmoid ? adjustmentFactorSigmoid : adjustmentFactor);
-    const bgLog = "BG: " + BG + " mg/dl (" + (BG * MGDL_TO_MMOL).toPrecision(2) + " mmol/l)";
+    const afLog = `, AF: ${enable_sigmoid ? adjustmentFactorSigmoid : adjustmentFactor}`;
+    const bgLog = `BG: ${BG} mg/dl (${(BG * MGDL_TO_MMOL).toPrecision(2)} mmol/l)`;
     let formula = "";
     let weightLog = "";
 
     // Insulin curve
+
     const curve = preferences.curve;
     const ipt = profile.insulinPeakTime;
     const ucpk = preferences.useCustomPeakTime;
@@ -115,10 +115,10 @@ export function calculateDynamicISF(
 
     if (ucpk) {
         insulinFactor = INSULIN_FACTOR_CEILING - ipt;
-        console.log("Custom insulinpeakTime set to :" + ipt + ", insulinFactor: " + insulinFactor);
+        console.log(`Custom insulinpeakTime set to :${ipt}, insulinFactor: ${insulinFactor}`);
     } else {
         insulinFactor = INSULIN_FACTOR_CEILING - insulinPA;
-        console.log("insulinFactor set to : " + insulinFactor);
+        console.log(`insulinFactor set to : ${insulinFactor}`);
     }
 
     // Use weighted TDD average
@@ -126,15 +126,15 @@ export function calculateDynamicISF(
 
     if (weightPercentage < 1 && weightedAverage > 1) {
         tdd = weightedAverage;
-        console.log("Using weighted TDD average: " + round(tdd,2) + " U, instead of past 24 h (" + round(tdd_before,2) + " U), weight: " + weightPercentage);
-        weightLog = ", Weighted TDD: " + round(tdd,2) + " U";
+        console.log(`Using weighted TDD average: ${round(tdd, 2)} U, instead of past 24 h (${round(tdd_before, 2)} U), weight: ${weightPercentage}`);
+        weightLog = `, Weighted TDD: ${round(tdd, 2)} U`;
     }
 
     // Modified Chris Wilson's formula with added adjustmentFactor for tuning and use of the autosens.ratio.
     // Uses logarithmic formula: newRatio = profile.sens * adjustmentFactor * tdd * ln((BG/insulinFactor) + 1) / 1800
 
-    let sigmoidLog = ""
-    let newRatio: number = undefined!;
+    let sigmoidLog = "";
+    let newRatio: number | undefined;
 
     if (dynISFenabled) {
         // Logarithmic
@@ -174,27 +174,26 @@ export function calculateDynamicISF(
         dynamicISFLog = ", Dynamic ISF: On";
 
         // Respect autosens.max and autosens.min limitLogs
-        if (newRatio > maxLimitChris) {
-            log = ", Dynamic ISF limited by autosens_max setting: " + maxLimitChris + " (" +  round(newRatio,2) + "), ";
-            limitLog = ", Autosens/Dynamic Limit: " + maxLimitChris + " (" +  round(newRatio,2) + ")";
+        if ((newRatio as number) > maxLimitChris) {
+            log = `, Dynamic ISF limited by autosens_max setting: ${maxLimitChris} (${round(newRatio as number, 2)}), `;
+            limitLog = `, Autosens/Dynamic Limit: ${maxLimitChris} (${round(newRatio as number, 2)})`;
             newRatio = maxLimitChris;
-        } else if (newRatio < minLimitChris) {
-            log = ", Dynamic ISF limited by autosens_min setting: " + minLimitChris + " (" +  round(newRatio,2) + "). ";
-            limitLog = ", Autosens/Dynamic Limit: " + minLimitChris + " (" +  round(newRatio,2) + ")";
+        } else if ((newRatio as number) < minLimitChris) {
+            log = `, Dynamic ISF limited by autosens_min setting: ${minLimitChris} (${round(newRatio as number, 2)}). `;
+            limitLog = `, Autosens/Dynamic Limit: ${minLimitChris} (${round(newRatio as number, 2)})`;
             newRatio = minLimitChris;
         }
 
-        const isf = sensitivity / newRatio;
+        const isf = sensitivity / (newRatio as number);
 
          // Set the new ratio
-         autosens_data.ratio = newRatio;
+         autosens_data.ratio = newRatio as number;
 
-        sigmoidLog = ". Using Sigmoid function, the autosens ratio has been adjusted with sigmoid factor to: " + round(autosens_data.ratio, 2) + ". New ISF = " + round(isf, 2) + " mg/dl (" + round(MGDL_TO_MMOL * isf, 2) + " (mmol/l).";
+        sigmoidLog = `. Using Sigmoid function, the autosens ratio has been adjusted with sigmoid factor to: ${round(autosens_data.ratio, 2)}. New ISF = ${round(isf, 2)} mg/dl (${round(MGDL_TO_MMOL * isf, 2)} (mmol/l).`;
 
         if (!enable_sigmoid) {
-            log += ", Dynamic autosens.ratio set to " + round(newRatio,2) + " with ISF: " + isf.toPrecision(3) + " mg/dl/U (" + (isf * MGDL_TO_MMOL).toPrecision(3) + " mmol/l/U)";
-        } else { log += sigmoidLog }
-
+            log += `, Dynamic autosens.ratio set to ${round(newRatio as number, 2)} with ISF: ${isf.toPrecision(3)} mg/dl/U (${(isf * MGDL_TO_MMOL).toPrecision(3)} mmol/l/U)`;
+        } else { log += sigmoidLog; }
 
         logOutPut += startLog + bgLog + afLog + formula + log + dynamicISFLog + weightLog;
 
@@ -210,13 +209,13 @@ export function calculateDynamicISF(
     else if (dynISFenabled && !profile.tddAdjBasal) { tddReason += dynamicISFLog + formula + limitLog + afLog; }
 
     if (DEFAULT_SMB_DELIVERY_RATIO !== profile.smb_delivery_ratio) {
-        tddReason += ", SMB Ratio: " + Math.min(profile.smb_delivery_ratio as number, 1);
+        tddReason += `, SMB Ratio: ${Math.min(profile.smb_delivery_ratio as number, 1)}`;
     }
 
     // Not confident but something like this in iAPS v3.0.3
     if ((middleWare as unknown) !== "" && (middleWare as unknown) !== "Nothing changed"){
-        tddReason += ", Middleware: " + middleWare;
+        tddReason += `, Middleware: ${middleWare}`;
     }
 
-    return { dynISFenabled, tdd, tddReason, newRatio, insulinFactor, adjustmentFactor, enable_sigmoid, tdd24h_14d_Ratio };
+    return { dynISFenabled, tdd, tddReason, newRatio: newRatio as number, insulinFactor, adjustmentFactor, enable_sigmoid, tdd24h_14d_Ratio };
 }

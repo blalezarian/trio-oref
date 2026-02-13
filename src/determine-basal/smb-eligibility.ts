@@ -8,6 +8,7 @@ import type {
     TrioCustomVariables,
 } from '../types/index';
 
+/** Determines whether SMB (Super Micro Bolus) should be enabled based on profile settings, meal data, and current BG. */
 export function enable_smb(
     profile: Profile,
     microBolusAllowed: boolean,
@@ -46,7 +47,7 @@ export function enable_smb(
         console.error("SMB disabled (!microBolusAllowed)");
         return false;
     } else if (! profile.allowSMB_with_high_temptarget && profile.temptargetSet && target_bg > EXERCISE_NORMAL_TARGET) {
-        console.error("SMB disabled due to high temptarget of " + target_bg);
+        console.error(`SMB disabled due to high temptarget of ${target_bg}`);
         return false;
     } else if (meal_data.bwFound === true && profile.A52_risk_enable === false) {
         console.error("SMB disabled due to Bolus Wizard activity in the last 6 hours.");
@@ -68,7 +69,7 @@ export function enable_smb(
         if (meal_data.bwCarbs) {
             console.error("Warning: SMB enabled with Bolus Wizard carbs: be sure to easy bolus 30s before using Bolus Wizard");
         } else {
-            console.error("SMB enabled for COB of " + meal_data.mealCOB);
+            console.error(`SMB enabled for COB of ${meal_data.mealCOB}`);
         }
         return true;
     }
@@ -89,7 +90,7 @@ export function enable_smb(
         if (meal_data.bwFound) {
             console.error("Warning: SMB enabled within 6h of using Bolus Wizard: be sure to easy bolus 30s before using Bolus Wizard");
         } else {
-            console.error("SMB enabled for temptarget of " + convert_bg(target_bg, profile));
+            console.error(`SMB enabled for temptarget of ${convert_bg(target_bg, profile)}`);
         }
         return true;
     }
@@ -97,7 +98,7 @@ export function enable_smb(
     // enable SMB if high bg is found
     if (profile.enableSMB_high_bg === true && high_bg !== null && bg >= high_bg) {
         console.error("Checking BG to see if High for SMB enablement.");
-        console.error("Current BG", bg, " | High BG ", high_bg);
+        console.error(`Current BG ${bg} | High BG ${high_bg}`);
         if (meal_data.bwFound) {
             console.error("Warning: High BG SMB enabled within 6h of using Bolus Wizard: be sure to easy bolus 30s before using Bolus Wizard");
         } else {

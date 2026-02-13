@@ -23,7 +23,7 @@ import type { CarbAbsorptionResult } from './types';
 
 import { round, convert_bg } from './helpers';
 
-
+/** Calculates carb impact, absorption rate, and remaining carb time for BG prediction. */
 export function calculateCarbAbsorption(
     minDelta: number,
     bgImpact: number,
@@ -48,13 +48,13 @@ export function calculateCarbAbsorption(
     // autotuned CR is still in effect even when basals and ISF are being adjusted by TT or autosens
     // this avoids overdosing insulin for large meals when low temp targets are active
     const carbSensFactor = adjustedSens / carbRatio;
-    console.error("profile.sens:" + convert_bg(sensitivity,profile) + ", sens:" + convert_bg(adjustedSens,profile) + ", CSF:" + round(carbSensFactor,1));
+    console.error(`profile.sens:${convert_bg(sensitivity, profile)}, sens:${convert_bg(adjustedSens, profile)}, CSF:${round(carbSensFactor, 1)}`);
 
     const maxCarbAbsorptionRate = DEFAULT_MAX_CARB_ABSORPTION_RATE; // g/h; maximum rate to assume carbs will absorb if no CI observed
     // limitLog Carb Impact to maxCarbAbsorptionRate * carbSensFactor in mg/dL per 5m
     const maxCI = round(maxCarbAbsorptionRate*carbSensFactor*PRED_INTERVAL_MINUTES/MINUTES_PER_HOUR,1);
     if (carbImpact > maxCI) {
-        console.error("Limiting carb impact from " + carbImpact + " to " + maxCI + "mg/dL/5m (" + maxCarbAbsorptionRate + "g/h)");
+        console.error(`Limiting carb impact from ${carbImpact} to ${maxCI}mg/dL/5m (${maxCarbAbsorptionRate}g/h)`);
         carbImpact = maxCI;
     }
     let remainingCATimeMin = DEFAULT_REMAINING_CA_TIME_MIN_HOURS; // h; minimum duration of expected not-yet-observed carb absorption
@@ -70,12 +70,12 @@ export function calculateCarbAbsorption(
         // if carbs * assumedCarbAbsorptionRate > remainingCATimeMin, raise it
         // so <= 90g is assumed to take 3h, and 120g=4h
         remainingCATimeMin = Math.max(remainingCATimeMin, meal_data.mealCOB/assumedCarbAbsorptionRate);
-        const lastCarbAge = round(( new Date(systemTime).getTime() - meal_data.lastCarbTime! ) / MS_PER_MINUTE);
+        const lastCarbAge = round(( new Date(systemTime).getTime() - (meal_data.lastCarbTime as number) ) / MS_PER_MINUTE);
         const fractionCOBAbsorbed = ( meal_data.carbs - meal_data.mealCOB ) / meal_data.carbs;
         // if the lastCarbTime was 1h ago, increase remainingCATime by 1.5 hours
         remainingCATime = remainingCATimeMin + CARB_TIME_EXTENSION_FACTOR * lastCarbAge/MINUTES_PER_HOUR;
         remainingCATime = round(remainingCATime,1);
-        console.error("Last carbs " + lastCarbAge + " minutes ago; remainingCATime:" + remainingCATime + "hours; " + round(fractionCOBAbsorbed*100, 1) + "% carbs absorbed");
+        console.error(`Last carbs ${lastCarbAge} minutes ago; remainingCATime:${remainingCATime}hours; ${round(fractionCOBAbsorbed * 100, 1)}% carbs absorbed`);
     }
 
     // calculate the number of carbs absorbed over remainingCATime hours at current CI
@@ -110,7 +110,7 @@ export function calculateCarbAbsorption(
     } else { carbImpactDuration = Math.min(remainingCATime*MINUTES_PER_HOUR/PRED_INTERVAL_MINUTES/LINEAR_DECAY_FACTOR,Math.max(0, meal_data.mealCOB * carbSensFactor / carbImpact )); }
 
     // duration (hours) = duration (5m) * 5 / 60 * 2 (to account for linear decay)
-    console.error("Carb Impact:" + carbImpact + "mg/dL per 5m; CI Duration:" + round(carbImpactDuration*PRED_INTERVAL_MINUTES/MINUTES_PER_HOUR*LINEAR_DECAY_FACTOR,1) + "hours; remaining CI (" + remainingCATime/LINEAR_DECAY_FACTOR + "h peak):" + round(remainingCIpeak,1) + "mg/dL per 5m");
+    console.error(`Carb Impact:${carbImpact}mg/dL per 5m; CI Duration:${round(carbImpactDuration * PRED_INTERVAL_MINUTES / MINUTES_PER_HOUR * LINEAR_DECAY_FACTOR, 1)}hours; remaining CI (${remainingCATime / LINEAR_DECAY_FACTOR}h peak):${round(remainingCIpeak, 1)}mg/dL per 5m`);
 
     return { carbImpact, carbImpactDuration, uamCarbImpact, carbSensFactor, remainingCATime, remainingCIpeak, slopeFromDeviations };
 }

@@ -30,7 +30,7 @@ import type { SensitivityAndTargetsResult } from './types';
 
 import { round, convert_bg } from './helpers';
 
-
+/** Configures sensitivity ratio, target BG, and threshold based on autosens, overrides, temp targets, and CGM noise. */
 export function configureSensitivityAndTargets(
     glucose_status: GlucoseStatus,
     profile: Profile,
@@ -58,11 +58,11 @@ export function configureSensitivityAndTargets(
     const max_iob = profile.max_iob; // maximum amount of non-bolus IOB OpenAPS will ever deliver
 
     // if min and max are set, then set target to their average
-    let target_bg: number = undefined!;
-    let min_bg: number = undefined!;
-    let max_bg: number = undefined!;
-    let new_target_bg: number = undefined!;
-    let high_bg: number = undefined!;
+    let target_bg: number | undefined;
+    let min_bg: number | undefined;
+    let max_bg: number | undefined;
+    let new_target_bg: number | undefined;
+    let high_bg: number | undefined;
 
     if (profileTarget !== undefined) {
             min_bg = profileTarget;
@@ -85,17 +85,14 @@ export function configureSensitivityAndTargets(
         return { earlyReturn: result };
     }
 
-
 // Calculate sensitivityRatio based on temp targets, if applicable, or using the value calculated by autosens
     const high_temptarget_raises_sensitivity = profile.exercise_mode || profile.high_temptarget_raises_sensitivity;
     const normalTarget = EXERCISE_NORMAL_TARGET; // evaluate high/low temptarget against 100, not scheduled target (which might change)
     let halfBasalTarget = EXERCISE_HALF_BASAL_TARGET;  // when temptarget is 160 mg/dL, run 50% basal (120 = 75%; 140 = 60%)
     // 80 mg/dL with low_temptarget_lowers_sensitivity would give 1.5x basal, but is limitLoged to autosens_max (1.2x by default)
-    //if ( profile.half_basal_exercise_target ) {
     halfBasalTarget = profile.half_basal_exercise_target as number;
-    //}
 
-    let sensitivityRatio: number = undefined!;
+    let sensitivityRatio: number | undefined;
     if ( high_temptarget_raises_sensitivity && profile.temptargetSet && target_bg > normalTarget ||
         profile.low_temptarget_lowers_sensitivity && profile.temptargetSet && target_bg < normalTarget ) {
         // w/ target 100, temp target 110 = .89, 120 = 0.8, 140 = 0.67, 160 = .57, and 200 = .44
@@ -114,7 +111,7 @@ export function configureSensitivityAndTargets(
         // limit sensitivityRatio to profile.autosens_max (1.2x by default)
         sensitivityRatio = Math.min(sensitivityRatio, profile.autosens_max);
         sensitivityRatio = round(sensitivityRatio,2);
-        process.stderr.write("Sensitivity ratio set to "+sensitivityRatio+" based on temp target of "+target_bg+"; ");
+        process.stderr.write(`Sensitivity ratio set to ${sensitivityRatio} based on temp target of ${target_bg}; `);
     }
     else if (autosens_data !== undefined && autosens_data) {
         sensitivityRatio = autosens_data.ratio;
@@ -122,19 +119,18 @@ export function configureSensitivityAndTargets(
         // Override Profile.Target
     if (overrideTarget !== 0 && overrideTarget !== OVERRIDE_TARGET_SENTINEL && overrideTarget !== profile.min_bg && !profile.temptargetSet) {
         target_bg = overrideTarget;
-        console.log("Current Override Profile Target: " + convert_bg(overrideTarget, profile) + " " + profile.out_units);
+        console.log(`Current Override Profile Target: ${convert_bg(overrideTarget, profile)} ${profile.out_units}`);
     }
-        process.stderr.write("Autosens ratio: "+sensitivityRatio+"; ");
+        process.stderr.write(`Autosens ratio: ${sensitivityRatio}; `);
     }
 
     // Increase the dynamic ratio when using a low temp target
-    if (profile.temptargetSet && target_bg < normalTarget && dynISFenabled && bg >= target_bg) {
-        if (sensitivityRatio < newRatio) {
-            autosens_data.ratio = newRatio * (normalTarget/target_bg);
-            //Use autosesns.max limit
+    if (profile.temptargetSet && (target_bg as number) < normalTarget && dynISFenabled && bg >= (target_bg as number)) {
+        if ((sensitivityRatio as number) < newRatio) {
+            autosens_data.ratio = newRatio * (normalTarget/(target_bg as number));
             autosens_data.ratio = Math.min(autosens_data.ratio, profile.autosens_max);
             sensitivityRatio = round(autosens_data.ratio, 2);
-            console.log("Dynamic ratio increased from " + round(newRatio, 2) + " to " + round(autosens_data.ratio,2) + " due to a low temp target (" + target_bg + ").");
+            console.log(`Dynamic ratio increased from ${round(newRatio, 2)} to ${round(autosens_data.ratio, 2)} due to a low temp target (${target_bg}).`);
         }
     }
 
@@ -142,9 +138,9 @@ export function configureSensitivityAndTargets(
         basal = profile.current_basal * overrideFactor * sensitivityRatio;
         basal = round_basal(basal, profile);
         if (basal !== profile_current_basal) {
-            process.stderr.write("Adjusting basal from "+profile_current_basal+" to "+basal+"; ");
+            process.stderr.write(`Adjusting basal from ${profile_current_basal} to ${basal}; `);
         } else {
-            process.stderr.write("Basal unchanged: "+basal+"; ");
+            process.stderr.write(`Basal unchanged: ${basal}; `);
         }
     }
 
@@ -152,41 +148,40 @@ export function configureSensitivityAndTargets(
         basal = profile.current_basal * tdd24h_14d_Ratio * overrideFactor;
         basal = round_basal(basal, profile);
         if (average_total_data > 0) {
-            process.stderr.write("TDD-adjustment of basals activated, using tdd24h_14d_Ratio " + round(tdd24h_14d_Ratio,2) + ", TDD 24h = " + round(tdd_before,2) + "U, Weighted average TDD = " + round(weightedAverage,2) + "U, (Weight percentage = " + weightPercentage + "), Total data of TDDs (up to 14 days) average = " + round(average_total_data,2) + "U. " );
+            process.stderr.write(`TDD-adjustment of basals activated, using tdd24h_14d_Ratio ${round(tdd24h_14d_Ratio, 2)}, TDD 24h = ${round(tdd_before, 2)}U, Weighted average TDD = ${round(weightedAverage, 2)}U, (Weight percentage = ${weightPercentage}), Total data of TDDs (up to 14 days) average = ${round(average_total_data, 2)}U. `);
             if (basal !== profile_current_basal * overrideFactor) {
-                process.stderr.write("Adjusting basal from " + profile_current_basal * overrideFactor + " U/h to " + basal + " U/h; ");
-            } else { process.stderr.write("Basal unchanged: " + basal + " U/h; "); }
+                process.stderr.write(`Adjusting basal from ${profile_current_basal * overrideFactor} U/h to ${basal} U/h; `);
+            } else { process.stderr.write(`Basal unchanged: ${basal} U/h; `); }
         }
     }
 
 // Conversely, adjust BG target based on autosens ratio if no temp target is running
     // adjust min, max, and target BG for sensitivity, such that 50% increase in ISF raises target from 100 to 120
     if (profile.temptargetSet) {
-        //process.stderr.write("Temp Target set, not adjusting with autosens; ");
     } else if (autosens_data !== undefined && autosens_data) {
         if ( profile.sensitivity_raises_target && autosens_data.ratio < 1 || profile.resistance_lowers_target && autosens_data.ratio > 1 ) {
             // with a target of 100, default 0.7-1.2 autosens min/max range would allow a 93-117 target range
-            min_bg = round((min_bg - TARGET_BG_PIVOT) / autosens_data.ratio) + TARGET_BG_PIVOT;
-            max_bg = round((max_bg - TARGET_BG_PIVOT) / autosens_data.ratio) + TARGET_BG_PIVOT;
-            new_target_bg = round((target_bg - TARGET_BG_PIVOT) / autosens_data.ratio) + TARGET_BG_PIVOT;
+            min_bg = round(((min_bg as number) - TARGET_BG_PIVOT) / autosens_data.ratio) + TARGET_BG_PIVOT;
+            max_bg = round(((max_bg as number) - TARGET_BG_PIVOT) / autosens_data.ratio) + TARGET_BG_PIVOT;
+            new_target_bg = round(((target_bg as number) - TARGET_BG_PIVOT) / autosens_data.ratio) + TARGET_BG_PIVOT;
             // don't allow target_bg below 80
             new_target_bg = Math.max(MIN_BG_TARGET, new_target_bg);
             if (target_bg === new_target_bg) {
-                process.stderr.write("target_bg unchanged: " + convert_bg(new_target_bg, profile) + "; ");
+                process.stderr.write(`target_bg unchanged: ${convert_bg(new_target_bg as number, profile)}; `);
             } else {
-                process.stderr.write("target_bg from "+ convert_bg(new_target_bg, profile) + " to " + convert_bg(new_target_bg, profile) + "; ");
+                process.stderr.write(`target_bg from ${convert_bg(new_target_bg as number, profile)} to ${convert_bg(new_target_bg as number, profile)}; `);
             }
             target_bg = new_target_bg;
         }
     }
 
     // Display if differing in enacted box
-    let targetLog: number | string = convert_bg(target_bg, profile);
+    let targetLog: number | string = convert_bg(target_bg as number, profile);
     if  (target_bg != profileTarget) {
         if (overrideTarget !== 0 && overrideTarget !== OVERRIDE_TARGET_SENTINEL && overrideTarget !== target_bg) {
-            targetLog = convert_bg(profileTarget, profile) + "\u2192" + convert_bg(overrideTarget, profile) + "\u2192" + convert_bg(target_bg, profile);
+            targetLog = `${convert_bg(profileTarget, profile)}\u2192${convert_bg(overrideTarget, profile)}\u2192${convert_bg(target_bg as number, profile)}`;
         } else {
-            targetLog = convert_bg(profileTarget, profile) + "\u2192" + convert_bg(target_bg, profile);
+            targetLog = `${convert_bg(profileTarget, profile)}\u2192${convert_bg(target_bg as number, profile)}`;
         }
     }
 
@@ -194,43 +189,42 @@ export function configureSensitivityAndTargets(
     let adjustedMinBG = MAX_BG_TARGET;
     let adjustedTargetBG = MAX_BG_TARGET;
     let adjustedMaxBG = MAX_BG_TARGET;
-    if (glucose_status.noise! >= CGM_NOISE_LEVEL_NOISY) {
+    if ((glucose_status.noise as number) >= CGM_NOISE_LEVEL_NOISY) {
         // increase target at least 10% (default 30%) for raw / noisy data
-        const noisyCGMTargetMultiplier = Math.max( MIN_NOISY_TARGET_MULTIPLIER, profile.noisyCGMTargetMultiplier! );
+        const noisyCGMTargetMultiplier = Math.max( MIN_NOISY_TARGET_MULTIPLIER, profile.noisyCGMTargetMultiplier as number );
         // don't allow maxRaw above 250
-        const maxRaw = Math.min( MAX_RAW_BG, profile.maxRaw! );
-        adjustedMinBG = round(Math.min(MAX_BG_TARGET, min_bg * noisyCGMTargetMultiplier ));
-        adjustedTargetBG = round(Math.min(MAX_BG_TARGET, target_bg * noisyCGMTargetMultiplier ));
-        adjustedMaxBG = round(Math.min(MAX_BG_TARGET, max_bg * noisyCGMTargetMultiplier ));
-        process.stderr.write("Raising target_bg for noisy / raw CGM data, from " + convert_bg(new_target_bg, profile) + " to " + convert_bg(adjustedTargetBG, profile) + "; ");
+        const maxRaw = Math.min( MAX_RAW_BG, profile.maxRaw as number );
+        adjustedMinBG = round(Math.min(MAX_BG_TARGET, (min_bg as number) * noisyCGMTargetMultiplier ));
+        adjustedTargetBG = round(Math.min(MAX_BG_TARGET, (target_bg as number) * noisyCGMTargetMultiplier ));
+        adjustedMaxBG = round(Math.min(MAX_BG_TARGET, (max_bg as number) * noisyCGMTargetMultiplier ));
+        process.stderr.write(`Raising target_bg for noisy / raw CGM data, from ${convert_bg(new_target_bg as number, profile)} to ${convert_bg(adjustedTargetBG, profile)}; `);
         min_bg = adjustedMinBG;
         target_bg = adjustedTargetBG;
         max_bg = adjustedMaxBG;
     }
 
     // min_bg thresholds: 80->60, 90->65, 100->70, 110->75, 120->80
-    const threshold = min_bg - THRESHOLD_FACTOR*(min_bg-THRESHOLD_BG_OFFSET);
+    const threshold = (min_bg as number) - THRESHOLD_FACTOR*((min_bg as number)-THRESHOLD_BG_OFFSET);
     // Set threshold to the user's setting, as long as it's between 60-120 and above the default calculated threshold
     const thresholdFinal = Math.min(Math.max(profile.threshold_setting as number, threshold, MIN_THRESHOLD_BG), MAX_THRESHOLD_BG);
     console.error(`Threshold set to ${convert_bg(thresholdFinal, profile)}`);
 
 // Adjust ISF based on sensitivityRatio
-    let isfreason = ""
-    const profile_sens = round(sensitivity,1);
+    let isfreason = "";
+    const profile_sens = round(sensitivity, 1);
     let adjustedSens = sensitivity;
     if (autosens_data !== undefined && autosens_data) {
-        adjustedSens = sensitivity / sensitivityRatio;
+        adjustedSens = sensitivity / (sensitivityRatio as number);
         adjustedSens = round(adjustedSens, 1);
         if (adjustedSens !== sensitivity) {
-            process.stderr.write("ISF from "+ convert_bg(sensitivity,profile) +" to " + convert_bg(adjustedSens,profile));
+            process.stderr.write(`ISF from ${convert_bg(sensitivity, profile)} to ${convert_bg(adjustedSens, profile)}`);
         } else {
-            process.stderr.write("ISF unchanged: "+ convert_bg(adjustedSens,profile));
+            process.stderr.write(`ISF unchanged: ${convert_bg(adjustedSens, profile)}`);
         }
-        //process.stderr.write(" (autosens ratio "+sensitivityRatio+")");
-        isfreason += "Autosens ratio: " + round(sensitivityRatio, 2) + ", ISF: " + convert_bg(sensitivity,profile) + "\u2192" + convert_bg(adjustedSens,profile);
+        isfreason += `Autosens ratio: ${round(sensitivityRatio as number, 2)}, ISF: ${convert_bg(sensitivity, profile)}\u2192${convert_bg(adjustedSens, profile)}`;
 
     }
-    console.error("CR:" + carbRatio);
+    console.error(`CR:${carbRatio}`);
 
-    return { max_iob, target_bg, min_bg, max_bg, high_bg, sensitivityRatio, basal, threshold: thresholdFinal, adjustedSens, isfreason, targetLog };
+    return { max_iob, target_bg: target_bg as number, min_bg: min_bg as number, max_bg: max_bg as number, high_bg: high_bg as number, sensitivityRatio: sensitivityRatio as number, basal, threshold: thresholdFinal, adjustedSens, isfreason, targetLog };
 }

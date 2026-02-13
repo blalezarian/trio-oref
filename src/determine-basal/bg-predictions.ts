@@ -11,7 +11,6 @@ import {
 import type {
     IOBData,
     IOBEntry,
-    Profile,
     MealData,
 } from '../types/index';
 
@@ -22,7 +21,6 @@ import {
     COB_PRED_BG_CAP,
     PRED_BG_SENTINEL,
     LINEAR_DECAY_FACTOR,
-    SLOPE_DAMPENING_DIVISOR,
 } from './constants';
 
 import type {
@@ -32,7 +30,7 @@ import type {
 
 import { round } from './helpers';
 
-
+/** Generates predicted BG arrays (IOB, ZT, COB, UAM) and computes min/max prediction values for dosing decisions. */
 export function generateBGPredictions(
     iobArray: IOBData[],
     eventualBG: number,
@@ -54,7 +52,6 @@ export function generateBGPredictions(
     target_bg: number,
     threshold: number,
     meal_data: MealData,
-    profile: Profile
 ): BGPredictionResult {
 // Initialize and calculate variables used for predicting BGs
     const COBpredBGs: number[] = [];
@@ -73,20 +70,20 @@ export function generateBGPredictions(
     let minUAMGuardBG = PRED_BG_SENTINEL;
     let minIOBGuardBG = PRED_BG_SENTINEL;
     let minZTGuardBG = PRED_BG_SENTINEL;
-    let minPredBG: number = undefined!;
-    let avgPredBG: number = undefined!;
+    let minPredBG: number | undefined;
+    let avgPredBG: number | undefined;
     let IOBpredBG = eventualBG;
     let maxIOBPredBG = bg;
     let maxCOBPredBG = bg;
-    let lastIOBpredBG: number = undefined!;
-    let lastCOBpredBG: number = undefined!;
-    let lastUAMpredBG: number = undefined!;
+    let lastIOBpredBG: number | undefined;
+    let lastCOBpredBG: number | undefined;
+    let lastUAMpredBG: number | undefined;
     let UAMduration = 0;
     let remainingCItotal = 0;
     const remainingCIs: number[] = [];
     const predCIs: number[] = [];
-    let COBpredBG: number = undefined!;
-    let UAMpredBG: number = undefined!;
+    let COBpredBG: number | undefined;
+    let UAMpredBG: number | undefined;
     try {
         iobArray.forEach((iobTick: IOBData) => {
             const predBGI = round(( -iobTick.activity * adjustedSens * PRED_INTERVAL_MINUTES ), 2);
@@ -101,7 +98,7 @@ export function generateBGPredictions(
                 case dynISFenabled && !enable_sigmoid:
                     IOBpredBG = IOBpredBGs[IOBpredBGs.length-1] + (round(( -iobTick.activity * (DYNAMIC_ISF_LOG_DENOMINATOR / ( tdd * adjustmentFactor * (Math.log((Math.max( IOBpredBGs[IOBpredBGs.length-1],MIN_VALID_GLUCOSE_MGDL) / insulinFactor ) + 1 ) ) )) * PRED_INTERVAL_MINUTES ),2)) + predDev;
                     ZTpredBG = ZTpredBGs[ZTpredBGs.length-1] + (round(( -(iobTick.iobWithZeroTemp as IOBEntry).activity * (DYNAMIC_ISF_LOG_DENOMINATOR / ( tdd * adjustmentFactor * (Math.log(( Math.max(ZTpredBGs[ZTpredBGs.length-1],MIN_VALID_GLUCOSE_MGDL) / insulinFactor ) + 1 ) ) )) * PRED_INTERVAL_MINUTES ), 2));
-                    console.log("Dynamic ISF (Logarithmic Formula) )adjusted predictions for IOB and ZT: IOBpredBG: " + round(IOBpredBG,2) + " , ZTpredBG: " + round(ZTpredBG,2));
+                    console.log(`Dynamic ISF (Logarithmic Formula) adjusted predictions for IOB and ZT: IOBpredBG: ${round(IOBpredBG, 2)} , ZTpredBG: ${round(ZTpredBG, 2)}`);
                     break;
                 default:
                     IOBpredBG = IOBpredBGs[IOBpredBGs.length-1] + predBGI + predDev;
@@ -137,7 +134,7 @@ export function generateBGPredictions(
             switch(true) {
                 case dynISFenabled && !enable_sigmoid:
                     UAMpredBG = UAMpredBGs[UAMpredBGs.length-1] + (round(( -iobTick.activity * (DYNAMIC_ISF_LOG_DENOMINATOR / ( tdd * adjustmentFactor * (Math.log(( Math.max(UAMpredBGs[UAMpredBGs.length-1],MIN_VALID_GLUCOSE_MGDL) / insulinFactor ) + 1 ) ) )) * PRED_INTERVAL_MINUTES ),2)) + Math.min(0, predDev) + predUCI;
-                    console.log("Dynamic ISF (Logarithmic Formula) adjusted prediction for UAM: UAMpredBG: " + round(UAMpredBG,2));
+                    console.log(`Dynamic ISF (Logarithmic Formula) adjusted prediction for UAM: UAMpredBG: ${round(UAMpredBG as number, 2)}`);
                     break;
                 default:
                     UAMpredBG = UAMpredBGs[UAMpredBGs.length-1] + predBGI + Math.min(0, predDev) + predUCI;
@@ -171,54 +168,52 @@ export function generateBGPredictions(
         console.error("Problem with iobArray.  Optional feature Advanced Meal Assist disabled");
     }
     if (meal_data.mealCOB) {
-        console.error("predCIs (mg/dL/5m):" + predCIs.join(" "));
-        console.error("remainingCIs:      " + remainingCIs.join(" "));
+        console.error(`predCIs (mg/dL/5m):${predCIs.join(" ")}`);
+        console.error(`remainingCIs:      ${remainingCIs.join(" ")}`);
     }
     const predBGs: PredBGs = {} as PredBGs;
-    IOBpredBGs.forEach((p: number, i: number, theArray: number[]) => {
-        theArray[i] = round(Math.min(MAX_VALID_GLUCOSE_MGDL+1,Math.max(MIN_VALID_GLUCOSE_MGDL,p)));
+    IOBpredBGs.forEach((p: number, iobIdx: number, theArray: number[]) => {
+        theArray[iobIdx] = round(Math.min(MAX_VALID_GLUCOSE_MGDL + 1, Math.max(MIN_VALID_GLUCOSE_MGDL, p)));
     });
-    let i;
-    for (i=IOBpredBGs.length-1; i > MIN_PRED_TRIM_POINTS; i--) {
-
-        if (IOBpredBGs[i-1] !== IOBpredBGs[i]) { break; }
+    for (let iobTrimIdx = IOBpredBGs.length - 1; iobTrimIdx > MIN_PRED_TRIM_POINTS; iobTrimIdx--) {
+        if (IOBpredBGs[iobTrimIdx - 1] !== IOBpredBGs[iobTrimIdx]) { break; }
         else { IOBpredBGs.pop(); }
     }
     predBGs.IOB = IOBpredBGs;
-    lastIOBpredBG=round(IOBpredBGs[IOBpredBGs.length-1]);
-    ZTpredBGs.forEach((p: number, i: number, theArray: number[]) => {
-        theArray[i] = round(Math.min(MAX_VALID_GLUCOSE_MGDL+1,Math.max(MIN_VALID_GLUCOSE_MGDL,p)));
+    lastIOBpredBG = round(IOBpredBGs[IOBpredBGs.length - 1]);
+    ZTpredBGs.forEach((p: number, ztIdx: number, theArray: number[]) => {
+        theArray[ztIdx] = round(Math.min(MAX_VALID_GLUCOSE_MGDL + 1, Math.max(MIN_VALID_GLUCOSE_MGDL, p)));
     });
-    for (i=ZTpredBGs.length-1; i > MIN_ZT_TRIM_POINTS; i--) {
+    for (let ztTrimIdx = ZTpredBGs.length - 1; ztTrimIdx > MIN_ZT_TRIM_POINTS; ztTrimIdx--) {
         // stop displaying ZTpredBGs once they're rising and above target
-        if (ZTpredBGs[i-1] >= ZTpredBGs[i] || ZTpredBGs[i] <= target_bg) { break; }
+        if (ZTpredBGs[ztTrimIdx - 1] >= ZTpredBGs[ztTrimIdx] || ZTpredBGs[ztTrimIdx] <= target_bg) { break; }
         else { ZTpredBGs.pop(); }
     }
     predBGs.ZT = ZTpredBGs;
     if (meal_data.mealCOB > 0 && ( carbImpact > 0 || remainingCIpeak > 0 )) {
-        COBpredBGs.forEach((p: number, i: number, theArray: number[]) => {
-            theArray[i] = round(Math.min(COB_PRED_BG_CAP,Math.max(MIN_VALID_GLUCOSE_MGDL,p)));
+        COBpredBGs.forEach((p: number, cobIdx: number, theArray: number[]) => {
+            theArray[cobIdx] = round(Math.min(COB_PRED_BG_CAP, Math.max(MIN_VALID_GLUCOSE_MGDL, p)));
         });
-        for (i=COBpredBGs.length-1; i > MIN_PRED_TRIM_POINTS; i--) {
-            if (COBpredBGs[i-1] !== COBpredBGs[i]) { break; }
+        for (let cobTrimIdx = COBpredBGs.length - 1; cobTrimIdx > MIN_PRED_TRIM_POINTS; cobTrimIdx--) {
+            if (COBpredBGs[cobTrimIdx - 1] !== COBpredBGs[cobTrimIdx]) { break; }
             else { COBpredBGs.pop(); }
         }
         predBGs.COB = COBpredBGs;
-        lastCOBpredBG=round(COBpredBGs[COBpredBGs.length-1]);
+        lastCOBpredBG = round(COBpredBGs[COBpredBGs.length - 1]);
         eventualBG = Math.max(eventualBG, round(COBpredBGs[COBpredBGs.length-1]));
-        console.error("COBpredBG: " + round(COBpredBGs[COBpredBGs.length-1]) );
+        console.error(`COBpredBG: ${round(COBpredBGs[COBpredBGs.length - 1])}`);
     }
     if (carbImpact > 0 || remainingCIpeak > 0) {
         if (enableUAM) {
-            UAMpredBGs.forEach((p: number, i: number, theArray: number[]) => {
-                theArray[i] = round(Math.min(MAX_VALID_GLUCOSE_MGDL+1,Math.max(MIN_VALID_GLUCOSE_MGDL,p)));
+            UAMpredBGs.forEach((p: number, uamIdx: number, theArray: number[]) => {
+                theArray[uamIdx] = round(Math.min(MAX_VALID_GLUCOSE_MGDL + 1, Math.max(MIN_VALID_GLUCOSE_MGDL, p)));
             });
-            for (i=UAMpredBGs.length-1; i > MIN_PRED_TRIM_POINTS; i--) {
-                if (UAMpredBGs[i-1] !== UAMpredBGs[i]) { break; }
+            for (let uamTrimIdx = UAMpredBGs.length - 1; uamTrimIdx > MIN_PRED_TRIM_POINTS; uamTrimIdx--) {
+                if (UAMpredBGs[uamTrimIdx - 1] !== UAMpredBGs[uamTrimIdx]) { break; }
                 else { UAMpredBGs.pop(); }
             }
             predBGs.UAM = UAMpredBGs;
-            lastUAMpredBG=round(UAMpredBGs[UAMpredBGs.length-1]);
+            lastUAMpredBG = round(UAMpredBGs[UAMpredBGs.length - 1]);
             if (UAMpredBGs[UAMpredBGs.length-1]) {
                 eventualBG = Math.max(eventualBG, round(UAMpredBGs[UAMpredBGs.length-1]) );
             }
@@ -227,7 +222,7 @@ export function generateBGPredictions(
         // set eventualBG based on COB or UAM predBGs
     }
 
-    console.error("UAM Impact:" + uamCarbImpact + "mg/dL per 5m; UAM Duration:" + UAMduration + "hours");
+    console.error(`UAM Impact:${uamCarbImpact}mg/dL per 5m; UAM Duration:${UAMduration}hours`);
 
     minIOBPredBG = Math.max(MIN_VALID_GLUCOSE_MGDL,minIOBPredBG);
     minCOBPredBG = Math.max(MIN_VALID_GLUCOSE_MGDL,minCOBPredBG);
@@ -238,13 +233,13 @@ export function generateBGPredictions(
     // if we have COB and UAM is enabled, average both
     if ( minUAMPredBG < PRED_BG_SENTINEL && minCOBPredBG < PRED_BG_SENTINEL ) {
         // weight COBpredBG vs. UAMpredBG based on how many carbs remain as COB
-        avgPredBG = round( (1-fractionCarbsLeft)*UAMpredBG + fractionCarbsLeft*COBpredBG );
+        avgPredBG = round( (1-fractionCarbsLeft)*(UAMpredBG as number) + fractionCarbsLeft*(COBpredBG as number) );
         // if UAM is disabled, average IOB and COB
     } else if ( minCOBPredBG < PRED_BG_SENTINEL ) {
-        avgPredBG = round( (IOBpredBG + COBpredBG)/2 );
+        avgPredBG = round( (IOBpredBG + (COBpredBG as number))/2 );
         // if we have UAM but no COB, average IOB and UAM
     } else if ( minUAMPredBG < PRED_BG_SENTINEL ) {
-        avgPredBG = round( (IOBpredBG + UAMpredBG)/2 );
+        avgPredBG = round( (IOBpredBG + (UAMpredBG as number))/2 );
     } else {
         avgPredBG = round( IOBpredBG );
     }
@@ -278,7 +273,6 @@ export function generateBGPredictions(
         const blendPct = (minZTGuardBG-threshold) / (target_bg-threshold);
         const blendedMinZTGuardBG = minUAMPredBG*blendPct + minZTGuardBG*(1-blendPct);
         minZTUAMPredBG = (minUAMPredBG + blendedMinZTGuardBG) / 2;
-        //minZTUAMPredBG = minUAMPredBG - target_bg + minZTGuardBG;
     // if minUAMPredBG is below minZTGuardBG, bring minUAMPredBG up by averaging
     // this allows more insulin if lastUAMPredBG is below target, but minZTGuardBG is still high
     } else if ( minZTGuardBG > minUAMPredBG ) {
@@ -313,19 +307,19 @@ export function generateBGPredictions(
 
 // Print summary variables based on predBGs etc.
 
-    process.stderr.write("minPredBG: "+minPredBG+" minIOBPredBG: "+minIOBPredBG+" minZTGuardBG: "+minZTGuardBG);
+    process.stderr.write(`minPredBG: ${minPredBG} minIOBPredBG: ${minIOBPredBG} minZTGuardBG: ${minZTGuardBG}`);
     if (minCOBPredBG < PRED_BG_SENTINEL) {
-        process.stderr.write(" minCOBPredBG: "+minCOBPredBG);
+        process.stderr.write(` minCOBPredBG: ${minCOBPredBG}`);
     }
     if (minUAMPredBG < PRED_BG_SENTINEL) {
-        process.stderr.write(" minUAMPredBG: "+minUAMPredBG);
+        process.stderr.write(` minUAMPredBG: ${minUAMPredBG}`);
     }
-    console.error(" avgPredBG:" + avgPredBG + " COB/Carbs:" + meal_data.mealCOB + "/" + meal_data.carbs);
+    console.error(` avgPredBG:${avgPredBG} COB/Carbs:${meal_data.mealCOB}/${meal_data.carbs}`);
     // But if the COB line falls off a cliff, don't trust UAM too much:
     // use maxCOBPredBG if it's been set and lower than minPredBG
     if ( maxCOBPredBG > bg ) {
         minPredBG = Math.min(minPredBG, maxCOBPredBG);
     }
 
-    return { eventualBG, minPredBG, minGuardBG, lastIOBpredBG, lastCOBpredBG, lastUAMpredBG, maxCOBPredBG, minIOBPredBG, IOBpredBGs, COBpredBGs, predBGs };
+    return { eventualBG, minPredBG: minPredBG as number, minGuardBG, lastIOBpredBG: lastIOBpredBG as number, lastCOBpredBG: lastCOBpredBG as number, lastUAMpredBG: lastUAMpredBG as number, maxCOBPredBG, minIOBPredBG, IOBpredBGs, COBpredBGs, predBGs };
 }
