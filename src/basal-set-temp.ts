@@ -55,8 +55,8 @@ const tempBasalFunctions = {} as TempBasalFunctionsInterface;
 
 tempBasalFunctions.getMaxSafeBasal = (profile: TempBasalProfile): number => {
 
-    const max_daily_safety_multiplier = (isNaN(profile.max_daily_safety_multiplier as number) || profile.max_daily_safety_multiplier === null) ? DEFAULT_MAX_DAILY_SAFETY_MULTIPLIER : profile.max_daily_safety_multiplier;
-    const current_basal_safety_multiplier = (isNaN(profile.current_basal_safety_multiplier as number) || profile.current_basal_safety_multiplier === null) ? DEFAULT_CURRENT_BASAL_SAFETY_MULTIPLIER : profile.current_basal_safety_multiplier;
+    const max_daily_safety_multiplier = (isNaN(profile.max_daily_safety_multiplier!) || profile.max_daily_safety_multiplier === null) ? DEFAULT_MAX_DAILY_SAFETY_MULTIPLIER : profile.max_daily_safety_multiplier;
+    const current_basal_safety_multiplier = (isNaN(profile.current_basal_safety_multiplier!) || profile.current_basal_safety_multiplier === null) ? DEFAULT_CURRENT_BASAL_SAFETY_MULTIPLIER : profile.current_basal_safety_multiplier;
 
     return Math.min(profile.max_basal, max_daily_safety_multiplier * profile.max_daily_basal, current_basal_safety_multiplier * profile.current_basal);
 };
