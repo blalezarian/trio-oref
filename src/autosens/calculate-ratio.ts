@@ -30,7 +30,6 @@ export function padDeviations(
         const pad = Math.round((1 - deviations.length/targetLength) * maxPadding);
         console.error("Adding",pad,"more zero deviations");
         for (let d=0; d<pad; d++) {
-            //process.stderr.write(".");
             deviations.push(0);
         }
     }
@@ -50,14 +49,11 @@ export function analyzePercentiles(
     bgis.sort((a: number, b: number) => {return a-b});
     deviations.sort((a: number, b: number) => {return a-b});
     for (let i=0.9; i > 0.1; i = i - 0.01) {
-        //console.error(`p=${i.toFixed(2)}: ${percentile(avgDeltas, i).toFixed(2)}, ${percentile(bgis, i).toFixed(2)}, ${percentile(deviations, i).toFixed(2)}`);
         if ( percentile(deviations, (i+0.01)) >= 0 && percentile(deviations, i) < 0 ) {
-            //console.error(`p=${i.toFixed(2)}: ${percentile(avgDeltas, i).toFixed(2)}, ${percentile(bgis, i).toFixed(2)}, ${percentile(deviations, i).toFixed(2)}`);
             const lessThanZero = Math.round(PERCENT*i);
             console.error(`${lessThanZero}% of non-meal deviations negative (>50% = sensitivity)`);
         }
         if ( percentile(deviations, (i+0.01)) > 0 && percentile(deviations, i) <= 0 ) {
-            //console.error(`p=${i.toFixed(2)}: ${percentile(avgDeltas, i).toFixed(2)}, ${percentile(bgis, i).toFixed(2)}, ${percentile(deviations, i).toFixed(2)}`);
             const greaterThanZero = PERCENT-Math.round(PERCENT*i);
             console.error(`${greaterThanZero}% of non-meal deviations positive (>50% = resistance)`);
         }
@@ -82,14 +78,11 @@ interface AutosensProfile {
 /** Calculate final autosens ratio and adjusted ISF */
 export function calculateAutosensRatio(
     deviations: number[],
-    deviationSum: number,
+    _deviationSum: number,
     pSensitive: number,
     pResistant: number,
     profile: AutosensProfile
 ): AutosensResult {
-    const average = deviationSum / deviations.length;
-    //console.error(`Mean deviation: ${average.toFixed(2)}`);
-
     const squareDeviations = deviations.reduce((acc: number, dev: number) => acc + dev * dev, 0);
     const rmsDev = Math.sqrt(squareDeviations / deviations.length);
     console.error(`RMS deviation: ${rmsDev.toFixed(2)}`);
@@ -107,7 +100,6 @@ export function calculateAutosensRatio(
     }
     let ratio: number;
     ratio = 1 + (basalOff / profile.max_daily_basal);
-    //console.error(basalOff, profile.max_daily_basal, ratio);
 
     // don't adjust more than 1.2x by default (set in preferences.json)
     const rawRatio = ratio;
@@ -121,10 +113,7 @@ export function calculateAutosensRatio(
     ratio = Math.round(ratio*ROUND_SCALE_2DP)/ROUND_SCALE_2DP;
     let newisf: number;
     newisf = Math.round(profile.sens / ratio);
-    //console.error(profile, newisf, ratio);
     console.error(`ISF adjusted from ${profile.sens} to ${newisf}`);
-    //console.error(`Basal adjustment ${basalOff.toFixed(2)}U/hr`);
-    //console.error(`Ratio: ${ratio*100}%: new ISF: ${newisf.toFixed(1)}mg/dL/U`);
     return {
         "ratio": ratio,
         "newisf": newisf

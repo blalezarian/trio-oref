@@ -72,13 +72,11 @@ export function analyzeDeviations(
     // last_bg, old_bg declared here to preserve var-hoisted (function-scoped) semantics
     let last_bg: number;
     let old_bg: number;
-    //console.error(bucketed_data);
     for (let i=3; i < bucketed_data.length; ++i) {
         bgTime = new Date(bucketed_data[i].date!);
 
         const sens = isf.isfLookup(profile.isfProfile!,bgTime);
 
-        //console.error(bgTime , bucketed_data[i].glucose);
         let bg: number;
         let avgDelta: number;
         let delta: number;
@@ -102,14 +100,9 @@ export function analyzeDeviations(
         iob_inputs.profile.current_basal = basal.basalLookup(basalprofile, bgTime)!;
         // make sure autosens doesn't use temptarget-adjusted insulin calculations
         iob_inputs.profile.temptargetSet = false;
-        //console.log(JSON.stringify(iob_inputs.profile));
-        //console.error("Before: ", new Date().getTime());
         const iob = get_iob(iob_inputs as IobInputs, true, treatments)[0];
-        //console.error("After: ", new Date().getTime());
-        //console.log(JSON.stringify(iob));
 
         const bgImpact = calculateBGImpact(iob.activity, sens);
-        //console.error(delta);
         let deviation!: number;
         if (isNaN(delta)) {
             console.error("Bad delta: ",delta, bg, last_bg, old_bg);
@@ -118,7 +111,6 @@ export function analyzeDeviations(
         }
 
         glucoseDatum = bucketed_data[i];
-        //console.error(glucoseDatum);
         BGDate = new Date(glucoseDatum.date!);
         BGTime = BGDate.getTime();
         // As we're processing each data point, go through the treatment.carbs and see if any of them are older than
@@ -129,11 +121,9 @@ export function analyzeDeviations(
             treatmentTime = treatmentDate.getTime();
             if ( treatmentTime < BGTime ) {
                 if (treatment.carbs! >= 1) {
-            //console.error(treatmentDate, treatmentTime, BGTime, BGTime-treatmentTime);
                     mealCOB += treatment.carbs!;
                     mealCarbs += treatment.carbs!;
                     displayCOB = Math.round(mealCOB);
-                    //console.error(displayCOB, mealCOB, treatment.carbs);
                     process.stderr.write(`${displayCOB}g`);
                 }
                 meals.pop();
@@ -153,7 +143,6 @@ export function analyzeDeviations(
         }
 
         // If mealCOB is zero but all deviations since hitting COB=0 are positive, exclude from autosens
-        //console.error(mealCOB, absorbing, mealCarbs);
         if (mealCOB > 0 || absorbing || mealCarbs > 0) {
             if (deviation > 0 ) {
                 absorbing = 1;
@@ -170,29 +159,21 @@ export function analyzeDeviations(
                 mealCarbs = 0;
             }
             // check previous "type" value, and if it wasn't csf, set a mealAbsorption start flag
-            //console.error(type);
             if ( type !== "csf" ) {
                 process.stderr.write("(");
                 mealStartCounter = 0;
-                //glucoseDatum.mealAbsorption = "start";
-                //console.error(glucoseDatum.mealAbsorption,"carb absorption");
             }
             mealStartCounter++;
             type="csf";
             glucoseDatum.mealCarbs = mealCarbs;
-            //if (i == 0) { glucoseDatum.mealAbsorption = "end"; }
-            //CSFGlucoseData.push(glucoseDatum);
         } else {
           // check previous "type" value, and if it was csf, set a mealAbsorption end flag
           if ( type === "csf" ) {
             process.stderr.write(")");
-            //CSFGlucoseData[CSFGlucoseData.length-1].mealAbsorption = "end";
-            //console.error(CSFGlucoseData[CSFGlucoseData.length-1].mealAbsorption,"carb absorption");
           }
 
           const currentBasal = iob_inputs.profile.current_basal;
           // always exclude the first 45m after each carb entry using mealStartCounter
-          //if (iob.iob > currentBasal || uam ) {
           if ((!retrospective && iob.iob > 2 * currentBasal) || uam || mealStartCounter < MEAL_EXCLUSION_COUNTER ) {
             mealStartCounter++;
             if (deviation > 0) {
@@ -202,15 +183,11 @@ export function analyzeDeviations(
             }
             if ( type !== "uam" ) {
                 process.stderr.write("u(");
-                //glucoseDatum.uamAbsorption = "start";
-                //console.error(glucoseDatum.uamAbsorption,"uannnounced meal absorption");
             }
-            //console.error(mealStartCounter);
             type="uam";
           } else {
             if ( type === "uam" ) {
                 process.stderr.write(")");
-                //console.error("end unannounced meal absorption");
             }
             type = "non-meal"
           }
@@ -219,12 +196,10 @@ export function analyzeDeviations(
         // Exclude meal-related deviations (carb absorption) from autosens
         if ( type === "non-meal" ) {
             if ( deviation > 0 ) {
-                //process.stderr.write(` ${bg}`);
                 process.stderr.write("+");
             } else if ( deviation === 0 ) {
                 process.stderr.write("=");
             } else {
-                //process.stderr.write(` ${bg}`);
                 process.stderr.write("-");
             }
             avgDeltas.push(avgDelta);
@@ -237,14 +212,10 @@ export function analyzeDeviations(
         // add an extra negative deviation if a high temptarget is running and exercise mode is set
         if (profile.high_temptarget_raises_sensitivity === true || profile.exercise_mode === true) {
             const tempTarget = tempTargetRunning(temptargets, bgTime!)
-            if (tempTarget) {
-                //console.error(tempTarget)
-            }
             if ( tempTarget! > EXERCISE_NORMAL_TARGET ) {
                 // for a 110 temptarget, add a -0.5 deviation, for 160 add -3
                 const tempDeviation=-(tempTarget!-EXERCISE_NORMAL_TARGET)/TEMP_TARGET_DEVIATION_DIVISOR;
                 process.stderr.write("-");
-                //console.error(tempDeviation)
                 deviations.push(tempDeviation);
             }
         }
@@ -252,7 +223,6 @@ export function analyzeDeviations(
         const minutes = bgTime!.getMinutes();
         const hours = bgTime!.getHours();
         if ( minutes >= 0 && minutes < 5 ) {
-            //console.error(bgTime);
             process.stderr.write(`${hours}h`);
             // add one neutral deviation every 2 hours to help decay over long exclusion periods
             if ( hours % 2 === 0 ) {
