@@ -55,7 +55,7 @@ export function convert_bg(value: number, profile: Profile): number {
  * Returns early if IOB data is missing/undefined or if a stale temp needs cancellation.
  */
 export function validateIOBAndTemps(
-    iob_data: IOBData,
+    iob_data: IOBData[],
     currenttemp: CurrentTemp,
     profile: Profile,
     systemTime: Date,
@@ -69,13 +69,10 @@ export function validateIOBAndTemps(
         return { earlyReturn: result };
     }
 
-    const iobArray = iob_data as unknown as IOBData[];
+    const iobArray = iob_data;
+    const iob_datum = iobArray[0];
 
-    if (typeof((iob_data as unknown as IOBData[]).length) && (iob_data as unknown as IOBData[]).length > 1) {
-        iob_data = iobArray[0];
-    }
-
-    if (iob_data.activity === undefined || iob_data.iob === undefined) {
+    if (iob_datum.activity === undefined || iob_datum.iob === undefined) {
         result.error ='Error: iob_data missing some property. ';
         return { earlyReturn: result };
     }
@@ -84,8 +81,8 @@ export function validateIOBAndTemps(
 // This should occur after checking that we're not in one of the CGM-data-related error conditions handled above,
 // and before returning (doing nothing) below if eventualBG is undefined.
     let lastTempAge;
-    if (iob_data.lastTemp !== undefined) {
-        lastTempAge = round(( systemTime.getTime() - iob_data.lastTemp.date ) / MS_PER_MINUTE); // in minutes
+    if (iob_datum.lastTemp !== undefined) {
+        lastTempAge = round(( systemTime.getTime() - iob_datum.lastTemp.date ) / MS_PER_MINUTE); // in minutes
     } else {
         lastTempAge = 0;
     }
@@ -93,19 +90,19 @@ export function validateIOBAndTemps(
     console.log(`currenttemp:${currenttemp.rate} lastTempAge:${lastTempAge}m, tempModulus:${tempModulus}m`);
     result.temp = 'absolute';
     result.deliverAt = deliverAt;
-    if ( microBolusAllowed && currenttemp && iob_data.lastTemp && currenttemp.rate !== iob_data.lastTemp.rate && lastTempAge > TEMP_AGE_STALE_MINUTES && currenttemp.duration ) {
-        result.reason = `Warning: currenttemp rate ${currenttemp.rate} != lastTemp rate ${iob_data.lastTemp.rate} from pumphistory; canceling temp`; // reason.conclusion started
+    if ( microBolusAllowed && currenttemp && iob_datum.lastTemp && currenttemp.rate !== iob_datum.lastTemp.rate && lastTempAge > TEMP_AGE_STALE_MINUTES && currenttemp.duration ) {
+        result.reason = `Warning: currenttemp rate ${currenttemp.rate} != lastTemp rate ${iob_datum.lastTemp.rate} from pumphistory; canceling temp`; // reason.conclusion started
         return { earlyReturn: tempBasalFunctions.setTempBasal(0, 0, profile, result, currenttemp) };
     }
-    if ( currenttemp && iob_data.lastTemp && currenttemp.duration > 0 ) {
-        const lastTempEnded = lastTempAge - iob_data.lastTemp.duration;
+    if ( currenttemp && iob_datum.lastTemp && currenttemp.duration > 0 ) {
+        const lastTempEnded = lastTempAge - iob_datum.lastTemp.duration;
         if ( lastTempEnded > TEMP_END_GAP_MINUTES && lastTempAge > TEMP_AGE_STALE_MINUTES ) {
             result.reason = `Warning: currenttemp running but lastTemp from pumphistory ended ${lastTempEnded}m ago; canceling temp`; // reason.conclusion started
             return { earlyReturn: tempBasalFunctions.setTempBasal(0, 0, profile, result, currenttemp) };
         }
     }
 
-    return { iob_data, iobArray };
+    return { iob_data: iob_datum, iobArray };
 }
 
 /**

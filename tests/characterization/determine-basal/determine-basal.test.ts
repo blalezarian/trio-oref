@@ -101,7 +101,7 @@ describe('determine-basal characterization tests', () => {
           const output = determine_basal(
             glucose_status,
             currenttemp,
-            iob_data,
+            Array.isArray(iob_data) ? iob_data : [iob_data],
             profile,
             autosens_data,
             meal_data,
@@ -160,7 +160,7 @@ function callDetermineBasal(overrides: {
   return determine_basal(
     overrides.glucose_status ?? defaultGlucoseStatus({ date: FIXED_DATE - 60_000 }),
     overrides.currenttemp ?? defaultCurrentTemp(),
-    overrides.iob_data_raw ? overrides.iob_data : (overrides.iob_data ?? defaultIOBData()),
+    overrides.iob_data_raw ? overrides.iob_data : [overrides.iob_data ?? defaultIOBData()],
     overrides.profile_raw ? overrides.profile : (overrides.profile ?? defaultProfile()),
     overrides.autosens_data_raw ? overrides.autosens_data : (overrides.autosens_data ?? defaultAutosensData()),
     overrides.meal_data ?? defaultMealData(),

@@ -48,6 +48,11 @@ function makeIOBData(overrides: Partial<IOBData> = {}): IOBData {
     } as IOBData;
 }
 
+function makeIOBArray(...overrides: Partial<IOBData>[]): IOBData[] {
+    if (overrides.length === 0) return [makeIOBData()];
+    return overrides.map(o => makeIOBData(o));
+}
+
 function makeTempBasalFunctions(): TempBasalFunctions {
     return {
         setTempBasal: vi.fn(
@@ -70,7 +75,7 @@ describe('validateIOBAndTemps', () => {
     it('returns earlyReturn when iob_data is undefined', () => {
         const result = { reason: '' } as DetermineBasalResult;
         const outcome = validateIOBAndTemps(
-            undefined as unknown as IOBData,
+            undefined as unknown as IOBData[],
             { rate: 0, duration: 0 } as CurrentTemp,
             makeProfile(),
             new Date('2025-01-15T12:00:00Z'),
@@ -92,7 +97,7 @@ describe('validateIOBAndTemps', () => {
         (iob as unknown as Record<string, unknown>).activity = undefined;
 
         const outcome = validateIOBAndTemps(
-            iob,
+            [iob],
             { rate: 0, duration: 0 } as CurrentTemp,
             makeProfile(),
             new Date('2025-01-15T12:00:00Z'),
@@ -110,12 +115,9 @@ describe('validateIOBAndTemps', () => {
 
     it('extracts first element from iobArray when length > 1', () => {
         const result = { reason: '' } as DetermineBasalResult;
-        const firstIOB = makeIOBData({ iob: 1.5 });
-        const secondIOB = makeIOBData({ iob: 3.0 });
-        const iobArray = [firstIOB, secondIOB] as unknown as IOBData;
 
         const outcome = validateIOBAndTemps(
-            iobArray,
+            makeIOBArray({ iob: 1.5 }, { iob: 3.0 }),
             { rate: 0, duration: 0 } as CurrentTemp,
             makeProfile(),
             new Date('2025-01-15T12:00:00Z'),
@@ -137,7 +139,7 @@ describe('validateIOBAndTemps', () => {
         const deliverAt = new Date('2025-01-15T12:05:00Z');
 
         const outcome = validateIOBAndTemps(
-            makeIOBData(),
+            makeIOBArray(),
             { rate: 0, duration: 0 } as CurrentTemp,
             makeProfile(),
             new Date('2025-01-15T12:00:00Z'),
@@ -155,12 +157,11 @@ describe('validateIOBAndTemps', () => {
     it('cancels temp when currenttemp rate differs from lastTemp rate (microBolus mode)', () => {
         const result = { reason: '' } as DetermineBasalResult;
         const tempFns = makeTempBasalFunctions();
-        const iob = makeIOBData({
-            lastTemp: { rate: 1.0, duration: 30, date: Date.now() - 15 * 60 * 1000 },
-        } as Partial<IOBData>);
 
         const outcome = validateIOBAndTemps(
-            iob,
+            makeIOBArray({
+                lastTemp: { rate: 1.0, duration: 30, date: Date.now() - 15 * 60 * 1000 },
+            } as Partial<IOBData>),
             { rate: 2.0, duration: 20 } as CurrentTemp,
             makeProfile(),
             new Date(),
@@ -180,13 +181,12 @@ describe('validateIOBAndTemps', () => {
     it('cancels temp when lastTemp ended too long ago', () => {
         const result = { reason: '' } as DetermineBasalResult;
         const tempFns = makeTempBasalFunctions();
-        // lastTemp set 20 minutes ago with 5 minute duration → ended 15 minutes ago (> TEMP_END_GAP_MINUTES=5)
-        const iob = makeIOBData({
-            lastTemp: { rate: 1.0, duration: 5, date: Date.now() - 20 * 60 * 1000 },
-        } as Partial<IOBData>);
 
+        // lastTemp set 20 minutes ago with 5 minute duration → ended 15 minutes ago (> TEMP_END_GAP_MINUTES=5)
         const outcome = validateIOBAndTemps(
-            iob,
+            makeIOBArray({
+                lastTemp: { rate: 1.0, duration: 5, date: Date.now() - 20 * 60 * 1000 },
+            } as Partial<IOBData>),
             { rate: 1.0, duration: 10 } as CurrentTemp,
             makeProfile(),
             new Date(),
@@ -204,10 +204,9 @@ describe('validateIOBAndTemps', () => {
 
     it('returns iob_data and iobArray on successful validation', () => {
         const result = { reason: '' } as DetermineBasalResult;
-        const iob = makeIOBData();
 
         const outcome = validateIOBAndTemps(
-            iob,
+            makeIOBArray(),
             { rate: 0, duration: 0 } as CurrentTemp,
             makeProfile(),
             new Date('2025-01-15T12:00:00Z'),

@@ -49,7 +49,7 @@ import { calculateDosingDecision } from './dosing-decision';
 export function determine_basal(
     glucose_status: GlucoseStatus,
     currenttemp: CurrentTemp,
-    iob_data: IOBData,
+    iob_data: IOBData[],
     profile: Profile,
     autosens_data: AutosensData,
     meal_data: MealData,
@@ -148,13 +148,13 @@ export function determine_basal(
 
     const iobValidation = validateIOBAndTemps(iob_data, currenttemp, profile, systemTime, microBolusAllowed, tempBasalFunctions, result, deliverAt);
     if ('earlyReturn' in iobValidation) return iobValidation.earlyReturn;
-    iob_data = iobValidation.iob_data;
+    const iob_datum = iobValidation.iob_data;
     const iobArray = iobValidation.iobArray;
 
     //calculate BG impact: the amount BG "should" be rising or falling based on insulin activity alone
-    const bgImpact = round(( -iob_data.activity * adjustedSens * PRED_INTERVAL_MINUTES ), 2);
+    const bgImpact = round(( -iob_datum.activity * adjustedSens * PRED_INTERVAL_MINUTES ), 2);
 
-    const deviationResult = calculateDeviation(bg, iob_data, adjustedSens, sensitivity, minDelta, minAvgDelta, glucose_status.long_avgdelta, bgImpact);
+    const deviationResult = calculateDeviation(bg, iob_datum, adjustedSens, sensitivity, minDelta, minAvgDelta, glucose_status.long_avgdelta, bgImpact);
     const { deviation, naive_eventualBG } = deviationResult;
     let eventualBG = deviationResult.eventualBG;
 
@@ -228,7 +228,7 @@ export function determine_basal(
     const { lastIOBpredBG, lastCOBpredBG, lastUAMpredBG, minIOBPredBG, IOBpredBGs, COBpredBGs } = bgPred;
 
     return calculateDosingDecision({
-        result, iob_data, meal_data, profile, glucose_status, currenttemp,
+        result, iob_data: iob_datum, meal_data, profile, glucose_status, currenttemp,
         tempBasalFunctions, systemTime, trio_custom_variables,
         bg, eventualBG, naive_eventualBG,
         threshold, target_bg, min_bg, max_bg, max_iob,

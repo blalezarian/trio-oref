@@ -39,13 +39,15 @@ exports[`determine-basal branch coverage tests > CGM just calibrated with unchan
   "predBGs": {
     "IOB": [
       120,
+      120,
     ],
     "ZT": [
+      120,
       120,
     ],
   },
   "rate": 1.4,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 120, Middleware: undefined; Eventual BG 120 >= 110, no temp, setting 1.4U/hr. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 120, minGuardBG 120, IOBpredBG 120, Middleware: undefined; Eventual BG 120 >= 110, no temp, setting 1.4U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -318,13 +320,15 @@ exports[`determine-basal branch coverage tests > IOB exceeds max_iob — cancels
   "predBGs": {
     "IOB": [
       160,
+      161,
     ],
     "ZT": [
+      160,
       160,
     ],
   },
   "rate": 0,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 48, BGI: -6, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 160, Middleware: undefined; Eventual BG 88 < 110, setting 120m zero temp. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 48, BGI: -6, CR: 10, Target: 110, minPredBG 161, minGuardBG 161, IOBpredBG 161, Middleware: undefined; Eventual BG 88 < 110, setting 120m zero temp. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -349,7 +353,7 @@ exports[`determine-basal branch coverage tests > SMB enabled, high BG — enters
   "eventualBG": 198,
   "expectedDelta": -3.7,
   "insulinForManualBolus": 2.2,
-  "insulinReq": 2.2,
+  "insulinReq": 1.83,
   "manualBolusErrorString": 0,
   "minDelta": 3,
   "minGuardBG": undefined,
@@ -357,13 +361,15 @@ exports[`determine-basal branch coverage tests > SMB enabled, high BG — enters
   "predBGs": {
     "IOB": [
       180,
+      183,
     ],
     "ZT": [
+      180,
       180,
     ],
   },
   "rate": 3.5,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 18, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 180, Middleware: undefined; Eventual BG 198 >= 110,  insulinReq 2.2; maxBolus 0.5. Microbolusing 0.5U. adj. req. rate: 5.3 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 18, BGI: 0, CR: 10, Target: 110, minPredBG 183, minGuardBG 183, IOBpredBG 183, Middleware: undefined; Eventual BG 198 >= 110,  insulinReq 1.83; maxBolus 0.5. Microbolusing 0.5U. adj. req. rate: 4.55 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -397,13 +403,15 @@ exports[`determine-basal branch coverage tests > SMB scheduling: startTime == en
   "predBGs": {
     "IOB": [
       180,
+      180,
     ],
     "ZT": [
+      180,
       180,
     ],
   },
   "rate": 3.5,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 180, Middleware: undefined; Eventual BG 180 >= 110, adj. req. rate: 4.4 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 180, minGuardBG 180, IOBpredBG 180, Middleware: undefined; Eventual BG 180 >= 110, adj. req. rate: 4.4 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -436,13 +444,15 @@ exports[`determine-basal branch coverage tests > SMB with UAM minutes override a
   "predBGs": {
     "IOB": [
       200,
+      204,
     ],
     "ZT": [
+      200,
       200,
     ],
   },
   "rate": 1.9,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 54, BGI: -4, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 200, Middleware: undefined; Eventual BG 174 >= 110, max_iob 2.5, max_iob 2.5,  insulinReq 0.5. Microbolusing 0.2U. no temp, setting 1.9U/hr. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 54, BGI: -4, CR: 10, Target: 110, minPredBG 204, minGuardBG 204, IOBpredBG 204, Middleware: undefined; Eventual BG 174 >= 110, max_iob 2.5, max_iob 2.5,  insulinReq 0.5. Microbolusing 0.2U. no temp, setting 1.9U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -835,7 +845,7 @@ exports[`determine-basal branch coverage tests > SMB with negative durationReq �
   "eventualBG": 134,
   "expectedDelta": -1.6,
   "insulinForManualBolus": 0.6,
-  "insulinReq": 0.6,
+  "insulinReq": 0.55,
   "manualBolusErrorString": 0,
   "minDelta": 2,
   "minGuardBG": undefined,
@@ -843,20 +853,22 @@ exports[`determine-basal branch coverage tests > SMB with negative durationReq �
   "predBGs": {
     "IOB": [
       130,
+      132,
     ],
     "ZT": [
       130,
+      130,
     ],
   },
-  "rate": 2.1,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 16, BGI: -1, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 130, Middleware: undefined; Eventual BG 134 >= 110,  insulinReq 0.6. Microbolusing 0.3U. no temp, setting 2.1U/hr. ",
+  "rate": 2,
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 16, BGI: -1, CR: 10, Target: 110, minPredBG 132, minGuardBG 132, IOBpredBG 132, Middleware: undefined; Eventual BG 134 >= 110,  insulinReq 0.55. Microbolusing 0.2U. no temp, setting 2U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
   "temp": "absolute",
   "threshold": 75,
   "tick": "+2",
-  "units": 0.3,
+  "units": 0.2,
 }
 `;
 
@@ -875,7 +887,7 @@ exports[`determine-basal branch coverage tests > SMB with non-default delivery r
   "eventualBG": 198,
   "expectedDelta": -3.7,
   "insulinForManualBolus": 2.2,
-  "insulinReq": 2.2,
+  "insulinReq": 1.83,
   "manualBolusErrorString": 0,
   "minDelta": 3,
   "minGuardBG": undefined,
@@ -883,13 +895,15 @@ exports[`determine-basal branch coverage tests > SMB with non-default delivery r
   "predBGs": {
     "IOB": [
       180,
+      183,
     ],
     "ZT": [
+      180,
       180,
     ],
   },
   "rate": 3.5,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 18, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 180, SMB Ratio: 0.8, Middleware: undefined; Eventual BG 198 >= 110,  insulinReq 2.2; maxBolus 0.5. Microbolusing 0.5U. adj. req. rate: 5.3 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 18, BGI: 0, CR: 10, Target: 110, minPredBG 183, minGuardBG 183, IOBpredBG 183, SMB Ratio: 0.8, Middleware: undefined; Eventual BG 198 >= 110,  insulinReq 1.83; maxBolus 0.5. Microbolusing 0.5U. adj. req. rate: 4.55 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -915,7 +929,7 @@ exports[`determine-basal branch coverage tests > SMB with override advancedSetti
   "eventualBG": 198,
   "expectedDelta": -3.7,
   "insulinForManualBolus": 2.2,
-  "insulinReq": 2.2,
+  "insulinReq": 1.83,
   "manualBolusErrorString": 0,
   "minDelta": 3,
   "minGuardBG": undefined,
@@ -923,13 +937,15 @@ exports[`determine-basal branch coverage tests > SMB with override advancedSetti
   "predBGs": {
     "IOB": [
       180,
+      183,
     ],
     "ZT": [
+      180,
       180,
     ],
   },
   "rate": 3.5,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 18, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 180, Middleware: undefined; Eventual BG 198 >= 110,  insulinReq 2.2; maxBolus 0.9. Microbolusing 0.9U. adj. req. rate: 5.3 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 18, BGI: 0, CR: 10, Target: 110, minPredBG 183, minGuardBG 183, IOBpredBG 183, Middleware: undefined; Eventual BG 198 >= 110,  insulinReq 1.83; maxBolus 0.9. Microbolusing 0.9U. adj. req. rate: 4.55 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -955,7 +971,7 @@ exports[`determine-basal branch coverage tests > SMB without SMBInterval setting
   "eventualBG": 198,
   "expectedDelta": -3.7,
   "insulinForManualBolus": 2.2,
-  "insulinReq": 2.2,
+  "insulinReq": 1.83,
   "manualBolusErrorString": 0,
   "minDelta": 3,
   "minGuardBG": undefined,
@@ -963,13 +979,15 @@ exports[`determine-basal branch coverage tests > SMB without SMBInterval setting
   "predBGs": {
     "IOB": [
       180,
+      183,
     ],
     "ZT": [
+      180,
       180,
     ],
   },
   "rate": 3.5,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 18, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 180, Middleware: undefined; Eventual BG 198 >= 110,  insulinReq 2.2; maxBolus 0.5. Microbolusing 0.5U. adj. req. rate: 5.3 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 18, BGI: 0, CR: 10, Target: 110, minPredBG 183, minGuardBG 183, IOBpredBG 183, Middleware: undefined; Eventual BG 198 >= 110,  insulinReq 1.83; maxBolus 0.5. Microbolusing 0.5U. adj. req. rate: 4.55 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -1185,25 +1203,27 @@ exports[`determine-basal branch coverage tests > bg below threshold triggers dir
   "current_target": 110,
   "deliverAt": "[DELIVER_AT]",
   "deviation": -24,
-  "duration": 30,
+  "duration": 90,
   "eventualBG": 36,
   "expectedDelta": 3.1,
   "insulinForManualBolus": -1.85,
   "insulinReq": 0,
-  "manualBolusErrorString": 0,
+  "manualBolusErrorString": 2,
   "minDelta": -5,
-  "minGuardBG": undefined,
+  "minGuardBG": 55,
   "minPredBG": undefined,
   "predBGs": {
     "IOB": [
       60,
+      55,
     ],
     "ZT": [
+      60,
       60,
     ],
   },
   "rate": 0,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: -24, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 60, Middleware: undefined; 4 add'l carbs req w/in 0m; minGuardBG 999<75",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: -24, BGI: 0, CR: 10, Target: 110, minPredBG 60, minGuardBG 55, IOBpredBG 55, Middleware: undefined; 4 add'l carbs req w/in 0m; minGuardBG 55<75",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -1375,13 +1395,15 @@ exports[`determine-basal branch coverage tests > deviation falls through all thr
   "predBGs": {
     "IOB": [
       115,
+      112,
     ],
     "ZT": [
+      115,
       115,
     ],
   },
   "rate": 0.4,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: -30, BGI: 1, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 115, Middleware: undefined; Eventual BG 105 < 110, setting 0.4U/hr. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: -30, BGI: 1, CR: 10, Target: 110, minPredBG 115, minGuardBG 112, IOBpredBG 112, Middleware: undefined; Eventual BG 105 < 110, setting 0.4U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -1414,13 +1436,15 @@ exports[`determine-basal branch coverage tests > dynISF enabled with tddAdjBasal
   "predBGs": {
     "IOB": [
       150,
+      150,
     ],
     "ZT": [
+      150,
       150,
     ],
   },
   "rate": 2.75,
-  "reason": "Autosens ratio: 0.94, ISF: 40→43, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 150, Dynamic ISF: On, Logarithmic formula, AF: 0.8, Middleware: undefined; Eventual BG 150 >= 110, no temp, setting 2.75U/hr. ",
+  "reason": "Autosens ratio: 0.94, ISF: 40→43, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 150, minGuardBG 150, IOBpredBG 150, Dynamic ISF: On, Logarithmic formula, AF: 0.8, Middleware: undefined; Eventual BG 150 >= 110, no temp, setting 2.75U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 0.9356,
   "target_bg": 110,
@@ -1453,13 +1477,15 @@ exports[`determine-basal branch coverage tests > dynISF enabled with tddAdjBasal
   "predBGs": {
     "IOB": [
       150,
+      150,
     ],
     "ZT": [
+      150,
       150,
     ],
   },
   "rate": 2.75,
-  "reason": "Autosens ratio: 0.94, ISF: 40→43, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 150, Dynamic ISF: On, Logarithmic formula, AF: 0.8, Basal ratio: 1, Middleware: undefined; Eventual BG 150 >= 110, no temp, setting 2.75U/hr. ",
+  "reason": "Autosens ratio: 0.94, ISF: 40→43, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 150, minGuardBG 150, IOBpredBG 150, Dynamic ISF: On, Logarithmic formula, AF: 0.8, Basal ratio: 1, Middleware: undefined; Eventual BG 150 >= 110, no temp, setting 2.75U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 0.9356,
   "target_bg": 110,
@@ -1675,13 +1701,15 @@ exports[`determine-basal branch coverage tests > dynISF with low TT, sensitivity
   "predBGs": {
     "IOB": [
       140,
+      140,
     ],
     "ZT": [
+      140,
       140,
     ],
   },
   "rate": 3.5,
-  "reason": "Autosens ratio: 1.2, ISF: 40→33, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 80, minPredBG 999, minGuardBG 999, IOBpredBG 140, Dynamic ISF: On, Logarithmic formula, Autosens/Dynamic Limit: 0.5 (0.34), AF: 0.3, Middleware: undefined; Eventual BG 140 >= 80, adj. req. rate: 4.5 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
+  "reason": "Autosens ratio: 1.2, ISF: 40→33, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 80, minPredBG 140, minGuardBG 140, IOBpredBG 140, Dynamic ISF: On, Logarithmic formula, Autosens/Dynamic Limit: 0.5 (0.34), AF: 0.3, Middleware: undefined; Eventual BG 140 >= 80, adj. req. rate: 4.5 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1.2,
   "target_bg": 80,
@@ -1714,13 +1742,15 @@ exports[`determine-basal branch coverage tests > dynISF with newRatio below auto
   "predBGs": {
     "IOB": [
       80,
+      80,
     ],
     "ZT": [
+      80,
       80,
     ],
   },
   "rate": 0,
-  "reason": "Autosens ratio: 0.8, ISF: 40→50, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 80, Dynamic ISF: On, Logarithmic formula, Autosens/Dynamic Limit: 0.8 (0.02), AF: 0.1, Middleware: undefined; Eventual BG 80 < 110, setting 30m zero temp. ",
+  "reason": "Autosens ratio: 0.8, ISF: 40→50, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 80, minGuardBG 80, IOBpredBG 80, Dynamic ISF: On, Logarithmic formula, Autosens/Dynamic Limit: 0.8 (0.02), AF: 0.1, Middleware: undefined; Eventual BG 80 < 110, setting 30m zero temp. ",
   "reservoir": 100,
   "sensitivityRatio": 0.8,
   "target_bg": 110,
@@ -1753,13 +1783,15 @@ exports[`determine-basal branch coverage tests > dynISF with tddAdjBasal and zer
   "predBGs": {
     "IOB": [
       150,
+      150,
     ],
     "ZT": [
+      150,
       150,
     ],
   },
   "rate": 2.75,
-  "reason": "Autosens ratio: 0.94, ISF: 40→43, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 150, Dynamic ISF: On, Logarithmic formula, AF: 0.8, Basal ratio: 1, Middleware: undefined; Eventual BG 150 >= 110, no temp, setting 2.75U/hr. ",
+  "reason": "Autosens ratio: 0.94, ISF: 40→43, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 150, minGuardBG 150, IOBpredBG 150, Dynamic ISF: On, Logarithmic formula, AF: 0.8, Basal ratio: 1, Middleware: undefined; Eventual BG 150 >= 110, no temp, setting 2.75U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 0.9356,
   "target_bg": 110,
@@ -1792,13 +1824,15 @@ exports[`determine-basal branch coverage tests > eventualBG < min_bg, barely fal
   "predBGs": {
     "IOB": [
       120,
+      120,
     ],
     "ZT": [
+      120,
       120,
     ],
   },
   "rate": 0.55,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 4, BGI: -1, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 120, Middleware: undefined; Eventual BG 104 < 110, setting 0.55U/hr. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 4, BGI: -1, CR: 10, Target: 110, minPredBG 120, minGuardBG 120, IOBpredBG 120, Middleware: undefined; Eventual BG 104 < 110, setting 0.55U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -1851,13 +1885,15 @@ exports[`determine-basal branch coverage tests > eventualBG < min_bg, rate <= 0 
   "predBGs": {
     "IOB": [
       90,
+      86,
     ],
     "ZT": [
+      90,
       90,
     ],
   },
   "rate": 0,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: -16, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 90, Middleware: undefined; Eventual BG 66 < 110, setting 60m zero temp. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: -16, BGI: 0, CR: 10, Target: 110, minPredBG 90, minGuardBG 86, IOBpredBG 86, Middleware: undefined; Eventual BG 66 < 110, setting 60m zero temp. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -1900,13 +1936,15 @@ exports[`determine-basal branch coverage tests > eventualBG < min_bg, rising, ca
   "predBGs": {
     "IOB": [
       76,
+      81,
     ],
     "ZT": [
+      76,
       76,
     ],
   },
   "rate": 0,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 32, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 76, Middleware: undefined; Eventual BG 108 < 110, but Delta 6 > expectedDelta 0; setting current basal of 0 as temp. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 32, BGI: 0, CR: 10, Target: 110, minPredBG 81, minGuardBG 81, IOBpredBG 81, Middleware: undefined; Eventual BG 108 < 110, but Delta 6 > expectedDelta 0; setting current basal of 0 as temp. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -1939,13 +1977,15 @@ exports[`determine-basal branch coverage tests > eventualBG < min_bg, rising, ca
   "predBGs": {
     "IOB": [
       76,
+      81,
     ],
     "ZT": [
+      76,
       76,
     ],
   },
   "rate": 0,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 32, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 76, Middleware: undefined; Eventual BG 108 < 110, but Min. Delta 5.33 > Exp. Delta 0; setting current basal of 0 as temp. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 32, BGI: 0, CR: 10, Target: 110, minPredBG 81, minGuardBG 81, IOBpredBG 81, Middleware: undefined; Eventual BG 108 < 110, but Min. Delta 5.33 > Exp. Delta 0; setting current basal of 0 as temp. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -1988,13 +2028,15 @@ exports[`determine-basal branch coverage tests > eventualBG >= min_bg, minDelta 
   "predBGs": {
     "IOB": [
       130,
+      128,
     ],
     "ZT": [
+      130,
       130,
     ],
   },
   "rate": 0.9,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: -18, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 130, Middleware: undefined; Eventual BG 112 > 110 but Min. Delta -2.00 < Exp. Delta 0; setting current basal of 0.9 as temp. . Setting neutral temp basal of 0.9U/hr",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: -18, BGI: 0, CR: 10, Target: 110, minPredBG 130, minGuardBG 128, IOBpredBG 128, Middleware: undefined; Eventual BG 112 > 110 but Min. Delta -2.00 < Exp. Delta 0; setting current basal of 0.9 as temp. . Setting neutral temp basal of 0.9U/hr",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -2037,13 +2079,15 @@ exports[`determine-basal branch coverage tests > handles falsy remainingCarbsCap
   "predBGs": {
     "IOB": [
       115,
+      115,
     ],
     "ZT": [
+      115,
       115,
     ],
   },
   "rate": 1.15,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 115, Middleware: undefined; Eventual BG 115 >= 110, no temp, setting 1.15U/hr. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 115, minGuardBG 115, IOBpredBG 115, Middleware: undefined; Eventual BG 115 >= 110, no temp, setting 1.15U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -2076,13 +2120,15 @@ exports[`determine-basal branch coverage tests > handles iob_data without lastTe
   "predBGs": {
     "IOB": [
       115,
+      115,
     ],
     "ZT": [
+      115,
       115,
     ],
   },
   "rate": 1.15,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 115, Middleware: undefined; Eventual BG 115 >= 110, no temp, setting 1.15U/hr. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 115, minGuardBG 115, IOBpredBG 115, Middleware: undefined; Eventual BG 115 >= 110, no temp, setting 1.15U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -2115,13 +2161,15 @@ exports[`determine-basal branch coverage tests > handles null autosens_data 1`] 
   "predBGs": {
     "IOB": [
       115,
+      115,
     ],
     "ZT": [
+      115,
       115,
     ],
   },
   "rate": 1.15,
-  "reason": ", COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 115, Middleware: undefined; Eventual BG 115 >= 110, no temp, setting 1.15U/hr. ",
+  "reason": ", COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 115, minGuardBG 115, IOBpredBG 115, Middleware: undefined; Eventual BG 115 >= 110, no temp, setting 1.15U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": undefined,
   "target_bg": 110,
@@ -2154,13 +2202,15 @@ exports[`determine-basal branch coverage tests > handles unchanged CGM data with
   "predBGs": {
     "IOB": [
       115,
+      115,
     ],
     "ZT": [
+      115,
       115,
     ],
   },
   "rate": 1.15,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 115, Middleware: undefined; Eventual BG 115 >= 110, no temp, setting 1.15U/hr. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 115, minGuardBG 115, IOBpredBG 115, Middleware: undefined; Eventual BG 115 >= 110, no temp, setting 1.15U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -2193,13 +2243,15 @@ exports[`determine-basal branch coverage tests > handles undefined autosens_data
   "predBGs": {
     "IOB": [
       115,
+      115,
     ],
     "ZT": [
+      115,
       115,
     ],
   },
   "rate": 1.15,
-  "reason": ", COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 115, Middleware: undefined; Eventual BG 115 >= 110, no temp, setting 1.15U/hr. ",
+  "reason": ", COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 115, minGuardBG 115, IOBpredBG 115, Middleware: undefined; Eventual BG 115 >= 110, no temp, setting 1.15U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": undefined,
   "target_bg": 110,
@@ -2232,13 +2284,15 @@ exports[`determine-basal branch coverage tests > handles undefined maxDelta_bg_t
   "predBGs": {
     "IOB": [
       115,
+      115,
     ],
     "ZT": [
+      115,
       115,
     ],
   },
   "rate": 1.15,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 115, Middleware: undefined; Eventual BG 115 >= 110, no temp, setting 1.15U/hr. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 115, minGuardBG 115, IOBpredBG 115, Middleware: undefined; Eventual BG 115 >= 110, no temp, setting 1.15U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -2271,13 +2325,15 @@ exports[`determine-basal branch coverage tests > handles undefined profile.enabl
   "predBGs": {
     "IOB": [
       115,
+      115,
     ],
     "ZT": [
+      115,
       115,
     ],
   },
   "rate": 1.15,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 115, Middleware: undefined; Eventual BG 115 >= 110, no temp, setting 1.15U/hr. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 115, minGuardBG 115, IOBpredBG 115, Middleware: undefined; Eventual BG 115 >= 110, no temp, setting 1.15U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -2310,13 +2366,15 @@ exports[`determine-basal branch coverage tests > handles undefined profile.max_b
   "predBGs": {
     "IOB": [
       115,
+      115,
     ],
     "ZT": [
+      115,
       115,
     ],
   },
   "rate": 1.15,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 115, Middleware: undefined; no temp, setting 1.15U/hr. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 115, minGuardBG 115, IOBpredBG 115, Middleware: undefined; no temp, setting 1.15U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -2359,13 +2417,15 @@ exports[`determine-basal branch coverage tests > high temp target with exercise_
   "predBGs": {
     "IOB": [
       150,
+      150,
     ],
     "ZT": [
+      150,
       150,
     ],
   },
   "rate": 0.85,
-  "reason": "Autosens ratio: 0.6, ISF: 40→67, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 140, minPredBG 999, minGuardBG 999, IOBpredBG 150, Middleware: undefined; Eventual BG 150 >= 140, no temp, setting 0.85U/hr. ",
+  "reason": "Autosens ratio: 0.6, ISF: 40→67, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 140, minPredBG 150, minGuardBG 150, IOBpredBG 150, Middleware: undefined; Eventual BG 150 >= 140, no temp, setting 0.85U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 0.6,
   "target_bg": 140,
@@ -2398,13 +2458,15 @@ exports[`determine-basal branch coverage tests > in-range with SMB enabled — c
   "predBGs": {
     "IOB": [
       115,
+      115,
     ],
     "ZT": [
+      115,
       115,
     ],
   },
   "rate": 1.15,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 115, Middleware: undefined; Eventual BG 115 >= 110,  insulinReq 0.13. no temp, setting 1.15U/hr. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 115, minGuardBG 115, IOBpredBG 115, Middleware: undefined; Eventual BG 115 >= 110,  insulinReq 0.13. no temp, setting 1.15U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -2437,13 +2499,15 @@ exports[`determine-basal branch coverage tests > in-range, non-SMB — sets neut
   "predBGs": {
     "IOB": [
       115,
+      115,
     ],
     "ZT": [
+      115,
       115,
     ],
   },
   "rate": 1.15,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 115, Middleware: undefined; Eventual BG 115 >= 110, no temp, setting 1.15U/hr. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 115, minGuardBG 115, IOBpredBG 115, Middleware: undefined; Eventual BG 115 >= 110, no temp, setting 1.15U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -2486,13 +2550,15 @@ exports[`determine-basal branch coverage tests > iob_data as single object (not 
   "predBGs": {
     "IOB": [
       115,
+      115,
     ],
     "ZT": [
+      115,
       115,
     ],
   },
   "rate": 1.15,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 115, Middleware: undefined; Eventual BG 115 >= 110, no temp, setting 1.15U/hr. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 115, minGuardBG 115, IOBpredBG 115, Middleware: undefined; Eventual BG 115 >= 110, no temp, setting 1.15U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -2525,13 +2591,15 @@ exports[`determine-basal branch coverage tests > low temp target with low_tempta
   "predBGs": {
     "IOB": [
       120,
+      120,
     ],
     "ZT": [
+      120,
       120,
     ],
   },
   "rate": 3.5,
-  "reason": "Autosens ratio: 1.2, ISF: 40→33, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 80, minPredBG 999, minGuardBG 999, IOBpredBG 120, Middleware: undefined; Eventual BG 120 >= 80, no temp, setting 3.5U/hr. ",
+  "reason": "Autosens ratio: 1.2, ISF: 40→33, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 80, minPredBG 120, minGuardBG 120, IOBpredBG 120, Middleware: undefined; Eventual BG 120 >= 80, no temp, setting 3.5U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1.2,
   "target_bg": 80,
@@ -2556,21 +2624,23 @@ exports[`determine-basal branch coverage tests > maxDelta exceeding threshold di
   "eventualBG": 250,
   "expectedDelta": -5.8,
   "insulinForManualBolus": 3.5,
-  "insulinReq": 2.5,
-  "manualBolusErrorString": 0,
+  "insulinReq": 0,
+  "manualBolusErrorString": 6,
   "minDelta": 25,
   "minGuardBG": undefined,
-  "minPredBG": undefined,
+  "minPredBG": 109,
   "predBGs": {
     "IOB": [
       100,
+      109,
     ],
     "ZT": [
       100,
+      100,
     ],
   },
-  "rate": 3.5,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 150, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 100, Middleware: undefined; maxDelta 30 > 20% of BG 100 - SMB disabled!, Eventual BG 250 >= 110, max_iob 2.5, max_iob 2.5, adj. req. rate: 5.9 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
+  "rate": 0.9,
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 150, BGI: 0, CR: 10, Target: 110, minPredBG 109, minGuardBG 109, IOBpredBG 109, Middleware: undefined; maxDelta 30 > 20% of BG 100 - SMB disabled!, 250-109 in range: no temp required; setting current basal of 0.9 as temp. . Setting neutral temp basal of 0.9U/hr",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -2595,7 +2665,7 @@ exports[`determine-basal branch coverage tests > meal with COB triggers carb imp
   "eventualBG": 174,
   "expectedDelta": -2.7,
   "insulinForManualBolus": 1.6,
-  "insulinReq": 1.6,
+  "insulinReq": 1.1,
   "manualBolusErrorString": 0,
   "minDelta": 4,
   "minGuardBG": undefined,
@@ -2603,16 +2673,19 @@ exports[`determine-basal branch coverage tests > meal with COB triggers carb imp
   "predBGs": {
     "COB": [
       150,
+      154,
     ],
     "IOB": [
       150,
+      154,
     ],
     "ZT": [
       150,
+      150,
     ],
   },
-  "rate": 3.5,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 40, Dev: 24, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 150, COBpredBG 150, Middleware: undefined; Eventual BG 174 >= 110, adj. req. rate: 4.1 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
+  "rate": 3.1,
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 40, Dev: 24, BGI: 0, CR: 10, Target: 110, minPredBG 154, minGuardBG 154, IOBpredBG 154, COBpredBG 154, Middleware: undefined; Eventual BG 174 >= 110, no temp, setting 3.1U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -2645,13 +2718,15 @@ exports[`determine-basal branch coverage tests > middleware string appended to t
   "predBGs": {
     "IOB": [
       150,
+      150,
     ],
     "ZT": [
+      150,
       150,
     ],
   },
   "rate": 2.9,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 150, Middleware: Custom adjustment applied; Eventual BG 150 >= 110, no temp, setting 2.9U/hr. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 150, minGuardBG 150, IOBpredBG 150, Middleware: Custom adjustment applied; Eventual BG 150 >= 110, no temp, setting 2.9U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -2684,13 +2759,15 @@ exports[`determine-basal branch coverage tests > minDelta < expectedDelta with S
   "predBGs": {
     "IOB": [
       130,
+      128,
     ],
     "ZT": [
+      130,
       130,
     ],
   },
   "rate": 1,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: -18, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 130, Middleware: undefined; Eventual BG 112 >= 110,  insulinReq 0.05. no temp, setting 1U/hr. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: -18, BGI: 0, CR: 10, Target: 110, minPredBG 130, minGuardBG 128, IOBpredBG 128, Middleware: undefined; Eventual BG 112 >= 110,  insulinReq 0.05. no temp, setting 1U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -2835,7 +2912,7 @@ exports[`determine-basal branch coverage tests > no current temp set (duration=0
   "eventualBG": 172,
   "expectedDelta": -2.6,
   "insulinForManualBolus": 1.55,
-  "insulinReq": 1.55,
+  "insulinReq": 1.3,
   "manualBolusErrorString": 0,
   "minDelta": 2,
   "minGuardBG": undefined,
@@ -2843,13 +2920,15 @@ exports[`determine-basal branch coverage tests > no current temp set (duration=0
   "predBGs": {
     "IOB": [
       160,
+      162,
     ],
     "ZT": [
+      160,
       160,
     ],
   },
   "rate": 3.5,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 12, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 160, Middleware: undefined; Eventual BG 172 >= 110, adj. req. rate: 4 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 12, BGI: 0, CR: 10, Target: 110, minPredBG 162, minGuardBG 162, IOBpredBG 162, Middleware: undefined; Eventual BG 172 >= 110, no temp, setting 3.5U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -2892,13 +2971,15 @@ exports[`determine-basal branch coverage tests > noisy CGM data (noise=2) raises
   "predBGs": {
     "IOB": [
       120,
+      120,
     ],
     "ZT": [
+      120,
       120,
     ],
   },
   "rate": 0,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 120, Middleware: undefined; Eventual BG 120 < 143, setting 30m zero temp. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 120, minGuardBG 120, IOBpredBG 120, Middleware: undefined; Eventual BG 120 < 143, setting 30m zero temp. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 143,
@@ -2931,13 +3012,15 @@ exports[`determine-basal branch coverage tests > override target differs from pr
   "predBGs": {
     "IOB": [
       150,
+      150,
     ],
     "ZT": [
+      150,
       150,
     ],
   },
   "rate": 2.3,
-  "reason": "Autosens ratio: 0.8, ISF: 40→50, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 100→100→110, minPredBG 999, minGuardBG 999, IOBpredBG 150, Middleware: undefined; Eventual BG 150 >= 110, no temp, setting 2.3U/hr. ",
+  "reason": "Autosens ratio: 0.8, ISF: 40→50, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 100→100→110, minPredBG 150, minGuardBG 150, IOBpredBG 150, Middleware: undefined; Eventual BG 150 >= 110, no temp, setting 2.3U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 0.8,
   "target_bg": 110,
@@ -2970,13 +3053,15 @@ exports[`determine-basal branch coverage tests > override target of 6 is exclude
   "predBGs": {
     "IOB": [
       115,
+      115,
     ],
     "ZT": [
+      115,
       115,
     ],
   },
   "rate": 1.15,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 115, Middleware: undefined; Eventual BG 115 >= 110, no temp, setting 1.15U/hr. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 115, minGuardBG 115, IOBpredBG 115, Middleware: undefined; Eventual BG 115 >= 110, no temp, setting 1.15U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -3009,13 +3094,15 @@ exports[`determine-basal branch coverage tests > override with indefinite durati
   "predBGs": {
     "IOB": [
       150,
+      150,
     ],
     "ZT": [
+      150,
       150,
     ],
   },
   "rate": 3,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 150, Middleware: undefined; Eventual BG 150 >= 110, no temp, setting 3U/hr. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 150, minGuardBG 150, IOBpredBG 150, Middleware: undefined; Eventual BG 150 >= 110, no temp, setting 3U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -3048,13 +3135,15 @@ exports[`determine-basal branch coverage tests > override with isfAndCr false, b
   "predBGs": {
     "IOB": [
       160,
+      160,
     ],
     "ZT": [
+      160,
       160,
     ],
   },
   "rate": 3.5,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 160, Middleware: undefined; Eventual BG 160 >= 110, adj. req. rate: 3.6 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 160, minGuardBG 160, IOBpredBG 160, Middleware: undefined; Eventual BG 160 >= 110, adj. req. rate: 3.6 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -3087,13 +3176,15 @@ exports[`determine-basal branch coverage tests > override with isfAndCr false, c
   "predBGs": {
     "IOB": [
       160,
+      160,
     ],
     "ZT": [
+      160,
       160,
     ],
   },
   "rate": 3.5,
-  "reason": "Autosens ratio: 1, ISF: 33→33, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 160, Middleware: undefined; Eventual BG 160 >= 110, adj. req. rate: 4.1 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
+  "reason": "Autosens ratio: 1, ISF: 33→33, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 160, minGuardBG 160, IOBpredBG 160, Middleware: undefined; Eventual BG 160 >= 110, adj. req. rate: 4.1 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -3126,13 +3217,15 @@ exports[`determine-basal branch coverage tests > override with isfAndCr false, c
   "predBGs": {
     "IOB": [
       160,
+      160,
     ],
     "ZT": [
+      160,
       160,
     ],
   },
   "rate": 3.2,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 12.5, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 160, Middleware: undefined; Eventual BG 160 >= 110, no temp, setting 3.2U/hr. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 12.5, Target: 110, minPredBG 160, minGuardBG 160, IOBpredBG 160, Middleware: undefined; Eventual BG 160 >= 110, no temp, setting 3.2U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -3165,13 +3258,15 @@ exports[`determine-basal branch coverage tests > rate exceeds maxSafeBasal — g
   "predBGs": {
     "IOB": [
       300,
+      309,
     ],
     "ZT": [
+      300,
       300,
     ],
   },
   "rate": 2,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 60, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 300, Middleware: undefined; Eventual BG 360 >= 110, max_iob 2.5, max_iob 2.5, adj. req. rate: 5.5 to maxSafeBasal: 2, no temp, setting 2U/hr. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 60, BGI: 0, CR: 10, Target: 110, minPredBG 309, minGuardBG 309, IOBpredBG 309, Middleware: undefined; Eventual BG 360 >= 110, max_iob 2.5, max_iob 2.5, adj. req. rate: 5.5 to maxSafeBasal: 2, no temp, setting 2U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -3214,13 +3309,15 @@ exports[`determine-basal branch coverage tests > resistance_lowers_target with h
   "predBGs": {
     "IOB": [
       150,
+      150,
     ],
     "ZT": [
+      150,
       150,
     ],
   },
   "rate": 3.5,
-  "reason": "Autosens ratio: 1.15, ISF: 40→35, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110→103, minPredBG 999, minGuardBG 999, IOBpredBG 150, Middleware: undefined; Eventual BG 150 >= 103, adj. req. rate: 3.75 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
+  "reason": "Autosens ratio: 1.15, ISF: 40→35, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110→103, minPredBG 150, minGuardBG 150, IOBpredBG 150, Middleware: undefined; Eventual BG 150 >= 103, adj. req. rate: 3.75 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1.15,
   "target_bg": 103,
@@ -3253,13 +3350,15 @@ exports[`determine-basal branch coverage tests > sensitivity_raises_target with 
   "predBGs": {
     "IOB": [
       115,
+      115,
     ],
     "ZT": [
+      115,
       115,
     ],
   },
   "rate": 0.05,
-  "reason": "Autosens ratio: 0.8, ISF: 40→50, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110→123, minPredBG 999, minGuardBG 999, IOBpredBG 115, Middleware: undefined; Eventual BG 115 < 123, setting 0.05U/hr. ",
+  "reason": "Autosens ratio: 0.8, ISF: 40→50, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110→123, minPredBG 115, minGuardBG 115, IOBpredBG 115, Middleware: undefined; Eventual BG 115 < 123, setting 0.05U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 0.8,
   "target_bg": 123,
@@ -3292,13 +3391,15 @@ exports[`determine-basal branch coverage tests > sigmoid dynamic ISF calculation
   "predBGs": {
     "IOB": [
       150,
+      150,
     ],
     "ZT": [
+      150,
       150,
     ],
   },
   "rate": 3.35,
-  "reason": "Autosens ratio: 1.22, ISF: 40→33, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 150, Dynamic ISF: On, Sigmoid function, AF: 0.5, Middleware: undefined; Eventual BG 150 >= 110, no temp, setting 3.35U/hr. ",
+  "reason": "Autosens ratio: 1.22, ISF: 40→33, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 150, minGuardBG 150, IOBpredBG 150, Dynamic ISF: On, Sigmoid function, AF: 0.5, Middleware: undefined; Eventual BG 150 >= 110, no temp, setting 3.35U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1.2164,
   "target_bg": 110,
@@ -3331,13 +3432,15 @@ exports[`determine-basal branch coverage tests > skip_neutral_temps at 55+ minut
   "predBGs": {
     "IOB": [
       115,
+      115,
     ],
     "ZT": [
+      115,
       115,
     ],
   },
   "rate": 0,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 115, Middleware: undefined; ; Canceling temp at 3min before turn of the hour to avoid beeping of MDT. SMB are disabled anyways.",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 115, minGuardBG 115, IOBpredBG 115, Middleware: undefined; ; Canceling temp at 3min before turn of the hour to avoid beeping of MDT. SMB are disabled anyways.",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -3362,7 +3465,7 @@ exports[`determine-basal branch coverage tests > skip_neutral_temps at 55+ minut
   "eventualBG": 198,
   "expectedDelta": -3.7,
   "insulinForManualBolus": 2.2,
-  "insulinReq": 2.2,
+  "insulinReq": 1.83,
   "manualBolusErrorString": 0,
   "minDelta": 3,
   "minGuardBG": undefined,
@@ -3370,13 +3473,15 @@ exports[`determine-basal branch coverage tests > skip_neutral_temps at 55+ minut
   "predBGs": {
     "IOB": [
       180,
+      183,
     ],
     "ZT": [
+      180,
       180,
     ],
   },
   "rate": 3.5,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 18, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 180, Middleware: undefined; Eventual BG 198 >= 110,  insulinReq 2.2; maxBolus 0.5. Microbolusing 0.5U. adj. req. rate: 5.3 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 18, BGI: 0, CR: 10, Target: 110, minPredBG 183, minGuardBG 183, IOBpredBG 183, Middleware: undefined; Eventual BG 198 >= 110,  insulinReq 1.83; maxBolus 0.5. Microbolusing 0.5U. adj. req. rate: 4.55 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -3402,7 +3507,7 @@ exports[`determine-basal branch coverage tests > smbMinutesSetting undefined via
   "eventualBG": 198,
   "expectedDelta": -3.7,
   "insulinForManualBolus": 2.2,
-  "insulinReq": 2.2,
+  "insulinReq": 1.83,
   "manualBolusErrorString": 0,
   "minDelta": 3,
   "minGuardBG": undefined,
@@ -3410,13 +3515,15 @@ exports[`determine-basal branch coverage tests > smbMinutesSetting undefined via
   "predBGs": {
     "IOB": [
       180,
+      183,
     ],
     "ZT": [
+      180,
       180,
     ],
   },
   "rate": 3.5,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 18, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 180, Middleware: undefined; Eventual BG 198 >= 110,  insulinReq 2.2; maxBolus 0.5. Microbolusing 0.5U. adj. req. rate: 5.3 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 18, BGI: 0, CR: 10, Target: 110, minPredBG 183, minGuardBG 183, IOBpredBG 183, Middleware: undefined; Eventual BG 198 >= 110,  insulinReq 1.83; maxBolus 0.5. Microbolusing 0.5U. adj. req. rate: 4.55 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -3442,7 +3549,7 @@ exports[`determine-basal branch coverage tests > smbMinutesSetting undefined wit
   "eventualBG": 284,
   "expectedDelta": -8.2,
   "insulinForManualBolus": 4.35,
-  "insulinReq": 4.35,
+  "insulinReq": 3.68,
   "manualBolusErrorString": 0,
   "minDelta": 8,
   "minGuardBG": undefined,
@@ -3450,13 +3557,15 @@ exports[`determine-basal branch coverage tests > smbMinutesSetting undefined wit
   "predBGs": {
     "IOB": [
       250,
+      257,
     ],
     "ZT": [
+      250,
       250,
     ],
   },
   "rate": 3.5,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 54, BGI: -1, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 250, Middleware: undefined; Eventual BG 284 >= 110,  insulinReq 4.35; maxBolus 0.5. Microbolusing 0.5U. adj. req. rate: 9.6 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 54, BGI: -1, CR: 10, Target: 110, minPredBG 257, minGuardBG 257, IOBpredBG 257, Middleware: undefined; Eventual BG 284 >= 110,  insulinReq 3.68; maxBolus 0.5. Microbolusing 0.5U. adj. req. rate: 8.25 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -3490,13 +3599,15 @@ exports[`determine-basal branch coverage tests > uses system time when currentTi
   "predBGs": {
     "IOB": [
       115,
+      115,
     ],
     "ZT": [
+      115,
       115,
     ],
   },
   "rate": 1.15,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 115, Middleware: undefined; Eventual BG 115 >= 110, no temp, setting 1.15U/hr. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 115, minGuardBG 115, IOBpredBG 115, Middleware: undefined; Eventual BG 115 >= 110, no temp, setting 1.15U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -3529,13 +3640,15 @@ exports[`determine-basal branch coverage tests > uses system time when currentTi
   "predBGs": {
     "IOB": [
       115,
+      115,
     ],
     "ZT": [
+      115,
       115,
     ],
   },
   "rate": 1.15,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 115, Middleware: undefined; Eventual BG 115 >= 110, no temp, setting 1.15U/hr. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 115, minGuardBG 115, IOBpredBG 115, Middleware: undefined; Eventual BG 115 >= 110, no temp, setting 1.15U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -3568,13 +3681,15 @@ exports[`determine-basal branch coverage tests > very low naive_eventualBG trigg
   "predBGs": {
     "IOB": [
       80,
+      79,
     ],
     "ZT": [
+      80,
       80,
     ],
   },
   "rate": 0,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 12, BGI: -3, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 80, Middleware: undefined; Eventual BG 32 < 110, setting 120m zero temp. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 12, BGI: -3, CR: 10, Target: 110, minPredBG 80, minGuardBG 79, IOBpredBG 79, Middleware: undefined; Eventual BG 32 < 110, setting 120m zero temp. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -3607,13 +3722,15 @@ exports[`determine-basal characterization tests > autosens > High sensitivity (r
   "predBGs": {
     "IOB": [
       150,
+      150,
     ],
     "ZT": [
+      150,
       150,
     ],
   },
   "rate": 2.3,
-  "reason": "Autosens ratio: 0.8, ISF: 40→50, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 150, Middleware: undefined; Eventual BG 150 >= 110, no temp, setting 2.3U/hr. ",
+  "reason": "Autosens ratio: 0.8, ISF: 40→50, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 150, minGuardBG 150, IOBpredBG 150, Middleware: undefined; Eventual BG 150 >= 110, no temp, setting 2.3U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 0.8,
   "target_bg": 110,
@@ -3646,13 +3763,15 @@ exports[`determine-basal characterization tests > autosens > Insulin resistance 
   "predBGs": {
     "IOB": [
       150,
+      150,
     ],
     "ZT": [
+      150,
       150,
     ],
   },
   "rate": 3.5,
-  "reason": "Autosens ratio: 1.2, ISF: 40→33, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 150, Middleware: undefined; Eventual BG 150 >= 110, no temp, setting 3.5U/hr. ",
+  "reason": "Autosens ratio: 1.2, ISF: 40→33, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 150, minGuardBG 150, IOBpredBG 150, Middleware: undefined; Eventual BG 150 >= 110, no temp, setting 3.5U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1.2,
   "target_bg": 110,
@@ -3810,7 +3929,7 @@ exports[`determine-basal characterization tests > bolus-wizard > SMB with bwFoun
   "eventualBG": 198,
   "expectedDelta": -3.7,
   "insulinForManualBolus": 2.2,
-  "insulinReq": 2.2,
+  "insulinReq": 1.83,
   "manualBolusErrorString": 0,
   "minDelta": 3,
   "minGuardBG": undefined,
@@ -3818,13 +3937,15 @@ exports[`determine-basal characterization tests > bolus-wizard > SMB with bwFoun
   "predBGs": {
     "IOB": [
       180,
+      183,
     ],
     "ZT": [
+      180,
       180,
     ],
   },
   "rate": 3.5,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 18, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 180, Middleware: undefined; Eventual BG 198 >= 110, adj. req. rate: 5.3 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 18, BGI: 0, CR: 10, Target: 110, minPredBG 183, minGuardBG 183, IOBpredBG 183, Middleware: undefined; Eventual BG 198 >= 110, adj. req. rate: 4.55 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -3857,13 +3978,15 @@ exports[`determine-basal characterization tests > carbs-req > carbsReq >= thresh
   "predBGs": {
     "IOB": [
       85,
+      83,
     ],
     "ZT": [
+      85,
       85,
     ],
   },
   "rate": 0,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 6, BGI: -3, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 85, Middleware: undefined; Eventual BG 31 < 110, setting 120m zero temp. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 6, BGI: -3, CR: 10, Target: 110, minPredBG 85, minGuardBG 83, IOBpredBG 83, Middleware: undefined; Eventual BG 31 < 110, setting 120m zero temp. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -3902,13 +4025,15 @@ exports[`determine-basal characterization tests > cgm-error > CGM data unchanged
   "predBGs": {
     "IOB": [
       120,
+      120,
     ],
     "ZT": [
+      120,
       120,
     ],
   },
   "rate": 1.4,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 120, Middleware: undefined; Eventual BG 120 >= 110, no temp, setting 1.4U/hr. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 120, minGuardBG 120, IOBpredBG 120, Middleware: undefined; Eventual BG 120 >= 110, no temp, setting 1.4U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -3973,13 +4098,15 @@ exports[`determine-basal characterization tests > cgm-error-extended > CGM just 
   "predBGs": {
     "IOB": [
       120,
+      120,
     ],
     "ZT": [
+      120,
       120,
     ],
   },
   "rate": 1.4,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 120, Middleware: undefined; Eventual BG 120 >= 110, no temp, setting 1.4U/hr. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 120, minGuardBG 120, IOBpredBG 120, Middleware: undefined; Eventual BG 120 >= 110, no temp, setting 1.4U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -4054,13 +4181,15 @@ exports[`determine-basal characterization tests > clock-parse-error > Meal data 
   "predBGs": {
     "IOB": [
       85,
+      83,
     ],
     "ZT": [
+      85,
       85,
     ],
   },
   "rate": 0,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 6, BGI: -3, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 85, Middleware: undefined; Eventual BG 31 < 110, setting 120m zero temp. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 6, BGI: -3, CR: 10, Target: 110, minPredBG 85, minGuardBG 83, IOBpredBG 83, Middleware: undefined; Eventual BG 31 < 110, setting 120m zero temp. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -4960,13 +5089,15 @@ exports[`determine-basal characterization tests > deviation-refinement > Negativ
   "predBGs": {
     "IOB": [
       120,
+      117,
     ],
     "ZT": [
+      120,
       120,
     ],
   },
   "rate": 0.9,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 10, BGI: -1, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 120, Middleware: undefined; Eventual BG 118 > 110 but Min. Delta -3.00 < Exp. Delta -1; setting current basal of 0.9 as temp. . Setting neutral temp basal of 0.9U/hr",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 10, BGI: -1, CR: 10, Target: 110, minPredBG 120, minGuardBG 117, IOBpredBG 117, Middleware: undefined; Eventual BG 118 > 110 but Min. Delta -3.00 < Exp. Delta -1; setting current basal of 0.9 as temp. . Setting neutral temp basal of 0.9U/hr",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -4999,13 +5130,15 @@ exports[`determine-basal characterization tests > deviation-refinement > Negativ
   "predBGs": {
     "IOB": [
       120,
+      115,
     ],
     "ZT": [
+      120,
       120,
     ],
   },
   "rate": 0.5,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: -2, BGI: -1, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 120, Middleware: undefined; Eventual BG 106 < 110, setting 0.5U/hr. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: -2, BGI: -1, CR: 10, Target: 110, minPredBG 120, minGuardBG 115, IOBpredBG 115, Middleware: undefined; Eventual BG 106 < 110, setting 0.5U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -5038,13 +5171,15 @@ exports[`determine-basal characterization tests > dynamic-isf > Dynamic ISF disa
   "predBGs": {
     "IOB": [
       200,
+      200,
     ],
     "ZT": [
+      200,
       200,
     ],
   },
   "rate": 3.5,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 200, Middleware: undefined; Eventual BG 200 >= 110, adj. req. rate: 5.4 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 200, minGuardBG 200, IOBpredBG 200, Middleware: undefined; Eventual BG 200 >= 110, adj. req. rate: 5.4 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -5077,13 +5212,15 @@ exports[`determine-basal characterization tests > dynamic-isf > Dynamic ISF loga
   "predBGs": {
     "IOB": [
       200,
+      200,
     ],
     "ZT": [
+      200,
       200,
     ],
   },
   "rate": 3.5,
-  "reason": "Autosens ratio: 1.09, ISF: 40→37, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 200, Dynamic ISF: On, Logarithmic formula, AF: 0.8, Middleware: undefined; Eventual BG 200 >= 110, adj. req. rate: 5.8 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
+  "reason": "Autosens ratio: 1.09, ISF: 40→37, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 200, minGuardBG 200, IOBpredBG 200, Dynamic ISF: On, Logarithmic formula, AF: 0.8, Middleware: undefined; Eventual BG 200 >= 110, adj. req. rate: 5.8 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1.0908,
   "target_bg": 110,
@@ -5116,13 +5253,15 @@ exports[`determine-basal characterization tests > dynamic-isf > Dynamic ISF loga
   "predBGs": {
     "IOB": [
       110,
+      110,
     ],
     "ZT": [
+      110,
       110,
     ],
   },
   "rate": 0.9,
-  "reason": "Autosens ratio: 0.78, ISF: 40→51, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 110, Dynamic ISF: On, Logarithmic formula, AF: 0.8, Middleware: undefined; Eventual BG 110 >= 110, 0m@0.00 > 2 * insulinReq. Setting temp basal of 0.9U/hr. . Setting neutral temp basal of 0.9U/hr",
+  "reason": "Autosens ratio: 0.78, ISF: 40→51, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 110, minGuardBG 110, IOBpredBG 110, Dynamic ISF: On, Logarithmic formula, AF: 0.8, Middleware: undefined; Eventual BG 110 >= 110, 0m@0.00 > 2 * insulinReq. Setting temp basal of 0.9U/hr. . Setting neutral temp basal of 0.9U/hr",
   "reservoir": 100,
   "sensitivityRatio": 0.7812,
   "target_bg": 110,
@@ -5155,13 +5294,15 @@ exports[`determine-basal characterization tests > dynamic-isf > Dynamic ISF sigm
   "predBGs": {
     "IOB": [
       200,
+      200,
     ],
     "ZT": [
+      200,
       200,
     ],
   },
   "rate": 3.5,
-  "reason": "Autosens ratio: 1.17, ISF: 40→34, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 200, Dynamic ISF: On, Sigmoid function, AF: 0.5, Middleware: undefined; Eventual BG 200 >= 110, max_iob 2.5, max_iob 2.5, adj. req. rate: 5.9 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
+  "reason": "Autosens ratio: 1.17, ISF: 40→34, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 200, minGuardBG 200, IOBpredBG 200, Dynamic ISF: On, Sigmoid function, AF: 0.5, Middleware: undefined; Eventual BG 200 >= 110, max_iob 2.5, max_iob 2.5, adj. req. rate: 5.9 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1.174,
   "target_bg": 110,
@@ -5194,13 +5335,15 @@ exports[`determine-basal characterization tests > dynamic-isf-exercise > Dynamic
   "predBGs": {
     "IOB": [
       130,
+      130,
     ],
     "ZT": [
+      130,
       130,
     ],
   },
   "rate": 1.1,
-  "reason": "Autosens ratio: 0.75, ISF: 40→53, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 120, minPredBG 999, minGuardBG 999, IOBpredBG 130, Middleware: undefined; Eventual BG 130 >= 120, no temp, setting 1.1U/hr. ",
+  "reason": "Autosens ratio: 0.75, ISF: 40→53, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 120, minPredBG 130, minGuardBG 130, IOBpredBG 130, Middleware: undefined; Eventual BG 130 >= 120, no temp, setting 1.1U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 0.75,
   "target_bg": 120,
@@ -5233,13 +5376,15 @@ exports[`determine-basal characterization tests > dynamic-isf-limits > Dynamic I
   "predBGs": {
     "IOB": [
       300,
+      305,
     ],
     "ZT": [
+      300,
       300,
     ],
   },
   "rate": 3.5,
-  "reason": "Autosens ratio: 1.2, ISF: 40→33, COB: 0, Dev: 30, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 300, Dynamic ISF: On, Logarithmic formula, Autosens/Dynamic Limit: 1.2 (3.73), AF: 1.5, Middleware: undefined; Eventual BG 330 >= 110, max_iob 2.5, max_iob 2.5, adj. req. rate: 5.9 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
+  "reason": "Autosens ratio: 1.2, ISF: 40→33, COB: 0, Dev: 30, BGI: 0, CR: 10, Target: 110, minPredBG 305, minGuardBG 305, IOBpredBG 305, Dynamic ISF: On, Logarithmic formula, Autosens/Dynamic Limit: 1.2 (3.73), AF: 1.5, Middleware: undefined; Eventual BG 330 >= 110, max_iob 2.5, max_iob 2.5, adj. req. rate: 5.9 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1.2,
   "target_bg": 110,
@@ -5272,13 +5417,15 @@ exports[`determine-basal characterization tests > dynamic-isf-limits > Dynamic I
   "predBGs": {
     "IOB": [
       80,
+      78,
     ],
     "ZT": [
+      80,
       80,
     ],
   },
   "rate": 0,
-  "reason": "Autosens ratio: 0.9, ISF: 40→45, COB: 0, Dev: -6, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 80, Dynamic ISF: On, Sigmoid function, AF: 0.5, Middleware: undefined; Eventual BG 74 < 110, setting 60m zero temp. ",
+  "reason": "Autosens ratio: 0.9, ISF: 40→45, COB: 0, Dev: -6, BGI: 0, CR: 10, Target: 110, minPredBG 80, minGuardBG 78, IOBpredBG 78, Dynamic ISF: On, Sigmoid function, AF: 0.5, Middleware: undefined; Eventual BG 74 < 110, setting 60m zero temp. ",
   "reservoir": 100,
   "sensitivityRatio": 0.8974,
   "target_bg": 110,
@@ -5311,13 +5458,15 @@ exports[`determine-basal characterization tests > dynamic-isf-limits > Dynamic I
   "predBGs": {
     "IOB": [
       180,
+      180,
     ],
     "ZT": [
+      180,
       180,
     ],
   },
   "rate": 3.5,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 180, Dynamic ISF: On, Sigmoid function, AF: 0.5, Middleware: undefined; Eventual BG 180 >= 110, adj. req. rate: 4.4 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 180, minGuardBG 180, IOBpredBG 180, Dynamic ISF: On, Sigmoid function, AF: 0.5, Middleware: undefined; Eventual BG 180 >= 110, adj. req. rate: 4.4 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 0.9986,
   "target_bg": 110,
@@ -5474,13 +5623,15 @@ exports[`determine-basal characterization tests > eventual-bg-high > EventualBG 
   "predBGs": {
     "IOB": [
       200,
+      204,
     ],
     "ZT": [
+      200,
       200,
     ],
   },
   "rate": 2.9,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 54, BGI: -4, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 200, Middleware: undefined; Eventual BG 174 >= 110, max_iob 3, max_iob 3, no temp, setting 2.9U/hr. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 54, BGI: -4, CR: 10, Target: 110, minPredBG 204, minGuardBG 204, IOBpredBG 204, Middleware: undefined; Eventual BG 174 >= 110, max_iob 3, max_iob 3, no temp, setting 2.9U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -5513,13 +5664,15 @@ exports[`determine-basal characterization tests > eventual-bg-high > EventualBG 
   "predBGs": {
     "IOB": [
       120,
+      120,
     ],
     "ZT": [
+      120,
       120,
     ],
   },
   "rate": 1.4,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 120, Middleware: undefined; Eventual BG 120 >= 110, no temp, setting 1.4U/hr. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 120, minGuardBG 120, IOBpredBG 120, Middleware: undefined; Eventual BG 120 >= 110, no temp, setting 1.4U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -5541,25 +5694,27 @@ exports[`determine-basal characterization tests > eventual-bg-low > EventualBG b
   "current_target": 110,
   "deliverAt": "[DELIVER_AT]",
   "deviation": 60,
-  "duration": 30,
+  "duration": 60,
   "eventualBG": 10,
   "expectedDelta": -1.8,
   "insulinForManualBolus": -2.5,
   "insulinReq": 0,
-  "manualBolusErrorString": 0,
+  "manualBolusErrorString": 2,
   "minDelta": 4,
-  "minGuardBG": undefined,
+  "minGuardBG": 73,
   "minPredBG": undefined,
   "predBGs": {
     "IOB": [
       70,
+      73,
     ],
     "ZT": [
+      70,
       70,
     ],
   },
   "rate": 0,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 60, BGI: -6, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 70, Middleware: undefined; 31 add'l carbs req w/in 0m; minGuardBG 999<75",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 60, BGI: -6, CR: 10, Target: 110, minPredBG 73, minGuardBG 73, IOBpredBG 73, Middleware: undefined; 31 add'l carbs req w/in 0m; minGuardBG 73<75",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -5602,13 +5757,15 @@ exports[`determine-basal characterization tests > eventual-bg-low > EventualBG b
   "predBGs": {
     "IOB": [
       95,
+      94,
     ],
     "ZT": [
+      95,
       95,
     ],
   },
   "rate": 0,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 12, BGI: -3, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 95, Middleware: undefined; Eventual BG 47 < 110, setting 120m zero temp. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 12, BGI: -3, CR: 10, Target: 110, minPredBG 95, minGuardBG 94, IOBpredBG 94, Middleware: undefined; Eventual BG 47 < 110, setting 120m zero temp. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -5641,13 +5798,15 @@ exports[`determine-basal characterization tests > eventual-bg-low > EventualBG b
   "predBGs": {
     "IOB": [
       90,
+      86,
     ],
     "ZT": [
+      90,
       90,
     ],
   },
   "rate": 0,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 6, BGI: -5, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 90, Middleware: undefined; Eventual BG -4 < 110, setting 120m zero temp. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 6, BGI: -5, CR: 10, Target: 110, minPredBG 90, minGuardBG 86, IOBpredBG 86, Middleware: undefined; Eventual BG -4 < 110, setting 120m zero temp. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -5680,13 +5839,15 @@ exports[`determine-basal characterization tests > eventual-bg-low-delta-gt-minde
   "predBGs": {
     "IOB": [
       115,
+      117,
     ],
     "ZT": [
+      115,
       115,
     ],
   },
   "rate": 0,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 28, BGI: -3, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 115, Middleware: undefined; Eventual BG 91 < 110, setting 90m zero temp. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 28, BGI: -3, CR: 10, Target: 110, minPredBG 117, minGuardBG 117, IOBpredBG 117, Middleware: undefined; Eventual BG 91 < 110, setting 90m zero temp. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -5719,13 +5880,15 @@ exports[`determine-basal characterization tests > eventual-bg-low-delta-le-minde
   "predBGs": {
     "IOB": [
       115,
+      117,
     ],
     "ZT": [
+      115,
       115,
     ],
   },
   "rate": 0,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 28, BGI: -3, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 115, Middleware: undefined; Eventual BG 91 < 110, setting 90m zero temp. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 28, BGI: -3, CR: 10, Target: 110, minPredBG 117, minGuardBG 117, IOBpredBG 117, Middleware: undefined; Eventual BG 91 < 110, setting 90m zero temp. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -5758,13 +5921,15 @@ exports[`determine-basal characterization tests > eventual-bg-low-duration-neg >
   "predBGs": {
     "IOB": [
       115,
+      108,
     ],
     "ZT": [
+      115,
       115,
     ],
   },
   "rate": 0,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: -36, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 115, Middleware: undefined; Eventual BG 79 < 110",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: -36, BGI: 0, CR: 10, Target: 110, minPredBG 115, minGuardBG 108, IOBpredBG 108, Middleware: undefined; Eventual BG 79 < 110",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -5797,13 +5962,15 @@ exports[`determine-basal characterization tests > eventual-bg-low-insched-low > 
   "predBGs": {
     "IOB": [
       112,
+      112,
     ],
     "ZT": [
+      112,
       112,
     ],
   },
   "rate": 0.5,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 112, Middleware: undefined; Eventual BG 106 < 110, 35m@0.00 is a lot less than needed. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 112, minGuardBG 112, IOBpredBG 112, Middleware: undefined; Eventual BG 106 < 110, 35m@0.00 is a lot less than needed. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -5856,13 +6023,15 @@ exports[`determine-basal characterization tests > eventual-bg-low-iob > eventual
   "predBGs": {
     "IOB": [
       90,
+      92,
     ],
     "ZT": [
+      90,
       90,
     ],
   },
   "rate": 0,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 42, BGI: -4, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 90, Middleware: undefined; Eventual BG 52 < 110, setting 120m zero temp. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 42, BGI: -4, CR: 10, Target: 110, minPredBG 92, minGuardBG 92, IOBpredBG 92, Middleware: undefined; Eventual BG 52 < 110, setting 120m zero temp. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -6009,12 +6178,14 @@ exports[`determine-basal characterization tests > eventual-bg-low-keep-temp > Ev
   "predBGs": {
     "IOB": [
       112,
+      112,
     ],
     "ZT": [
       112,
+      112,
     ],
   },
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: -1, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 112, Middleware: undefined; Eventual BG 107 < 110, temp 0.7 ~< req 0.6U/hr. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: -1, BGI: 0, CR: 10, Target: 110, minPredBG 112, minGuardBG 112, IOBpredBG 112, Middleware: undefined; Eventual BG 107 < 110, temp 0.7 ~< req 0.6U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -6047,13 +6218,15 @@ exports[`determine-basal characterization tests > eventual-bg-low-naive > Eventu
   "predBGs": {
     "IOB": [
       115,
+      114,
     ],
     "ZT": [
+      115,
       115,
     ],
   },
   "rate": 0,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 71, BGI: -10, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 115, Middleware: undefined; Eventual BG -22 < 110, setting 120m zero temp. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 71, BGI: -10, CR: 10, Target: 110, minPredBG 115, minGuardBG 114, IOBpredBG 114, Middleware: undefined; Eventual BG -22 < 110, setting 120m zero temp. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -6591,13 +6764,15 @@ exports[`determine-basal characterization tests > eventual-bg-low-temp-match > E
   "predBGs": {
     "IOB": [
       115,
+      117,
     ],
     "ZT": [
+      115,
       115,
     ],
   },
   "rate": 0,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 28, BGI: -3, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 115, Middleware: undefined; Eventual BG 91 < 110, setting 90m zero temp. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 28, BGI: -3, CR: 10, Target: 110, minPredBG 117, minGuardBG 117, IOBpredBG 117, Middleware: undefined; Eventual BG 91 < 110, setting 90m zero temp. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -6630,13 +6805,15 @@ exports[`determine-basal characterization tests > falling-bg > Fall with negativ
   "predBGs": {
     "IOB": [
       100,
+      97,
     ],
     "ZT": [
+      100,
       100,
     ],
   },
   "rate": 0.1,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: -18, BGI: 1, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 100, Middleware: undefined; Eventual BG 102 < 110, setting 0.1U/hr. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: -18, BGI: 1, CR: 10, Target: 110, minPredBG 100, minGuardBG 97, IOBpredBG 97, Middleware: undefined; Eventual BG 102 < 110, setting 0.1U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -6669,13 +6846,15 @@ exports[`determine-basal characterization tests > falling-bg > Fast fall (-10/5m
   "predBGs": {
     "IOB": [
       150,
+      140,
     ],
     "ZT": [
+      150,
       150,
     ],
   },
   "rate": 0,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: -6, BGI: -6, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 150, Middleware: undefined; Eventual BG 64 < 110, setting 60m zero temp. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: -6, BGI: -6, CR: 10, Target: 110, minPredBG 150, minGuardBG 140, IOBpredBG 140, Middleware: undefined; Eventual BG 64 < 110, setting 60m zero temp. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -6708,13 +6887,15 @@ exports[`determine-basal characterization tests > falling-bg > Moderate fall (-5
   "predBGs": {
     "IOB": [
       105,
+      100,
     ],
     "ZT": [
+      105,
       105,
     ],
   },
   "rate": 0,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: -24, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 105, Middleware: undefined; Eventual BG 81 < 110",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: -24, BGI: 0, CR: 10, Target: 110, minPredBG 105, minGuardBG 100, IOBpredBG 100, Middleware: undefined; Eventual BG 81 < 110",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -6747,13 +6928,15 @@ exports[`determine-basal characterization tests > falling-bg > Slow fall (-2/5m)
   "predBGs": {
     "IOB": [
       110,
+      108,
     ],
     "ZT": [
+      110,
       110,
     ],
   },
   "rate": 0,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: -9, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 110, Middleware: undefined; Eventual BG 101 < 110",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: -9, BGI: 0, CR: 10, Target: 110, minPredBG 110, minGuardBG 108, IOBpredBG 108, Middleware: undefined; Eventual BG 101 < 110",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -6786,13 +6969,15 @@ exports[`determine-basal characterization tests > high-bg > High BG (180), no IO
   "predBGs": {
     "IOB": [
       180,
+      180,
     ],
     "ZT": [
+      180,
       180,
     ],
   },
   "rate": 3.5,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 180, Middleware: undefined; Eventual BG 180 >= 110, adj. req. rate: 4.4 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 180, minGuardBG 180, IOBpredBG 180, Middleware: undefined; Eventual BG 180 >= 110, adj. req. rate: 4.4 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -6825,13 +7010,15 @@ exports[`determine-basal characterization tests > high-bg > High BG (180), with 
   "predBGs": {
     "IOB": [
       180,
+      180,
     ],
     "ZT": [
+      180,
       180,
     ],
   },
   "rate": 1.6,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 24, BGI: -4, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 180, Middleware: undefined; Eventual BG 124 >= 110, no temp, setting 1.6U/hr. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 24, BGI: -4, CR: 10, Target: 110, minPredBG 180, minGuardBG 180, IOBpredBG 180, Middleware: undefined; Eventual BG 124 >= 110, no temp, setting 1.6U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -6856,7 +7043,7 @@ exports[`determine-basal characterization tests > high-bg > High BG (200), risin
   "eventualBG": 260,
   "expectedDelta": -6.2,
   "insulinForManualBolus": 3.75,
-  "insulinReq": 2.5,
+  "insulinReq": 2.48,
   "manualBolusErrorString": 0,
   "minDelta": 10,
   "minGuardBG": undefined,
@@ -6864,13 +7051,15 @@ exports[`determine-basal characterization tests > high-bg > High BG (200), risin
   "predBGs": {
     "IOB": [
       200,
+      209,
     ],
     "ZT": [
+      200,
       200,
     ],
   },
   "rate": 3.5,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 60, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 200, Middleware: undefined; Eventual BG 260 >= 110, max_iob 2.5, max_iob 2.5, adj. req. rate: 5.9 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 60, BGI: 0, CR: 10, Target: 110, minPredBG 209, minGuardBG 209, IOBpredBG 209, Middleware: undefined; Eventual BG 260 >= 110, max_iob 2.5, adj. req. rate: 5.85 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -6903,13 +7092,15 @@ exports[`determine-basal characterization tests > high-bg > High BG (250), no IO
   "predBGs": {
     "IOB": [
       250,
+      255,
     ],
     "ZT": [
+      250,
       250,
     ],
   },
   "rate": 3.5,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 30, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 250, Middleware: undefined; Eventual BG 280 >= 110, max_iob 2.5, max_iob 2.5, adj. req. rate: 5.9 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 30, BGI: 0, CR: 10, Target: 110, minPredBG 255, minGuardBG 255, IOBpredBG 255, Middleware: undefined; Eventual BG 280 >= 110, max_iob 2.5, max_iob 2.5, adj. req. rate: 5.9 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -6952,13 +7143,15 @@ exports[`determine-basal characterization tests > high-bg > Slightly above range
   "predBGs": {
     "IOB": [
       130,
+      130,
     ],
     "ZT": [
+      130,
       130,
     ],
   },
   "rate": 1.9,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 130, Middleware: undefined; Eventual BG 130 >= 110, no temp, setting 1.9U/hr. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 130, minGuardBG 130, IOBpredBG 130, Middleware: undefined; Eventual BG 130 >= 110, no temp, setting 1.9U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -6991,13 +7184,15 @@ exports[`determine-basal characterization tests > high-bg > Very high BG (350), 
   "predBGs": {
     "IOB": [
       350,
+      350,
     ],
     "ZT": [
+      350,
       350,
     ],
   },
   "rate": 3.5,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 350, Middleware: undefined; Eventual BG 350 >= 110, max_iob 2.5, max_iob 2.5, adj. req. rate: 5.9 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 350, minGuardBG 350, IOBpredBG 350, Middleware: undefined; Eventual BG 350 >= 110, max_iob 2.5, max_iob 2.5, adj. req. rate: 5.9 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -8344,13 +8539,15 @@ exports[`determine-basal characterization tests > in-range-no-smb-set-basal > In
   "predBGs": {
     "IOB": [
       115,
+      115,
     ],
     "ZT": [
+      115,
       115,
     ],
   },
   "rate": 1.15,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 115, Middleware: undefined; Eventual BG 115 >= 110, no temp, setting 1.15U/hr. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 115, minGuardBG 115, IOBpredBG 115, Middleware: undefined; Eventual BG 115 >= 110, no temp, setting 1.15U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -8383,13 +8580,15 @@ exports[`determine-basal characterization tests > in-range-no-smb-temp > In rang
   "predBGs": {
     "IOB": [
       115,
+      115,
     ],
     "ZT": [
+      115,
       115,
     ],
   },
   "rate": 1.15,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 115, Middleware: undefined; Eventual BG 115 >= 110, temp 0.9<1.15U/hr. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 115, minGuardBG 115, IOBpredBG 115, Middleware: undefined; Eventual BG 115 >= 110, temp 0.9<1.15U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -8751,13 +8950,15 @@ exports[`determine-basal characterization tests > in-range-smb > In range, minPr
   "predBGs": {
     "IOB": [
       115,
+      114,
     ],
     "ZT": [
+      115,
       115,
     ],
   },
   "rate": 0,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 6, BGI: -2, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 115, Middleware: undefined; Eventual BG 81 < 110, setting 60m zero temp. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 6, BGI: -2, CR: 10, Target: 110, minPredBG 115, minGuardBG 114, IOBpredBG 114, Middleware: undefined; Eventual BG 81 < 110, setting 60m zero temp. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -8918,7 +9119,7 @@ exports[`determine-basal characterization tests > insulin-curve > Custom peak ti
   "eventualBG": 188,
   "expectedDelta": -3.2,
   "insulinForManualBolus": 1.95,
-  "insulinReq": 1.95,
+  "insulinReq": 1.58,
   "manualBolusErrorString": 0,
   "minDelta": 3,
   "minGuardBG": undefined,
@@ -8926,13 +9127,15 @@ exports[`determine-basal characterization tests > insulin-curve > Custom peak ti
   "predBGs": {
     "IOB": [
       170,
+      173,
     ],
     "ZT": [
+      170,
       170,
     ],
   },
   "rate": 3.5,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 18, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 170, Middleware: undefined; Eventual BG 188 >= 110, adj. req. rate: 4.8 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 18, BGI: 0, CR: 10, Target: 110, minPredBG 173, minGuardBG 173, IOBpredBG 173, Middleware: undefined; Eventual BG 188 >= 110, adj. req. rate: 4.05 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -8957,7 +9160,7 @@ exports[`determine-basal characterization tests > insulin-curve > Ultra-rapid in
   "eventualBG": 188,
   "expectedDelta": -3.2,
   "insulinForManualBolus": 1.95,
-  "insulinReq": 1.95,
+  "insulinReq": 1.58,
   "manualBolusErrorString": 0,
   "minDelta": 3,
   "minGuardBG": undefined,
@@ -8965,13 +9168,15 @@ exports[`determine-basal characterization tests > insulin-curve > Ultra-rapid in
   "predBGs": {
     "IOB": [
       170,
+      173,
     ],
     "ZT": [
+      170,
       170,
     ],
   },
   "rate": 3.5,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 18, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 170, Middleware: undefined; Eventual BG 188 >= 110, adj. req. rate: 4.8 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 18, BGI: 0, CR: 10, Target: 110, minPredBG 173, minGuardBG 173, IOBpredBG 173, Middleware: undefined; Eventual BG 188 >= 110, adj. req. rate: 4.05 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -10031,13 +10236,15 @@ exports[`determine-basal characterization tests > iob-over-max > IOB > max_iob, 
   "predBGs": {
     "IOB": [
       200,
+      204,
     ],
     "ZT": [
+      200,
       200,
     ],
   },
   "rate": 0.9,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 60, BGI: -5, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 200, Middleware: undefined; Eventual BG 160 >= 110, IOB 2.5 > max_iob 2; setting current basal of 0.9 as temp. . Setting neutral temp basal of 0.9U/hr",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 60, BGI: -5, CR: 10, Target: 110, minPredBG 204, minGuardBG 204, IOBpredBG 204, Middleware: undefined; Eventual BG 160 >= 110, IOB 2.5 > max_iob 2; setting current basal of 0.9 as temp. . Setting neutral temp basal of 0.9U/hr",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -10070,13 +10277,15 @@ exports[`determine-basal characterization tests > iob-over-max-no-temp > IOB > m
   "predBGs": {
     "IOB": [
       200,
+      204,
     ],
     "ZT": [
+      200,
       200,
     ],
   },
   "rate": 0.9,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 60, BGI: -5, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 200, Middleware: undefined; Eventual BG 160 >= 110, IOB 2.5 > max_iob 2; setting current basal of 0.9 as temp. . Setting neutral temp basal of 0.9U/hr",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 60, BGI: -5, CR: 10, Target: 110, minPredBG 204, minGuardBG 204, IOBpredBG 204, Middleware: undefined; Eventual BG 160 >= 110, IOB 2.5 > max_iob 2; setting current basal of 0.9 as temp. . Setting neutral temp basal of 0.9U/hr",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -10108,12 +10317,14 @@ exports[`determine-basal characterization tests > iob-over-max-temp-match > IOB 
   "predBGs": {
     "IOB": [
       200,
+      204,
     ],
     "ZT": [
       200,
+      200,
     ],
   },
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 60, BGI: -5, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 200, Middleware: undefined; Eventual BG 160 >= 110, IOB 2.5 > max_iob 2, temp 0.9 ~ req 0.9U/hr. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 60, BGI: -5, CR: 10, Target: 110, minPredBG 204, minGuardBG 204, IOBpredBG 204, Middleware: undefined; Eventual BG 160 >= 110, IOB 2.5 > max_iob 2, temp 0.9 ~ req 0.9U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -10146,13 +10357,15 @@ exports[`determine-basal characterization tests > low-bg > BG at threshold (80),
   "predBGs": {
     "IOB": [
       80,
+      77,
     ],
     "ZT": [
+      80,
       80,
     ],
   },
   "rate": 0,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: -18, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 80, Middleware: undefined; Eventual BG 62 < 110, setting 60m zero temp. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: -18, BGI: 0, CR: 10, Target: 110, minPredBG 80, minGuardBG 77, IOBpredBG 77, Middleware: undefined; Eventual BG 62 < 110, setting 60m zero temp. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -10186,22 +10399,24 @@ exports[`determine-basal characterization tests > low-bg > Low BG, falling, no I
   "duration": 60,
   "eventualBG": 45,
   "expectedDelta": 2.7,
-  "insulinForManualBolus": 0,
+  "insulinForManualBolus": -1.62,
   "insulinReq": 0,
-  "manualBolusErrorString": 0,
+  "manualBolusErrorString": 2,
   "minDelta": -5,
-  "minGuardBG": undefined,
+  "minGuardBG": 70,
   "minPredBG": undefined,
   "predBGs": {
     "IOB": [
       75,
+      70,
     ],
     "ZT": [
+      75,
       75,
     ],
   },
   "rate": 0,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: -30, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 75, Middleware: undefined; Eventual BG 45 < 110, setting 60m zero temp. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: -30, BGI: 0, CR: 10, Target: 110, minPredBG 75, minGuardBG 70, IOBpredBG 70, Middleware: undefined; minGuardBG 70<75",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -10219,28 +10434,31 @@ exports[`determine-basal characterization tests > low-bg > Low BG, falling, with
   "IOB": 1,
   "ISF": 40,
   "bg": 75,
+  "carbsReq": 9,
   "current_target": 110,
   "deliverAt": "[DELIVER_AT]",
   "deviation": 6,
-  "duration": 120,
+  "duration": 60,
   "eventualBG": 41,
   "expectedDelta": 0.9,
-  "insulinForManualBolus": 0,
+  "insulinForManualBolus": -1.72,
   "insulinReq": 0,
-  "manualBolusErrorString": 0,
+  "manualBolusErrorString": 2,
   "minDelta": -1,
-  "minGuardBG": undefined,
+  "minGuardBG": 74,
   "minPredBG": undefined,
   "predBGs": {
     "IOB": [
       75,
+      74,
     ],
     "ZT": [
+      75,
       75,
     ],
   },
   "rate": 0,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 6, BGI: -2, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 75, Middleware: undefined; Eventual BG 41 < 110, setting 120m zero temp. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 6, BGI: -2, CR: 10, Target: 110, minPredBG 75, minGuardBG 74, IOBpredBG 74, Middleware: undefined; 9 add'l carbs req w/in 5m; minGuardBG 74<75",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -10273,13 +10491,15 @@ exports[`determine-basal characterization tests > low-bg > Low BG, rising slower
   "predBGs": {
     "IOB": [
       75,
+      76,
     ],
     "ZT": [
+      75,
       75,
     ],
   },
   "rate": 0,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: -6, BGI: 2, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 75, Middleware: undefined; Eventual BG 89 < 110, setting 30m zero temp. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: -6, BGI: 2, CR: 10, Target: 110, minPredBG 76, minGuardBG 76, IOBpredBG 76, Middleware: undefined; Eventual BG 89 < 110, setting 30m zero temp. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -10304,21 +10524,23 @@ exports[`determine-basal characterization tests > low-bg > Low BG, rising, no IO
   "eventualBG": 111,
   "expectedDelta": -0,
   "insulinForManualBolus": 0.03,
-  "insulinReq": 0.03,
-  "manualBolusErrorString": 0,
+  "insulinReq": 0,
+  "manualBolusErrorString": 6,
   "minDelta": 6,
   "minGuardBG": undefined,
-  "minPredBG": undefined,
+  "minPredBG": 81,
   "predBGs": {
     "IOB": [
       75,
+      81,
     ],
     "ZT": [
       75,
+      75,
     ],
   },
-  "rate": 0.95,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 36, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 75, Middleware: undefined; Eventual BG 111 >= 110, no temp, setting 0.95U/hr. ",
+  "rate": 0.9,
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 36, BGI: 0, CR: 10, Target: 110, minPredBG 81, minGuardBG 81, IOBpredBG 81, Middleware: undefined; 111-81 in range: no temp required; setting current basal of 0.9 as temp. . Setting neutral temp basal of 0.9U/hr",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -10340,25 +10562,27 @@ exports[`determine-basal characterization tests > low-bg > Very low BG (55) — 
   "current_target": 110,
   "deliverAt": "[DELIVER_AT]",
   "deviation": -18,
-  "duration": 30,
+  "duration": 90,
   "eventualBG": 37,
   "expectedDelta": 3,
   "insulinForManualBolus": -1.82,
   "insulinReq": 0,
-  "manualBolusErrorString": 0,
+  "manualBolusErrorString": 2,
   "minDelta": -3,
-  "minGuardBG": undefined,
+  "minGuardBG": 52,
   "minPredBG": undefined,
   "predBGs": {
     "IOB": [
       55,
+      52,
     ],
     "ZT": [
+      55,
       55,
     ],
   },
   "rate": 0,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: -18, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 55, Middleware: undefined; 5 add'l carbs req w/in 0m; minGuardBG 999<75",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: -18, BGI: 0, CR: 10, Target: 110, minPredBG 55, minGuardBG 52, IOBpredBG 52, Middleware: undefined; 5 add'l carbs req w/in 0m; minGuardBG 52<75",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -10383,21 +10607,23 @@ exports[`determine-basal characterization tests > low-bg-neg-iob > BG below thre
   "eventualBG": 117,
   "expectedDelta": 1.7,
   "insulinForManualBolus": 0.18,
-  "insulinReq": 0.18,
-  "manualBolusErrorString": 0,
+  "insulinReq": 0,
+  "manualBolusErrorString": 6,
   "minDelta": 4,
   "minGuardBG": undefined,
-  "minPredBG": undefined,
+  "minPredBG": 69,
   "predBGs": {
     "IOB": [
       65,
+      69,
     ],
     "ZT": [
       65,
+      65,
     ],
   },
-  "rate": 1.25,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 12, BGI: 2, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 65, Middleware: undefined; IOB -1 < -0.3 and minDelta 4 > expectedDelta 2; Eventual BG 117 >= 110, no temp, setting 1.25U/hr. ",
+  "rate": 0.9,
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 12, BGI: 2, CR: 10, Target: 110, minPredBG 69, minGuardBG 69, IOBpredBG 69, Middleware: undefined; IOB -1 < -0.3 and minDelta 4 > expectedDelta 2; 117-69 in range: no temp required; setting current basal of 0.9 as temp. . Setting neutral temp basal of 0.9U/hr",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -10430,13 +10656,15 @@ exports[`determine-basal characterization tests > low-tt-edge > Low TT — c*(c+
   "predBGs": {
     "IOB": [
       120,
+      120,
     ],
     "ZT": [
+      120,
       120,
     ],
   },
   "rate": 3.5,
-  "reason": "Autosens ratio: 1.3, ISF: 40→31, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 50, minPredBG 999, minGuardBG 999, IOBpredBG 120, Middleware: undefined; Eventual BG 120 >= 50, adj. req. rate: 5.7 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
+  "reason": "Autosens ratio: 1.3, ISF: 40→31, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 50, minPredBG 120, minGuardBG 120, IOBpredBG 120, Middleware: undefined; Eventual BG 120 >= 50, adj. req. rate: 5.7 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1.3,
   "target_bg": 50,
@@ -10469,13 +10697,15 @@ exports[`determine-basal characterization tests > low-tt-sensitivity > Low TT lo
   "predBGs": {
     "IOB": [
       120,
+      120,
     ],
     "ZT": [
+      120,
       120,
     ],
   },
   "rate": 3.5,
-  "reason": "Autosens ratio: 1.2, ISF: 40→33, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 80, minPredBG 999, minGuardBG 999, IOBpredBG 120, Middleware: undefined; Eventual BG 120 >= 80, no temp, setting 3.5U/hr. ",
+  "reason": "Autosens ratio: 1.2, ISF: 40→33, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 80, minPredBG 120, minGuardBG 120, IOBpredBG 120, Middleware: undefined; Eventual BG 120 >= 80, no temp, setting 3.5U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1.2,
   "target_bg": 80,
@@ -10500,7 +10730,7 @@ exports[`determine-basal characterization tests > low-tt-sensitivity > Low TT wi
   "eventualBG": 158,
   "expectedDelta": -3.2,
   "insulinForManualBolus": 2.73,
-  "insulinReq": 2.5,
+  "insulinReq": 2.2,
   "manualBolusErrorString": 0,
   "minDelta": 3,
   "minGuardBG": undefined,
@@ -10508,13 +10738,15 @@ exports[`determine-basal characterization tests > low-tt-sensitivity > Low TT wi
   "predBGs": {
     "IOB": [
       140,
+      143,
     ],
     "ZT": [
+      140,
       140,
     ],
   },
   "rate": 3.5,
-  "reason": "Autosens ratio: 1.4, ISF: 40→29, COB: 0, Dev: 18, BGI: 0, CR: 10, Target: 80, minPredBG 999, minGuardBG 999, IOBpredBG 140, Dynamic ISF: On, Logarithmic formula, AF: 0.8, Middleware: undefined; Eventual BG 158 >= 80, max_iob 2.5, max_iob 2.5, adj. req. rate: 5.9 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
+  "reason": "Autosens ratio: 1.4, ISF: 40→29, COB: 0, Dev: 18, BGI: 0, CR: 10, Target: 80, minPredBG 143, minGuardBG 143, IOBpredBG 143, Dynamic ISF: On, Logarithmic formula, AF: 0.8, Middleware: undefined; Eventual BG 158 >= 80, max_iob 2.5, adj. req. rate: 5.3 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1.4,
   "target_bg": 80,
@@ -10547,13 +10779,15 @@ exports[`determine-basal characterization tests > max-safe-basal > Rate exceeds 
   "predBGs": {
     "IOB": [
       300,
+      309,
     ],
     "ZT": [
+      300,
       300,
     ],
   },
   "rate": 2,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 60, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 300, Middleware: undefined; Eventual BG 360 >= 110, max_iob 2.5, max_iob 2.5, adj. req. rate: 5.9 to maxSafeBasal: 2, no temp, setting 2U/hr. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 60, BGI: 0, CR: 10, Target: 110, minPredBG 309, minGuardBG 309, IOBpredBG 309, Middleware: undefined; Eventual BG 360 >= 110, max_iob 2.5, max_iob 2.5, adj. req. rate: 5.9 to maxSafeBasal: 2, no temp, setting 2U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -10586,13 +10820,15 @@ exports[`determine-basal characterization tests > middleware > Middleware active
   "predBGs": {
     "IOB": [
       150,
+      150,
     ],
     "ZT": [
+      150,
       150,
     ],
   },
   "rate": 2.9,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 150, Middleware: Custom middleware adjustment applied; Eventual BG 150 >= 110, no temp, setting 2.9U/hr. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 150, minGuardBG 150, IOBpredBG 150, Middleware: Custom middleware adjustment applied; Eventual BG 150 >= 110, no temp, setting 2.9U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -10625,13 +10861,15 @@ exports[`determine-basal characterization tests > middleware > Middleware set to
   "predBGs": {
     "IOB": [
       150,
+      150,
     ],
     "ZT": [
+      150,
       150,
     ],
   },
   "rate": 2.9,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 150; Eventual BG 150 >= 110, no temp, setting 2.9U/hr. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 150, minGuardBG 150, IOBpredBG 150; Eventual BG 150 >= 110, no temp, setting 2.9U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -10664,13 +10902,15 @@ exports[`determine-basal characterization tests > middleware > Middleware set to
   "predBGs": {
     "IOB": [
       150,
+      150,
     ],
     "ZT": [
+      150,
       150,
     ],
   },
   "rate": 2.9,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 150; Eventual BG 150 >= 110, no temp, setting 2.9U/hr. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 150, minGuardBG 150, IOBpredBG 150; Eventual BG 150 >= 110, no temp, setting 2.9U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -10713,13 +10953,15 @@ exports[`determine-basal characterization tests > mindelta-detail > minDelta < e
   "predBGs": {
     "IOB": [
       155,
+      155,
     ],
     "ZT": [
+      155,
       155,
     ],
   },
   "rate": 2.85,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 2, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 155, Middleware: undefined; Eventual BG 149 >= 110, no temp, setting 2.85U/hr. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 2, BGI: 0, CR: 10, Target: 110, minPredBG 155, minGuardBG 155, IOBpredBG 155, Middleware: undefined; Eventual BG 149 >= 110, no temp, setting 2.85U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -10752,13 +10994,15 @@ exports[`determine-basal characterization tests > mindelta-detail > minDelta < e
   "predBGs": {
     "IOB": [
       130,
+      125,
     ],
     "ZT": [
+      130,
       130,
     ],
   },
   "rate": 0.9,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: -18, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 130, Middleware: undefined; Eventual BG 112 > 110 but Min. Delta -5.00 < Exp. Delta 0; setting current basal of 0.9 as temp. . Setting neutral temp basal of 0.9U/hr",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: -18, BGI: 0, CR: 10, Target: 110, minPredBG 130, minGuardBG 125, IOBpredBG 125, Middleware: undefined; Eventual BG 112 > 110 but Min. Delta -5.00 < Exp. Delta 0; setting current basal of 0.9 as temp. . Setting neutral temp basal of 0.9U/hr",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -10791,13 +11035,15 @@ exports[`determine-basal characterization tests > mindelta-no-smb-set-basal > mi
   "predBGs": {
     "IOB": [
       130,
+      126,
     ],
     "ZT": [
+      130,
       130,
     ],
   },
   "rate": 0.9,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: -12, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 130, Middleware: undefined; Eventual BG 118 > 110 but Min. Delta -4.00 < Exp. Delta 0; setting current basal of 0.9 as temp. . Setting neutral temp basal of 0.9U/hr",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: -12, BGI: 0, CR: 10, Target: 110, minPredBG 130, minGuardBG 126, IOBpredBG 126, Middleware: undefined; Eventual BG 118 > 110 but Min. Delta -4.00 < Exp. Delta 0; setting current basal of 0.9 as temp. . Setting neutral temp basal of 0.9U/hr",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -10829,12 +11075,14 @@ exports[`determine-basal characterization tests > mindelta-no-smb-temp-match > m
   "predBGs": {
     "IOB": [
       130,
+      126,
     ],
     "ZT": [
       130,
+      130,
     ],
   },
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: -12, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 130, Middleware: undefined; Eventual BG 118 > 110 but Min. Delta -4.00 < Exp. Delta 0, temp 0.9 ~ req 0.9U/hr. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: -12, BGI: 0, CR: 10, Target: 110, minPredBG 130, minGuardBG 126, IOBpredBG 126, Middleware: undefined; Eventual BG 118 > 110 but Min. Delta -4.00 < Exp. Delta 0, temp 0.9 ~ req 0.9U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -11159,13 +11407,15 @@ exports[`determine-basal characterization tests > mindelta-paths > Eventual BG a
   "predBGs": {
     "IOB": [
       130,
+      125,
     ],
     "ZT": [
+      130,
       130,
     ],
   },
   "rate": 0.9,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: -12, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 130, Middleware: undefined; Eventual BG 118 > 110 but Min. Delta -5.00 < Exp. Delta 0; setting current basal of 0.9 as temp. . Setting neutral temp basal of 0.9U/hr",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: -12, BGI: 0, CR: 10, Target: 110, minPredBG 130, minGuardBG 125, IOBpredBG 125, Middleware: undefined; Eventual BG 118 > 110 but Min. Delta -5.00 < Exp. Delta 0; setting current basal of 0.9 as temp. . Setting neutral temp basal of 0.9U/hr",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -11198,13 +11448,15 @@ exports[`determine-basal characterization tests > mindelta-paths > Eventual BG a
   "predBGs": {
     "IOB": [
       130,
+      126,
     ],
     "ZT": [
+      130,
       130,
     ],
   },
   "rate": 0.9,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: -12, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 130, Middleware: undefined; Eventual BG 118 > 110 but Min. Delta -4.00 < Exp. Delta 0; setting current basal of 0.9 as temp. . Setting neutral temp basal of 0.9U/hr",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: -12, BGI: 0, CR: 10, Target: 110, minPredBG 130, minGuardBG 126, IOBpredBG 126, Middleware: undefined; Eventual BG 118 > 110 but Min. Delta -4.00 < Exp. Delta 0; setting current basal of 0.9 as temp. . Setting neutral temp basal of 0.9U/hr",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -11369,7 +11621,7 @@ exports[`determine-basal characterization tests > mmol-units > Output in mmol/L 
   "eventualBG": 188,
   "expectedDelta": -3.2,
   "insulinForManualBolus": 1.95,
-  "insulinReq": 1.95,
+  "insulinReq": 1.58,
   "manualBolusErrorString": 0,
   "minDelta": 3,
   "minGuardBG": undefined,
@@ -11377,13 +11629,15 @@ exports[`determine-basal characterization tests > mmol-units > Output in mmol/L 
   "predBGs": {
     "IOB": [
       170,
+      173,
     ],
     "ZT": [
+      170,
       170,
     ],
   },
   "rate": 3.5,
-  "reason": "Autosens ratio: 1, ISF: 2.2→2.2, COB: 0, Dev: 1, BGI: 0, CR: 10, Target: 6.1, minPredBG 55.4, minGuardBG 55.4, IOBpredBG 9.4, Middleware: undefined; Eventual BG 10.4 >= 6.1, adj. req. rate: 4.8 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
+  "reason": "Autosens ratio: 1, ISF: 2.2→2.2, COB: 0, Dev: 1, BGI: 0, CR: 10, Target: 6.1, minPredBG 9.6, minGuardBG 9.6, IOBpredBG 9.6, Middleware: undefined; Eventual BG 10.4 >= 6.1, adj. req. rate: 4.05 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 6.1,
@@ -11408,7 +11662,7 @@ exports[`determine-basal characterization tests > noisy-cgm > CGM noise=2 — ta
   "eventualBG": 168,
   "expectedDelta": -1,
   "insulinForManualBolus": 0.63,
-  "insulinReq": 0.63,
+  "insulinReq": 0.25,
   "manualBolusErrorString": 0,
   "minDelta": 3,
   "minGuardBG": undefined,
@@ -11416,13 +11670,15 @@ exports[`determine-basal characterization tests > noisy-cgm > CGM noise=2 — ta
   "predBGs": {
     "IOB": [
       150,
+      153,
     ],
     "ZT": [
       150,
+      150,
     ],
   },
-  "rate": 2.15,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 18, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 150, Middleware: undefined; Eventual BG 168 >= 143, no temp, setting 2.15U/hr. ",
+  "rate": 1.4,
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 18, BGI: 0, CR: 10, Target: 110, minPredBG 153, minGuardBG 153, IOBpredBG 153, Middleware: undefined; Eventual BG 168 >= 143, no temp, setting 1.4U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 143,
@@ -11455,13 +11711,15 @@ exports[`determine-basal characterization tests > override-isf-cr > Override CR 
   "predBGs": {
     "IOB": [
       160,
+      160,
     ],
     "ZT": [
+      160,
       160,
     ],
   },
   "rate": 3.2,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 12.5, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 160, Middleware: undefined; Eventual BG 160 >= 110, no temp, setting 3.2U/hr. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 12.5, Target: 110, minPredBG 160, minGuardBG 160, IOBpredBG 160, Middleware: undefined; Eventual BG 160 >= 110, no temp, setting 3.2U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -11494,13 +11752,15 @@ exports[`determine-basal characterization tests > override-isf-cr > Override ISF
   "predBGs": {
     "IOB": [
       160,
+      160,
     ],
     "ZT": [
+      160,
       160,
     ],
   },
   "rate": 3.5,
-  "reason": "Autosens ratio: 1, ISF: 33→33, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 160, Middleware: undefined; Eventual BG 160 >= 110, adj. req. rate: 4.1 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
+  "reason": "Autosens ratio: 1, ISF: 33→33, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 160, minGuardBG 160, IOBpredBG 160, Middleware: undefined; Eventual BG 160 >= 110, adj. req. rate: 4.1 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -11533,13 +11793,15 @@ exports[`determine-basal characterization tests > override-isf-cr > Override bot
   "predBGs": {
     "IOB": [
       160,
+      160,
     ],
     "ZT": [
+      160,
       160,
     ],
   },
   "rate": 3.5,
-  "reason": "Autosens ratio: 1, ISF: 36→36, COB: 0, Dev: 0, BGI: 0, CR: 9.1, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 160, Middleware: undefined; Eventual BG 160 >= 110, adj. req. rate: 3.75 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
+  "reason": "Autosens ratio: 1, ISF: 36→36, COB: 0, Dev: 0, BGI: 0, CR: 9.1, Target: 110, minPredBG 160, minGuardBG 160, IOBpredBG 160, Middleware: undefined; Eventual BG 160 >= 110, adj. req. rate: 3.75 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -11572,13 +11834,15 @@ exports[`determine-basal characterization tests > override-target-double-arrow >
   "predBGs": {
     "IOB": [
       150,
+      150,
     ],
     "ZT": [
+      150,
       150,
     ],
   },
   "rate": 2.3,
-  "reason": "Autosens ratio: 0.8, ISF: 40→50, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 100→100→110, minPredBG 999, minGuardBG 999, IOBpredBG 150, Middleware: undefined; Eventual BG 150 >= 110, no temp, setting 2.3U/hr. ",
+  "reason": "Autosens ratio: 0.8, ISF: 40→50, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 100→100→110, minPredBG 150, minGuardBG 150, IOBpredBG 150, Middleware: undefined; Eventual BG 150 >= 110, no temp, setting 2.3U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 0.8,
   "target_bg": 110,
@@ -11603,7 +11867,7 @@ exports[`determine-basal characterization tests > post-meal > Early meal absorpt
   "eventualBG": 182,
   "expectedDelta": -3,
   "insulinForManualBolus": 1.8,
-  "insulinReq": 1.8,
+  "insulinReq": 0.9,
   "manualBolusErrorString": 0,
   "minDelta": 7,
   "minGuardBG": undefined,
@@ -11611,16 +11875,19 @@ exports[`determine-basal characterization tests > post-meal > Early meal absorpt
   "predBGs": {
     "COB": [
       140,
+      147,
     ],
     "IOB": [
       140,
+      146,
     ],
     "ZT": [
       140,
+      140,
     ],
   },
-  "rate": 3.5,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 40, Dev: 42, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 140, COBpredBG 140, Middleware: undefined; Eventual BG 182 >= 110, adj. req. rate: 4.5 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
+  "rate": 2.7,
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 40, Dev: 42, BGI: 0, CR: 10, Target: 110, minPredBG 146, minGuardBG 147, IOBpredBG 146, COBpredBG 147, Middleware: undefined; Eventual BG 182 >= 110, no temp, setting 2.7U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -11645,7 +11912,7 @@ exports[`determine-basal characterization tests > post-meal > Large meal (90g) e
   "eventualBG": 220,
   "expectedDelta": -4.6,
   "insulinForManualBolus": 2.75,
-  "insulinReq": 2.5,
+  "insulinReq": 1.48,
   "manualBolusErrorString": 0,
   "minDelta": 10,
   "minGuardBG": undefined,
@@ -11653,16 +11920,19 @@ exports[`determine-basal characterization tests > post-meal > Large meal (90g) e
   "predBGs": {
     "COB": [
       160,
+      170,
     ],
     "IOB": [
       160,
+      169,
     ],
     "ZT": [
+      160,
       160,
     ],
   },
   "rate": 3.5,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 75, Dev: 60, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 160, COBpredBG 160, Middleware: undefined; Eventual BG 220 >= 110, max_iob 2.5, max_iob 2.5, adj. req. rate: 5.9 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 75, Dev: 60, BGI: 0, CR: 10, Target: 110, minPredBG 169, minGuardBG 170, IOBpredBG 169, COBpredBG 170, Middleware: undefined; Eventual BG 220 >= 110, max_iob 2.5, adj. req. rate: 3.85 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -11687,7 +11957,7 @@ exports[`determine-basal characterization tests > post-meal > Late meal absorpti
   "eventualBG": 157,
   "expectedDelta": -2,
   "insulinForManualBolus": 1.18,
-  "insulinReq": 1.18,
+  "insulinReq": 0.83,
   "manualBolusErrorString": 0,
   "minDelta": -2,
   "minGuardBG": undefined,
@@ -11695,16 +11965,19 @@ exports[`determine-basal characterization tests > post-meal > Late meal absorpti
   "predBGs": {
     "COB": [
       145,
+      143,
     ],
     "IOB": [
       145,
+      143,
     ],
     "ZT": [
       145,
+      145,
     ],
   },
-  "rate": 3.25,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 8, Dev: 12, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 145, COBpredBG 145, Middleware: undefined; Eventual BG 157 >= 110, no temp, setting 3.25U/hr. ",
+  "rate": 2.55,
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 8, Dev: 12, BGI: 0, CR: 10, Target: 110, minPredBG 143, minGuardBG 143, IOBpredBG 143, COBpredBG 143, Middleware: undefined; Eventual BG 157 >= 110, no temp, setting 2.55U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -11729,7 +12002,7 @@ exports[`determine-basal characterization tests > post-meal > Peak meal absorpti
   "eventualBG": 200,
   "expectedDelta": -3.7,
   "insulinForManualBolus": 2.25,
-  "insulinReq": 2.25,
+  "insulinReq": 1.62,
   "manualBolusErrorString": 0,
   "minDelta": 5,
   "minGuardBG": undefined,
@@ -11737,16 +12010,19 @@ exports[`determine-basal characterization tests > post-meal > Peak meal absorpti
   "predBGs": {
     "COB": [
       170,
+      175,
     ],
     "IOB": [
       170,
+      175,
     ],
     "ZT": [
+      170,
       170,
     ],
   },
   "rate": 3.5,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 25, Dev: 30, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 170, COBpredBG 170, Middleware: undefined; Eventual BG 200 >= 110, adj. req. rate: 5.4 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 25, Dev: 30, BGI: 0, CR: 10, Target: 110, minPredBG 175, minGuardBG 175, IOBpredBG 175, COBpredBG 175, Middleware: undefined; Eventual BG 200 >= 110, adj. req. rate: 4.15 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -13189,7 +13465,7 @@ exports[`determine-basal characterization tests > req-temp-gt-existing > High BG
   "eventualBG": 198,
   "expectedDelta": -3.7,
   "insulinForManualBolus": 2.2,
-  "insulinReq": 2.2,
+  "insulinReq": 1.83,
   "manualBolusErrorString": 0,
   "minDelta": 3,
   "minGuardBG": undefined,
@@ -13197,13 +13473,15 @@ exports[`determine-basal characterization tests > req-temp-gt-existing > High BG
   "predBGs": {
     "IOB": [
       180,
+      183,
     ],
     "ZT": [
+      180,
       180,
     ],
   },
   "rate": 3.5,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 18, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 180, Middleware: undefined; Eventual BG 198 >= 110, adj. req. rate: 5.3 to maxSafeBasal: 3.5, temp 1<3.5U/hr. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 18, BGI: 0, CR: 10, Target: 110, minPredBG 183, minGuardBG 183, IOBpredBG 183, Middleware: undefined; Eventual BG 198 >= 110, adj. req. rate: 4.55 to maxSafeBasal: 3.5, temp 1<3.5U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -13228,7 +13506,7 @@ exports[`determine-basal characterization tests > rising-bg > Fast rise (+10/5m)
   "eventualBG": 184,
   "expectedDelta": -3.1,
   "insulinForManualBolus": 1.85,
-  "insulinReq": 1.85,
+  "insulinReq": 0.7,
   "manualBolusErrorString": 0,
   "minDelta": 9,
   "minGuardBG": undefined,
@@ -13236,13 +13514,15 @@ exports[`determine-basal characterization tests > rising-bg > Fast rise (+10/5m)
   "predBGs": {
     "IOB": [
       130,
+      138,
     ],
     "ZT": [
       130,
+      130,
     ],
   },
-  "rate": 3.5,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 54, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 130, Middleware: undefined; Eventual BG 184 >= 110, adj. req. rate: 4.6 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
+  "rate": 2.3,
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 54, BGI: 0, CR: 10, Target: 110, minPredBG 138, minGuardBG 138, IOBpredBG 138, Middleware: undefined; Eventual BG 184 >= 110, no temp, setting 2.3U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -13267,7 +13547,7 @@ exports[`determine-basal characterization tests > rising-bg > Moderate rise (+5/
   "eventualBG": 155,
   "expectedDelta": -1.9,
   "insulinForManualBolus": 1.13,
-  "insulinReq": 1.13,
+  "insulinReq": 0.5,
   "manualBolusErrorString": 0,
   "minDelta": 5,
   "minGuardBG": undefined,
@@ -13275,13 +13555,15 @@ exports[`determine-basal characterization tests > rising-bg > Moderate rise (+5/
   "predBGs": {
     "IOB": [
       125,
+      130,
     ],
     "ZT": [
       125,
+      125,
     ],
   },
-  "rate": 3.15,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 30, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 125, Middleware: undefined; Eventual BG 155 >= 110, no temp, setting 3.15U/hr. ",
+  "rate": 1.9,
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 30, BGI: 0, CR: 10, Target: 110, minPredBG 130, minGuardBG 130, IOBpredBG 130, Middleware: undefined; Eventual BG 155 >= 110, no temp, setting 1.9U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -13314,13 +13596,15 @@ exports[`determine-basal characterization tests > rising-bg > Rise with existing
   "predBGs": {
     "IOB": [
       130,
+      134,
     ],
     "ZT": [
+      130,
       130,
     ],
   },
   "rate": 1.3,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 48, BGI: -3, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 130, Middleware: undefined; Eventual BG 118 >= 110, no temp, setting 1.3U/hr. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 48, BGI: -3, CR: 10, Target: 110, minPredBG 134, minGuardBG 134, IOBpredBG 134, Middleware: undefined; Eventual BG 118 >= 110, no temp, setting 1.3U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -13345,7 +13629,7 @@ exports[`determine-basal characterization tests > rising-bg > Slow rise (+2/5m) 
   "eventualBG": 132,
   "expectedDelta": -0.9,
   "insulinForManualBolus": 0.55,
-  "insulinReq": 0.55,
+  "insulinReq": 0.3,
   "manualBolusErrorString": 0,
   "minDelta": 2,
   "minGuardBG": undefined,
@@ -13353,13 +13637,15 @@ exports[`determine-basal characterization tests > rising-bg > Slow rise (+2/5m) 
   "predBGs": {
     "IOB": [
       120,
+      122,
     ],
     "ZT": [
       120,
+      120,
     ],
   },
-  "rate": 2,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 12, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 120, Middleware: undefined; Eventual BG 132 >= 110, no temp, setting 2U/hr. ",
+  "rate": 1.5,
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 12, BGI: 0, CR: 10, Target: 110, minPredBG 122, minGuardBG 122, IOBpredBG 122, Middleware: undefined; Eventual BG 132 >= 110, no temp, setting 1.5U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -13392,13 +13678,15 @@ exports[`determine-basal characterization tests > sens-target-adjust > Resistanc
   "predBGs": {
     "IOB": [
       150,
+      150,
     ],
     "ZT": [
+      150,
       150,
     ],
   },
   "rate": 3.5,
-  "reason": "Autosens ratio: 1.2, ISF: 40→33, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110→102, minPredBG 999, minGuardBG 999, IOBpredBG 150, Middleware: undefined; Eventual BG 150 >= 102, adj. req. rate: 4 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
+  "reason": "Autosens ratio: 1.2, ISF: 40→33, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110→102, minPredBG 150, minGuardBG 150, IOBpredBG 150, Middleware: undefined; Eventual BG 150 >= 102, adj. req. rate: 4 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1.2,
   "target_bg": 102,
@@ -13431,13 +13719,15 @@ exports[`determine-basal characterization tests > sens-target-adjust > Sensitivi
   "predBGs": {
     "IOB": [
       150,
+      150,
     ],
     "ZT": [
+      150,
       150,
     ],
   },
   "rate": 1.8,
-  "reason": "Autosens ratio: 0.8, ISF: 40→50, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110→123, minPredBG 999, minGuardBG 999, IOBpredBG 150, Middleware: undefined; Eventual BG 150 >= 123, no temp, setting 1.8U/hr. ",
+  "reason": "Autosens ratio: 0.8, ISF: 40→50, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110→123, minPredBG 150, minGuardBG 150, IOBpredBG 150, Middleware: undefined; Eventual BG 150 >= 123, no temp, setting 1.8U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 0.8,
   "target_bg": 123,
@@ -13470,13 +13760,15 @@ exports[`determine-basal characterization tests > sens-target-unchanged > Sensit
   "predBGs": {
     "IOB": [
       120,
+      120,
     ],
     "ZT": [
+      120,
       120,
     ],
   },
   "rate": 2.85,
-  "reason": "Autosens ratio: 0.98, ISF: 40→41, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 80, minPredBG 999, minGuardBG 999, IOBpredBG 120, Middleware: undefined; Eventual BG 120 >= 80, no temp, setting 2.85U/hr. ",
+  "reason": "Autosens ratio: 0.98, ISF: 40→41, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 80, minPredBG 120, minGuardBG 120, IOBpredBG 120, Middleware: undefined; Eventual BG 120 >= 80, no temp, setting 2.85U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 0.98,
   "target_bg": 80,
@@ -13509,13 +13801,15 @@ exports[`determine-basal characterization tests > skip-neutral-temps > Skip neut
   "predBGs": {
     "IOB": [
       130,
+      131,
     ],
     "ZT": [
+      130,
       130,
     ],
   },
   "rate": 0,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 6, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 130, Middleware: undefined; ; Canceling temp at 5min before turn of the hour to avoid beeping of MDT. SMB are disabled anyways.",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 6, BGI: 0, CR: 10, Target: 110, minPredBG 131, minGuardBG 131, IOBpredBG 131, Middleware: undefined; ; Canceling temp at 5min before turn of the hour to avoid beeping of MDT. SMB are disabled anyways.",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -13680,13 +13974,15 @@ exports[`determine-basal characterization tests > smb > SMB at max IOB — shoul
   "predBGs": {
     "IOB": [
       180,
+      184,
     ],
     "ZT": [
+      180,
       180,
     ],
   },
   "rate": 0.9,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 60, BGI: -5, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 180, Middleware: undefined; Eventual BG 140 >= 110, max_iob 2.5, max_iob 2.5,  insulinReq 0. 0m@0.00 > 2 * insulinReq. Setting temp basal of 0.9U/hr. . Setting neutral temp basal of 0.9U/hr",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 60, BGI: -5, CR: 10, Target: 110, minPredBG 184, minGuardBG 184, IOBpredBG 184, Middleware: undefined; Eventual BG 140 >= 110, max_iob 2.5, max_iob 2.5,  insulinReq 0. 0m@0.00 > 2 * insulinReq. Setting temp basal of 0.9U/hr. . Setting neutral temp basal of 0.9U/hr",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -13711,7 +14007,7 @@ exports[`determine-basal characterization tests > smb > SMB blocked by high temp
   "eventualBG": 142,
   "expectedDelta": -0.9,
   "insulinForManualBolus": 0.55,
-  "insulinReq": 0.55,
+  "insulinReq": 0.3,
   "manualBolusErrorString": 0,
   "minDelta": 2,
   "minGuardBG": undefined,
@@ -13719,13 +14015,15 @@ exports[`determine-basal characterization tests > smb > SMB blocked by high temp
   "predBGs": {
     "IOB": [
       130,
+      132,
     ],
     "ZT": [
       130,
+      130,
     ],
   },
-  "rate": 2,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 12, BGI: 0, CR: 10, Target: 120, minPredBG 999, minGuardBG 999, IOBpredBG 130, Middleware: undefined; Eventual BG 142 >= 120, no temp, setting 2U/hr. ",
+  "rate": 1.5,
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 12, BGI: 0, CR: 10, Target: 120, minPredBG 132, minGuardBG 132, IOBpredBG 132, Middleware: undefined; Eventual BG 142 >= 120, no temp, setting 1.5U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 120,
@@ -13750,7 +14048,7 @@ exports[`determine-basal characterization tests > smb > SMB disabled (microBolus
   "eventualBG": 210,
   "expectedDelta": -4.2,
   "insulinForManualBolus": 2.5,
-  "insulinReq": 2.5,
+  "insulinReq": 1.88,
   "manualBolusErrorString": 0,
   "minDelta": 5,
   "minGuardBG": undefined,
@@ -13758,13 +14056,15 @@ exports[`determine-basal characterization tests > smb > SMB disabled (microBolus
   "predBGs": {
     "IOB": [
       180,
+      185,
     ],
     "ZT": [
+      180,
       180,
     ],
   },
   "rate": 3.5,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 30, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 180, Middleware: undefined; Eventual BG 210 >= 110, adj. req. rate: 5.9 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 30, BGI: 0, CR: 10, Target: 110, minPredBG 185, minGuardBG 185, IOBpredBG 185, Middleware: undefined; Eventual BG 210 >= 110, adj. req. rate: 4.65 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -13789,7 +14089,7 @@ exports[`determine-basal characterization tests > smb > SMB enabled always, high
   "eventualBG": 192,
   "expectedDelta": -3.4,
   "insulinForManualBolus": 2.05,
-  "insulinReq": 2.05,
+  "insulinReq": 1.8,
   "manualBolusErrorString": 0,
   "minDelta": 2,
   "minGuardBG": undefined,
@@ -13797,13 +14097,15 @@ exports[`determine-basal characterization tests > smb > SMB enabled always, high
   "predBGs": {
     "IOB": [
       180,
+      182,
     ],
     "ZT": [
+      180,
       180,
     ],
   },
   "rate": 3.5,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 12, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 180, Middleware: undefined; Eventual BG 192 >= 110,  insulinReq 2.05; maxBolus 0.5. Microbolusing 0.5U. adj. req. rate: 5 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 12, BGI: 0, CR: 10, Target: 110, minPredBG 182, minGuardBG 182, IOBpredBG 182, Middleware: undefined; Eventual BG 192 >= 110,  insulinReq 1.8; maxBolus 0.5. Microbolusing 0.5U. adj. req. rate: 4.5 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -13829,7 +14131,7 @@ exports[`determine-basal characterization tests > smb > SMB with COB enabled, me
   "eventualBG": 176,
   "expectedDelta": -3.7,
   "insulinForManualBolus": 1.65,
-  "insulinReq": 1.65,
+  "insulinReq": 1.37,
   "manualBolusErrorString": 0,
   "minDelta": 5,
   "minGuardBG": undefined,
@@ -13837,16 +14139,19 @@ exports[`determine-basal characterization tests > smb > SMB with COB enabled, me
   "predBGs": {
     "COB": [
       160,
+      165,
     ],
     "IOB": [
       160,
+      165,
     ],
     "ZT": [
+      160,
       160,
     ],
   },
   "rate": 3.5,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 30, Dev: 36, BGI: -1, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 160, COBpredBG 160, Middleware: undefined; Eventual BG 176 >= 110,  insulinReq 1.65; maxBolus 0.5. Microbolusing 0.5U. adj. req. rate: 4.2 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 30, Dev: 36, BGI: -1, CR: 10, Target: 110, minPredBG 165, minGuardBG 165, IOBpredBG 165, COBpredBG 165, Middleware: undefined; Eventual BG 176 >= 110,  insulinReq 1.37; maxBolus 0.5. Microbolusing 0.5U. adj. req. rate: 3.65 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -13880,13 +14185,15 @@ exports[`determine-basal characterization tests > smb > SMB with high BG target 
   "predBGs": {
     "IOB": [
       160,
+      160,
     ],
     "ZT": [
+      160,
       160,
     ],
   },
   "rate": 3.4,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 160, Middleware: undefined; Eventual BG 160 >= 110,  insulinReq 1.25; maxBolus 0.5. Microbolusing 0.5U. no temp, setting 3.4U/hr. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 160, minGuardBG 160, IOBpredBG 160, Middleware: undefined; Eventual BG 160 >= 110,  insulinReq 1.25; maxBolus 0.5. Microbolusing 0.5U. no temp, setting 3.4U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -13912,7 +14219,7 @@ exports[`determine-basal characterization tests > smb > SMB with temp target —
   "eventualBG": 142,
   "expectedDelta": -2.6,
   "insulinForManualBolus": 1.55,
-  "insulinReq": 1.55,
+  "insulinReq": 1.3,
   "manualBolusErrorString": 0,
   "minDelta": 2,
   "minGuardBG": undefined,
@@ -13920,13 +14227,15 @@ exports[`determine-basal characterization tests > smb > SMB with temp target —
   "predBGs": {
     "IOB": [
       130,
+      132,
     ],
     "ZT": [
+      130,
       130,
     ],
   },
   "rate": 3.5,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 12, BGI: 0, CR: 10, Target: 80, minPredBG 999, minGuardBG 999, IOBpredBG 130, Middleware: undefined; Eventual BG 142 >= 80,  insulinReq 1.55; maxBolus 0.5. Microbolusing 0.5U. adj. req. rate: 4 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 12, BGI: 0, CR: 10, Target: 80, minPredBG 132, minGuardBG 132, IOBpredBG 132, Middleware: undefined; Eventual BG 142 >= 80,  insulinReq 1.3; maxBolus 0.5. Microbolusing 0.5U. no temp, setting 3.5U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 80,
@@ -18662,13 +18971,15 @@ exports[`determine-basal characterization tests > steady-state > In range, no IO
   "predBGs": {
     "IOB": [
       115,
+      115,
     ],
     "ZT": [
+      115,
       115,
     ],
   },
   "rate": 1.15,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 115, Middleware: undefined; Eventual BG 115 >= 110, no temp, setting 1.15U/hr. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 115, minGuardBG 115, IOBpredBG 115, Middleware: undefined; Eventual BG 115 >= 110, no temp, setting 1.15U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -18711,13 +19022,15 @@ exports[`determine-basal characterization tests > steady-state > In range, small
   "predBGs": {
     "IOB": [
       115,
+      115,
     ],
     "ZT": [
+      115,
       115,
     ],
   },
   "rate": 0.9,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: -4, BGI: 1, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 115, Middleware: undefined; Eventual BG 123 > 110 but Min. Delta 0.00 < Exp. Delta 0; setting current basal of 0.9 as temp. . Setting neutral temp basal of 0.9U/hr",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: -4, BGI: 1, CR: 10, Target: 110, minPredBG 115, minGuardBG 115, IOBpredBG 115, Middleware: undefined; Eventual BG 123 > 110 but Min. Delta 0.00 < Exp. Delta 0; setting current basal of 0.9 as temp. . Setting neutral temp basal of 0.9U/hr",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -18750,13 +19063,15 @@ exports[`determine-basal characterization tests > steady-state > In range, small
   "predBGs": {
     "IOB": [
       115,
+      115,
     ],
     "ZT": [
+      115,
       115,
     ],
   },
   "rate": 0,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 6, BGI: -1, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 115, Middleware: undefined; Eventual BG 101 < 110, setting 30m zero temp. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 6, BGI: -1, CR: 10, Target: 110, minPredBG 115, minGuardBG 115, IOBpredBG 115, Middleware: undefined; Eventual BG 101 < 110, setting 30m zero temp. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -18789,13 +19104,15 @@ exports[`determine-basal characterization tests > tdd-basal > TDD-adjusted basal
   "predBGs": {
     "IOB": [
       130,
+      130,
     ],
     "ZT": [
+      130,
       130,
     ],
   },
   "rate": 2.2,
-  "reason": "Autosens ratio: 1.08, ISF: 40→37, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 130, Dynamic ISF: On, Logarithmic formula, AF: 0.8, Basal ratio: 1.2, Middleware: undefined; Eventual BG 130 >= 110, no temp, setting 2.2U/hr. ",
+  "reason": "Autosens ratio: 1.08, ISF: 40→37, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 130, minGuardBG 130, IOBpredBG 130, Dynamic ISF: On, Logarithmic formula, AF: 0.8, Basal ratio: 1.2, Middleware: undefined; Eventual BG 130 >= 110, no temp, setting 2.2U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1.0782,
   "target_bg": 110,
@@ -18828,13 +19145,15 @@ exports[`determine-basal characterization tests > tdd-basal > TDD-adjusted basal
   "predBGs": {
     "IOB": [
       130,
+      130,
     ],
     "ZT": [
+      130,
       130,
     ],
   },
   "rate": 1.4,
-  "reason": "Autosens ratio: 0.7, ISF: 40→57, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 130, Dynamic ISF: On, Logarithmic formula, Autosens/Dynamic Limit: 0.7 (0.65), AF: 0.8, Basal ratio: 0.75, Middleware: undefined; Eventual BG 130 >= 110, no temp, setting 1.4U/hr. ",
+  "reason": "Autosens ratio: 0.7, ISF: 40→57, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 130, minGuardBG 130, IOBpredBG 130, Dynamic ISF: On, Logarithmic formula, Autosens/Dynamic Limit: 0.7 (0.65), AF: 0.8, Basal ratio: 0.75, Middleware: undefined; Eventual BG 130 >= 110, no temp, setting 1.4U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 0.7,
   "target_bg": 110,
@@ -18867,13 +19186,15 @@ exports[`determine-basal characterization tests > tdd-basal-edge > DynISF on but
   "predBGs": {
     "IOB": [
       150,
+      150,
     ],
     "ZT": [
+      150,
       150,
     ],
   },
   "rate": 2.75,
-  "reason": "Autosens ratio: 0.94, ISF: 40→43, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 150, Dynamic ISF: On, Logarithmic formula, AF: 0.8, Middleware: undefined; Eventual BG 150 >= 110, no temp, setting 2.75U/hr. ",
+  "reason": "Autosens ratio: 0.94, ISF: 40→43, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 150, minGuardBG 150, IOBpredBG 150, Dynamic ISF: On, Logarithmic formula, AF: 0.8, Middleware: undefined; Eventual BG 150 >= 110, no temp, setting 2.75U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 0.9356,
   "target_bg": 110,
@@ -18906,13 +19227,15 @@ exports[`determine-basal characterization tests > tdd-basal-edge > TDD-adjusted 
   "predBGs": {
     "IOB": [
       150,
+      150,
     ],
     "ZT": [
+      150,
       150,
     ],
   },
   "rate": 2.75,
-  "reason": "Autosens ratio: 0.94, ISF: 40→43, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 150, Dynamic ISF: On, Logarithmic formula, AF: 0.8, Basal ratio: 1, Middleware: undefined; Eventual BG 150 >= 110, no temp, setting 2.75U/hr. ",
+  "reason": "Autosens ratio: 0.94, ISF: 40→43, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 150, minGuardBG 150, IOBpredBG 150, Dynamic ISF: On, Logarithmic formula, AF: 0.8, Basal ratio: 1, Middleware: undefined; Eventual BG 150 >= 110, no temp, setting 2.75U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 0.9356,
   "target_bg": 110,
@@ -18945,13 +19268,15 @@ exports[`determine-basal characterization tests > tdd-basal-unchanged > TDD-adju
   "predBGs": {
     "IOB": [
       150,
+      150,
     ],
     "ZT": [
+      150,
       150,
     ],
   },
   "rate": 2.75,
-  "reason": "Autosens ratio: 0.94, ISF: 40→43, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 150, Dynamic ISF: On, Logarithmic formula, AF: 0.8, Basal ratio: 1, Middleware: undefined; Eventual BG 150 >= 110, no temp, setting 2.75U/hr. ",
+  "reason": "Autosens ratio: 0.94, ISF: 40→43, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 150, minGuardBG 150, IOBpredBG 150, Dynamic ISF: On, Logarithmic formula, AF: 0.8, Basal ratio: 1, Middleware: undefined; Eventual BG 150 >= 110, no temp, setting 2.75U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 0.9356,
   "target_bg": 110,
@@ -18976,7 +19301,7 @@ exports[`determine-basal characterization tests > tdd-weighted > TDD = 0 — dyn
   "eventualBG": 150,
   "expectedDelta": -1.7,
   "insulinForManualBolus": 1,
-  "insulinReq": 1,
+  "insulinReq": NaN,
   "manualBolusErrorString": 0,
   "minDelta": 0,
   "minGuardBG": undefined,
@@ -18984,13 +19309,15 @@ exports[`determine-basal characterization tests > tdd-weighted > TDD = 0 — dyn
   "predBGs": {
     "IOB": [
       150,
+      NaN,
     ],
     "ZT": [
       150,
+      NaN,
     ],
   },
-  "rate": 2.9,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 150, Logarithmic formula, AF: 0.8, Middleware: undefined; Eventual BG 150 >= 110, no temp, setting 2.9U/hr. ",
+  "rate": NaN,
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG NaN, minGuardBG 999, IOBpredBG NaN, Logarithmic formula, AF: 0.8, Middleware: undefined; Eventual BG 150 >= 110, no temp, setting NaNU/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -19023,13 +19350,15 @@ exports[`determine-basal characterization tests > tdd-weighted > Weighted TDD av
   "predBGs": {
     "IOB": [
       150,
+      150,
     ],
     "ZT": [
+      150,
       150,
     ],
   },
   "rate": 2.9,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 150, Middleware: undefined; Eventual BG 150 >= 110, no temp, setting 2.9U/hr. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 150, minGuardBG 150, IOBpredBG 150, Middleware: undefined; Eventual BG 150 >= 110, no temp, setting 2.9U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -19062,13 +19391,15 @@ exports[`determine-basal characterization tests > tdd-weighted > average_total_d
   "predBGs": {
     "IOB": [
       150,
+      150,
     ],
     "ZT": [
+      150,
       150,
     ],
   },
   "rate": 2.75,
-  "reason": "Autosens ratio: 0.94, ISF: 40→43, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 150, Dynamic ISF: On, Logarithmic formula, AF: 0.8, Middleware: undefined; Eventual BG 150 >= 110, no temp, setting 2.75U/hr. ",
+  "reason": "Autosens ratio: 0.94, ISF: 40→43, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 150, minGuardBG 150, IOBpredBG 150, Dynamic ISF: On, Logarithmic formula, AF: 0.8, Middleware: undefined; Eventual BG 150 >= 110, no temp, setting 2.75U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 0.9356,
   "target_bg": 110,
@@ -19113,7 +19444,7 @@ exports[`determine-basal characterization tests > temp-comparison > No temp runn
   "eventualBG": 182,
   "expectedDelta": -3,
   "insulinForManualBolus": 1.8,
-  "insulinReq": 1.8,
+  "insulinReq": 1.55,
   "manualBolusErrorString": 0,
   "minDelta": 2,
   "minGuardBG": undefined,
@@ -19121,13 +19452,15 @@ exports[`determine-basal characterization tests > temp-comparison > No temp runn
   "predBGs": {
     "IOB": [
       170,
+      172,
     ],
     "ZT": [
+      170,
       170,
     ],
   },
   "rate": 3.5,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 12, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 170, Middleware: undefined; Eventual BG 182 >= 110, adj. req. rate: 4.5 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 12, BGI: 0, CR: 10, Target: 110, minPredBG 172, minGuardBG 172, IOBpredBG 172, Middleware: undefined; Eventual BG 182 >= 110, adj. req. rate: 4 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -19190,13 +19523,15 @@ exports[`determine-basal characterization tests > temp-target > High temp target
   "predBGs": {
     "IOB": [
       130,
+      130,
     ],
     "ZT": [
+      130,
       130,
     ],
   },
   "rate": 0,
-  "reason": "Autosens ratio: 0.55, ISF: 40→73, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 150, minPredBG 999, minGuardBG 999, IOBpredBG 130, Middleware: undefined; Eventual BG 130 < 150, setting 30m zero temp. ",
+  "reason": "Autosens ratio: 0.55, ISF: 40→73, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 150, minPredBG 130, minGuardBG 130, IOBpredBG 130, Middleware: undefined; Eventual BG 130 < 150, setting 30m zero temp. ",
   "reservoir": 100,
   "sensitivityRatio": 0.55,
   "target_bg": 150,
@@ -19229,13 +19564,15 @@ exports[`determine-basal characterization tests > temp-target > Low temp target 
   "predBGs": {
     "IOB": [
       120,
+      120,
     ],
     "ZT": [
+      120,
       120,
     ],
   },
   "rate": 2.9,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 80, minPredBG 999, minGuardBG 999, IOBpredBG 120, Middleware: undefined; Eventual BG 120 >= 80, no temp, setting 2.9U/hr. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 80, minPredBG 120, minGuardBG 120, IOBpredBG 120, Middleware: undefined; Eventual BG 120 >= 80, no temp, setting 2.9U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 80,
@@ -19268,13 +19605,15 @@ exports[`determine-basal characterization tests > trio-override > Override activ
   "predBGs": {
     "IOB": [
       150,
+      150,
     ],
     "ZT": [
+      150,
       150,
     ],
   },
   "rate": 2.3,
-  "reason": "Autosens ratio: 1, ISF: 50→50, COB: 0, Dev: 0, BGI: 0, CR: 12.5, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 150, Middleware: undefined; Eventual BG 150 >= 110, no temp, setting 2.3U/hr. ",
+  "reason": "Autosens ratio: 1, ISF: 50→50, COB: 0, Dev: 0, BGI: 0, CR: 12.5, Target: 110, minPredBG 150, minGuardBG 150, IOBpredBG 150, Middleware: undefined; Eventual BG 150 >= 110, no temp, setting 2.3U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -19307,13 +19646,15 @@ exports[`determine-basal characterization tests > trio-override > Override activ
   "predBGs": {
     "IOB": [
       150,
+      150,
     ],
     "ZT": [
+      150,
       150,
     ],
   },
   "rate": 3.5,
-  "reason": "Autosens ratio: 1, ISF: 33→33, COB: 0, Dev: 0, BGI: 0, CR: 8.3, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 150, Middleware: undefined; Eventual BG 150 >= 110, no temp, setting 3.5U/hr. ",
+  "reason": "Autosens ratio: 1, ISF: 33→33, COB: 0, Dev: 0, BGI: 0, CR: 8.3, Target: 110, minPredBG 150, minGuardBG 150, IOBpredBG 150, Middleware: undefined; Eventual BG 150 >= 110, no temp, setting 3.5U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -19346,13 +19687,15 @@ exports[`determine-basal characterization tests > trio-override > Override with 
   "predBGs": {
     "IOB": [
       150,
+      150,
     ],
     "ZT": [
+      150,
       150,
     ],
   },
   "rate": 3.4,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 100, minPredBG 999, minGuardBG 999, IOBpredBG 150, Middleware: undefined; Eventual BG 150 >= 100, no temp, setting 3.4U/hr. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 100, minPredBG 150, minGuardBG 150, IOBpredBG 150, Middleware: undefined; Eventual BG 150 >= 100, no temp, setting 3.4U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 100,
@@ -19377,7 +19720,7 @@ exports[`determine-basal characterization tests > trio-override > SMBs disabled 
   "eventualBG": 210,
   "expectedDelta": -4.2,
   "insulinForManualBolus": 2.5,
-  "insulinReq": 2.5,
+  "insulinReq": 1.88,
   "manualBolusErrorString": 0,
   "minDelta": 5,
   "minGuardBG": undefined,
@@ -19385,13 +19728,15 @@ exports[`determine-basal characterization tests > trio-override > SMBs disabled 
   "predBGs": {
     "IOB": [
       180,
+      185,
     ],
     "ZT": [
+      180,
       180,
     ],
   },
   "rate": 3.5,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 30, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 180, Middleware: undefined; Eventual BG 210 >= 110, adj. req. rate: 5.9 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 30, BGI: 0, CR: 10, Target: 110, minPredBG 185, minGuardBG 185, IOBpredBG 185, Middleware: undefined; Eventual BG 210 >= 110, adj. req. rate: 4.65 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -19424,16 +19769,19 @@ exports[`determine-basal characterization tests > uam > UAM — BG rising fast, 
   "predBGs": {
     "IOB": [
       170,
+      176,
     ],
     "UAM": [
       170,
+      180,
     ],
     "ZT": [
+      170,
       170,
     ],
   },
   "rate": 2.9,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 78, BGI: -3, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 170, UAMpredBG 170, Middleware: undefined; Eventual BG 188 >= 110, max_iob 2.5, max_iob 2.5,  insulinReq 1; maxBolus 0.5. Microbolusing 0.5U. no temp, setting 2.9U/hr. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 78, BGI: -3, CR: 10, Target: 110, minPredBG 176, minGuardBG 180, IOBpredBG 176, UAMpredBG 180, Middleware: undefined; Eventual BG 188 >= 110, max_iob 2.5, max_iob 2.5,  insulinReq 1; maxBolus 0.5. Microbolusing 0.5U. no temp, setting 2.9U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -19459,7 +19807,7 @@ exports[`determine-basal characterization tests > uam > UAM — rising BG with n
   "eventualBG": 192,
   "expectedDelta": -3.4,
   "insulinForManualBolus": 2.05,
-  "insulinReq": 2.05,
+  "insulinReq": 1.15,
   "manualBolusErrorString": 0,
   "minDelta": 7,
   "minGuardBG": undefined,
@@ -19467,16 +19815,19 @@ exports[`determine-basal characterization tests > uam > UAM — rising BG with n
   "predBGs": {
     "IOB": [
       150,
+      156,
     ],
     "UAM": [
       150,
+      157,
     ],
     "ZT": [
       150,
+      150,
     ],
   },
-  "rate": 3.5,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 42, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 150, UAMpredBG 150, Middleware: undefined; Eventual BG 192 >= 110,  insulinReq 2.05; maxBolus 0.5. Microbolusing 0.5U. adj. req. rate: 5 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
+  "rate": 3.2,
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 42, BGI: 0, CR: 10, Target: 110, minPredBG 156, minGuardBG 157, IOBpredBG 156, UAMpredBG 157, Middleware: undefined; Eventual BG 192 >= 110,  insulinReq 1.15; maxBolus 0.5. Microbolusing 0.5U. no temp, setting 3.2U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -19510,13 +19861,15 @@ exports[`determine-basal characterization tests > zero-temp > BG predicted to go
   "predBGs": {
     "IOB": [
       100,
+      97,
     ],
     "ZT": [
+      100,
       100,
     ],
   },
   "rate": 0,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 12, BGI: -5, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 100, Middleware: undefined; Eventual BG 32 < 110, setting 120m zero temp. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 12, BGI: -5, CR: 10, Target: 110, minPredBG 100, minGuardBG 97, IOBpredBG 97, Middleware: undefined; Eventual BG 32 < 110, setting 120m zero temp. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
@@ -19549,13 +19902,15 @@ exports[`determine-basal characterization tests > zero-temp > Eventual BG well b
   "predBGs": {
     "IOB": [
       110,
+      109,
     ],
     "ZT": [
+      110,
       110,
     ],
   },
   "rate": 0,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 30, BGI: -6, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 110, Middleware: undefined; Eventual BG 20 < 110, setting 120m zero temp. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 30, BGI: -6, CR: 10, Target: 110, minPredBG 110, minGuardBG 109, IOBpredBG 109, Middleware: undefined; Eventual BG 20 < 110, setting 120m zero temp. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
