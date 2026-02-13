@@ -16,7 +16,7 @@ let mockGetTime = function(minutes) {
 let carb_ratios_mod = proxyquire('../src/profile/carbs', {
     '../utils/medtronic-clock': { getTime: mockGetTime }
 });
-let carb_ratios = { carbRatioLookup: carb_ratios_mod.default };
+let carb_ratios = carb_ratios_mod;
 
 describe('Carb Ratio Profile', function() {
     var carbratio_input = {
@@ -30,13 +30,13 @@ describe('Carb Ratio Profile', function() {
 
     it('should return current carb ratio from schedule', function() {
         var now = new Date('2025-01-26T02:00:00');
-        var ratio = carb_ratios.carbRatioLookup({carbratio: carbratio_input}, null, now);
+        var ratio = carb_ratios.carbRatioLookup({carbratio: carbratio_input}, now);
         ratio.should.equal(15);
     });
 
     it('should handle ratio schedule changes', function() {
         var now = new Date('2025-01-26T04:00:00');
-        var ratio = carb_ratios.carbRatioLookup({carbratio: carbratio_input}, null, now);
+        var ratio = carb_ratios.carbRatioLookup({carbratio: carbratio_input}, now);
         ratio.should.equal(18);
     });
 
@@ -48,7 +48,7 @@ describe('Carb Ratio Profile', function() {
             ]
         };
         var now = new Date('2025-01-26T04:00:00');
-        var ratio = carb_ratios.carbRatioLookup({carbratio: exchange_input}, null, now);
+        var ratio = carb_ratios.carbRatioLookup({carbratio: exchange_input}, now);
         ratio.should.equal(1); // 12 grams per exchange
     });
 

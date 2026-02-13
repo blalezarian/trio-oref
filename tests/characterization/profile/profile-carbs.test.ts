@@ -43,7 +43,7 @@ describe('profile/carbs (carbRatioLookup) characterization tests', () => {
   describe('single ratio schedule', () => {
     it('returns the single ratio value', () => {
       const inputs = makeInputs();
-      const result = carbRatioLookup(inputs, {});
+      const result = carbRatioLookup(inputs);
       expect(result).toMatchSnapshot();
     });
   });
@@ -64,7 +64,7 @@ describe('profile/carbs (carbRatioLookup) characterization tests', () => {
           ],
         },
       };
-      const result = carbRatioLookup(inputs, {});
+      const result = carbRatioLookup(inputs);
       expect(result).toMatchSnapshot();
     });
 
@@ -81,7 +81,7 @@ describe('profile/carbs (carbRatioLookup) characterization tests', () => {
           ],
         },
       };
-      const result = carbRatioLookup(inputs, {});
+      const result = carbRatioLookup(inputs);
       expect(result).toMatchSnapshot();
     });
 
@@ -98,7 +98,7 @@ describe('profile/carbs (carbRatioLookup) characterization tests', () => {
           ],
         },
       };
-      const result = carbRatioLookup(inputs, {});
+      const result = carbRatioLookup(inputs);
       expect(result).toMatchSnapshot();
     });
   });
@@ -119,8 +119,8 @@ describe('profile/carbs (carbRatioLookup) characterization tests', () => {
           ],
         },
       };
-      // Pass custom now as 3rd parameter
-      const result = carbRatioLookup(inputs, {}, customTime);
+      // Pass custom now as 2nd parameter
+      const result = carbRatioLookup(inputs, customTime);
       expect(result).toMatchSnapshot();
     });
   });
@@ -137,7 +137,7 @@ describe('profile/carbs (carbRatioLookup) characterization tests', () => {
         },
       };
       // Expected: 12 / 2 = 6
-      const result = carbRatioLookup(inputs, {});
+      const result = carbRatioLookup(inputs);
       expect(result).toMatchSnapshot();
     });
 
@@ -153,7 +153,7 @@ describe('profile/carbs (carbRatioLookup) characterization tests', () => {
       };
       // At 12:00 UTC = 720 min, should match second entry at offset 720
       // But since 720 >= 720, and there's no next entry, falls through to last
-      const result = carbRatioLookup(inputs, {});
+      const result = carbRatioLookup(inputs);
       expect(result).toMatchSnapshot();
     });
   });
@@ -169,7 +169,7 @@ describe('profile/carbs (carbRatioLookup) characterization tests', () => {
           schedule: [{ offset: 0, ratio: 0.5 }],
         },
       };
-      const result = carbRatioLookup(inputs, {});
+      const result = carbRatioLookup(inputs);
       expect(result).toMatchSnapshot();
     });
 
@@ -180,7 +180,7 @@ describe('profile/carbs (carbRatioLookup) characterization tests', () => {
           schedule: [{ offset: 0, ratio: 200 }],
         },
       };
-      const result = carbRatioLookup(inputs, {});
+      const result = carbRatioLookup(inputs);
       expect(result).toMatchSnapshot();
     });
 
@@ -191,7 +191,7 @@ describe('profile/carbs (carbRatioLookup) characterization tests', () => {
           schedule: [{ offset: 0, ratio: 1 }],
         },
       };
-      const result = carbRatioLookup(inputs, {});
+      const result = carbRatioLookup(inputs);
       expect(result).toMatchSnapshot();
     });
 
@@ -202,7 +202,7 @@ describe('profile/carbs (carbRatioLookup) characterization tests', () => {
           schedule: [{ offset: 0, ratio: 150 }],
         },
       };
-      const result = carbRatioLookup(inputs, {});
+      const result = carbRatioLookup(inputs);
       expect(result).toMatchSnapshot();
     });
   });
@@ -219,7 +219,7 @@ describe('profile/carbs (carbRatioLookup) characterization tests', () => {
           schedule: [{ offset: 0, ratio: 10 }],
         },
       };
-      const result = carbRatioLookup(inputs, {});
+      const result = carbRatioLookup(inputs);
       expect(result).toMatchSnapshot();
     });
   });
@@ -229,13 +229,13 @@ describe('profile/carbs (carbRatioLookup) characterization tests', () => {
   // -------------------------------------------------------------------------
   describe('undefined carbratio data', () => {
     it('returns undefined when carbratio is undefined', () => {
-      const result = carbRatioLookup({}, {});
+      const result = carbRatioLookup({});
       expect(result).toMatchSnapshot();
     });
 
     it('returns undefined when carbratio.schedule is undefined', () => {
       const inputs = { carbratio: { units: 'grams' as const } };
-      const result = carbRatioLookup(inputs, {});
+      const result = carbRatioLookup(inputs);
       expect(result).toMatchSnapshot();
     });
   });

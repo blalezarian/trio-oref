@@ -93,7 +93,7 @@ function generate (inputs: ProfileInputs, opts?: ProfileOpts): ProfileDefaults |
 
   // --- Carb ratio ---
   if (inputs.carbratio !== undefined) {
-    profile.carb_ratio = carbRatioLookup(inputs, profile);
+    profile.carb_ratio = carbRatioLookup(inputs);
     profile.carb_ratios = inputs.carbratio;
   } else {
     console.error("Profile wasn't given carb ratio data, cannot calculate carb_ratio");
