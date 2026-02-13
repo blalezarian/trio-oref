@@ -71,7 +71,7 @@ export interface IobCalcProfile {
 
 /** Unified inputs for IOB history and index processing */
 export interface IobInputs {
-    clock: string;
+    clock: ISODateString;
     history: PumpHistoryEvent[];
     history24?: PumpHistoryEvent[];
     profile: IobProfile;
@@ -85,10 +85,10 @@ export interface IobInputs {
 /** Treatment record produced by history processing, consumed by IOB calculations */
 export interface IobTreatment {
     insulin?: number;
-    date: number;
+    date: EpochMillis;
     created_at?: Date;
     started_at?: Date;
-    timestamp?: string;
+    timestamp?: ISODateString;
     rate?: number;
     duration?: number;
 }
@@ -98,8 +98,8 @@ export interface TempEvent {
     _type?: PumpHistoryEventType | (string & {});
     rate?: number;
     duration?: number;
-    date: number;
-    timestamp?: string;
+    date: EpochMillis;
+    timestamp?: ISODateString;
     started_at?: Date;
     created_at?: Date;
     insulin?: number;
@@ -113,9 +113,9 @@ export interface SplitterEvent {
 
 /** Pump suspend event with computed duration */
 export interface SuspendEvent {
-    timestamp?: string;
+    timestamp?: ISODateString;
     started_at?: Date;
-    date: number;
+    date: EpochMillis;
     duration?: number;
 }
 
@@ -123,8 +123,8 @@ export interface SuspendEvent {
 export interface SuspendResumeData {
     pumpSuspends: SuspendEvent[];
     suspendedPrior: boolean;
-    firstResumeTime: string;
-    lastSuspendTime: string;
+    firstResumeTime: ISODateString;
+    lastSuspendTime: ISODateString;
     currentlySuspended: number | false;
 }
 
@@ -148,9 +148,9 @@ export interface IobIndexEntry {
     bolusinsulin: number;
     time: Date;
     iobWithZeroTemp?: IobIndexEntry;
-    lastBolusTime?: number;
+    lastBolusTime?: EpochMillis;
     lastTemp?: {
-        date: number;
+        date: EpochMillis;
         rate?: number;
         duration?: number;
         started_at?: Date | string;
