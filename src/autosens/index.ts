@@ -8,8 +8,8 @@ import { DEFAULT_AUTOSENS_LOOKBACK } from '../constants';
 /** Maximum zero-deviation padding count (90m / 5m = 18) */
 const MAX_ZERO_DEVIATION_PAD = 18;
 
+/** Orchestrate autosens: prepare data, analyze deviations, compute ratio */
 export function detectSensitivity(inputs: AutosensInputs): AutosensResult {
-
     const {
         treatments,
         meals,
@@ -29,7 +29,7 @@ export function detectSensitivity(inputs: AutosensInputs): AutosensResult {
         treatments,
         inputs.temptargets,
         inputs.retrospective,
-        inputs.deviations
+        inputs.deviations,
     );
 
     // when we have less than 8h worth of deviation data, add up to 90m of zero deviations
@@ -48,6 +48,6 @@ export function detectSensitivity(inputs: AutosensInputs): AutosensResult {
             max_daily_basal: profile.max_daily_basal!,
             autosens_min: profile.autosens_min!,
             autosens_max: profile.autosens_max!,
-        }
+        },
     );
 }
