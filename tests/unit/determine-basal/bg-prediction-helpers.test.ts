@@ -3,6 +3,9 @@ import {
     calculateDynISFBGImpact,
     clipAndTrimPredictions,
     calculateMinAndGuardBGs,
+    calculateAvgPredBG,
+    blendMinGuardBG,
+    selectMinPredBG,
 } from '../../../src/determine-basal/bg-predictions';
 import type {
     ClipAndTrimInputs,
@@ -417,5 +420,157 @@ describe('calculateMinAndGuardBGs', () => {
         expect(process.stderr.write).toHaveBeenCalledWith(
             expect.stringContaining('minPredBG:'),
         );
+    });
+});
+
+// ---------------------------------------------------------------------------
+// calculateAvgPredBG
+// ---------------------------------------------------------------------------
+
+// PRED_BG_SENTINEL = 999
+
+describe('calculateAvgPredBG', () => {
+    it('returns round(IOBpredBG) when no COB or UAM predictions', () => {
+        // Both minUAMPredBG and minCOBPredBG are sentinel (999)
+        const result = calculateAvgPredBG(0.5, 999, 999, 80, 90.7, undefined, undefined);
+        expect(result).toBe(91);
+    });
+
+    it('averages IOB and COB when COB present but no UAM', () => {
+        // minCOBPredBG < 999, minUAMPredBG = 999
+        const result = calculateAvgPredBG(0.5, 999, 85, 60, 90, 100, undefined);
+        // avgPredBG = round((90 + 100) / 2) = 95
+        expect(result).toBe(95);
+    });
+
+    it('averages IOB and UAM when UAM present but no COB', () => {
+        // minUAMPredBG < 999, minCOBPredBG = 999
+        const result = calculateAvgPredBG(0.5, 85, 999, 60, 90, undefined, 100);
+        // avgPredBG = round((90 + 100) / 2) = 95
+        expect(result).toBe(95);
+    });
+
+    it('blends COB and UAM weighted by fractionCarbsLeft when both present', () => {
+        // fractionCarbsLeft = 0.5, UAMpredBG = 80, COBpredBG = 100
+        // avgPredBG = round(0.5 * 80 + 0.5 * 100) = 90
+        const result = calculateAvgPredBG(0.5, 85, 85, 60, 90, 100, 80);
+        expect(result).toBe(90);
+    });
+
+    it('raises avgPredBG to minZTGuardBG when minZTGuardBG is higher', () => {
+        // IOB-only: avgPredBG = round(70) = 70, but minZTGuardBG = 90
+        const result = calculateAvgPredBG(0.5, 999, 999, 90, 70, undefined, undefined);
+        expect(result).toBe(90);
+    });
+
+    it('does not lower avgPredBG when minZTGuardBG is lower', () => {
+        const result = calculateAvgPredBG(0.5, 999, 999, 50, 90, undefined, undefined);
+        expect(result).toBe(90);
+    });
+});
+
+// ---------------------------------------------------------------------------
+// blendMinGuardBG
+// ---------------------------------------------------------------------------
+
+describe('blendMinGuardBG', () => {
+    it('uses minIOBGuardBG when no carb impact and no UAM', () => {
+        const result = blendMinGuardBG(0.5, 80, 70, 72, 85, 100, 0, 0, false, 65, 100);
+        expect(result.minGuardBG).toBe(72);
+    });
+
+    it('uses minUAMGuardBG when UAM enabled but no carb impact', () => {
+        const result = blendMinGuardBG(0.5, 80, 70, 72, 85, 100, 0, 0, true, 65, 100);
+        expect(result.minGuardBG).toBe(70);
+    });
+
+    it('uses minCOBGuardBG when carb impact but no UAM', () => {
+        const result = blendMinGuardBG(0.5, 80, 70, 72, 85, 100, 5, 0, false, 65, 100);
+        expect(result.minGuardBG).toBe(80);
+    });
+
+    it('blends COB and UAM guard BGs when both present', () => {
+        // fractionCarbsLeft = 0.5, minCOBGuardBG = 80, minUAMGuardBG = 70
+        // minGuardBG = round(0.5 * 80 + 0.5 * 70) = 75
+        const result = blendMinGuardBG(0.5, 80, 70, 72, 85, 100, 5, 0, true, 65, 100);
+        expect(result.minGuardBG).toBe(75);
+    });
+
+    it('averages minUAMPredBG and minZTGuardBG when ZT < threshold', () => {
+        // minZTGuardBG = 60 < threshold = 65
+        // minZTUAMPredBG = (100 + 60) / 2 = 80
+        const result = blendMinGuardBG(0.5, 80, 70, 72, 60, 100, 0, 0, false, 65, 100);
+        expect(result.minZTUAMPredBG).toBe(80);
+    });
+
+    it('blends minZTUAMPredBG when ZT between threshold and target', () => {
+        // minZTGuardBG = 85, threshold = 65, target = 100
+        // blendPct = (85-65) / (100-65) = 20/35 ≈ 0.5714
+        // blendedMinZTGuardBG = 100 * 0.5714 + 85 * 0.4286 ≈ 93.57
+        // minZTUAMPredBG = (100 + 93.57) / 2 ≈ 96.79 → round = 97
+        const result = blendMinGuardBG(0.5, 80, 70, 72, 85, 100, 0, 0, false, 65, 100);
+        expect(result.minZTUAMPredBG).toBe(97);
+    });
+
+    it('averages when minZTGuardBG > minUAMPredBG (both above target)', () => {
+        // minZTGuardBG = 110 > target = 100 and > minUAMPredBG = 90
+        // minZTUAMPredBG = (90 + 110) / 2 = 100
+        const result = blendMinGuardBG(0.5, 80, 70, 72, 110, 90, 0, 0, false, 65, 100);
+        expect(result.minZTUAMPredBG).toBe(100);
+    });
+
+    it('leaves minZTUAMPredBG unchanged when ZT >= target and <= minUAMPredBG', () => {
+        // minZTGuardBG = 100, target = 100, minUAMPredBG = 120
+        // None of the conditions trigger
+        const result = blendMinGuardBG(0.5, 80, 70, 72, 100, 120, 0, 0, false, 65, 100);
+        expect(result.minZTUAMPredBG).toBe(120);
+    });
+});
+
+// ---------------------------------------------------------------------------
+// selectMinPredBG
+// ---------------------------------------------------------------------------
+
+describe('selectMinPredBG', () => {
+    it('returns round(minIOBPredBG) when no carbs and no UAM', () => {
+        const result = selectMinPredBG(0.5, 80.4, 999, 90, 75, 100, false, 0);
+        expect(result).toBe(80);
+    });
+
+    it('uses max(minIOBPredBG, minCOBPredBG) with carbs and no UAM', () => {
+        // carbs = 40, enableUAM = false, minIOBPredBG = 80, minCOBPredBG = 85
+        const result = selectMinPredBG(0.5, 80, 85, 90, 75, 100, false, 40);
+        expect(result).toBe(85);
+    });
+
+    it('blends COB and ZT-UAM when carbs present with COB and UAM', () => {
+        // fractionCarbsLeft = 0.5, minCOBPredBG = 85, minZTUAMPredBG = 95
+        // blendedMinPredBG = 0.5 * 85 + 0.5 * 95 = 90
+        // minPredBG = round(max(80, 85, 90)) = 90
+        const result = selectMinPredBG(0.5, 80, 85, 95, 75, 100, true, 40);
+        expect(result).toBe(90);
+    });
+
+    it('uses minZTUAMPredBG when carbs entered but expired (no COB)', () => {
+        // carbs = 40, enableUAM = true, minCOBPredBG = 999 (sentinel)
+        const result = selectMinPredBG(0.5, 80, 999, 88, 75, 100, true, 40);
+        expect(result).toBe(88);
+    });
+
+    it('uses minGuardBG when carbs entered but no COB and no UAM', () => {
+        const result = selectMinPredBG(0.5, 80, 999, 90, 75, 100, false, 40);
+        expect(result).toBe(75);
+    });
+
+    it('uses max(minIOBPredBG, minZTUAMPredBG) in pure UAM mode (no carbs)', () => {
+        // enableUAM = true, carbs = 0, minIOBPredBG = 80, minZTUAMPredBG = 90
+        const result = selectMinPredBG(0.5, 80, 999, 90, 75, 100, true, 0);
+        expect(result).toBe(90);
+    });
+
+    it('caps minPredBG at avgPredBG', () => {
+        // minIOBPredBG = 100, avgPredBG = 85 → capped at 85
+        const result = selectMinPredBG(0.5, 100, 999, 90, 75, 85, false, 0);
+        expect(result).toBe(85);
     });
 });

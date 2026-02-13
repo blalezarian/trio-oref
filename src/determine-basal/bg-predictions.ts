@@ -367,9 +367,57 @@ export function calculateMinAndGuardBGs(inputs: MinGuardBGInputs): MinGuardBGRes
     minIOBPredBG = Math.max(MIN_VALID_GLUCOSE_MGDL,minIOBPredBG);
     minCOBPredBG = Math.max(MIN_VALID_GLUCOSE_MGDL,minCOBPredBG);
     minUAMPredBG = Math.max(MIN_VALID_GLUCOSE_MGDL,minUAMPredBG);
-    let minPredBG: number = round(minIOBPredBG);
+    const fractionCarbsLeft = mealCOB / carbs;
 
-    const fractionCarbsLeft = mealCOB/carbs;
+    const avgPredBG = calculateAvgPredBG(
+        fractionCarbsLeft, minUAMPredBG, minCOBPredBG, minZTGuardBG,
+        IOBpredBG, COBpredBG, UAMpredBG,
+    );
+
+    const { minGuardBG, minZTUAMPredBG } = blendMinGuardBG(
+        fractionCarbsLeft, minCOBGuardBG, minUAMGuardBG, minIOBGuardBG, minZTGuardBG,
+        minUAMPredBG, carbImpactDuration, remainingCIpeak, enableUAM,
+        threshold, target_bg,
+    );
+
+    let minPredBG = selectMinPredBG(
+        fractionCarbsLeft, minIOBPredBG, minCOBPredBG, minZTUAMPredBG,
+        minGuardBG, avgPredBG, enableUAM, carbs,
+    );
+
+// Print summary variables based on predBGs etc.
+
+    process.stderr.write(`minPredBG: ${minPredBG} minIOBPredBG: ${minIOBPredBG} minZTGuardBG: ${minZTGuardBG}`);
+    if (minCOBPredBG < PRED_BG_SENTINEL) {
+        process.stderr.write(` minCOBPredBG: ${minCOBPredBG}`);
+    }
+    if (minUAMPredBG < PRED_BG_SENTINEL) {
+        process.stderr.write(` minUAMPredBG: ${minUAMPredBG}`);
+    }
+    console.error(` avgPredBG:${avgPredBG} COB/Carbs:${mealCOB}/${carbs}`);
+    // But if the COB line falls off a cliff, don't trust UAM too much:
+    // use maxCOBPredBG if it's been set and lower than minPredBG
+    if ( maxCOBPredBG > bg ) {
+        minPredBG = Math.min(minPredBG, maxCOBPredBG);
+    }
+
+    return { minPredBG, minGuardBG, avgPredBG, minIOBPredBG };
+}
+
+// ---------------------------------------------------------------------------
+// calculateMinAndGuardBGs helpers
+// ---------------------------------------------------------------------------
+
+/** Computes weighted average predicted BG from IOB, COB, and UAM prediction scenarios. */
+export function calculateAvgPredBG(
+    fractionCarbsLeft: number,
+    minUAMPredBG: number,
+    minCOBPredBG: number,
+    minZTGuardBG: number,
+    IOBpredBG: number,
+    COBpredBG: number | undefined,
+    UAMpredBG: number | undefined,
+): number {
     // if we have COB and UAM is enabled, average both
     let avgPredBG: number;
     if ( minUAMPredBG < PRED_BG_SENTINEL && minCOBPredBG < PRED_BG_SENTINEL ) {
@@ -388,7 +436,23 @@ export function calculateMinAndGuardBGs(inputs: MinGuardBGInputs): MinGuardBGRes
     if ( minZTGuardBG > avgPredBG ) {
         avgPredBG = minZTGuardBG;
     }
+    return avgPredBG;
+}
 
+/** Blends minGuardBG from COB/UAM/IOB guard BGs and computes minZTUAMPredBG safety blend. */
+export function blendMinGuardBG(
+    fractionCarbsLeft: number,
+    minCOBGuardBG: number,
+    minUAMGuardBG: number,
+    minIOBGuardBG: number,
+    minZTGuardBG: number,
+    minUAMPredBG: number,
+    carbImpactDuration: number,
+    remainingCIpeak: number,
+    enableUAM: boolean | undefined,
+    threshold: number,
+    target_bg: number,
+): { minGuardBG: number; minZTUAMPredBG: number } {
     // if we have both minCOBGuardBG and minUAMGuardBG, blend according to fractionCarbsLeft
     let minGuardBG: number;
     if ( (carbImpactDuration || remainingCIpeak > 0) ) {
@@ -420,6 +484,21 @@ export function calculateMinAndGuardBGs(inputs: MinGuardBGInputs): MinGuardBGRes
         minZTUAMPredBG = (minUAMPredBG + minZTGuardBG) / 2;
     }
     minZTUAMPredBG = round(minZTUAMPredBG);
+    return { minGuardBG, minZTUAMPredBG };
+}
+
+/** Selects the final minPredBG from carb, UAM, and IOB prediction scenarios. */
+export function selectMinPredBG(
+    fractionCarbsLeft: number,
+    minIOBPredBG: number,
+    minCOBPredBG: number,
+    minZTUAMPredBG: number,
+    minGuardBG: number,
+    avgPredBG: number,
+    enableUAM: boolean | undefined,
+    carbs: number,
+): number {
+    let minPredBG: number = round(minIOBPredBG);
     // if any carbs have been entered recently
     if (carbs) {
 
@@ -446,21 +525,5 @@ export function calculateMinAndGuardBGs(inputs: MinGuardBGInputs): MinGuardBGRes
     // make sure minPredBG isn't higher than avgPredBG
     minPredBG = Math.min( minPredBG, avgPredBG );
 
-// Print summary variables based on predBGs etc.
-
-    process.stderr.write(`minPredBG: ${minPredBG} minIOBPredBG: ${minIOBPredBG} minZTGuardBG: ${minZTGuardBG}`);
-    if (minCOBPredBG < PRED_BG_SENTINEL) {
-        process.stderr.write(` minCOBPredBG: ${minCOBPredBG}`);
-    }
-    if (minUAMPredBG < PRED_BG_SENTINEL) {
-        process.stderr.write(` minUAMPredBG: ${minUAMPredBG}`);
-    }
-    console.error(` avgPredBG:${avgPredBG} COB/Carbs:${mealCOB}/${carbs}`);
-    // But if the COB line falls off a cliff, don't trust UAM too much:
-    // use maxCOBPredBG if it's been set and lower than minPredBG
-    if ( maxCOBPredBG > bg ) {
-        minPredBG = Math.min(minPredBG, maxCOBPredBG);
-    }
-
-    return { minPredBG, minGuardBG, avgPredBG, minIOBPredBG };
+    return minPredBG;
 }
