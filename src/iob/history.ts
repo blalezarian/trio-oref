@@ -13,7 +13,8 @@ import {
     MS_PER_HOUR,
     MAX_DIA_FOR_SUSPEND_HOURS,
 } from '../constants';
-import { splitTimespan, splitAroundSuspends } from './timespan-splitting';
+import { splitTimespan } from './split-at-basal-boundaries';
+import { splitAroundSuspends } from './split-around-suspends';
 import { extractSuspendResumeData } from './suspend-resume';
 import { extractTempBasalsAndBoluses } from './temp-basals';
 import { convertNetBasalsToTreatments } from './net-basals';
