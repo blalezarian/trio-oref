@@ -8,7 +8,11 @@ vi.mock('../../../src/cob/index', () => ({
 }));
 
 // Import after mock setup
-import recentCarbs from '../../../src/meal/total';
+import recentCarbs, {
+    round,
+    resolveMaxAbsorptionTime,
+    accumulateCarbsByType,
+} from '../../../src/meal/total';
 import { detectCarbAbsorption } from '../../../src/cob/index';
 
 const FIXED_TIME = '2025-01-15T12:00:00.000Z';
@@ -75,6 +79,96 @@ function mockAbsorption(carbsAbsorbed: number, overrides: Partial<{
         allDeviations: overrides.allDeviations ?? [5, 10, -2],
     });
 }
+
+// ---------------------------------------------------------------------------
+// round
+// ---------------------------------------------------------------------------
+
+describe('round', () => {
+    it('rounds to 0 decimal places by default', () => {
+        expect(round(3.7)).toBe(4);
+        expect(round(3.2)).toBe(3);
+    });
+
+    it('rounds to specified decimal places', () => {
+        expect(round(3.14159, 2)).toBe(3.14);
+        expect(round(3.14159, 3)).toBe(3.142);
+    });
+
+    it('handles zero', () => {
+        expect(round(0, 2)).toBe(0);
+    });
+});
+
+// ---------------------------------------------------------------------------
+// resolveMaxAbsorptionTime
+// ---------------------------------------------------------------------------
+
+describe('resolveMaxAbsorptionTime', () => {
+    it('returns profile value when it is a valid number', () => {
+        const profile = makeProfile({ maxMealAbsorptionTime: 4 });
+        expect(resolveMaxAbsorptionTime(profile)).toBe(4);
+    });
+
+    it('returns default (6) when profile value is NaN', () => {
+        const spy = vi.spyOn(console, 'error').mockImplementation(() => {});
+        const profile = makeProfile({ maxMealAbsorptionTime: NaN });
+        expect(resolveMaxAbsorptionTime(profile)).toBe(6);
+        spy.mockRestore();
+    });
+
+    it('returns default (6) when profile value is undefined', () => {
+        const spy = vi.spyOn(console, 'error').mockImplementation(() => {});
+        const profile = makeProfile({ maxMealAbsorptionTime: undefined as unknown as number });
+        expect(resolveMaxAbsorptionTime(profile)).toBe(6);
+        spy.mockRestore();
+    });
+});
+
+// ---------------------------------------------------------------------------
+// accumulateCarbsByType
+// ---------------------------------------------------------------------------
+
+describe('accumulateCarbsByType', () => {
+    it('accumulates nsCarbs', () => {
+        const totals = { nsCarbs: 0, bwCarbs: 0, journalCarbs: 0, bwFound: false };
+        accumulateCarbsByType({ timestamp: '', carbs: 30, nsCarbs: 30 }, totals);
+        expect(totals.nsCarbs).toBe(30);
+        expect(totals.bwFound).toBe(false);
+    });
+
+    it('accumulates bwCarbs and sets bwFound', () => {
+        const totals = { nsCarbs: 0, bwCarbs: 0, journalCarbs: 0, bwFound: false };
+        accumulateCarbsByType({ timestamp: '', carbs: 25, bwCarbs: 25 }, totals);
+        expect(totals.bwCarbs).toBe(25);
+        expect(totals.bwFound).toBe(true);
+    });
+
+    it('accumulates journalCarbs', () => {
+        const totals = { nsCarbs: 0, bwCarbs: 0, journalCarbs: 0, bwFound: false };
+        accumulateCarbsByType({ timestamp: '', carbs: 20, journalCarbs: 20 }, totals);
+        expect(totals.journalCarbs).toBe(20);
+    });
+
+    it('logs error for unclassified carbs', () => {
+        const spy = vi.spyOn(console, 'error').mockImplementation(() => {});
+        const totals = { nsCarbs: 0, bwCarbs: 0, journalCarbs: 0, bwFound: false };
+        accumulateCarbsByType({ timestamp: '', carbs: 10 }, totals);
+        expect(spy).toHaveBeenCalledWith('Treatment carbs unclassified:', expect.anything());
+        spy.mockRestore();
+    });
+
+    it('prioritizes nsCarbs over bwCarbs when both present', () => {
+        const totals = { nsCarbs: 0, bwCarbs: 0, journalCarbs: 0, bwFound: false };
+        accumulateCarbsByType({ timestamp: '', carbs: 30, nsCarbs: 30, bwCarbs: 30 }, totals);
+        expect(totals.nsCarbs).toBe(30);
+        expect(totals.bwCarbs).toBe(0);
+    });
+});
+
+// ---------------------------------------------------------------------------
+// recentCarbs
+// ---------------------------------------------------------------------------
 
 describe('recentCarbs', () => {
 
