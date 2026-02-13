@@ -3,7 +3,7 @@ import getIOB from '../iob/index';
 import { isfLookup as ISFLookup } from '../profile/isf';
 import find_insulin from '../iob/extract-treatments';
 import type { IobInputs } from '../iob/types';
-import dosed from './dosed';
+import { insulinDosed as dosed } from './dosed';
 import type { DosedOpts } from './dosed';
 import type { PumpHistoryEvent, CarbTreatment, InsulinCurve, MealAbsorptionPhase } from '../types/index';
 import {

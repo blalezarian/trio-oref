@@ -2,19 +2,19 @@
 // Types
 // ---------------------------------------------------------------------------
 
-interface DosedOpts {
+export interface DosedOpts {
     start: Date;
     end: Date;
     treatments: DosedTreatment[] | undefined;
     profile: Record<string, unknown>;
 }
 
-interface DosedTreatment {
+export interface DosedTreatment {
     insulin?: number | null;
     date: number;
 }
 
-interface DosedResult {
+export interface DosedResult {
     insulin: number;
 }
 
@@ -30,7 +30,7 @@ const ROUND_SCALE_3DP = 1000;
 // ---------------------------------------------------------------------------
 
 /** Sum insulin dosed between start and end timestamps */
-function insulinDosed(opts: DosedOpts): { insulin?: number } {
+export function insulinDosed(opts: DosedOpts): { insulin?: number } {
     const start = opts.start.getTime();
     const end = opts.end.getTime();
     const treatments = opts.treatments;
@@ -52,10 +52,3 @@ function insulinDosed(opts: DosedOpts): { insulin?: number } {
     };
 }
 
-// ---------------------------------------------------------------------------
-// Exports
-// ---------------------------------------------------------------------------
-
-export default insulinDosed;
-export { insulinDosed };
-export type { DosedOpts, DosedTreatment, DosedResult };
