@@ -1,19 +1,40 @@
-import { percentile } from '../utils/percentile';
 
-/** Deviations per hour (60 / 5) */
+import { percentile } from '../utils/percentile';
+import { MEDIAN_PERCENTILE } from '../shared/constants';
+
+// ---------------------------------------------------------------------------
+// Constants
+// ---------------------------------------------------------------------------
+
+/** Deviations per hour (60 min / 5 min intervals) */
 const DEVIATIONS_PER_HOUR = 12;
-/** Rounding scale for 2 decimal places */
-const ROUND_SCALE_2DP = 100;
-/** Percentage multiplier */
-const PERCENT = 100;
+/** Multiplier to convert fraction to percentage */
+const PERCENT_MULTIPLIER = 100;
+/** Upper bound for percentile scan loop */
+const PERCENTILE_SCAN_HIGH = 0.9;
+/** Lower bound for percentile scan loop */
+const PERCENTILE_SCAN_LOW = 0.1;
+/** Step size for percentile scan loop */
+const PERCENTILE_SCAN_STEP = 0.01;
+
+// ---------------------------------------------------------------------------
+// Types
+// ---------------------------------------------------------------------------
 
 export interface AutosensResult {
     ratio: number;
     newisf: number;
 }
 
+interface AutosensProfile {
+    sens: number;
+    max_daily_basal: number;
+    autosens_min: number;
+    autosens_max: number;
+}
+
 // ---------------------------------------------------------------------------
-// Deviation padding
+// Helpers
 // ---------------------------------------------------------------------------
 
 /**
@@ -24,97 +45,88 @@ export interface AutosensResult {
 export function padDeviations(
     deviations: number[],
     targetLength: number,
-    maxPadding: number
+    maxPadding: number,
 ): void {
     if (deviations.length < targetLength) {
-        const pad = Math.round((1 - deviations.length/targetLength) * maxPadding);
-        console.error("Adding",pad,"more zero deviations");
-        for (let d=0; d<pad; d++) {
-            deviations.push(0);
-        }
+        const pad = Math.round((1 - deviations.length / targetLength) * maxPadding);
+        console.error("Adding", pad, "more zero deviations");
+        deviations.push(...Array(pad).fill(0));
     }
 }
-
-// ---------------------------------------------------------------------------
-// Percentile analysis
-// ---------------------------------------------------------------------------
 
 /** Analyze deviation percentiles to detect sensitivity/resistance patterns */
 export function analyzePercentiles(
     deviations: number[],
     avgDeltas: number[],
-    bgis: number[]
+    bgis: number[],
 ): { pSensitive: number; pResistant: number } {
-    avgDeltas.sort((a: number, b: number) => {return a-b});
-    bgis.sort((a: number, b: number) => {return a-b});
-    deviations.sort((a: number, b: number) => {return a-b});
-    for (let i=0.9; i > 0.1; i = i - 0.01) {
-        if ( percentile(deviations, (i+0.01)) >= 0 && percentile(deviations, i) < 0 ) {
-            const lessThanZero = Math.round(PERCENT*i);
+    // Mutates input arrays, matching original behavior
+    avgDeltas.sort((a, b) => a - b);
+    bgis.sort((a, b) => a - b);
+    deviations.sort((a, b) => a - b);
+
+    for (let threshold = PERCENTILE_SCAN_HIGH; threshold > PERCENTILE_SCAN_LOW; threshold -= PERCENTILE_SCAN_STEP) {
+        if (percentile(deviations, threshold + PERCENTILE_SCAN_STEP) >= 0
+            && percentile(deviations, threshold) < 0) {
+            const lessThanZero = Math.round(PERCENT_MULTIPLIER * threshold);
             console.error(`${lessThanZero}% of non-meal deviations negative (>50% = sensitivity)`);
         }
-        if ( percentile(deviations, (i+0.01)) > 0 && percentile(deviations, i) <= 0 ) {
-            const greaterThanZero = PERCENT-Math.round(PERCENT*i);
+        if (percentile(deviations, threshold + PERCENTILE_SCAN_STEP) > 0
+            && percentile(deviations, threshold) <= 0) {
+            const greaterThanZero = PERCENT_MULTIPLIER - Math.round(PERCENT_MULTIPLIER * threshold);
             console.error(`${greaterThanZero}% of non-meal deviations positive (>50% = resistance)`);
         }
     }
-    const pSensitive = percentile(deviations, 0.50);
-    const pResistant = percentile(deviations, 0.50);
+
+    const pSensitive = percentile(deviations, MEDIAN_PERCENTILE);
+    const pResistant = percentile(deviations, MEDIAN_PERCENTILE);
 
     return { pSensitive, pResistant };
 }
 
 // ---------------------------------------------------------------------------
-// Ratio calculation
+// Main function
 // ---------------------------------------------------------------------------
-
-interface AutosensProfile {
-    sens: number;
-    max_daily_basal: number;
-    autosens_min: number;
-    autosens_max: number;
-}
 
 /** Calculate final autosens ratio and adjusted ISF */
 export function calculateAutosensRatio(
     deviations: number[],
     pSensitive: number,
     pResistant: number,
-    profile: AutosensProfile
+    profile: AutosensProfile,
 ): AutosensResult {
-    const squareDeviations = deviations.reduce((acc: number, dev: number) => acc + dev * dev, 0);
+    const squareDeviations = deviations.reduce(
+        (acc, deviation) => acc + deviation * deviation,
+        0,
+    );
     const rmsDev = Math.sqrt(squareDeviations / deviations.length);
     console.error(`RMS deviation: ${rmsDev.toFixed(2)}`);
 
     let basalOff = 0;
 
-    if(pSensitive < 0) { // sensitive
+    if (pSensitive < 0) {
         basalOff = pSensitive * DEVIATIONS_PER_HOUR / profile.sens;
         process.stderr.write("Insulin sensitivity detected: ");
-    } else if (pResistant > 0) { // resistant
+    } else if (pResistant > 0) {
         basalOff = pResistant * DEVIATIONS_PER_HOUR / profile.sens;
         process.stderr.write("Insulin resistance detected: ");
     } else {
         console.error("Sensitivity normal.");
     }
-    let ratio: number;
-    ratio = 1 + (basalOff / profile.max_daily_basal);
 
-    // don't adjust more than 1.2x by default (set in preferences.json)
+    let ratio = 1 + (basalOff / profile.max_daily_basal);
+
     const rawRatio = ratio;
     ratio = Math.max(ratio, profile.autosens_min);
     ratio = Math.min(ratio, profile.autosens_max);
 
     if (ratio !== rawRatio) {
-      console.error(`Ratio limited from ${rawRatio} to ${ratio}`);
+        console.error(`Ratio limited from ${rawRatio} to ${ratio}`);
     }
 
-    ratio = Math.round(ratio*ROUND_SCALE_2DP)/ROUND_SCALE_2DP;
-    let newisf: number;
-    newisf = Math.round(profile.sens / ratio);
+    ratio = Math.round(ratio * 100) / 100;
+    const newisf = Math.round(profile.sens / ratio);
     console.error(`ISF adjusted from ${profile.sens} to ${newisf}`);
-    return {
-        "ratio": ratio,
-        "newisf": newisf
-    }
+
+    return { ratio, newisf };
 }

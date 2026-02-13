@@ -4,7 +4,10 @@ import type {
     AutotuneGlucoseDatum,
     AutotuneBounds,
 } from './types';
-import { AUTOTUNE_ADJUSTMENT_FRACTION } from '../shared/constants';
+import {
+    AUTOTUNE_ADJUSTMENT_FRACTION,
+    MEDIAN_PERCENTILE,
+} from '../shared/constants';
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -12,7 +15,6 @@ import { AUTOTUNE_ADJUSTMENT_FRACTION } from '../shared/constants';
 
 const MIN_ISF_DATA_POINTS = 10;
 const DEFAULT_ISF_ADJUSTMENT_FRACTION = 1.0;
-const MEDIAN_PERCENTILE = 0.50;
 
 // ---------------------------------------------------------------------------
 // Types

@@ -81,6 +81,8 @@ export const DEFAULT_AUTOSENS_MIN = 0.7;
 export const AUTOTUNE_ADJUSTMENT_FRACTION = 0.2;
 /** Maximum lookback deviations: 8h of 5-min data */
 export const DEFAULT_AUTOSENS_LOOKBACK = 96;
+/** Median percentile used for autosens/autotune deviation analysis */
+export const MEDIAN_PERCENTILE = 0.50;
 
 // === Target BG Bounds ===
 
