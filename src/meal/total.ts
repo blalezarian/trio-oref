@@ -88,6 +88,50 @@ function accumulateCarbsByType(
     }
 }
 
+/** Track carbs from a fully-absorbed treatment for later subtraction (mirrors accumulateCarbsByType) */
+function accumulateRemovalsByType(
+    treatment: CarbTreatment,
+    removals: { carbs: number; nsCarbs: number; bwCarbs: number; journalCarbs: number },
+): void {
+    removals.carbs += treatment.carbs ?? 0;
+    if ((treatment.nsCarbs ?? 0) >= 1) {
+        removals.nsCarbs += treatment.nsCarbs ?? 0;
+    } else if ((treatment.bwCarbs ?? 0) >= 1) {
+        removals.bwCarbs += treatment.bwCarbs ?? 0;
+    } else if ((treatment.journalCarbs ?? 0) >= 1) {
+        removals.journalCarbs += treatment.journalCarbs ?? 0;
+    }
+}
+
+/** Reset removal counters when a non-absorbed meal is encountered */
+function resetRemovalTotals(
+    removals: { carbs: number; nsCarbs: number; bwCarbs: number; journalCarbs: number },
+): void {
+    removals.carbs = 0;
+    removals.nsCarbs = 0;
+    removals.bwCarbs = 0;
+    // Note: journalCarbs intentionally not reset (matches original behavior)
+}
+
+/** Zero mealCOB when deviation data is null/undefined (zombie-carb safety) */
+function applyZombieCarbSafety(
+    mealCOB: number,
+    currentDeviation: number,
+    maxDeviation: number,
+): number {
+    if (currentDeviation === undefined || currentDeviation === null) {
+        console.error("");
+        console.error("Warning: setting mealCOB to 0 because currentDeviation is null/undefined");
+        mealCOB = 0;
+    }
+    if (maxDeviation === undefined || maxDeviation === null) {
+        console.error("");
+        console.error("Warning: setting mealCOB to 0 because maxDeviation is 0 or undefined");
+        mealCOB = 0;
+    }
+    return mealCOB;
+}
+
 // ---------------------------------------------------------------------------
 // Main function
 // ---------------------------------------------------------------------------
@@ -125,10 +169,7 @@ function recentCarbs(opts: RecentCarbsOpts, time: Date): RecentCarbsResult | Rec
     let lastCarbTime = 0;
 
     // Removal tracking for fully-absorbed earlier meals
-    let carbsToRemove = 0;
-    let nsCarbsToRemove = 0;
-    let bwCarbsToRemove = 0;
-    let journalCarbsToRemove = 0;
+    const removals = { carbs: 0, nsCarbs: 0, bwCarbs: 0, journalCarbs: 0 };
 
     for (const treatment of treatments) {
         const treatmentTime = new Date(treatment.timestamp).getTime();
@@ -161,27 +202,17 @@ function recentCarbs(opts: RecentCarbsOpts, time: Date): RecentCarbsResult | Rec
 
         // Track removal candidates for fully-absorbed earlier meals
         if (myMealCOB < mealCOB) {
-            carbsToRemove += treatment.carbs ?? 0;
-            if ((treatment.nsCarbs ?? 0) >= 1) {
-                nsCarbsToRemove += treatment.nsCarbs ?? 0;
-            } else if ((treatment.bwCarbs ?? 0) >= 1) {
-                bwCarbsToRemove += treatment.bwCarbs ?? 0;
-            } else if ((treatment.journalCarbs ?? 0) >= 1) {
-                journalCarbsToRemove += treatment.journalCarbs ?? 0;
-            }
+            accumulateRemovalsByType(treatment, removals);
         } else {
-            // Note: journalCarbsToRemove intentionally not reset (matches original behavior)
-            carbsToRemove = 0;
-            nsCarbsToRemove = 0;
-            bwCarbsToRemove = 0;
+            resetRemovalTotals(removals);
         }
     }
 
     // Subtract carbs from fully-absorbed earlier meals
-    carbs -= carbsToRemove;
-    totals.nsCarbs -= nsCarbsToRemove;
-    totals.bwCarbs -= bwCarbsToRemove;
-    totals.journalCarbs -= journalCarbsToRemove;
+    carbs -= removals.carbs;
+    totals.nsCarbs -= removals.nsCarbs;
+    totals.bwCarbs -= removals.bwCarbs;
+    totals.journalCarbs -= removals.journalCarbs;
 
     // Calculate deviation data over the full absorption window
     cobInputs.carbImpactTime = nowMs;
@@ -197,16 +228,7 @@ function recentCarbs(opts: RecentCarbsOpts, time: Date): RecentCarbsResult | Rec
     }
 
     // Zombie-carb safety: zero COB when deviations are null/undefined
-    if (deviationResult.currentDeviation === undefined || deviationResult.currentDeviation === null) {
-        console.error("");
-        console.error("Warning: setting mealCOB to 0 because currentDeviation is null/undefined");
-        mealCOB = 0;
-    }
-    if (deviationResult.maxDeviation === undefined || deviationResult.maxDeviation === null) {
-        console.error("");
-        console.error("Warning: setting mealCOB to 0 because maxDeviation is 0 or undefined");
-        mealCOB = 0;
-    }
+    mealCOB = applyZombieCarbSafety(mealCOB, deviationResult.currentDeviation, deviationResult.maxDeviation);
 
     return {
         carbs: Math.round(carbs * ROUND_SCALE_3DP) / ROUND_SCALE_3DP,
@@ -236,5 +258,8 @@ export {
     round,
     resolveMaxAbsorptionTime,
     accumulateCarbsByType,
+    accumulateRemovalsByType,
+    resetRemovalTotals,
+    applyZombieCarbSafety,
 };
 export type { RecentCarbsOpts, COBInputs, RecentCarbsResult };

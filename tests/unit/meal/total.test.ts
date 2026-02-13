@@ -12,6 +12,9 @@ import recentCarbs, {
     round,
     resolveMaxAbsorptionTime,
     accumulateCarbsByType,
+    accumulateRemovalsByType,
+    resetRemovalTotals,
+    applyZombieCarbSafety,
 } from '../../../src/meal/total';
 import { detectCarbAbsorption } from '../../../src/cob/index';
 
@@ -163,6 +166,101 @@ describe('accumulateCarbsByType', () => {
         accumulateCarbsByType({ timestamp: '', carbs: 30, nsCarbs: 30, bwCarbs: 30 }, totals);
         expect(totals.nsCarbs).toBe(30);
         expect(totals.bwCarbs).toBe(0);
+    });
+});
+
+// ---------------------------------------------------------------------------
+// accumulateRemovalsByType
+// ---------------------------------------------------------------------------
+
+describe('accumulateRemovalsByType', () => {
+    it('accumulates total carbs plus nsCarbs', () => {
+        const removals = { carbs: 0, nsCarbs: 0, bwCarbs: 0, journalCarbs: 0 };
+        accumulateRemovalsByType({ timestamp: '', carbs: 30, nsCarbs: 30 }, removals);
+        expect(removals.carbs).toBe(30);
+        expect(removals.nsCarbs).toBe(30);
+    });
+
+    it('accumulates total carbs plus bwCarbs', () => {
+        const removals = { carbs: 0, nsCarbs: 0, bwCarbs: 0, journalCarbs: 0 };
+        accumulateRemovalsByType({ timestamp: '', carbs: 25, bwCarbs: 25 }, removals);
+        expect(removals.carbs).toBe(25);
+        expect(removals.bwCarbs).toBe(25);
+    });
+
+    it('accumulates total carbs plus journalCarbs', () => {
+        const removals = { carbs: 0, nsCarbs: 0, bwCarbs: 0, journalCarbs: 0 };
+        accumulateRemovalsByType({ timestamp: '', carbs: 20, journalCarbs: 20 }, removals);
+        expect(removals.carbs).toBe(20);
+        expect(removals.journalCarbs).toBe(20);
+    });
+
+    it('accumulates across multiple calls', () => {
+        const removals = { carbs: 0, nsCarbs: 0, bwCarbs: 0, journalCarbs: 0 };
+        accumulateRemovalsByType({ timestamp: '', carbs: 10, nsCarbs: 10 }, removals);
+        accumulateRemovalsByType({ timestamp: '', carbs: 15, nsCarbs: 15 }, removals);
+        expect(removals.carbs).toBe(25);
+        expect(removals.nsCarbs).toBe(25);
+    });
+});
+
+// ---------------------------------------------------------------------------
+// resetRemovalTotals
+// ---------------------------------------------------------------------------
+
+describe('resetRemovalTotals', () => {
+    it('resets carbs, nsCarbs, and bwCarbs to zero', () => {
+        const removals = { carbs: 40, nsCarbs: 30, bwCarbs: 10, journalCarbs: 5 };
+        resetRemovalTotals(removals);
+        expect(removals.carbs).toBe(0);
+        expect(removals.nsCarbs).toBe(0);
+        expect(removals.bwCarbs).toBe(0);
+    });
+
+    it('does NOT reset journalCarbs (matches original behavior)', () => {
+        const removals = { carbs: 40, nsCarbs: 30, bwCarbs: 10, journalCarbs: 5 };
+        resetRemovalTotals(removals);
+        expect(removals.journalCarbs).toBe(5);
+    });
+});
+
+// ---------------------------------------------------------------------------
+// applyZombieCarbSafety
+// ---------------------------------------------------------------------------
+
+describe('applyZombieCarbSafety', () => {
+    beforeEach(() => {
+        vi.spyOn(console, 'error').mockImplementation(() => {});
+    });
+
+    it('returns mealCOB unchanged when deviations are valid numbers', () => {
+        expect(applyZombieCarbSafety(30, 5.0, 10.0)).toBe(30);
+    });
+
+    it('returns 0 when currentDeviation is null', () => {
+        expect(applyZombieCarbSafety(30, null as unknown as number, 10.0)).toBe(0);
+    });
+
+    it('returns 0 when currentDeviation is undefined', () => {
+        expect(applyZombieCarbSafety(30, undefined as unknown as number, 10.0)).toBe(0);
+    });
+
+    it('returns 0 when maxDeviation is null', () => {
+        expect(applyZombieCarbSafety(30, 5.0, null as unknown as number)).toBe(0);
+    });
+
+    it('returns 0 when maxDeviation is undefined', () => {
+        expect(applyZombieCarbSafety(30, 5.0, undefined as unknown as number)).toBe(0);
+    });
+
+    it('logs warning for null currentDeviation', () => {
+        applyZombieCarbSafety(30, null as unknown as number, 10.0);
+        expect(console.error).toHaveBeenCalledWith('Warning: setting mealCOB to 0 because currentDeviation is null/undefined');
+    });
+
+    it('logs warning for null maxDeviation', () => {
+        applyZombieCarbSafety(30, 5.0, null as unknown as number);
+        expect(console.error).toHaveBeenCalledWith('Warning: setting mealCOB to 0 because maxDeviation is 0 or undefined');
     });
 });
 
