@@ -142,7 +142,7 @@ export function resolveGlucoseDeltas(
 ): GlucoseDeltas | 'skip' {
     if (bucketed_data[bucketIdx].glucose === undefined) {
         console.log("Could not find glucose data");
-        return { bg: undefined as unknown as number, delta: NaN, avgDelta: NaN };
+        return { bg: NaN, delta: NaN, avgDelta: NaN };
     }
 
     const bg = bucketed_data[bucketIdx].glucose as number;
