@@ -81,9 +81,9 @@ export interface PumpHistoryEvent {
 
   // -- Timestamps --
   /** ISO timestamp string */
-  timestamp?: string;
+  timestamp?: ISODateString;
   /** Nightscout created_at ISO timestamp */
-  created_at?: string;
+  created_at?: ISODateString;
 
   // -- Insulin & bolus --
   /** Insulin delivery amount in Units (bolus) */
@@ -135,7 +135,7 @@ export interface PumpHistoryEvent {
 
   // -- Nested objects --
   /** Nested bolus object (Medtronic compound events) */
-  bolus?: { _type?: PumpHistoryEventType; amount?: number; programmed?: number; timestamp?: string; duration?: number };
+  bolus?: { _type?: PumpHistoryEventType; amount?: number; programmed?: number; timestamp?: ISODateString; duration?: number };
 
   /** Allow additional fields present in pump data */
   [key: string]: unknown;
@@ -152,11 +152,11 @@ export interface GlucoseEntry {
   /** Nightscout sgv field (used interchangeably with glucose) */
   sgv?: number;
   /** Epoch milliseconds timestamp */
-  date?: number;
+  date?: EpochMillis;
   /** Display timestamp string */
-  display_time?: string;
+  display_time?: ISODateString;
   /** ISO date string */
-  dateString?: string;
+  dateString?: ISODateString;
   /** CGM device identifier */
   device?: string;
   /** CGM noise level */
@@ -164,7 +164,7 @@ export interface GlucoseEntry {
   /** Entry type (e.g. "cal" for calibration) */
   type?: GlucoseEntryType;
   /** xDrip start timestamp */
-  xDrip_started_at?: string;
+  xDrip_started_at?: ISODateString;
 }
 
 // ---------------------------------------------------------------------------
@@ -177,11 +177,11 @@ export interface BucketedGlucose {
   /** Glucose value in mg/dL */
   glucose?: number;
   /** Epoch milliseconds timestamp */
-  date?: number;
+  date?: EpochMillis;
   /** Display timestamp string */
-  display_time?: string;
+  display_time?: ISODateString;
   /** ISO date string */
-  dateString?: string;
+  dateString?: ISODateString;
 }
 
 // ---------------------------------------------------------------------------
@@ -191,7 +191,7 @@ export interface BucketedGlucose {
 /** Carb/bolus entry extracted from pump history by meal/history.ts */
 export interface CarbTreatment {
   /** ISO timestamp string */
-  timestamp: string;
+  timestamp: ISODateString;
   /** Total carbs in grams */
   carbs?: number;
   /** Carbs entered via Nightscout Care Portal (g) */
@@ -221,7 +221,7 @@ export interface GlucoseStatus {
   /** CGM noise level (Dexcom noise estimate) */
   noise?: number;
   /** Timestamp of the glucose reading (epoch ms) */
-  date?: number;
+  date?: EpochMillis;
   /** Calibration record index (0 = no recent calibration) */
   last_cal?: number;
   /** CGM device identifier string */
@@ -269,13 +269,13 @@ export interface IOBData extends IOBEntry {
   /** Projected IOB assuming continuous zero temp from now */
   iobWithZeroTemp?: IOBEntry;
   /** Epoch ms of the most recent bolus */
-  lastBolusTime?: number;
+  lastBolusTime?: EpochMillis;
   /** Most recent temp basal treatment */
   lastTemp?: {
     rate: number;
     duration: number;
-    date: number;
-    started_at?: string;
+    date: EpochMillis;
+    started_at?: ISODateString;
   };
 }
 
@@ -292,17 +292,17 @@ export interface Treatment {
   /** Insulin amount in Units (bolus or temp basal increment) */
   insulin?: number;
   /** Timestamp of treatment (epoch ms) */
-  date: number;
+  date: EpochMillis;
   /** ISO timestamp string of when treatment started */
-  started_at?: string;
+  started_at?: ISODateString;
   /** ISO timestamp string */
-  timestamp?: string;
+  timestamp?: ISODateString;
   /** Temp basal rate in U/hr (present for temp basals) */
   rate?: number;
   /** Duration in minutes (present for temp basals) */
   duration?: number;
   /** Created-at ISO timestamp */
-  created_at?: string;
+  created_at?: ISODateString;
 }
 
 // ---------------------------------------------------------------------------
@@ -334,7 +334,7 @@ export interface MealData {
   /** Array of rounded deviation values for the absorption period */
   allDeviations: number[];
   /** Epoch ms of last carb entry */
-  lastCarbTime?: number;
+  lastCarbTime?: EpochMillis;
   /** True if Bolus Wizard was used in the last 6 hours */
   bwFound: boolean;
   /** Status reason string (e.g. "Could not parse clock data") */
@@ -717,7 +717,7 @@ export interface DetermineBasalInputs {
   meal_data: MealData;
   microBolusAllowed: boolean;
   reservoir_data?: number;
-  currentTime?: string;
+  currentTime?: ISODateString;
   pumphistory?: unknown[];
   preferences: Preferences;
   basalprofile?: BasalEntry[];
@@ -743,7 +743,7 @@ export interface DetermineBasalFixture {
 
 /** Inputs to iob/index.js generate() */
 export interface IOBInputs {
-  clock: string;
+  clock: ISODateString;
   history: unknown[];
   profile: {
     dia: number;
@@ -758,7 +758,7 @@ export interface IOBInputs {
 
 /** Inputs to meal/index.js generate() */
 export interface MealInputs {
-  clock: string;
+  clock: ISODateString;
   history: unknown[];
   carbs?: unknown[];
   glucose?: unknown[];
