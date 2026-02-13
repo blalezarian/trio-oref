@@ -85,6 +85,84 @@ export interface BGPredictionResult {
     predBGs: PredBGs;
 }
 
+// --- clipAndTrimPredictions ---
+
+export interface ClipAndTrimInputs {
+    // Prediction arrays from the loop
+    IOBpredBGs: number[];
+    ZTpredBGs: number[];
+    COBpredBGs: number[];
+    UAMpredBGs: number[];
+
+    // BG context
+    eventualBG: number;
+    target_bg: number;
+
+    // Meal / carb context
+    mealCOB: number;
+    carbImpact: number;
+    remainingCIpeak: number;
+    enableUAM: boolean | undefined;
+
+    // Logging arrays
+    predCIs: number[];
+    remainingCIs: number[];
+}
+
+export interface ClipAndTrimResult {
+    predBGs: PredBGs;
+    lastIOBpredBG: number;
+    lastCOBpredBG: number | undefined;
+    lastUAMpredBG: number | undefined;
+    eventualBG: number;
+}
+
+// --- calculateMinAndGuardBGs ---
+
+export interface MinGuardBGInputs {
+    // Min predictions from loop
+    minIOBPredBG: number;
+    minCOBPredBG: number;
+    minUAMPredBG: number;
+
+    // Guard BGs from loop
+    minCOBGuardBG: number;
+    minUAMGuardBG: number;
+    minIOBGuardBG: number;
+    minZTGuardBG: number;
+
+    // Last predicted values
+    IOBpredBG: number;
+    COBpredBG: number | undefined;
+    UAMpredBG: number | undefined;
+
+    // BG context
+    bg: number;
+    maxCOBPredBG: number;
+    threshold: number;
+    target_bg: number;
+
+    // Meal / carb context
+    mealCOB: number;
+    carbs: number;
+    carbImpactDuration: number;
+    remainingCIpeak: number;
+    enableUAM: boolean | undefined;
+
+    // Logging
+    uamCarbImpact: number;
+    UAMduration: number;
+}
+
+export interface MinGuardBGResult {
+    minPredBG: number;
+    minGuardBG: number;
+    avgPredBG: number;
+    minIOBPredBG: number;
+}
+
+// --- DosingDecisionInputs ---
+
 export interface DosingDecisionInputs {
     result: DetermineBasalResult;
     iob_data: IOBData;

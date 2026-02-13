@@ -26,9 +26,17 @@ import {
 import type {
     PredBGs,
     BGPredictionResult,
+    ClipAndTrimInputs,
+    ClipAndTrimResult,
+    MinGuardBGInputs,
+    MinGuardBGResult,
 } from './types';
 
 import { round } from './helpers';
+
+// ---------------------------------------------------------------------------
+// Main function
+// ---------------------------------------------------------------------------
 
 /** Generates predicted BG arrays (IOB, ZT, COB, UAM) and computes min/max prediction values for dosing decisions. */
 export function generateBGPredictions(
@@ -70,14 +78,9 @@ export function generateBGPredictions(
     let minUAMGuardBG = PRED_BG_SENTINEL;
     let minIOBGuardBG = PRED_BG_SENTINEL;
     let minZTGuardBG = PRED_BG_SENTINEL;
-    let minPredBG: number | undefined;
-    let avgPredBG: number | undefined;
     let IOBpredBG = eventualBG;
     let maxIOBPredBG = bg;
     let maxCOBPredBG = bg;
-    let lastIOBpredBG: number | undefined;
-    let lastCOBpredBG: number | undefined;
-    let lastUAMpredBG: number | undefined;
     let UAMduration = 0;
     let remainingCItotal = 0;
     const remainingCIs: number[] = [];
@@ -167,11 +170,93 @@ export function generateBGPredictions(
     } catch (e) {
         console.error("Problem with iobArray.  Optional feature Advanced Meal Assist disabled");
     }
-    if (meal_data.mealCOB) {
+
+    const clipResult = clipAndTrimPredictions({
+        IOBpredBGs,
+        ZTpredBGs,
+        COBpredBGs,
+        UAMpredBGs,
+        eventualBG,
+        target_bg,
+        mealCOB: meal_data.mealCOB,
+        carbImpact,
+        remainingCIpeak,
+        enableUAM,
+        predCIs,
+        remainingCIs,
+    });
+    eventualBG = clipResult.eventualBG;
+
+    const minGuardResult = calculateMinAndGuardBGs({
+        minIOBPredBG,
+        minCOBPredBG,
+        minUAMPredBG,
+        minCOBGuardBG,
+        minUAMGuardBG,
+        minIOBGuardBG,
+        minZTGuardBG,
+        IOBpredBG,
+        COBpredBG,
+        UAMpredBG,
+        bg,
+        maxCOBPredBG,
+        threshold,
+        target_bg,
+        mealCOB: meal_data.mealCOB,
+        carbs: meal_data.carbs,
+        carbImpactDuration,
+        remainingCIpeak,
+        enableUAM,
+        uamCarbImpact,
+        UAMduration,
+    });
+
+    return {
+        eventualBG,
+        minPredBG: minGuardResult.minPredBG,
+        minGuardBG: minGuardResult.minGuardBG,
+        lastIOBpredBG: clipResult.lastIOBpredBG,
+        lastCOBpredBG: clipResult.lastCOBpredBG as number,
+        lastUAMpredBG: clipResult.lastUAMpredBG as number,
+        maxCOBPredBG,
+        minIOBPredBG: minGuardResult.minIOBPredBG,
+        IOBpredBGs,
+        COBpredBGs,
+        predBGs: clipResult.predBGs,
+    };
+}
+
+// ---------------------------------------------------------------------------
+// Extracted helpers
+// ---------------------------------------------------------------------------
+
+/** Clips prediction arrays to valid BG range, trims flat tails, and builds the PredBGs result object. */
+export function clipAndTrimPredictions(inputs: ClipAndTrimInputs): ClipAndTrimResult {
+    const {
+        IOBpredBGs,
+        ZTpredBGs,
+        COBpredBGs,
+        UAMpredBGs,
+        target_bg,
+        mealCOB,
+        carbImpact,
+        remainingCIpeak,
+        enableUAM,
+        predCIs,
+        remainingCIs,
+    } = inputs;
+    let eventualBG = inputs.eventualBG;
+    let lastCOBpredBG: number | undefined;
+    let lastUAMpredBG: number | undefined;
+
+    if (mealCOB) {
         console.error(`predCIs (mg/dL/5m):${predCIs.join(" ")}`);
         console.error(`remainingCIs:      ${remainingCIs.join(" ")}`);
     }
+
     const predBGs: PredBGs = {} as PredBGs;
+
+    // IOB: clip to [39, 401], trim flat tail
     IOBpredBGs.forEach((p: number, iobIdx: number, theArray: number[]) => {
         theArray[iobIdx] = round(Math.min(MAX_VALID_GLUCOSE_MGDL + 1, Math.max(MIN_VALID_GLUCOSE_MGDL, p)));
     });
@@ -180,7 +265,9 @@ export function generateBGPredictions(
         else { IOBpredBGs.pop(); }
     }
     predBGs.IOB = IOBpredBGs;
-    lastIOBpredBG = round(IOBpredBGs[IOBpredBGs.length - 1]);
+    const lastIOBpredBG = round(IOBpredBGs[IOBpredBGs.length - 1]);
+
+    // ZT: clip to [39, 401], trim rising-above-target tail
     ZTpredBGs.forEach((p: number, ztIdx: number, theArray: number[]) => {
         theArray[ztIdx] = round(Math.min(MAX_VALID_GLUCOSE_MGDL + 1, Math.max(MIN_VALID_GLUCOSE_MGDL, p)));
     });
@@ -190,7 +277,9 @@ export function generateBGPredictions(
         else { ZTpredBGs.pop(); }
     }
     predBGs.ZT = ZTpredBGs;
-    if (meal_data.mealCOB > 0 && ( carbImpact > 0 || remainingCIpeak > 0 )) {
+
+    // COB: clip to [39, 1500], trim flat tail (only if mealCOB and carb impact present)
+    if (mealCOB > 0 && ( carbImpact > 0 || remainingCIpeak > 0 )) {
         COBpredBGs.forEach((p: number, cobIdx: number, theArray: number[]) => {
             theArray[cobIdx] = round(Math.min(COB_PRED_BG_CAP, Math.max(MIN_VALID_GLUCOSE_MGDL, p)));
         });
@@ -203,6 +292,8 @@ export function generateBGPredictions(
         eventualBG = Math.max(eventualBG, round(COBpredBGs[COBpredBGs.length-1]));
         console.error(`COBpredBG: ${round(COBpredBGs[COBpredBGs.length - 1])}`);
     }
+
+    // UAM: clip to [39, 401], trim flat tail (only if carb impact present and UAM enabled)
     if (carbImpact > 0 || remainingCIpeak > 0) {
         if (enableUAM) {
             UAMpredBGs.forEach((p: number, uamIdx: number, theArray: number[]) => {
@@ -222,15 +313,47 @@ export function generateBGPredictions(
         // set eventualBG based on COB or UAM predBGs
     }
 
+    return { predBGs, lastIOBpredBG, lastCOBpredBG, lastUAMpredBG, eventualBG };
+}
+
+/** Selects min predicted BG, guard BG, and average predicted BG from all prediction scenarios. */
+export function calculateMinAndGuardBGs(inputs: MinGuardBGInputs): MinGuardBGResult {
+    let {
+        minIOBPredBG,
+        minCOBPredBG,
+        minUAMPredBG,
+    } = inputs;
+    const {
+        minCOBGuardBG,
+        minUAMGuardBG,
+        minIOBGuardBG,
+        minZTGuardBG,
+        IOBpredBG,
+        COBpredBG,
+        UAMpredBG,
+        bg,
+        maxCOBPredBG,
+        threshold,
+        target_bg,
+        mealCOB,
+        carbs,
+        carbImpactDuration,
+        remainingCIpeak,
+        enableUAM,
+        uamCarbImpact,
+        UAMduration,
+    } = inputs;
+
     console.error(`UAM Impact:${uamCarbImpact}mg/dL per 5m; UAM Duration:${UAMduration}hours`);
 
     minIOBPredBG = Math.max(MIN_VALID_GLUCOSE_MGDL,minIOBPredBG);
     minCOBPredBG = Math.max(MIN_VALID_GLUCOSE_MGDL,minCOBPredBG);
     minUAMPredBG = Math.max(MIN_VALID_GLUCOSE_MGDL,minUAMPredBG);
-    minPredBG = round(minIOBPredBG);
+    let minPredBG: number = round(minIOBPredBG);
 
-    const fractionCarbsLeft = meal_data.mealCOB/meal_data.carbs;
+    const fractionCarbsLeft = mealCOB/carbs;
     // if we have COB and UAM is enabled, average both
+    let avgPredBG: number;
     if ( minUAMPredBG < PRED_BG_SENTINEL && minCOBPredBG < PRED_BG_SENTINEL ) {
         // weight COBpredBG vs. UAMpredBG based on how many carbs remain as COB
         avgPredBG = round( (1-fractionCarbsLeft)*(UAMpredBG as number) + fractionCarbsLeft*(COBpredBG as number) );
@@ -280,7 +403,7 @@ export function generateBGPredictions(
     }
     minZTUAMPredBG = round(minZTUAMPredBG);
     // if any carbs have been entered recently
-    if (meal_data.carbs) {
+    if (carbs) {
 
         // if UAM is disabled, use max of minIOBPredBG, minCOBPredBG
         if ( ! enableUAM && minCOBPredBG < PRED_BG_SENTINEL ) {
@@ -314,12 +437,12 @@ export function generateBGPredictions(
     if (minUAMPredBG < PRED_BG_SENTINEL) {
         process.stderr.write(` minUAMPredBG: ${minUAMPredBG}`);
     }
-    console.error(` avgPredBG:${avgPredBG} COB/Carbs:${meal_data.mealCOB}/${meal_data.carbs}`);
+    console.error(` avgPredBG:${avgPredBG} COB/Carbs:${mealCOB}/${carbs}`);
     // But if the COB line falls off a cliff, don't trust UAM too much:
     // use maxCOBPredBG if it's been set and lower than minPredBG
     if ( maxCOBPredBG > bg ) {
         minPredBG = Math.min(minPredBG, maxCOBPredBG);
     }
 
-    return { eventualBG, minPredBG: minPredBG as number, minGuardBG, lastIOBpredBG: lastIOBpredBG as number, lastCOBpredBG: lastCOBpredBG as number, lastUAMpredBG: lastUAMpredBG as number, maxCOBPredBG, minIOBPredBG, IOBpredBGs, COBpredBGs, predBGs };
+    return { minPredBG, minGuardBG, avgPredBG, minIOBPredBG };
 }
