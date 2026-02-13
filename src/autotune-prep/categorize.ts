@@ -2,6 +2,7 @@ import { getCurrentBasalRate } from '../profile/basal';
 import getIOB from '../iob/index';
 import { isfLookup as ISFLookup } from '../profile/isf';
 import find_insulin from '../iob/extract-treatments';
+import type { IobInputs } from '../iob/types';
 import dosed from './dosed';
 import type { DosedOpts } from './dosed';
 import type { PumpHistoryEvent, CarbTreatment, InsulinCurve, MealAbsorptionPhase } from '../types/index';
@@ -98,12 +99,6 @@ interface CategorizeOpts {
   categorize_uam_as_basal?: boolean;
 }
 
-interface CategorizeIOBInputs {
-  profile: CategorizeProfile;
-  history: PumpHistoryEvent[];
-  clock?: string;
-}
-
 interface CategorizeGlucoseDatum {
   glucose: number;
   date: number;
@@ -181,9 +176,10 @@ function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
     }
     if (!treatments) return {} as CategorizeResult;
 
-    let IOBInputs: CategorizeIOBInputs = {
-        profile: profileData
+    let IOBInputs = {
+        clock: ''
     ,   history: opts.pumpHistory
+    ,   profile: profileData
     };
     let CSFGlucoseData: CategorizeGlucoseDatum[] = [];
     let ISFGlucoseData: CategorizeGlucoseDatum[] = [];
@@ -307,7 +303,7 @@ function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
         // basalBGI is BGI of basal insulin activity.
         const basalBGI = Math.round(( currentBasal * sens / MINUTES_PER_HOUR * PRED_INTERVAL_MINUTES )*ROUND_SCALE_2DP)/ROUND_SCALE_2DP; // U/hr * mg/dL/U * 1 hr / 60 minutes * 5 = mg/dL/5m
         // call iob since calculated elsewhere
-        const iob = getIOB(IOBInputs as unknown as Parameters<typeof getIOB>[0])[0];
+        const iob = getIOB(IOBInputs as IobInputs)[0];
 
         // activity times ISF times 5 minutes is BGI
         const bgImpact = Math.round(( -iob.activity * sens * PRED_INTERVAL_MINUTES )*ROUND_SCALE_2DP)/ROUND_SCALE_2DP;
@@ -460,10 +456,11 @@ function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
     }
 
     IOBInputs = {
-        profile: profileData
+        clock: ''
     ,   history: opts.pumpHistory
+    ,   profile: profileData
     };
-    const dosedTreatments = find_insulin(IOBInputs as unknown as Parameters<typeof find_insulin>[0]);
+    const dosedTreatments = find_insulin(IOBInputs as IobInputs);
     CRData.forEach((crEntry: CRDatum) => {
         const dosedOpts: DosedOpts = {
             treatments: dosedTreatments
