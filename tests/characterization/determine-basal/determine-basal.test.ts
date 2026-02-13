@@ -182,7 +182,7 @@ describe('determine-basal error path tests', () => {
   // at line 395 could handle it).
   it('returns error when profile is undefined', () => {
     const output = callDetermineBasal({ profile: undefined, profile_raw: true });
-    expect(output).toEqual({ error: 'Error: could not get current basal rate' });
+    expect(output).toEqual({ reason: '', error: 'Error: could not get current basal rate' });
   });
 
   // Lines 381-382: profile without current_basal

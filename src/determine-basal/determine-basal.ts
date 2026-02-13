@@ -71,7 +71,7 @@ export function determine_basal(
         preferences = {} as Preferences;
     }
     if (profile === undefined || profile.current_basal === undefined) {
-        return { error: 'Error: could not get current basal rate' } as unknown as DetermineBasalResult;
+        return { reason: '', error: 'Error: could not get current basal rate' } as DetermineBasalResult;
     }
 
     let profileTarget = profile.min_bg;

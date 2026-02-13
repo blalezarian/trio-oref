@@ -20130,6 +20130,7 @@ exports[`determine-basal error path tests > returns error when iob_data.iob is u
 exports[`determine-basal error path tests > returns error when profile.current_basal is undefined 1`] = `
 {
   "error": "Error: could not get current basal rate",
+  "reason": "",
 }
 `;
 
