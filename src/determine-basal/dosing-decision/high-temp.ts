@@ -15,14 +15,17 @@ import {
     LOW_TEMP_CORRECTION_FACTOR,
     MIN_SMB_INTERVAL_MINUTES,
     MAX_SMB_INTERVAL_MINUTES,
-    SMB_MAX_ZERO_TEMP_MINUTES,
     SECONDS_PER_MINUTE,
 } from '../constants';
 
 import { round, convert_bg } from '../helpers';
 
 import type { DosingContext, PhaseOutcome } from './types';
-import { keepOrSetBasalTemp } from './helpers';
+import {
+    keepOrSetBasalTemp,
+    determineSMBMaxBolus,
+    calculateSMBZeroTemp,
+} from './helpers';
 
 // ---------------------------------------------------------------------------
 // Phase 10: checkIOBLimit
@@ -112,22 +115,59 @@ export function calculateHighInsulinReq(ctx: DosingContext): PhaseOutcome {
 export function handleSMB(ctx: DosingContext): PhaseOutcome {
     const {
         iob_data,
+        meal_data,
         profile,
-        microBolusAllowed,
         systemTime,
+        trio_custom_variables,
+        microBolusAllowed,
         bg,
+        target_bg,
         threshold,
+        basal,
+        carbRatio,
+        adjustedSens,
+        overrideFactor,
         naive_eventualBG,
+        minIOBPredBG,
     } = ctx.inputs;
     const { result } = ctx;
+    const { advancedSettings, smbMinutes, uamMinutes } = trio_custom_variables;
 
     // minutes since last bolus
     const lastBolusAge = round((new Date(systemTime).getTime() - (iob_data.lastBolusTime as number)) / MS_PER_MINUTE, 1);
 
     // only allow microboluses with COB or low temp targets, or within DIA hours of a bolus
     if (microBolusAllowed && ctx.enableSMB && bg > threshold) {
-        const maxBolus = calculateSMBMaxBolus(ctx);
+        // never bolus more than maxSMBBasalMinutes worth of basal
+        let smbMinutesSetting = DEFAULT_MAX_SMB_BASAL_MINUTES;
+        if (profile.maxSMBBasalMinutes !== undefined) {
+            smbMinutesSetting = profile.maxSMBBasalMinutes;
+        }
+        let uamMinutesSetting = DEFAULT_MAX_SMB_BASAL_MINUTES;
+        if (profile.maxUAMSMBBasalMinutes !== undefined) {
+            uamMinutesSetting = profile.maxUAMSMBBasalMinutes;
+        }
 
+        if (trio_custom_variables.useOverride && advancedSettings && smbMinutes !== smbMinutesSetting) {
+            console.error(`SMB Max Minutes - setting overriden from ${smbMinutesSetting} to ${smbMinutes}`);
+            smbMinutesSetting = smbMinutes;
+        }
+        if (trio_custom_variables.useOverride && advancedSettings && uamMinutes !== uamMinutesSetting) {
+            console.error(`UAM Max Minutes - setting overriden from ${uamMinutesSetting} to ${uamMinutes}`);
+            uamMinutesSetting = uamMinutes;
+        }
+
+        const mealInsulinReq = round(meal_data.mealCOB / carbRatio, 3);
+        const effectiveBasal = profile.current_basal * overrideFactor;
+        const maxBolus = determineSMBMaxBolus(
+            ctx.insulinReq,
+            iob_data.iob,
+            meal_data.mealCOB,
+            mealInsulinReq,
+            effectiveBasal,
+            smbMinutesSetting,
+            uamMinutesSetting,
+        );
         // bolus 1/2 the insulinReq, up to maxBolus, rounding down to nearest bolus increment
         const bolusIncrement = profile.bolus_increment as number;
         const roundSMBTo = 1 / bolusIncrement;
@@ -140,9 +180,18 @@ export function handleSMB(ctx: DosingContext): PhaseOutcome {
         let microBolus = Math.min(ctx.insulinReq * smb_ratio, maxBolus);
 
         microBolus = Math.floor(microBolus * roundSMBTo) / roundSMBTo;
-
-        const { durationReq, smbLowTempReq } = calculateSMBZeroTempDuration(ctx, microBolus, bolusIncrement);
-
+        // calculate a long enough zero temp to eventually correct back up to target
+        const smbTarget = target_bg;
+        const worstCaseInsulinReq = (smbTarget - (naive_eventualBG + minIOBPredBG) / 2) / adjustedSens;
+        const { durationReq, smbLowTempReq } = calculateSMBZeroTemp(
+            ctx.insulinReq,
+            microBolus,
+            bolusIncrement,
+            worstCaseInsulinReq,
+            profile.current_basal,
+            overrideFactor,
+            basal,
+        );
         result.reason += ` insulinReq ${ctx.insulinReq}`;
         if (microBolus >= maxBolus) {
             result.reason += `; maxBolus ${maxBolus}`;
@@ -152,9 +201,24 @@ export function handleSMB(ctx: DosingContext): PhaseOutcome {
         }
         result.reason += ". ";
 
-        applySMBTiming(ctx, microBolus, maxBolus, lastBolusAge);
+        //allow SMBs every 3 minutes by default
+        let SMBInterval = DEFAULT_SMB_INTERVAL_MINUTES;
+        if (profile.SMBInterval) {
+            // allow SMBIntervals between 1 and 10 minutes
+            SMBInterval = Math.min(MAX_SMB_INTERVAL_MINUTES, Math.max(MIN_SMB_INTERVAL_MINUTES, profile.SMBInterval));
+        }
+        const nextBolusMins = round(SMBInterval - lastBolusAge, 0);
+        const nextBolusSeconds = round((SMBInterval - lastBolusAge) * SECONDS_PER_MINUTE, 0) % SECONDS_PER_MINUTE;
         console.error(`naive_eventualBG ${naive_eventualBG},${durationReq}m ${smbLowTempReq}U/h temp needed; last bolus ${lastBolusAge}m ago; maxBolus: ${maxBolus}`);
 
+        if (lastBolusAge > SMBInterval) {
+            if (microBolus > 0) {
+                result.units = microBolus;
+                result.reason += `Microbolusing ${microBolus}U. `;
+            }
+        } else {
+            result.reason += `Waiting ${nextBolusMins}m ${nextBolusSeconds}s to microbolus again. `;
+        }
         // if no zero temp is required, don't return yet; allow later code to set a high temp
         if (durationReq > 0) {
             result.rate = smbLowTempReq;
@@ -165,179 +229,6 @@ export function handleSMB(ctx: DosingContext): PhaseOutcome {
     }
 
     return { done: false };
-}
-
-// ---------------------------------------------------------------------------
-// handleSMB helpers
-// ---------------------------------------------------------------------------
-
-/** Resolves SMB minutes settings with overrides and calculates maxBolus from the 3-branch selection. */
-function calculateSMBMaxBolus(ctx: DosingContext): number {
-    const {
-        iob_data,
-        meal_data,
-        profile,
-        trio_custom_variables,
-        carbRatio,
-        overrideFactor,
-    } = ctx.inputs;
-
-    const { smbMinutesSetting, uamMinutesSetting } = resolveSMBMinutesSettings(profile, trio_custom_variables);
-    const mealInsulinReq = round(meal_data.mealCOB / carbRatio, 3);
-
-    if (smbMinutesSetting === undefined) {
-        return calculateDefaultMaxBolus(profile.current_basal, overrideFactor, ctx.insulinReq);
-    }
-
-    if (iob_data.iob > mealInsulinReq && iob_data.iob > 0) {
-        return calculateUAMMaxBolus(profile.current_basal, overrideFactor, uamMinutesSetting, iob_data.iob, meal_data.mealCOB, mealInsulinReq, ctx.insulinReq);
-    }
-
-    return calculateSMBMinutesMaxBolus(profile.current_basal, overrideFactor, smbMinutesSetting, ctx.insulinReq);
-}
-
-/** Resolves smbMinutesSetting and uamMinutesSetting from profile defaults and override values. */
-function resolveSMBMinutesSettings(
-    profile: DosingContext['inputs']['profile'],
-    trio_custom_variables: DosingContext['inputs']['trio_custom_variables'],
-): { smbMinutesSetting: number; uamMinutesSetting: number } {
-    const { advancedSettings, smbMinutes, uamMinutes } = trio_custom_variables;
-
-    // never bolus more than maxSMBBasalMinutes worth of basal
-    let smbMinutesSetting = DEFAULT_MAX_SMB_BASAL_MINUTES;
-    if (profile.maxSMBBasalMinutes !== undefined) {
-        smbMinutesSetting = profile.maxSMBBasalMinutes;
-    }
-    let uamMinutesSetting = DEFAULT_MAX_SMB_BASAL_MINUTES;
-    if (profile.maxUAMSMBBasalMinutes !== undefined) {
-        uamMinutesSetting = profile.maxUAMSMBBasalMinutes;
-    }
-
-    if (trio_custom_variables.useOverride && advancedSettings && smbMinutes !== smbMinutesSetting) {
-        console.error(`SMB Max Minutes - setting overriden from ${smbMinutesSetting} to ${smbMinutes}`);
-        smbMinutesSetting = smbMinutes;
-    }
-    if (trio_custom_variables.useOverride && advancedSettings && uamMinutes !== uamMinutesSetting) {
-        console.error(`UAM Max Minutes - setting overriden from ${uamMinutesSetting} to ${uamMinutes}`);
-        uamMinutesSetting = uamMinutes;
-    }
-
-    return { smbMinutesSetting, uamMinutesSetting };
-}
-
-/** maxBolus when smbMinutesSetting is undefined: default to 30m worth of basal. */
-function calculateDefaultMaxBolus(current_basal: number, overrideFactor: number, insulinReq: number): number {
-    const maxBolus = round(current_basal * overrideFactor * DEFAULT_MAX_SMB_BASAL_MINUTES / MINUTES_PER_HOUR, 1);
-    console.error("smbMinutesSetting undefined: defaulting to 30m");
-    if (insulinReq > maxBolus) {
-        console.error(`SMB limited by maxBolus: ${maxBolus} ( ${insulinReq} U)`);
-    }
-    return maxBolus;
-}
-
-/** maxBolus when IOB exceeds meal insulin requirement: use UAM minutes setting. */
-function calculateUAMMaxBolus(
-    current_basal: number,
-    overrideFactor: number,
-    uamMinutesSetting: number,
-    iob: number,
-    mealCOB: number,
-    mealInsulinReq: number,
-    insulinReq: number,
-): number {
-    console.error(`IOB${iob}> COB${mealCOB}; mealInsulinReq =${mealInsulinReq}`);
-    const effectiveMinutes = uamMinutesSetting || DEFAULT_MAX_SMB_BASAL_MINUTES;
-    if (uamMinutesSetting) {
-        console.error(`maxUAMSMBBasalMinutes: ${uamMinutesSetting}, profile.current_basal: ${current_basal * overrideFactor}`);
-    } else {
-        console.error("maxUAMSMBBasalMinutes undefined: defaulting to 30m");
-    }
-    const maxBolus = round(current_basal * overrideFactor * effectiveMinutes / MINUTES_PER_HOUR, 1);
-    if (insulinReq > maxBolus) {
-        console.error(`SMB limited by maxUAMSMBBasalMinutes [ ${uamMinutesSetting}m ]: ${maxBolus}U ( ${insulinReq}U )`);
-    } else { console.error(`SMB is not limited by maxUAMSMBBasalMinutes. ( insulinReq: ${insulinReq}U )`); }
-    return maxBolus;
-}
-
-/** maxBolus for normal SMB path: use smbMinutesSetting. */
-function calculateSMBMinutesMaxBolus(current_basal: number, overrideFactor: number, smbMinutesSetting: number, insulinReq: number): number {
-    console.error(`.maxSMBBasalMinutes: ${smbMinutesSetting}, profile.current_basal: ${current_basal * overrideFactor}`);
-    const maxBolus = round(current_basal * overrideFactor * smbMinutesSetting / MINUTES_PER_HOUR, 1);
-    if (insulinReq > maxBolus) {
-        console.error(`SMB limited by maxSMBBasalMinutes: ${smbMinutesSetting}m ]: ${maxBolus}U ( insulinReq: ${insulinReq}U )`);
-    } else { console.error(`SMB is not limited by maxSMBBasalMinutes. ( insulinReq: ${insulinReq}U )`); }
-    return maxBolus;
-}
-
-/** Calculates zero-temp duration for SMB and clamps to valid range. */
-function calculateSMBZeroTempDuration(
-    ctx: DosingContext,
-    microBolus: number,
-    bolusIncrement: number,
-): { durationReq: number; smbLowTempReq: number } {
-    const {
-        profile,
-        target_bg,
-        basal,
-        adjustedSens,
-        overrideFactor,
-        naive_eventualBG,
-        minIOBPredBG,
-    } = ctx.inputs;
-
-    // calculate a long enough zero temp to eventually correct back up to target
-    const smbTarget = target_bg;
-    const worstCaseInsulinReq = (smbTarget - (naive_eventualBG + minIOBPredBG) / 2) / adjustedSens;
-    let durationReq = round(MINUTES_PER_HOUR * worstCaseInsulinReq / profile.current_basal * overrideFactor);
-
-    // if insulinReq > 0 but not enough for a microBolus, don't set an SMB zero temp
-    if (ctx.insulinReq > 0 && microBolus < bolusIncrement) {
-        return { durationReq: 0, smbLowTempReq: 0 };
-    }
-
-    if (durationReq <= 0) {
-        return { durationReq: 0, smbLowTempReq: 0 };
-    }
-
-    // don't set an SMB zero temp longer than 60 minutes
-    if (durationReq >= TEMP_BASAL_DURATION_MINUTES) {
-        durationReq = round(durationReq / TEMP_BASAL_DURATION_MINUTES) * TEMP_BASAL_DURATION_MINUTES;
-        durationReq = Math.min(SMB_MAX_ZERO_TEMP_MINUTES, Math.max(0, durationReq));
-        return { durationReq, smbLowTempReq: 0 };
-    }
-
-    // if SMB durationReq is less than 30m, set a nonzero low temp
-    const smbLowTempReq = round(basal * durationReq / TEMP_BASAL_DURATION_MINUTES, 2);
-    return { durationReq: TEMP_BASAL_DURATION_MINUTES, smbLowTempReq };
-}
-
-/** Checks SMB interval timing and sets result.units/reason if a microBolus should be delivered. */
-function applySMBTiming(
-    ctx: DosingContext,
-    microBolus: number,
-    maxBolus: number,
-    lastBolusAge: number,
-): void {
-    const { profile } = ctx.inputs;
-    const { result } = ctx;
-
-    //allow SMBs every 3 minutes by default
-    let SMBInterval = DEFAULT_SMB_INTERVAL_MINUTES;
-    if (profile.SMBInterval) {
-        // allow SMBIntervals between 1 and 10 minutes
-        SMBInterval = Math.min(MAX_SMB_INTERVAL_MINUTES, Math.max(MIN_SMB_INTERVAL_MINUTES, profile.SMBInterval));
-    }
-    const nextBolusMins = round(SMBInterval - lastBolusAge, 0);
-    const nextBolusSeconds = round((SMBInterval - lastBolusAge) * SECONDS_PER_MINUTE, 0) % SECONDS_PER_MINUTE;
-
-    if (lastBolusAge > SMBInterval) {
-        if (microBolus > 0) {
-            result.units = microBolus;
-            result.reason += `Microbolusing ${microBolus}U. `;
-        }
-    } else {
-        result.reason += `Waiting ${nextBolusMins}m ${nextBolusSeconds}s to microbolus again. `;
-    }
 }
 
 // ---------------------------------------------------------------------------
