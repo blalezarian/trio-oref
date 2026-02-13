@@ -30,9 +30,9 @@ export interface CarbAbsorptionResult {
 /** Analyze glucose deviations and track carb absorption */
 export function analyzeAbsorption(
     bucketed_data: BucketedGlucose[],
-    iob_inputs: { profile: IobProfile & Record<string, unknown>; history: unknown[]; clock?: string | Date },
+    iob_inputs: { profile: IobProfile; history: unknown[]; clock?: string | Date },
     basalprofile: HistoryBasalProfileEntry[],
-    profile: IobProfile & Record<string, unknown>,
+    profile: IobProfile,
     treatments: IobTreatment[],
     mealTime: Date,
     ciTime: Date
@@ -49,7 +49,7 @@ export function analyzeAbsorption(
     for (let i=0; i < bucketed_data.length-3; ++i) {
         bgTime = new Date(bucketed_data[i].date!);
 
-        const sens = isf.isfLookup((profile.isfProfile as { sensitivities: Array<{ offset: number; sensitivity: number }> }),bgTime);
+        const sens = isf.isfLookup(profile.isfProfile!,bgTime);
 
         //console.error(bgTime , bucketed_data[i].glucose, bucketed_data[i].date);
         let bg: number;
@@ -85,7 +85,7 @@ export function analyzeAbsorption(
                 //console.error("currentDeviation:",currentDeviation,avgDelta,bgi);
                 allDeviations.push(Math.round(currentDeviation));
             }
-            if (currentDeviation/2 > (profile.min_5m_carbimpact as number)) {
+            if (currentDeviation/2 > profile.min_5m_carbimpact!) {
                 //console.error("currentDeviation",currentDeviation,"/2 > min_5m_carbimpact",profile.min_5m_carbimpact);
             }
         } else if (ciTime > bgTime) {
@@ -111,8 +111,8 @@ export function analyzeAbsorption(
             // figure out how many carbs that represents
             // if currentDeviation is > 2 * min_5m_carbimpact, assume currentDeviation/2 worth of carbs were absorbed
             // but always assume at least profile.min_5m_carbimpact (3mg/dL/5m by default) absorption
-            const carbImpact = Math.max(deviation, currentDeviation!/2, profile.min_5m_carbimpact as number);
-            const absorbed = carbImpact * (profile.carb_ratio as number) / sens;
+            const carbImpact = Math.max(deviation, currentDeviation!/2, profile.min_5m_carbimpact!);
+            const absorbed = carbImpact * profile.carb_ratio! / sens;
             // and add that to the running total carbsAbsorbed
             //console.error("carbsAbsorbed:",carbsAbsorbed,"absorbed:",absorbed,"bgTime:",bgTime,"BG:",bucketed_data[i].glucose)
             carbsAbsorbed += absorbed;

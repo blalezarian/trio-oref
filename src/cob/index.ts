@@ -9,7 +9,7 @@ import type { CarbAbsorptionResult } from './deviation-loop';
 interface CarbAbsorptionInputs {
   glucose_data: GlucoseEntry[] | undefined;
   iob_inputs: {
-    profile: IobProfile & Record<string, unknown>;
+    profile: IobProfile;
     history: PumpHistoryEvent[];
     clock?: string | Date;
   };
@@ -20,7 +20,7 @@ interface CarbAbsorptionInputs {
 
 export function detectCarbAbsorption(inputs: CarbAbsorptionInputs): CarbAbsorptionResult {
 
-    let profile: IobProfile & Record<string, unknown>;
+    let profile: IobProfile;
     const glucose_data = normalizeGlucoseData(inputs.glucose_data!);
     const iob_inputs = inputs.iob_inputs;
     const basalprofile = inputs.basalprofile;
@@ -38,7 +38,7 @@ export function detectCarbAbsorption(inputs: CarbAbsorptionInputs): CarbAbsorpti
         glucose_data,
         mealTime,
         ciTime,
-        profile.maxMealAbsorptionTime as number
+        profile.maxMealAbsorptionTime!
     );
 
     return analyzeAbsorption(
