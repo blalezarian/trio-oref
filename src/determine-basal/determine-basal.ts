@@ -164,25 +164,25 @@ export function determine_basal(
     }
     const expectedDelta = calculate_expected_delta(target_bg, eventualBG, bgImpact);
 
-// Initialize result (requestedTemp) object. Has to be done after eventualBG is calculated.
+    // Initialize result (requestedTemp) object. Has to be done after eventualBG is calculated.
     result = {
-        'temp': 'absolute'
-        , 'bg': bg
-        , 'tick': tick
-        , 'eventualBG': eventualBG
-        , 'insulinReq': 0
-        , 'reservoir' : reservoir_data // The expected reservoir volume at which to deliver the microbolus (the reservoir volume from right before the last pumphistory run)
-        , 'deliverAt' : deliverAt as unknown as string // The time at which the microbolus should be delivered
-        , 'sensitivityRatio' : sensitivityRatio
-        , 'CR' : round(carbRatio, 1)
-        , 'current_target': target_bg
-        , 'insulinForManualBolus': insulinForManualBolus
-        , 'manualBolusErrorString': manualBolusErrorString
-        , 'minDelta':  minDelta
-        , 'expectedDelta':  expectedDelta
-        , 'minGuardBG':  undefined
-        , 'minPredBG':  undefined
-        , 'threshold': convert_bg(threshold, profile)
+        temp: 'absolute',
+        bg,
+        tick,
+        eventualBG,
+        insulinReq: 0,
+        reservoir: reservoir_data,
+        deliverAt: deliverAt as unknown as string,
+        sensitivityRatio,
+        CR: round(carbRatio, 1),
+        current_target: target_bg,
+        insulinForManualBolus,
+        manualBolusErrorString,
+        minDelta,
+        expectedDelta,
+        minGuardBG: undefined,
+        minPredBG: undefined,
+        threshold: convert_bg(threshold, profile),
     } as unknown as DetermineBasalResult;
 
     let enableSMB = false;
