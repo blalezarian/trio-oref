@@ -45,13 +45,11 @@ export function analyzeAbsorption(
     let minDeviation = 999;
     const allDeviations: number[] = [];
     let bgTime: Date | undefined;
-    //console.error(bucketed_data);
     for (let i=0; i < bucketed_data.length-3; ++i) {
         bgTime = new Date(bucketed_data[i].date!);
 
         const sens = isf.isfLookup(profile.isfProfile!,bgTime);
 
-        //console.error(bgTime , bucketed_data[i].glucose, bucketed_data[i].date);
         let bg: number;
         let avgDelta: number;
         let delta: number;
@@ -68,30 +66,19 @@ export function analyzeAbsorption(
         avgDelta = Math.round(avgDelta! * 100) / 100;
         iob_inputs.clock=bgTime;
         iob_inputs.profile.current_basal = basal.basalLookup(basalprofile, bgTime)!;
-        //console.log(JSON.stringify(iob_inputs.profile));
-        //console.error("Before: ", new Date().getTime());
         const iob = get_iob(iob_inputs as IobInputs, true, treatments)[0];
-        //console.error("After: ", new Date().getTime());
-        //console.error(JSON.stringify(iob));
 
         const bgImpact = calculateBGImpact(iob.activity, sens);
-        //console.error(delta);
         const deviation = calculateDeviation(delta!, bgImpact);
-        //if (deviation < 0 && deviation > -2) { console.error("BG: "+bg+", avgDelta: "+avgDelta+", BGI: "+bgi+", deviation: "+deviation); }
         // calculate the deviation right now, for use in min_5m
         if (i===0) {
             currentDeviation = Math.round((avgDelta - bgImpact)*1000)/1000;
             if (ciTime > bgTime) {
-                //console.error("currentDeviation:",currentDeviation,avgDelta,bgi);
                 allDeviations.push(Math.round(currentDeviation));
-            }
-            if (currentDeviation/2 > profile.min_5m_carbimpact!) {
-                //console.error("currentDeviation",currentDeviation,"/2 > min_5m_carbimpact",profile.min_5m_carbimpact);
             }
         } else if (ciTime > bgTime) {
             const avgDeviation = Math.round((avgDelta - bgImpact)*1000)/1000;
             const deviationSlope = (avgDeviation-currentDeviation!)/(bgTime.getTime()-ciTime.getTime())*MS_PER_5_MIN;
-            //console.error(avgDeviation,currentDeviation,bgTime,ciTime)
             if (avgDeviation > maxDeviation) {
                 slopeFromMaxDeviation = Math.min(0, deviationSlope);
                 maxDeviation = avgDeviation;
@@ -101,9 +88,7 @@ export function analyzeAbsorption(
                 minDeviation = avgDeviation;
             }
 
-            //console.error("Deviations:",avgDeviation, avgDelta,bgi,bgTime);
             allDeviations.push(Math.round(avgDeviation));
-            //console.error(allDeviations);
         }
 
         // if bgTime is more recent than mealTime
@@ -114,14 +99,9 @@ export function analyzeAbsorption(
             const carbImpact = Math.max(deviation, currentDeviation!/2, profile.min_5m_carbimpact!);
             const absorbed = carbImpact * profile.carb_ratio! / sens;
             // and add that to the running total carbsAbsorbed
-            //console.error("carbsAbsorbed:",carbsAbsorbed,"absorbed:",absorbed,"bgTime:",bgTime,"BG:",bucketed_data[i].glucose)
             carbsAbsorbed += absorbed;
         }
     }
-    if(maxDeviation>0) {
-        //console.error("currentDeviation:",currentDeviation,"maxDeviation:",maxDeviation,"slopeFromMaxDeviation:",slopeFromMaxDeviation);
-    }
-
     return {
         "carbsAbsorbed": carbsAbsorbed
     ,   "currentDeviation": currentDeviation!

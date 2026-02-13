@@ -41,7 +41,6 @@ export function bucketGlucoseWithInterpolation(
             bgTime = new Date(glucose_data[i].dateString!);
         } else { console.error("Could not determine BG time"); }
         if (! glucose_data[i].glucose || glucose_data[i].glucose! < MIN_VALID_GLUCOSE_MGDL) {
-//console.error("skipping:",glucose_data[i].glucose);
             continue;
         }
         // only consider BGs for 6h after a meal for calculating COB
@@ -49,10 +48,8 @@ export function bucketGlucoseWithInterpolation(
         if (hoursAfterMeal > maxMealAbsorptionTime || foundPreMealBG) {
             continue;
         } else if (hoursAfterMeal < 0) {
-//console.error("Found pre-meal BG:",glucose_data[i].glucose, bgTime, Math.round(hoursAfterMeal*100)/100);
             foundPreMealBG = true;
         }
-//console.error(glucose_data[i].glucose, bgTime, Math.round(hoursAfterMeal*100)/100, bucketed_data[bucketed_data.length-1].display_time);
         // only consider last ~45m of data in CI mode
         // this allows us to calculate deviations for the last ~30m
         if (ciTime !== undefined) {
@@ -69,23 +66,19 @@ export function bucketGlucoseWithInterpolation(
             lastbgTime = new Date(glucose_data[lastbgi].dateString!);
         } else { console.error("Could not determine last BG time"); }
         let elapsed_minutes = (Number(bgTime) - Number(lastbgTime))/MS_PER_MINUTE;
-    //console.error(bgTime, lastbgTime, elapsed_minutes);
         if(Math.abs(elapsed_minutes) > BUCKETING_GAP_THRESHOLD_MIN) {
             // interpolate missing data points
             let lastbg = glucose_data[lastbgi].glucose!;
             // cap interpolation at a maximum of 4h
             elapsed_minutes = Math.min(MAX_INTERPOLATION_GAP_MINUTES,Math.abs(elapsed_minutes));
-            //console.error(elapsed_minutes);
             while(elapsed_minutes > PRED_INTERVAL_MINUTES) {
                 const previousbgTime = new Date(lastbgTime!.getTime() - MS_PER_5_MIN);
                 j++;
                 bucketed_data[j] = {} as BucketedGlucose;
                 bucketed_data[j].date = previousbgTime.getTime();
                 const gapDelta = glucose_data[i].glucose! - lastbg;
-                //console.error(gapDelta, lastbg, elapsed_minutes);
                 const previousbg = lastbg + (PRED_INTERVAL_MINUTES/elapsed_minutes * gapDelta);
                 bucketed_data[j].glucose = Math.round(previousbg);
-                //console.error("Interpolated", bucketed_data[j]);
 
                 elapsed_minutes = elapsed_minutes - PRED_INTERVAL_MINUTES;
                 lastbg = previousbg;
@@ -101,7 +94,6 @@ export function bucketGlucoseWithInterpolation(
         }
 
         lastbgi = i;
-        //console.error(bucketed_data[j].date)
     }
 
     return bucketed_data;

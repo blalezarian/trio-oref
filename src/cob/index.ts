@@ -29,8 +29,6 @@ export function detectCarbAbsorption(inputs: CarbAbsorptionInputs): CarbAbsorpti
     const mealTime = new Date(inputs.mealTime as string | number);
     const ciTime = new Date(inputs.ciTime as string | number);
 
-    //console.error(mealTime, ciTime);
-
     // get treatments from pumphistory once, not every time we get_iob()
     const treatments = find_insulin(inputs.iob_inputs as IobInputs);
 
