@@ -4,7 +4,7 @@ import type {
     SuspendEvent,
     SuspendResumeData,
 } from './types';
-import { MS_PER_MINUTE } from '../constants';
+import { MS_PER_MINUTE } from '../shared/constants';
 
 export function extractSuspendResumeData(
     pumpHistory: PumpHistoryEvent[],

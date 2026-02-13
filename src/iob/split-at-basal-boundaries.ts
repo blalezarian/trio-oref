@@ -7,7 +7,7 @@ import {
     MS_PER_MINUTE,
     TEMP_BASAL_DURATION_MINUTES,
     MINUTES_PER_DAY,
-} from '../constants';
+} from '../shared/constants';
 
 /** Deep-clone a TempEvent, preserving Date fields */
 function cloneTempEvent(event: TempEvent): TempEvent {

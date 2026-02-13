@@ -8,7 +8,7 @@ import {
     ULTRA_RAPID_MAX_PEAK,
     ULTRA_RAPID_MIN_PEAK,
     SECONDS_PER_MINUTE,
-} from '../constants';
+} from '../shared/constants';
 
 export function iobCalcExponential(treatment: Treatment, minsAgo: number, dia: number, peak: number, profile: IobCalcProfile): IOBContribution {
 

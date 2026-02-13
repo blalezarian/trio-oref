@@ -1,6 +1,6 @@
 
-import type { PumpHistoryEvent, PumpHistoryEventType } from './types/index';
-import { MS_PER_MINUTE } from './constants';
+import type { PumpHistoryEvent, PumpHistoryEventType } from '../types/index';
+import { MS_PER_MINUTE } from '../shared/constants';
 
 /** Minutes window for grouping related bolus events */
 const BOLUS_GROUPING_MINUTES = 2;

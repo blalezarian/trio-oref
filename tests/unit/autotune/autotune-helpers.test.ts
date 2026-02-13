@@ -10,7 +10,7 @@ import type {
 import {
     ULTRA_RAPID_PEAK,
     RAPID_ACTING_PEAK,
-} from '../../../src/constants';
+} from '../../../src/shared/constants';
 
 // ---------------------------------------------------------------------------
 // Helpers

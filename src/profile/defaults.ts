@@ -11,7 +11,7 @@ import {
     DEFAULT_SMB_DELIVERY_RATIO,
     RAPID_ACTING_PEAK,
     DEFAULT_REMAINING_CARBS_CAP,
-} from '../constants';
+} from '../shared/constants';
 
 // ---------------------------------------------------------------------------
 // defaults()

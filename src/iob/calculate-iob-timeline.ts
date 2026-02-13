@@ -9,7 +9,7 @@ import type {
     IobIndexEntry,
     IobGenerateOpts,
 } from './types';
-import { PRED_INTERVAL_MINUTES, MS_PER_MINUTE } from '../constants';
+import { PRED_INTERVAL_MINUTES, MS_PER_MINUTE } from '../shared/constants';
 
 /** Lookahead minutes for zero-temp IOB projection */
 const ZERO_TEMP_LOOKAHEAD_MINUTES = 240;

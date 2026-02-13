@@ -7,7 +7,7 @@ import type { IobProfile, HistoryBasalProfileEntry, IobInputs, IobTreatment } fr
 import {
     MIN_VALID_GLUCOSE_MGDL,
     MS_PER_5_MIN,
-} from '../constants';
+} from '../shared/constants';
 
 // ---------------------------------------------------------------------------
 // Types

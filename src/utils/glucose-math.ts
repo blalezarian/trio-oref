@@ -1,5 +1,5 @@
 import type { GlucoseEntry } from '../types/index';
-import { PRED_INTERVAL_MINUTES } from '../constants';
+import { PRED_INTERVAL_MINUTES } from '../shared/constants';
 
 /** Rounding scale for 2 decimal places */
 const ROUND_SCALE_2DP = 100;

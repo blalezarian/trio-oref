@@ -2,7 +2,7 @@ import {
     MGDL_TO_MMOL,
     MINUTES_PER_HOUR,
     PRED_INTERVAL_MINUTES,
-} from '../constants';
+} from '../shared/constants';
 
 import { EXPECTED_DELTA_HOURS } from './constants';
 

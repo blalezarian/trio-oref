@@ -4,7 +4,7 @@ import {
     AUTOTUNE_ADJUSTMENT_FRACTION,
     MAX_CARB_RATIO,
     MIN_CARB_RATIO,
-} from '../constants';
+} from '../shared/constants';
 
 // ---------------------------------------------------------------------------
 // Main function

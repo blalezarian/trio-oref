@@ -1,6 +1,6 @@
 /** @deprecated Not used by the Trio algorithm pipeline. Candidate for removal. */
 
-import type { PumpHistoryEvent } from './types/index';
+import type { PumpHistoryEvent } from '../types/index';
 
 function translate (treatments: PumpHistoryEvent[]) {
 

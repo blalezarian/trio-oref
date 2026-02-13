@@ -17,7 +17,7 @@ import {
     MS_PER_MINUTE,
     PRED_INTERVAL_MINUTES,
     TEMP_BASAL_DURATION_MINUTES,
-} from '../constants';
+} from '../shared/constants';
 
 import type {
     GlucoseStatus,

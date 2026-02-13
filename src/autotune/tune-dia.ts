@@ -3,7 +3,7 @@ import type { AutotuneDiaDeviation } from './types';
 import {
     AUTOTUNE_IMPROVEMENT_THRESHOLD,
     MAX_DIA_HOURS,
-} from '../constants';
+} from '../shared/constants';
 
 export function tuneDIA(
     diaDeviations: AutotuneDiaDeviation[] | undefined,

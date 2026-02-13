@@ -8,7 +8,7 @@ import {
     MS_PER_MINUTE,
     EXERCISE_NORMAL_TARGET,
     EXERCISE_HALF_BASAL_TARGET,
-} from '../constants';
+} from '../shared/constants';
 
 export function convertNetBasalsToTreatments(
     splitHistory: TempEvent[],

@@ -10,7 +10,7 @@ import {
     DEFAULT_AUTOSENS_MAX,
     DEFAULT_AUTOSENS_MIN,
     BASAL_SCALE_DEFAULT,
-} from '../constants';
+} from '../shared/constants';
 
 // ---------------------------------------------------------------------------
 // Constants

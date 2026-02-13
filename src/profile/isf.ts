@@ -1,4 +1,4 @@
-import { MINUTES_PER_DAY } from '../constants';
+import { MINUTES_PER_DAY } from '../shared/constants';
 import { toMinuteOfDay } from './basal';
 
 /** Error sentinel returned when ISF schedule has invalid first offset */

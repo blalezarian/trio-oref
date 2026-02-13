@@ -3,7 +3,7 @@ import { analyzeDeviations } from './deviation-loop';
 import { padDeviations, analyzePercentiles, calculateAutosensRatio } from './calculate-ratio';
 import type { AutosensInputs } from './prepare-data';
 import type { AutosensResult } from './calculate-ratio';
-import { DEFAULT_AUTOSENS_LOOKBACK } from '../constants';
+import { DEFAULT_AUTOSENS_LOOKBACK } from '../shared/constants';
 
 /** Maximum zero-deviation padding count (90m / 5m = 18) */
 const MAX_ZERO_DEVIATION_PAD = 18;

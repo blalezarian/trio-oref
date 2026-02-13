@@ -7,7 +7,7 @@ import {
     ULTRA_RAPID_PEAK,
     EXPONENTIAL_MIN_TD,
     MS_PER_HOUR,
-} from '../constants';
+} from '../shared/constants';
 
 /** Bolus threshold below which insulin is considered basal (U) */
 const BOLUS_DETECTION_THRESHOLD = 0.1;

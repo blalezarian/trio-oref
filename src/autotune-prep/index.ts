@@ -4,7 +4,7 @@
 import find_meals from '../meal/history';
 import categorize from './categorize';
 import type { PumpHistoryEvent, InsulinCurve, MealAbsorptionPhase } from '../types/index';
-import { ULTRA_RAPID_PEAK, RAPID_ACTING_PEAK, HOURS_PER_DAY } from '../constants';
+import { ULTRA_RAPID_PEAK, RAPID_ACTING_PEAK, HOURS_PER_DAY } from '../shared/constants';
 
 /** Sentinel value for minimum-deviations search initialization */
 const DEVIATION_SENTINEL = 1000000;

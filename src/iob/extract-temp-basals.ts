@@ -7,7 +7,7 @@ import type {
 import {
     MS_PER_MINUTE,
     MINUTES_PER_HOUR,
-} from '../constants';
+} from '../shared/constants';
 
 export function extractTempBasalsAndBoluses(
     pumpHistory: PumpHistoryEvent[],

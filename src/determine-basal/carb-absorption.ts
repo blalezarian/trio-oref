@@ -6,7 +6,7 @@ import {
     DEFAULT_ASSUMED_CARB_ABSORPTION_RATE,
     DEFAULT_REMAINING_CA_TIME_MIN_HOURS,
     DEFAULT_REMAINING_CARBS_CAP,
-} from '../constants';
+} from '../shared/constants';
 
 import type {
     Profile,

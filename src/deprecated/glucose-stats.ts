@@ -13,7 +13,7 @@ import {
     NOISE_MEDIUM_THRESHOLD,
     TREND_MAX_MINUTES,
     MS_PER_MINUTE,
-} from './constants';
+} from '../shared/constants';
 
 interface GlucoseHistEntry {
   glucose: number;

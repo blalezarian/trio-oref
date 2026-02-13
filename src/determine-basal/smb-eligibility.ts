@@ -1,4 +1,4 @@
-import { EXERCISE_NORMAL_TARGET } from '../constants';
+import { EXERCISE_NORMAL_TARGET } from '../shared/constants';
 
 import { convert_bg } from './helpers';
 

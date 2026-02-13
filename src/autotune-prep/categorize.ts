@@ -13,7 +13,7 @@ import {
     PRED_INTERVAL_MINUTES,
     AUTOSENS_MIN_VALID_BG,
     BUCKETING_MERGE_THRESHOLD_MIN,
-} from '../constants';
+} from '../shared/constants';
 
 /** Rounding scale for 3 decimal places */
 const ROUND_SCALE_3DP = 1000;

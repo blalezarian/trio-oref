@@ -1,5 +1,5 @@
 import endsWith from 'lodash/endsWith';
-import { BASAL_SCALE_DEFAULT, BASAL_SCALE_MEDTRONIC } from '../constants';
+import { BASAL_SCALE_DEFAULT, BASAL_SCALE_MEDTRONIC } from '../shared/constants';
 
 /** Basal rate (U/hr) below which lowest_rate_scale is used */
 const BASAL_RATE_LOW_THRESHOLD = 1;

@@ -6,7 +6,7 @@ import {
     average,
     roundTo2Dp,
     computeAvgDelta,
-} from '../../src/glucose-get-last';
+} from '../../src/glucose/index';
 import type { GlucoseEntry } from '../../src/types/index';
 
 const FIXED_TIME = '2025-01-15T12:00:00.000Z';

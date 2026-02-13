@@ -7,7 +7,7 @@ import type {
 import {
     ULTRA_RAPID_PEAK,
     RAPID_ACTING_PEAK,
-} from '../constants';
+} from '../shared/constants';
 import { tuneDIA } from './tune-dia';
 import { tunePeakTime } from './tune-peak';
 import { calculateTotalCarbRatio } from './calculate-total-carb-ratio';

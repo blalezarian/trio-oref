@@ -1,10 +1,10 @@
 
-import { round_basal } from './utils/round-basal';
+import { round_basal } from '../utils/round-basal';
 import {
     DEFAULT_MAX_DAILY_SAFETY_MULTIPLIER,
     DEFAULT_CURRENT_BASAL_SAFETY_MULTIPLIER,
     MAX_TEMP_BASAL_DURATION_MINUTES,
-} from './constants';
+} from '../shared/constants';
 
 // ---------------------------------------------------------------------------
 // Constants

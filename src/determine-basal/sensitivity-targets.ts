@@ -3,7 +3,7 @@ import {
     EXERCISE_HALF_BASAL_TARGET,
     MIN_BG_TARGET,
     MAX_BG_TARGET,
-} from '../constants';
+} from '../shared/constants';
 
 import { round_basal } from '../utils/round-basal';
 

@@ -1,7 +1,7 @@
 import {
     MS_PER_MINUTE,
     TEMP_BASAL_DURATION_MINUTES,
-} from '../constants';
+} from '../shared/constants';
 
 import { round_basal } from '../utils/round-basal';
 

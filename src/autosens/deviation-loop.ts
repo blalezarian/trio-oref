@@ -11,7 +11,7 @@ import {
     EXERCISE_NORMAL_TARGET,
     DEFAULT_AUTOSENS_LOOKBACK,
     AUTOSENS_MIN_VALID_BG,
-} from '../constants';
+} from '../shared/constants';
 
 // ---------------------------------------------------------------------------
 // Constants

@@ -11,7 +11,7 @@ import {
     MS_PER_MINUTE,
     HOURS_PER_DAY,
     BUCKETING_MERGE_THRESHOLD_MIN,
-} from '../constants';
+} from '../shared/constants';
 
 // ---------------------------------------------------------------------------
 // Input / output interfaces

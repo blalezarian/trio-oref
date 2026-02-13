@@ -6,7 +6,7 @@ import {
     MIN_VALID_GLUCOSE_MGDL,
     MAX_VALID_GLUCOSE_MGDL,
     INSULIN_PEAK_WAIT_MINUTES,
-} from '../constants';
+} from '../shared/constants';
 
 import type {
     IOBData,

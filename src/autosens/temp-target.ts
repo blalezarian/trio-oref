@@ -1,5 +1,5 @@
 import type { TempTarget } from '../profile/targets';
-import { MS_PER_MINUTE } from '../constants';
+import { MS_PER_MINUTE } from '../shared/constants';
 
 /**
  * Check if a temp target is currently active at the given time.

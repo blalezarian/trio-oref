@@ -1,7 +1,7 @@
 'use strict';
 
 var should = require('should');
-var withRawGlucose = require('../src/with-raw-glucose').default;
+var withRawGlucose = require('../src/glucose/with-raw-glucose').default;
 
 var cals = [{
   scale: 1

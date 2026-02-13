@@ -3,7 +3,7 @@ import {
     BILINEAR_DEFAULT_DIA_HOURS,
     BILINEAR_PEAK_MINUTES,
     BILINEAR_END_MINUTES,
-} from '../constants';
+} from '../shared/constants';
 
 export function iobCalcBilinear(treatment: Treatment, minsAgo: number, dia: number): IOBContribution {
 

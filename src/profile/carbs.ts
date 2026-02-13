@@ -1,5 +1,5 @@
 import { getTime } from '../utils/medtronic-clock';
-import { MIN_CARB_RATIO, MAX_CARB_RATIO } from '../constants';
+import { MIN_CARB_RATIO, MAX_CARB_RATIO } from '../shared/constants';
 import type { CarbRatioUnits } from '../types/index';
 
 interface CarbRatioScheduleEntry {

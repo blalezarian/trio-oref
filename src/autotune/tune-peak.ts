@@ -1,6 +1,6 @@
 
 import type { AutotunePeakDeviation } from './types';
-import { AUTOTUNE_IMPROVEMENT_THRESHOLD } from '../constants';
+import { AUTOTUNE_IMPROVEMENT_THRESHOLD } from '../shared/constants';
 
 export function tunePeakTime(
     peakDeviations: AutotunePeakDeviation[] | undefined,

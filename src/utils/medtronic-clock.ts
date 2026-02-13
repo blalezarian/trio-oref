@@ -1,5 +1,5 @@
 
-import { MS_PER_MINUTE } from '../constants';
+import { MS_PER_MINUTE } from '../shared/constants';
 
 export function getTime(minutes: number): number {
     const baseTime = new Date();

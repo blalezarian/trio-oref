@@ -3,7 +3,7 @@ import type {
     AutotuneGlucoseDatum,
     AutotuneBounds,
 } from './types';
-import { AUTOTUNE_ADJUSTMENT_FRACTION } from '../constants';
+import { AUTOTUNE_ADJUSTMENT_FRACTION } from '../shared/constants';
 
 // ---------------------------------------------------------------------------
 // Helpers

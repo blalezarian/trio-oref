@@ -10,7 +10,7 @@ import {
     MS_PER_MINUTE,
     MS_PER_HOUR,
     MAX_DIA_FOR_SUSPEND_HOURS,
-} from '../constants';
+} from '../shared/constants';
 import { splitTimespan } from './split-at-basal-boundaries';
 import { splitAroundSuspends } from './split-around-suspends';
 import { extractSuspendResumeData } from './extract-suspends';

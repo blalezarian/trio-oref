@@ -3,7 +3,7 @@ import type {
     TempEvent,
     SuspendEvent,
 } from './types';
-import { MS_PER_MINUTE } from '../constants';
+import { MS_PER_MINUTE } from '../shared/constants';
 
 /** Deep-clone a TempEvent, preserving Date fields, works in Swift with JavaScriptCore */
 function cloneTempEvent(event: TempEvent): TempEvent {

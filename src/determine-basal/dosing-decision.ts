@@ -7,7 +7,7 @@ import {
     DEFAULT_SMB_DELIVERY_RATIO,
     DEFAULT_SMB_INTERVAL_MINUTES,
     DEFAULT_MAX_SMB_BASAL_MINUTES,
-} from '../constants';
+} from '../shared/constants';
 
 import { round_basal } from '../utils/round-basal';
 

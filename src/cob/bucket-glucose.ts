@@ -6,7 +6,7 @@ import {
     MS_PER_5_MIN,
     PRED_INTERVAL_MINUTES,
     BUCKETING_MERGE_THRESHOLD_MIN,
-} from '../constants';
+} from '../shared/constants';
 import { resolveGlucoseTime } from '../utils/glucose-time';
 
 // ---------------------------------------------------------------------------

@@ -5,7 +5,7 @@ import {
     INSULIN_FACTOR_CEILING,
     RAPID_ACTING_ACTIVITY_OFFSET,
     ULTRA_RAPID_ACTIVITY_OFFSET,
-} from '../constants';
+} from '../shared/constants';
 
 import type {
     GlucoseStatus,

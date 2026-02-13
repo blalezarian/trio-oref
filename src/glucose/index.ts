@@ -1,6 +1,6 @@
 
-import type { GlucoseEntry, GlucoseStatus } from './types/index';
-import { MS_PER_MINUTE, PRED_INTERVAL_MINUTES, MIN_VALID_GLUCOSE_MGDL } from './constants';
+import type { GlucoseEntry, GlucoseStatus } from '../types/index';
+import { MS_PER_MINUTE, PRED_INTERVAL_MINUTES, MIN_VALID_GLUCOSE_MGDL } from '../shared/constants';
 
 // ---------------------------------------------------------------------------
 // Constants

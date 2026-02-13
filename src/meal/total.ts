@@ -1,7 +1,7 @@
 import { detectCarbAbsorption as calcMealCOB } from '../cob/index';
 import type { CarbTreatment, GlucoseEntry, PumpHistoryEvent } from '../types/index';
 import type { IobProfile, HistoryBasalProfileEntry } from '../iob/types';
-import { MS_PER_HOUR, DEFAULT_MAX_MEAL_ABSORPTION_HOURS } from '../constants';
+import { MS_PER_HOUR, DEFAULT_MAX_MEAL_ABSORPTION_HOURS } from '../shared/constants';
 
 // ---------------------------------------------------------------------------
 // Constants
