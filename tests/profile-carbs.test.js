@@ -1,7 +1,6 @@
 'use strict';
 
 require('should');
-var _ = require('lodash');
 let proxyquire = require('proxyquire');
 
 // Create a mock getTime function that matches the actual implementation

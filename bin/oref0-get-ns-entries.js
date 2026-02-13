@@ -22,7 +22,6 @@
 
 var crypto = require('crypto');
 var request = require('request');
-var _ = require('lodash');
 var fs = require('fs');
 var network = require('network');
 
@@ -137,7 +136,7 @@ if (!module.parent) {
           glucosedata = JSON.parse(fileContent);
 
           if (glucosedata.constructor == Array) { //{ throw "Glucose data file doesn't seem to be valid"; }
-            _.forEach(glucosedata, function findLatest(sgvrecord) {
+            glucosedata.forEach(function findLatest(sgvrecord) {
               var d = new Date(sgvrecord.dateString);
               if (!lastDate || lastDate < d) {
                 lastDate = d;
@@ -165,7 +164,7 @@ if (!module.parent) {
       headers = { 'api-secret': apisecret };
     }
 
-    if (!_.isNil(lastDate)) {
+    if (lastDate != null) {
       headers["If-Modified-Since"] = lastDate.toISOString();
     }
 
@@ -186,7 +185,7 @@ if (!module.parent) {
         } else {
           console.error("Got Not Changed response from Nightscout, assuming no new data is available");
           // output old file
-          if (!_.isNil(glucosedata)) {
+          if (glucosedata != null) {
             console.log(JSON.stringify(glucosedata));
           }
         }
@@ -199,7 +198,7 @@ if (!module.parent) {
 
   function processAndOutput(glucosedata) {
 
-    _.forEach(glucosedata, function findLatest(sgvrecord) {
+    glucosedata.forEach(function (sgvrecord) {
       sgvrecord.glucose = sgvrecord.sgv;
     });
 

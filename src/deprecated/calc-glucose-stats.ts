@@ -2,7 +2,6 @@
 // Only used by bin/oref0-calculate-glucose-noise.js CLI tool.
 
 import moment from 'moment';
-import _ from 'lodash';
 import stats from './glucose-stats';
 
 interface GlucoseHistItem {
@@ -27,7 +26,9 @@ interface CalcGlucoseStats {
 const calcStatsExports = {} as CalcGlucoseStats;
 
 calcStatsExports.updateGlucoseStats = (options: UpdateGlucoseStatsOptions): GlucoseHistItem[] => {
-  const hist = _.map(_.sortBy(options.glucose_hist, 'dateString'), (value: GlucoseHistItem): GlucoseHistItemWithDate => {
+  const hist = [...options.glucose_hist]
+    .sort((a, b) => a.dateString < b.dateString ? -1 : a.dateString > b.dateString ? 1 : 0)
+    .map((value: GlucoseHistItem): GlucoseHistItemWithDate => {
       return Object.assign(value, { readDateMills: moment(value.dateString).valueOf() });
     });
 

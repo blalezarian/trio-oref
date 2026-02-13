@@ -108,7 +108,6 @@
   "dependencies": {
     "json": "^9.0.6",
     "json-stable-stringify": "^1.0.1",
-    "lodash": "^4.17.15",
     "moment": "^2.24.0",
     "moment-timezone": "0.5.23",
     "network": "^0.4.1",
@@ -118,7 +117,6 @@
     "yargs": "^13.2.2"
   },
   "devDependencies": {
-    "@types/lodash": "^4.17.23",
     "@types/node": "^25.2.3",
     "@vitest/coverage-v8": "^4.0.18",
     "copy-rename-webpack-plugin": "^1.0.2-alpha.0",

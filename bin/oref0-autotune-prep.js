@@ -21,7 +21,6 @@
 */
 
 var generate = require('../src/autotune-prep');
-var _ = require('lodash');
 var moment = require('moment');
 
 if (!module.parent) {
@@ -120,7 +119,7 @@ if (!module.parent) {
     }
 
     // Have to sort history - NS sort doesn't account for different zulu and local timestamps
-    pumphistory_data = _.orderBy(pumphistory_data, [function (o) { return moment(o.created_at).valueOf(); }], ['desc']);
+    pumphistory_data.sort(function (a, b) { return moment(b.created_at).valueOf() - moment(a.created_at).valueOf(); });
 
     inputs = {
       history: pumphistory_data

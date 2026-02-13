@@ -21,7 +21,6 @@
 
 var crypto = require('crypto');
 var request = require('request');
-var _ = require('lodash');
 
 if (!module.parent) {
 
@@ -109,7 +108,7 @@ if (!module.parent) {
         }
 
         var original_profile = data;
-        var new_profile = _.cloneDeep(data);
+        var new_profile = JSON.parse(JSON.stringify(data));
 
         if (!data.defaultProfile) {
             console.error('Nightscout profile missing data');
@@ -126,7 +125,7 @@ if (!module.parent) {
         var new_basal = [];
         var decimals = 100; // always round basal rates to 0.01 U/h
 
-        _.forEach(profiledata.basalprofile, function(basalentry) {
+        profiledata.basalprofile.forEach(function(basalentry) {
 
             var newEntry = {
                 time: '' + basalentry.start.substring(0, 5)
@@ -145,7 +144,7 @@ if (!module.parent) {
         var new_target_low = [];
         var new_target_high = [];
 
-        _.forEach(profiledata.bg_targets.targets, function(target_entry) {
+        profiledata.bg_targets.targets.forEach(function(target_entry) {
 
             var time = target_entry.start.substring(0, 5);
             var seconds = parseInt(time.substring(0, 2)) * 60 * 60 + parseInt(time.substring(3, 5)) * 60;
@@ -193,7 +192,7 @@ if (!module.parent) {
 
         var new_sens = [];
 
-        _.forEach(profiledata.isfProfile.sensitivities, function(isf_entry) {
+        profiledata.isfProfile.sensitivities.forEach(function(isf_entry) {
 
             var value = isf_entry.sensitivity;
             var conversionFactor = 1;
@@ -227,7 +226,7 @@ if (!module.parent) {
         var new_carb_ratios = [];
         var decimals = 10; // always round insulin to carb ratios to 0.1g
 
-        _.forEach(profiledata.carb_ratios.schedule, function(carb_entry) {
+        profiledata.carb_ratios.schedule.forEach(function(carb_entry) {
 
             var new_entry = {
                 time: carb_entry.start.substring(0, 5)
@@ -247,12 +246,12 @@ if (!module.parent) {
         var upload_profile;
 
         if (profile_id !== 'OpenAPS Autosync') {
-            upload_profile = _.cloneDeep(data);
+            upload_profile = JSON.parse(JSON.stringify(data));
         } else {
             upload_profile = new_profile;
         }
 
-        var do_upload = !_.isEqual(original_profile, new_profile);
+        var do_upload = JSON.stringify(original_profile) !== JSON.stringify(new_profile);
 
         if (do_upload) {
 
@@ -275,7 +274,7 @@ if (!module.parent) {
 
         if (params.preview) {
 
-            if (_.isEqual(original_profile, new_profile)) {
+            if (JSON.stringify(original_profile) === JSON.stringify(new_profile)) {
                 console.log('Profile in Nightscout and OpenAPS are identical');
             } else {
                 console.log('Profile in Nightscout and OpenAPS differ');
