@@ -1,5 +1,8 @@
-
 import type { AutotuneCRDatum } from './types';
+
+// ---------------------------------------------------------------------------
+// Types
+// ---------------------------------------------------------------------------
 
 export interface TotalCRResult {
     totalCR: number;
@@ -7,6 +10,11 @@ export interface TotalCRResult {
     CRTotalInsulin: number;
 }
 
+// ---------------------------------------------------------------------------
+// Main function
+// ---------------------------------------------------------------------------
+
+/** Calculate aggregate carb ratio from meal data by summing carbs and insulin across valid entries */
 export function calculateTotalCarbRatio(
     CRData: AutotuneCRDatum[],
     ISF: number,
@@ -14,7 +22,7 @@ export function calculateTotalCarbRatio(
     let CRTotalCarbs = 0;
     let CRTotalInsulin = 0;
 
-    CRData.forEach((CRDatum: AutotuneCRDatum) => {
+    for (const CRDatum of CRData) {
         const CRBGChange = CRDatum.CREndBG - CRDatum.CRInitialBG;
         const CRInsulinReq = CRBGChange / ISF;
         CRDatum.CRInsulinTotal = CRDatum.CRInitialIOB + CRDatum.CRInsulin + CRInsulinReq;
@@ -23,11 +31,11 @@ export function calculateTotalCarbRatio(
             CRTotalCarbs += CRDatum.CRCarbs;
             CRTotalInsulin += CRDatum.CRInsulinTotal;
         }
-    });
+    }
 
     CRTotalInsulin = Math.round(CRTotalInsulin * 1000) / 1000;
     const totalCR = Math.round(CRTotalCarbs / CRTotalInsulin * 1000) / 1000;
-    console.error("CRTotalCarbs:", CRTotalCarbs, "CRTotalInsulin:", CRTotalInsulin, "totalCR:", totalCR);
+    console.error(`CRTotalCarbs: ${CRTotalCarbs} CRTotalInsulin: ${CRTotalInsulin} totalCR: ${totalCR}`);
 
     return { totalCR, CRTotalCarbs, CRTotalInsulin };
 }

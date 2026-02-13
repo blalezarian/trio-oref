@@ -1,4 +1,3 @@
-
 import type {
     AutotuneInputs,
     AutotunePreviousProfile,
@@ -58,6 +57,7 @@ export function extractPumpBaselines(
 // Main function
 // ---------------------------------------------------------------------------
 
+/** Run one autotune iteration: tune basal, ISF, CSF, CR, DIA, and peak from prepped glucose data */
 export function autotuneProfile(
     inputs: AutotuneInputs,
 ): AutotunePreviousProfile | undefined {
@@ -129,15 +129,7 @@ export function autotuneProfile(
         pumpProfile.autotune_isf_adjustmentFraction,
     );
     console.error(
-        "p50deviation:", isfResult.p50deviation,
-        "p50BGI", isfResult.p50BGI,
-        "p50ratios:", isfResult.p50ratios,
-        "Old ISF:", ISF,
-        "fullNewISF:", isfResult.fullNewISF,
-        "adjustedISF:", isfResult.adjustedISF,
-        "newISF:", isfResult.newISF,
-        "newDIA:", newDIA,
-        "newPeak:", newPeak,
+        `p50deviation: ${isfResult.p50deviation} p50BGI ${isfResult.p50BGI} p50ratios: ${isfResult.p50ratios} Old ISF: ${ISF} fullNewISF: ${isfResult.fullNewISF} adjustedISF: ${isfResult.adjustedISF} newISF: ${isfResult.newISF} newDIA: ${newDIA} newPeak: ${newPeak}`,
     );
     if (isfResult.newISF) { ISF = isfResult.newISF; }
 

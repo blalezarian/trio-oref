@@ -38,8 +38,7 @@ describe('tuneCarbRatio', () => {
         const result = tuneCarbRatio(20, 10, 10, DEFAULT_BOUNDS);
         expect(result).toBe(10.4);
         expect(console.error).toHaveBeenCalledWith(
-            'Limiting fullNewCR from', 20, 'to', '12.00',
-            '(which is', 1.2, '* pump CR of', 10, ')',
+            'Limiting fullNewCR from 20 to 12.00 (which is 1.2 * pump CR of 10)',
         );
     });
 
@@ -50,8 +49,7 @@ describe('tuneCarbRatio', () => {
         const result = tuneCarbRatio(5, 10, 10, DEFAULT_BOUNDS);
         expect(result).toBe(9.4);
         expect(console.error).toHaveBeenCalledWith(
-            'Limiting fullNewCR from', 5, 'to', '7.00',
-            '(which is', 0.7, '* pump CR of', 10, ')',
+            'Limiting fullNewCR from 5 to 7.00 (which is 0.7 * pump CR of 10)',
         );
     });
 
@@ -62,8 +60,7 @@ describe('tuneCarbRatio', () => {
         const result = tuneCarbRatio(12, 14, 10, DEFAULT_BOUNDS);
         expect(result).toBe(12);
         expect(console.error).toHaveBeenCalledWith(
-            'Limiting CR to', '12.00',
-            '(which is', 1.2, '* pump CR of', 10, ')',
+            'Limiting CR to 12.00 (which is 1.2 * pump CR of 10)',
         );
     });
 
@@ -95,7 +92,7 @@ describe('tuneCarbRatio', () => {
     it('logs oldCR, fullNewCR, and newCR', () => {
         tuneCarbRatio(0, 12, 12, DEFAULT_BOUNDS);
         expect(console.error).toHaveBeenCalledWith(
-            'oldCR:', 12, 'fullNewCR:', 12, 'newCR:', 12,
+            'oldCR: 12 fullNewCR: 12 newCR: 12',
         );
     });
 });

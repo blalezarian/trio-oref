@@ -92,7 +92,7 @@ describe('convertToHourlyProfile', () => {
         const result = convertToHourlyProfile(profile, 'basal');
         expect(result).toBeUndefined();
         expect(console.error).toHaveBeenCalledWith(
-            'ERROR: bad basalProfile',
+            `ERROR: bad basalProfile`,
             expect.objectContaining({ rate: 0 }),
         );
     });
@@ -304,8 +304,7 @@ describe('capBasalRates', () => {
         // 2.0 > 1.0 * 1.5 = 1.5, so capped at 1.5
         expect(profile[0].rate).toBe(1.5);
         expect(console.error).toHaveBeenCalledWith(
-            'Limiting hour', 0, 'basal to', '1.50',
-            '(which is', 1.5, '* pump basal of', 1.0, ')',
+            'Limiting hour 0 basal to 1.50 (which is 1.5 * pump basal of 1)',
         );
     });
 

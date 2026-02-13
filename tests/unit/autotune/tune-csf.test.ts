@@ -122,8 +122,7 @@ describe('tuneCSF', () => {
         const result = tuneCSF(data, 5, 8, 5, DEFAULT_BOUNDS);
         expect(result).toBeLessThanOrEqual(6);
         expect(console.error).toHaveBeenCalledWith(
-            'Limiting CSF to', expect.any(String),
-            '(which is', 1.2, '* pump CSF of', 5, ')',
+            'Limiting CSF to 6.00 (which is 1.2 * pump CSF of 5)',
         );
     });
 
@@ -149,11 +148,7 @@ describe('tuneCSF', () => {
     it('logs totalMealCarbs, totalDeviations, oldCSF, fullNewCSF, newCSF', () => {
         tuneCSF([], 10, undefined, undefined, DEFAULT_BOUNDS);
         expect(console.error).toHaveBeenCalledWith(
-            'totalMealCarbs:', 0,
-            'totalDeviations:', 0,
-            'oldCSF', 10,
-            'fullNewCSF:', 10,
-            'newCSF:', 10,
+            'totalMealCarbs: 0 totalDeviations: 0 oldCSF 10 fullNewCSF: 10 newCSF: 10',
         );
     });
 });

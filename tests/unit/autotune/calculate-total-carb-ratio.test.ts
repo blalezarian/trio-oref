@@ -72,7 +72,7 @@ describe('calculateTotalCarbRatio', () => {
     it('logs CRTotalCarbs, CRTotalInsulin, and totalCR', () => {
         calculateTotalCarbRatio([makeCRDatum()], 100);
         expect(console.error).toHaveBeenCalledWith(
-            "CRTotalCarbs:", 45, "CRTotalInsulin:", 3.9, "totalCR:", 11.538,
+            "CRTotalCarbs: 45 CRTotalInsulin: 3.9 totalCR: 11.538",
         );
     });
 });

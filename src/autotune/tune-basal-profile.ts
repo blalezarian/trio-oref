@@ -1,4 +1,3 @@
-
 import type {
     AutotuneBasalProfileEntry,
     AutotuneGlucoseDatum,
@@ -40,7 +39,7 @@ type ProfileType = 'basal' | 'pump';
 // Helpers
 // ---------------------------------------------------------------------------
 
-/** Wrap a potentially-negative hour index into 0–23 range */
+/** Wrap a potentially-negative hour index into 0-23 range */
 function wrapHour(hour: number): number {
     return hour < 0 ? hour + HOURS_PER_DAY : hour;
 }
@@ -61,12 +60,12 @@ export function convertToHourlyProfile(
     for (let hour = 0; hour < HOURS_PER_DAY; hour++) {
         for (let entryIdx = 0; entryIdx < profile.length; entryIdx++) {
             if (profileType === 'pump' && profile[entryIdx].rate === 0) {
-                console.error("ERROR: bad pumpBasalProfile", profile[entryIdx]);
+                console.error(`ERROR: bad pumpBasalProfile`, profile[entryIdx]);
                 return undefined;
             }
             if (profile[entryIdx].minutes <= hour * 60) {
                 if (profileType === 'basal' && profile[entryIdx].rate === 0) {
-                    console.error("ERROR: bad basalProfile", profile[entryIdx]);
+                    console.error(`ERROR: bad basalProfile`, profile[entryIdx]);
                     return undefined;
                 }
                 hourly[hour] = { ...profile[entryIdx] };
@@ -81,7 +80,7 @@ export function convertToHourlyProfile(
     return hourly;
 }
 
-/** Parse hour-of-day from a glucose datum, trying date → displayTime → dateString */
+/** Parse hour-of-day from a glucose datum, trying date -> displayTime -> dateString */
 export function parseHourFromDatum(datum: AutotuneGlucoseDatum): number {
     if (datum.date) {
         return new Date(datum.date as number).getHours();
@@ -93,7 +92,7 @@ export function parseHourFromDatum(datum: AutotuneGlucoseDatum): number {
         return new Date(datum.dateString as string).getHours();
     }
     console.error("Could not determine last BG time");
-    // Original crashes here with BGTime!.getHours() on undefined — preserve behavior
+    // Original crashes here with BGTime!.getHours() on undefined -- preserve behavior
     return (undefined as unknown as Date).getHours();
 }
 
@@ -115,7 +114,7 @@ export function sumDeviationsByHour(
     return hourlyDeviations;
 }
 
-/** Adjust basal rates based on deviations — spreads adjustment across prior 3 hours */
+/** Adjust basal rates based on deviations -- spreads adjustment across prior 3 hours */
 export function adjustBasalsByDeviations(
     newProfile: AutotuneBasalProfileEntry[],
     hourlyDeviations: number[],
@@ -123,10 +122,10 @@ export function adjustBasalsByDeviations(
 ): void {
     for (let hour = 0; hour < HOURS_PER_DAY; hour++) {
         const deviations = hourlyDeviations[hour];
-        console.error("Hour", hour.toString(), "total deviations:", deviations, "mg/dL");
+        console.error(`Hour ${hour} total deviations: ${deviations} mg/dL`);
 
         const basalNeeded = Math.round(AUTOTUNE_ADJUSTMENT_FRACTION * deviations / ISF * 100) / 100;
-        console.error("Hour", hour, "basal adjustment needed:", basalNeeded, "U/hr");
+        console.error(`Hour ${hour} basal adjustment needed: ${basalNeeded} U/hr`);
 
         if (basalNeeded > 0) {
             for (let offset = -PRIOR_HOURS; offset < 0; offset++) {
@@ -160,10 +159,10 @@ export function capBasalRates(
         const minRate = hourlyPumpProfile[hour].rate * bounds.autotuneMin;
 
         if (newProfile[hour].rate > maxRate) {
-            console.error("Limiting hour", hour, "basal to", maxRate.toFixed(2), "(which is", bounds.autotuneMax, "* pump basal of", hourlyPumpProfile[hour].rate, ")");
+            console.error(`Limiting hour ${hour} basal to ${maxRate.toFixed(2)} (which is ${bounds.autotuneMax} * pump basal of ${hourlyPumpProfile[hour].rate})`);
             newProfile[hour].rate = maxRate;
         } else if (newProfile[hour].rate < minRate) {
-            console.error("Limiting hour", hour, "basal to", minRate.toFixed(2), "(which is", bounds.autotuneMin, "* pump basal of", hourlyPumpProfile[hour].rate, ")");
+            console.error(`Limiting hour ${hour} basal to ${minRate.toFixed(2)} (which is ${bounds.autotuneMin} * pump basal of ${hourlyPumpProfile[hour].rate})`);
             newProfile[hour].rate = minRate;
         }
 
@@ -200,7 +199,7 @@ export function smoothUntunedHours(
                 newProfile[hour].untuned = 1;
             }
 
-            console.error("Adjusting hour", hour, "basal from", oldProfile[hour].rate, "to", newProfile[hour].rate, "based on hour", lastAdjustedHour, "=", newProfile[lastAdjustedHour].rate, "and hour", nextAdjustedHour, "=", newProfile[nextAdjustedHour].rate);
+            console.error(`Adjusting hour ${hour} basal from ${oldProfile[hour].rate} to ${newProfile[hour].rate} based on hour ${lastAdjustedHour} = ${newProfile[lastAdjustedHour].rate} and hour ${nextAdjustedHour} = ${newProfile[nextAdjustedHour].rate}`);
         } else {
             lastAdjustedHour = hour;
         }
@@ -211,6 +210,7 @@ export function smoothUntunedHours(
 // Main function
 // ---------------------------------------------------------------------------
 
+/** Tune the 24-hour basal profile by adjusting rates based on glucose deviations */
 export function tuneBasalProfile(
     basalProfile: AutotuneBasalProfileEntry[],
     pumpBasalProfile: AutotuneBasalProfileEntry[],
