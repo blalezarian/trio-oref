@@ -11,7 +11,7 @@ const ROUND_SCALE_2DP = 100;
 
 interface RecentCarbsOpts {
   treatments: CarbTreatment[] | null;
-  profile: IobProfile & Record<string, unknown>;
+  profile: IobProfile;
   pumphistory: PumpHistoryEvent[];
   glucose?: GlucoseEntry[];
   basalprofile: HistoryBasalProfileEntry[];
@@ -20,7 +20,7 @@ interface RecentCarbsOpts {
 interface COBInputs {
   glucose_data: GlucoseEntry[] | undefined;
   iob_inputs: {
-    profile: IobProfile & Record<string, unknown>;
+    profile: IobProfile;
     history: PumpHistoryEvent[];
   };
   basalprofile: HistoryBasalProfileEntry[];

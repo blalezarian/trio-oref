@@ -8,7 +8,7 @@ import type { IobProfile, HistoryBasalProfileEntry } from '../iob/types';
 interface MealGenerateInputs {
   history: PumpHistoryEvent[];
   carbs: PumpHistoryEvent[];
-  profile: IobProfile & Record<string, unknown>;
+  profile: IobProfile;
   clock: string;
   glucose?: GlucoseEntry[];
   basalprofile: HistoryBasalProfileEntry[];
