@@ -224,6 +224,49 @@ describe('calcTempTreatments', () => {
     });
 
     // -----------------------------------------------------------------------
+    // AndroidAPS cancel TBR splice (null duration)
+    // -----------------------------------------------------------------------
+
+    it('splices out overlapping AndroidAPS cancel TBR records with null duration', () => {
+        // An AndroidAPS "Cancel TBR" event has eventType="Temp Basal" with
+        // duration=null. When it overlaps with a preceding temp, the overlap
+        // trim code (line 56-58) should splice it out of tempHistory.
+        const temp1Time = '2025-01-15T11:00:00.000Z';
+        const cancelTime = '2025-01-15T11:15:00.000Z';
+        const inputs = makeInputs({
+            history: [
+                // AndroidAPS cancel TBR: eventType Temp Basal, null duration
+                // Must come first (newest) in pump-history order
+                {
+                    eventType: 'Temp Basal',
+                    timestamp: cancelTime,
+                    rate: 0,
+                    duration: null,
+                } as unknown as PumpHistoryEvent,
+                // Regular temp basal: overlaps cancel because 11:00 + 30min > 11:15
+                {
+                    eventType: 'Temp Basal',
+                    timestamp: temp1Time,
+                    rate: 2.0,
+                    duration: 30,
+                } as unknown as PumpHistoryEvent,
+            ],
+        });
+        const result = calcTempTreatments(inputs);
+
+        // The cancel TBR record with null duration should have been spliced
+        // out. The remaining temp event at rate=2.0 should be trimmed to 15
+        // minutes (the gap before the cancel arrived).
+        const rawTemps = result.filter(
+            t => t.rate === 2.0 && t.duration !== undefined,
+        );
+        expect(rawTemps.length).toBeGreaterThanOrEqual(1);
+        for (const t of rawTemps) {
+            expect(t.duration).toBeLessThanOrEqual(15);
+        }
+    });
+
+    // -----------------------------------------------------------------------
     // suspend_zeros_iob path
     // -----------------------------------------------------------------------
 

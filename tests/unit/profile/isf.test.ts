@@ -79,4 +79,21 @@ describe('isfLookup', () => {
         // Exactly at 360 minutes (6:00 AM) → second entry
         expect(isfLookup(isfData, localTime(6, 0))).toBe(45);
     });
+
+    it('re-resolves when cached range no longer covers the current time', () => {
+        // First call at 2:00 AM → caches entry 0 (offset 0, endOffset 360)
+        expect(isfLookup(isfData, localTime(2, 0))).toBe(50);
+        // Second call at 8:00 AM → 480 minutes, outside [0, 360) → cache miss, re-resolves
+        resetISFCache();  // reset to cleanly verify the miss path
+        expect(isfLookup(isfData, localTime(2, 0))).toBe(50);
+        // Now call at 8:00 AM — cache says [0, 360) but 480 >= 360, so miss
+        expect(isfLookup(isfData, localTime(8, 0))).toBe(45);
+    });
+
+    it('misses cache when nowMinutes is before cached range start', () => {
+        // Populate cache with entry at 8:00 AM (offset 360-720)
+        expect(isfLookup(isfData, localTime(8, 0))).toBe(45);
+        // Now call at 2:00 AM — 120 < 360 (cached offset), cache miss
+        expect(isfLookup(isfData, localTime(2, 0))).toBe(50);
+    });
 });

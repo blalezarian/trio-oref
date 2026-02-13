@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import findMealInputs, { hasDuplicateEntry } from '../../../src/meal/history';
 import type { PumpHistoryEvent, CarbTreatment } from '../../../src/types/index';
 
@@ -417,4 +417,176 @@ describe('findMealInputs', () => {
         expect(result).toHaveLength(1);
         expect(result[0].journalCarbs).toBe(25);
     });
+
+    // --- Deduplication of carbHistory entries (Phase 1, line 43-44) ---
+
+    it('deduplicates carbHistory entries with the same timestamp', () => {
+        const carbs: PumpHistoryEvent[] = [
+            { carbs: 30, created_at: FIXED_TIME },
+            { carbs: 30, created_at: FIXED_TIME },
+        ];
+        const result = findMealInputs({ history: [], carbs });
+
+        // Second entry is a duplicate and should be skipped
+        expect(result).toHaveLength(1);
+        expect(result[0].carbs).toBe(30);
+    });
+
+    // --- Deduplication of xDrip entries (line 86) ---
+
+    it('deduplicates xDrip entries with the same timestamp', () => {
+        const history: PumpHistoryEvent[] = [
+            {
+                enteredBy: 'xdrip',
+                carbs: 20,
+                insulin: 1.5,
+                created_at: FIXED_TIME,
+                timestamp: FIXED_TIME,
+            },
+            {
+                enteredBy: 'xdrip',
+                carbs: 20,
+                insulin: 1.5,
+                created_at: FIXED_TIME,
+                timestamp: FIXED_TIME,
+            },
+        ];
+        const result = findMealInputs({ history, carbs: [] });
+
+        // Second xDrip entry is a duplicate and should be skipped
+        expect(result).toHaveLength(1);
+        expect(result[0].carbs).toBe(20);
+        expect(result[0].bolus).toBe(1.5);
+    });
+
+    it('handles xDrip entry without timestamp field (nullish coalescing fallback)', () => {
+        const history: PumpHistoryEvent[] = [
+            {
+                enteredBy: 'xdrip',
+                carbs: 20,
+                insulin: 1.0,
+                created_at: FIXED_TIME,
+            },
+        ];
+        const result = findMealInputs({ history, carbs: [] });
+
+        expect(result).toHaveLength(1);
+        expect(result[0].timestamp).toBe(FIXED_TIME);
+        expect(result[0].carbs).toBe(20);
+    });
+
+    // --- Deduplication of generic carbs > 0 entries (line 99) ---
+
+    it('deduplicates generic carbs > 0 entries with the same timestamp', () => {
+        const history: PumpHistoryEvent[] = [
+            {
+                carbs: 15,
+                insulin: 0.5,
+                created_at: FIXED_TIME,
+                timestamp: FIXED_TIME,
+            },
+            {
+                carbs: 15,
+                insulin: 0.5,
+                created_at: FIXED_TIME,
+                timestamp: FIXED_TIME,
+            },
+        ];
+        const result = findMealInputs({ history, carbs: [] });
+
+        // Second generic entry is a duplicate and should be skipped
+        expect(result).toHaveLength(1);
+        expect(result[0].carbs).toBe(15);
+    });
+
+    it('handles generic carbs > 0 entry without timestamp field (nullish coalescing fallback)', () => {
+        const history: PumpHistoryEvent[] = [
+            {
+                carbs: 15,
+                insulin: 0.5,
+                created_at: FIXED_TIME,
+            },
+        ];
+        const result = findMealInputs({ history, carbs: [] });
+
+        expect(result).toHaveLength(1);
+        expect(result[0].carbs).toBe(15);
+        expect(result[0].timestamp).toBe(FIXED_TIME);
+    });
+
+    // --- Deduplication of JournalEntryMealMarker entries (lines 112-119) ---
+
+    it('deduplicates JournalEntryMealMarker entries with the same timestamp', () => {
+        const history: PumpHistoryEvent[] = [
+            makeHistory({ _type: 'JournalEntryMealMarker', carb_input: 35 }),
+            makeHistory({ _type: 'JournalEntryMealMarker', carb_input: 35 }),
+        ];
+        const result = findMealInputs({ history, carbs: [] });
+
+        // Second JournalEntryMealMarker is a duplicate and should be skipped
+        expect(result).toHaveLength(1);
+        expect(result[0].carbs).toBe(35);
+        expect(result[0].journalCarbs).toBe(35);
+    });
+
+    // --- BolusWizard skipped when duplicate carb entry already exists (line 129-130) ---
+
+    it('skips BolusWizard when a carb entry with the same timestamp already exists', () => {
+        const carbs: PumpHistoryEvent[] = [
+            { carbs: 45, created_at: FIXED_TIME },
+        ];
+        const history: PumpHistoryEvent[] = [
+            makeHistory({ _type: 'Bolus', amount: 2.0 }),
+            makeHistory({ _type: 'BolusWizard', carb_input: 45 }),
+        ];
+        const result = findMealInputs({ history, carbs });
+
+        // carbHistory provides the carb entry, Bolus provides the bolus entry.
+        // BolusWizard is skipped because a carb entry already exists at the same timestamp.
+        expect(result).toHaveLength(2);
+        const carbEntry = result.find(r => r.nsCarbs !== undefined);
+        expect(carbEntry).toBeDefined();
+        expect(carbEntry!.carbs).toBe(45);
+        const bolusEntry = result.find(r => r.bolus !== undefined);
+        expect(bolusEntry).toBeDefined();
+        expect(bolusEntry!.bolus).toBe(2.0);
+        // No bwCarbs entry should be present
+        expect(result.find(r => r.bwCarbs !== undefined)).toBeUndefined();
+    });
+
+    // --- BolusWizard with carb_input === 0, no matching bolus (line 136-137) ---
+
+    it('logs special message for BolusWizard with carb_input === 0 and no matching bolus', () => {
+        const spy = vi.spyOn(console, 'log').mockImplementation(() => {});
+        const history: PumpHistoryEvent[] = [
+            makeHistory({ _type: 'BolusWizard', carb_input: 0 }),
+        ];
+        const result = findMealInputs({ history, carbs: [] });
+
+        expect(result).toHaveLength(0);
+        expect(spy).toHaveBeenCalledWith(
+            expect.stringContaining('BolusWizard without carbs'),
+        );
+        spy.mockRestore();
+    });
+
+    // --- BolusWizard with timestamp, no matching bolus (line 139) ---
+
+    it('logs timestamp for BolusWizard with no matching bolus', () => {
+        const spy = vi.spyOn(console, 'log').mockImplementation(() => {});
+        const history: PumpHistoryEvent[] = [
+            makeHistory({ _type: 'BolusWizard', carb_input: 30 }),
+        ];
+        const result = findMealInputs({ history, carbs: [] });
+
+        expect(result).toHaveLength(0);
+        expect(spy).toHaveBeenCalledWith(
+            `Timestamp of bolus wizard: ${FIXED_TIME}`,
+        );
+        spy.mockRestore();
+    });
+
+    // Note: BolusWizard entries without a timestamp are never deferred (line 67 guard),
+    // so the `entry.timestamp ?? ''` fallback on line 126 and the `if (entry.timestamp)`
+    // false branch on line 139 are structurally unreachable in Phase 3 processing.
 });

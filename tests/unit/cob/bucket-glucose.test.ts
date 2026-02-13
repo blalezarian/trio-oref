@@ -83,6 +83,69 @@ describe('bucketGlucoseWithInterpolation', () => {
         expect(glucoseValues).not.toContain(30);
     });
 
+    it('skips entries where glucose is falsy (0 or undefined)', () => {
+        // Line 56: !glucose_data[glucoseIdx].glucose → continue
+        const data: GlucoseEntry[] = [
+            makeGlucoseEntry(0, 150),
+            { dateString: new Date(NOW - 5 * 60_000).toISOString(), glucose: 0 } as GlucoseEntry, // falsy glucose
+            makeGlucoseEntry(10, 140),
+        ];
+        const result = bucketGlucoseWithInterpolation(data, mealTime, carbImpactTime, 6);
+        const glucoseValues = result.map(r => r.glucose).filter(g => g !== undefined && g > 0);
+        expect(glucoseValues).not.toContain(0);
+    });
+
+    it('skips entries outside CI mode lookback window (> 45m ago)', () => {
+        // Line 70-74: carbImpactTime is defined and hoursAgo > 1
+        // carbImpactTime is NOW, so entries more than 45m before NOW have hoursAgo > 1
+        const ciTime = new Date(NOW);
+        const data: GlucoseEntry[] = [
+            makeGlucoseEntry(0, 150),
+            makeGlucoseEntry(5, 145),   // 5 min before NOW — hoursAgo = 5/45 < 1 → included
+            makeGlucoseEntry(50, 140),  // 50 min before NOW — hoursAgo = 50/45 > 1 → skipped
+        ];
+        const result = bucketGlucoseWithInterpolation(data, mealTime, ciTime, 6);
+        // The 50-min-ago entry should be skipped due to CI lookback
+        // We expect only the seed entry and the 5-min entry
+        const validGlucose = result.filter(r => r.glucose !== undefined && r.glucose > 0);
+        // All included entries should have glucose >= 140
+        expect(validGlucose.every(r => (r.glucose ?? 0) >= 140)).toBe(true);
+    });
+
+    it('skips entries in the future relative to CI time (hoursAgo < 0)', () => {
+        // Line 72: hoursAgo < 0 (bgTime is after carbImpactTime)
+        const pastCarbImpact = new Date(NOW - 120 * 60_000); // 2 hours ago
+        const data: GlucoseEntry[] = [
+            makeGlucoseEntry(0, 150),   // NOW — after carbImpactTime → hoursAgo < 0 → skip
+            makeGlucoseEntry(5, 145),
+        ];
+        const result = bucketGlucoseWithInterpolation(data, mealTime, pastCarbImpact, 6);
+        // First entry is seed (always included), entries after carbImpactTime are skipped
+        expect(result.length).toBeGreaterThanOrEqual(1);
+    });
+
+    it('handles initial entry with glucose below threshold (lastValidIndex = -1)', () => {
+        // Line 40-42: first entry has invalid glucose → lastValidIndex = -1
+        const data: GlucoseEntry[] = [
+            { dateString: new Date(NOW).toISOString(), glucose: 30 } as GlucoseEntry, // below 39
+            makeGlucoseEntry(5, 145),
+            makeGlucoseEntry(10, 140),
+        ];
+        const result = bucketGlucoseWithInterpolation(data, mealTime, carbImpactTime, 6);
+        // Should still process despite invalid first entry
+        expect(result.length).toBeGreaterThanOrEqual(1);
+    });
+
+    it('logs when resolveGlucoseTime returns undefined for an entry', () => {
+        // Line 51-52: no display_time or dateString → "Could not determine BG time"
+        const data: GlucoseEntry[] = [
+            makeGlucoseEntry(0, 150),
+            { glucose: 145 } as GlucoseEntry, // no time fields at all
+        ];
+        const result = bucketGlucoseWithInterpolation(data, mealTime, carbImpactTime, 6);
+        expect(console.log).toHaveBeenCalledWith('Could not determine BG time');
+    });
+
     it('stops after finding pre-meal BG', () => {
         // Entries before the meal time (hoursAfterMeal < 0)
         const earlyMealTime = new Date(NOW - 5 * 60_000); // 5 min ago

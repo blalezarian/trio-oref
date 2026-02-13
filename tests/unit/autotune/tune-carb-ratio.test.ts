@@ -95,4 +95,25 @@ describe('tuneCarbRatio', () => {
             'oldCR: 12 fullNewCR: 12 newCR: 12',
         );
     });
+
+    it('skips bounding when pumpCarbRatio is undefined (line 28, 43)', () => {
+        // pumpCarbRatio = undefined → both guard blocks at lines 28 and 43 are skipped
+        // fullNewCR = totalCR = 15, no capping applied
+        // newCR = 0.8 * 10 + 0.2 * 15 = 11
+        const result = tuneCarbRatio(15, 10, undefined, DEFAULT_BOUNDS);
+        expect(result).toBe(11);
+    });
+
+    it('caps blended newCR at minCR when blended is below min', () => {
+        // Line 43 else-if: newCR < minCR
+        // pumpCR=10, autotuneMin=0.7 → minCR=7
+        // currentCR=6 (below min), totalCR=5 (below min)
+        // fullNewCR=5 < 7 → capped to 7
+        // newCR = 0.8 * 6 + 0.2 * 7 = 6.2 < 7 → capped to 7
+        const result = tuneCarbRatio(5, 6, 10, DEFAULT_BOUNDS);
+        expect(result).toBe(7);
+        expect(console.log).toHaveBeenCalledWith(
+            expect.stringContaining('Limiting CR to 7.00'),
+        );
+    });
 });

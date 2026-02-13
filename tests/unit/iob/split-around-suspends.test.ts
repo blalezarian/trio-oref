@@ -95,6 +95,64 @@ describe('splitAroundSuspends', () => {
         expect(result[0].duration).toBe(0);
     });
 
+    it('clones event without started_at when splitting around a mid-event suspend', () => {
+        // Event without started_at: exercises the falsy branch of
+        // cloneTempEvent line 110 (started_at undefined)
+        const event: TempEvent = {
+            rate: 1.0,
+            duration: 60,
+            date: BASE_TIME,
+            // started_at intentionally omitted
+            timestamp: new Date(BASE_TIME).toISOString(),
+        };
+        const result = splitAroundSuspends(
+            event,
+            [makeSuspend(20, 10)],
+            farFutureResume,
+            false,
+            farPastSuspend,
+            false,
+        );
+        // The event spans 0-60, suspend at 20-30 splits into 0-20 and 30-60
+        expect(result).toHaveLength(2);
+        expect(result[0].duration).toBe(20);
+        expect(result[1].duration).toBe(30);
+        // The cloned event2 should have started_at undefined since original lacked it
+        // (event2 gets a new started_at from the suspend end date in the code,
+        //  but the clone's ternary for started_at was evaluated)
+    });
+
+    it('clones event with created_at when splitting around a mid-event suspend', () => {
+        // Event with created_at: exercises the truthy branch of
+        // cloneTempEvent line 111 (created_at defined)
+        const createdDate = new Date(BASE_TIME - 5 * MS_PER_MINUTE);
+        const event: TempEvent = {
+            rate: 1.0,
+            duration: 60,
+            date: BASE_TIME,
+            started_at: new Date(BASE_TIME),
+            created_at: createdDate,
+            timestamp: new Date(BASE_TIME).toISOString(),
+        };
+        const result = splitAroundSuspends(
+            event,
+            [makeSuspend(20, 10)],
+            farFutureResume,
+            false,
+            farPastSuspend,
+            false,
+        );
+        // The event spans 0-60, suspend at 20-30 splits into 0-20 and 30-60
+        expect(result).toHaveLength(2);
+        expect(result[0].duration).toBe(20);
+        expect(result[1].duration).toBe(30);
+        // The cloned event should preserve created_at as a new Date instance
+        expect(result[1].created_at).toBeInstanceOf(Date);
+        expect(result[1].created_at!.getTime()).toBe(createdDate.getTime());
+        // Verify it's a clone (different reference)
+        expect(result[1].created_at).not.toBe(createdDate);
+    });
+
     it('truncates event that extends past lastSuspend when currentlySuspended', () => {
         const lastSuspend = new Date(BASE_TIME + 20 * MS_PER_MINUTE).toISOString();
         const event = makeEvent(0, 30);

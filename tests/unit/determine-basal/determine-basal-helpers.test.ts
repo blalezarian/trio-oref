@@ -254,6 +254,14 @@ describe('calculateDeviation', () => {
         expect(result.deviation).toBe(-6);
     });
 
+    it('stops at minAvgDelta when minDelta deviation is negative but minAvgDelta deviation is non-negative', () => {
+        // bgImpact = 3, minDelta = 1 → deviation = round(6 * (1 - 3)) = round(-12) = -12 (negative)
+        // Falls back to minAvgDelta = 4 → deviation = round(6 * (4 - 3)) = round(6) = 6 (non-negative, stops here)
+        // Does NOT fall through to long_avgdelta
+        const result = calculateDeviation(150, iob, 50, 50, 1, 4, 10, 3);
+        expect(result.deviation).toBe(6);
+    });
+
     it('computes naive_eventualBG using adjustedSens for positive IOB', () => {
         // bg=150, iob=2.0 > 0, adjustedSens=50
         // naive_eventualBG = round(150 - 2.0 * 50) = round(50) = 50

@@ -154,4 +154,32 @@ describe('tuneISF', () => {
         const decimal = (result.newISF * 1000) % 1;
         expect(decimal).toBe(0);
     });
+
+    it('returns NaN for newISF and adjustedISF when pumpISF is undefined', () => {
+        // Line 64: pumpISF === undefined → early return with NaN values
+        const data = Array.from({ length: 12 }, () =>
+            makeDatum({ deviation: '2', BGI: -4, avgDelta: '-1' }),
+        );
+        const result = tuneISF(data, 40, undefined, DEFAULT_BOUNDS, undefined);
+        expect(Number.isNaN(result.newISF)).toBe(true);
+        expect(Number.isNaN(result.adjustedISF)).toBe(true);
+        expect(result.oldISF).toBe(40);
+        expect(result.p50deviation).toBeDefined();
+        expect(result.p50BGI).toBeDefined();
+        expect(result.p50ratios).toBeDefined();
+        expect(result.fullNewISF).toBeDefined();
+    });
+
+    it('handles fullNewISF < 0 by using currentISF as adjustedISF', () => {
+        // Line 81: if (fullNewISF < 0) { adjustedISF = currentISF; }
+        // ratio = 1 + 5/(-2) = -1.5 → fullNewISF = 40 * -1.5 = -60
+        const data = Array.from({ length: 12 }, () =>
+            makeDatum({ deviation: '5', BGI: -2, avgDelta: '-1' }),
+        );
+        const result = tuneISF(data, 40, 40, DEFAULT_BOUNDS, undefined);
+        // fullNewISF = -60 < 0 → adjustedISF = currentISF = 40
+        expect(result.fullNewISF).toBe(-60);
+        // adjustedISF should be currentISF (40), not negative
+        expect(result.adjustedISF).toBe(40);
+    });
 });

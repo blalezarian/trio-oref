@@ -47,6 +47,41 @@ describe('splitTimespanWithOneSplitter', () => {
         expect(result[1].duration).toBe(30);
     });
 
+    it('returns event unchanged for non-recurring splitter type', () => {
+        // Exercise the falsy branch of `if (splitter.type === 'recurring')` at line 27.
+        // The SplitterEvent type only allows 'recurring', but the runtime guard
+        // exists for safety. We cast to simulate an unexpected type value.
+        const event = makeEventAtLocalTime(10, 0, 20);
+        const nonRecurringSplitter = { type: 'one-time', minutes: 615 } as unknown as SplitterEvent;
+        const result = splitTimespanWithOneSplitter(event, nonRecurringSplitter);
+        expect(result).toHaveLength(1);
+        expect(result[0]).toBe(event);
+    });
+
+    it('clones event with created_at when splitting at a boundary', () => {
+        // Exercise the truthy branch of cloneTempEvent line 114
+        // (created_at defined)
+        const d = new Date();
+        d.setHours(10, 0, 0, 0);
+        const createdDate = new Date(d.getTime() - 60_000);
+        const event: TempEvent = {
+            rate: 1.0,
+            duration: 30,
+            date: d.getTime(),
+            started_at: d,
+            created_at: createdDate,
+            timestamp: d.toISOString(),
+        };
+        // Splitter at 10:15 (615 min) falls within 10:00-10:30
+        const result = splitTimespanWithOneSplitter(event, makeSplitter(615));
+        expect(result).toHaveLength(2);
+        // Both cloned events should preserve created_at as new Date instances
+        expect(result[0].created_at).toBeInstanceOf(Date);
+        expect(result[0].created_at!.getTime()).toBe(createdDate.getTime());
+        // Verify it's a clone (different reference)
+        expect(result[0].created_at).not.toBe(createdDate);
+    });
+
     it('preserves event2 date and timestamp after split', () => {
         const event = makeEventAtLocalTime(10, 0, 30);
         const result = splitTimespanWithOneSplitter(event, makeSplitter(615));

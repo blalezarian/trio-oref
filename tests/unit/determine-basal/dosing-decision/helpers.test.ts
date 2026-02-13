@@ -270,6 +270,15 @@ describe('determineSMBMaxBolus', () => {
         expect(console.log).toHaveBeenCalledWith(expect.stringContaining('smbMinutesSetting undefined'));
     });
 
+    it('does not log limitation when insulinReq <= maxBolus and smbMinutesSetting is undefined', () => {
+        // insulinReq=0.3 <= maxBolus=0.5, smbMinutesSetting=undefined
+        // Should log "smbMinutesSetting undefined" but NOT "SMB limited by maxBolus"
+        const result = determineSMBMaxBolus(0.3, 2.0, 0, 0, 1.0, undefined, undefined);
+        expect(result).toBe(0.5);
+        expect(console.log).toHaveBeenCalledWith(expect.stringContaining('smbMinutesSetting undefined'));
+        expect(console.log).not.toHaveBeenCalledWith(expect.stringContaining('SMB limited by maxBolus'));
+    });
+
     it('uses UAM minutes when IOB > mealInsulinReq', () => {
         // iob=5 > mealInsulinReq=2 and iob > 0
         // uamMinutesSetting=45, effectiveBasal=1.0

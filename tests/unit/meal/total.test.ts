@@ -202,6 +202,39 @@ describe('accumulateRemovalsByType', () => {
         expect(removals.carbs).toBe(25);
         expect(removals.nsCarbs).toBe(25);
     });
+
+    it('handles treatment with undefined carbs (nullish coalescing fallback to 0)', () => {
+        const removals = { carbs: 0, nsCarbs: 0, bwCarbs: 0, journalCarbs: 0 };
+        accumulateRemovalsByType({ timestamp: '', nsCarbs: 10 }, removals);
+        expect(removals.carbs).toBe(0);
+        expect(removals.nsCarbs).toBe(10);
+    });
+
+    it('handles treatment with undefined nsCarbs falling through to bwCarbs', () => {
+        const removals = { carbs: 0, nsCarbs: 0, bwCarbs: 0, journalCarbs: 0 };
+        accumulateRemovalsByType({ timestamp: '', carbs: 20, bwCarbs: 20 }, removals);
+        expect(removals.carbs).toBe(20);
+        expect(removals.nsCarbs).toBe(0);
+        expect(removals.bwCarbs).toBe(20);
+    });
+
+    it('handles treatment with undefined nsCarbs and bwCarbs falling through to journalCarbs', () => {
+        const removals = { carbs: 0, nsCarbs: 0, bwCarbs: 0, journalCarbs: 0 };
+        accumulateRemovalsByType({ timestamp: '', carbs: 15, journalCarbs: 15 }, removals);
+        expect(removals.carbs).toBe(15);
+        expect(removals.nsCarbs).toBe(0);
+        expect(removals.bwCarbs).toBe(0);
+        expect(removals.journalCarbs).toBe(15);
+    });
+
+    it('handles treatment with no classified carb type (all undefined)', () => {
+        const removals = { carbs: 0, nsCarbs: 0, bwCarbs: 0, journalCarbs: 0 };
+        accumulateRemovalsByType({ timestamp: '', carbs: 10 }, removals);
+        expect(removals.carbs).toBe(10);
+        expect(removals.nsCarbs).toBe(0);
+        expect(removals.bwCarbs).toBe(0);
+        expect(removals.journalCarbs).toBe(0);
+    });
 });
 
 // ---------------------------------------------------------------------------
@@ -616,5 +649,240 @@ describe('recentCarbs', () => {
         const r = result as { carbs: number };
 
         expect(r.carbs).toBe(0);
+    });
+
+    // --- Treatment with insufficient carbs (< 1) is skipped (line 102-103) ---
+
+    it('skips treatment with carbs less than 1', () => {
+        mockAbsorption(0);
+
+        const treatments: CarbTreatment[] = [
+            {
+                timestamp: '2025-01-15T11:00:00.000Z',
+                carbs: 0.5,
+                nsCarbs: 0.5,
+            },
+        ];
+        const result = recentCarbs(makeOpts(treatments), FIXED_DATE);
+        const r = result as { carbs: number; mealCOB: number };
+
+        expect(r.carbs).toBe(0);
+        expect(r.mealCOB).toBe(0);
+    });
+
+    it('skips treatment with zero carbs', () => {
+        mockAbsorption(0);
+
+        const treatments: CarbTreatment[] = [
+            {
+                timestamp: '2025-01-15T11:00:00.000Z',
+                carbs: 0,
+                nsCarbs: 0,
+            },
+        ];
+        const result = recentCarbs(makeOpts(treatments), FIXED_DATE);
+        const r = result as { carbs: number; mealCOB: number };
+
+        expect(r.carbs).toBe(0);
+        expect(r.mealCOB).toBe(0);
+    });
+
+    it('skips treatment with undefined carbs', () => {
+        mockAbsorption(0);
+
+        const treatments: CarbTreatment[] = [
+            {
+                timestamp: '2025-01-15T11:00:00.000Z',
+            },
+        ];
+        const result = recentCarbs(makeOpts(treatments), FIXED_DATE);
+        const r = result as { carbs: number; mealCOB: number };
+
+        expect(r.carbs).toBe(0);
+        expect(r.mealCOB).toBe(0);
+    });
+
+    // --- Bad myMealCOB (NaN) from calcMealCOB (line 118-119) ---
+
+    it('logs error and skips bad myMealCOB when carbsAbsorbed is NaN', () => {
+        const spy = vi.spyOn(console, 'log').mockImplementation(() => {});
+
+        const treatments = [
+            makeTreatment({ timestamp: '2025-01-15T11:00:00.000Z' }),
+        ];
+
+        // First call for treatment COB: return NaN carbsAbsorbed => myMealCOB will be NaN
+        mockedCalcMealCOB
+            .mockReturnValueOnce({
+                carbsAbsorbed: NaN,
+                currentDeviation: 5,
+                maxDeviation: 10,
+                minDeviation: -2,
+                slopeFromMaxDeviation: -0.5,
+                slopeFromMinDeviation: 0.3,
+                allDeviations: [5, 10, -2],
+            })
+            // Final deviation calculation call
+            .mockReturnValue({
+                carbsAbsorbed: 0,
+                currentDeviation: 5,
+                maxDeviation: 10,
+                minDeviation: -2,
+                slopeFromMaxDeviation: -0.5,
+                slopeFromMinDeviation: 0.3,
+                allDeviations: [5, 10, -2],
+            });
+
+        const result = recentCarbs(makeOpts(treatments), FIXED_DATE);
+        const r = result as { mealCOB: number };
+
+        // mealCOB should remain 0 since NaN myMealCOB is skipped
+        expect(r.mealCOB).toBe(0);
+        expect(spy).toHaveBeenCalledWith(expect.stringContaining('Bad myMealCOB'));
+        spy.mockRestore();
+    });
+
+    // --- Bad profile.maxCOB (NaN) (line 145-146) ---
+
+    it('logs error when profile.maxCOB is NaN', () => {
+        const spy = vi.spyOn(console, 'log').mockImplementation(() => {});
+
+        mockAbsorption(10);
+
+        const treatments = [
+            makeTreatment({ timestamp: '2025-01-15T11:00:00.000Z' }),
+        ];
+        const result = recentCarbs(
+            makeOpts(treatments, { maxCOB: NaN }),
+            FIXED_DATE,
+        );
+        const r = result as { mealCOB: number };
+
+        // maxCOB is invalid so no cap is applied; mealCOB = 30 - 10 = 20
+        expect(r.mealCOB).toBe(20);
+        expect(spy).toHaveBeenCalledWith(expect.stringContaining('Bad profile.maxCOB'));
+        spy.mockRestore();
+    });
+
+    it('logs error when profile.maxCOB is undefined', () => {
+        const spy = vi.spyOn(console, 'log').mockImplementation(() => {});
+
+        mockAbsorption(10);
+
+        const treatments = [
+            makeTreatment({ timestamp: '2025-01-15T11:00:00.000Z' }),
+        ];
+        const result = recentCarbs(
+            makeOpts(treatments, { maxCOB: undefined as unknown as number }),
+            FIXED_DATE,
+        );
+        const r = result as { mealCOB: number };
+
+        expect(r.mealCOB).toBe(20);
+        expect(spy).toHaveBeenCalledWith(expect.stringContaining('Bad profile.maxCOB'));
+        spy.mockRestore();
+    });
+
+    // --- Removal of fully-absorbed bwCarbs meals (line 207, 214-215) ---
+
+    it('removes carbs from fully absorbed earlier bwCarbs meals', () => {
+        const t1 = '2025-01-15T08:00:00.000Z'; // 4h ago - older
+        const t2 = '2025-01-15T11:00:00.000Z'; // 1h ago - newer
+
+        const treatments: CarbTreatment[] = [
+            { timestamp: t1, carbs: 40, bwCarbs: 40 },
+            { timestamp: t2, carbs: 20, bwCarbs: 20 },
+        ];
+
+        // First call (newer, t2): 5g absorbed of 20g => COB=15
+        // Second call (older, t1): 55g absorbed of 60g => COB=5 < 15 => flagged for removal
+        mockedCalcMealCOB
+            .mockReturnValueOnce({
+                carbsAbsorbed: 5,
+                currentDeviation: 5,
+                maxDeviation: 10,
+                minDeviation: -2,
+                slopeFromMaxDeviation: -0.5,
+                slopeFromMinDeviation: 0.3,
+                allDeviations: [5, 10, -2],
+            })
+            .mockReturnValueOnce({
+                carbsAbsorbed: 55,
+                currentDeviation: 5,
+                maxDeviation: 10,
+                minDeviation: -2,
+                slopeFromMaxDeviation: -0.5,
+                slopeFromMinDeviation: 0.3,
+                allDeviations: [5, 10, -2],
+            })
+            .mockReturnValue({
+                carbsAbsorbed: 0,
+                currentDeviation: 3,
+                maxDeviation: 8,
+                minDeviation: -1,
+                slopeFromMaxDeviation: -0.4,
+                slopeFromMinDeviation: 0.2,
+                allDeviations: [3, 8, -1],
+            });
+
+        const result = recentCarbs(makeOpts(treatments), FIXED_DATE);
+        const r = result as { carbs: number; bwCarbs: number; bwFound: boolean; mealCOB: number };
+
+        // Older meal's 40g bwCarbs should be subtracted
+        expect(r.carbs).toBe(20);
+        expect(r.bwCarbs).toBe(20);
+        expect(r.bwFound).toBe(true);
+        expect(r.mealCOB).toBe(15);
+    });
+
+    // --- Removal of fully-absorbed journalCarbs meals (line 207, 216-217) ---
+
+    it('removes carbs from fully absorbed earlier journalCarbs meals', () => {
+        const t1 = '2025-01-15T08:00:00.000Z'; // 4h ago - older
+        const t2 = '2025-01-15T11:00:00.000Z'; // 1h ago - newer
+
+        const treatments: CarbTreatment[] = [
+            { timestamp: t1, carbs: 40, journalCarbs: 40 },
+            { timestamp: t2, carbs: 20, journalCarbs: 20 },
+        ];
+
+        // First call (newer, t2): 5g absorbed of 20g => COB=15
+        // Second call (older, t1): 55g absorbed of 60g => COB=5 < 15 => flagged for removal
+        mockedCalcMealCOB
+            .mockReturnValueOnce({
+                carbsAbsorbed: 5,
+                currentDeviation: 5,
+                maxDeviation: 10,
+                minDeviation: -2,
+                slopeFromMaxDeviation: -0.5,
+                slopeFromMinDeviation: 0.3,
+                allDeviations: [5, 10, -2],
+            })
+            .mockReturnValueOnce({
+                carbsAbsorbed: 55,
+                currentDeviation: 5,
+                maxDeviation: 10,
+                minDeviation: -2,
+                slopeFromMaxDeviation: -0.5,
+                slopeFromMinDeviation: 0.3,
+                allDeviations: [5, 10, -2],
+            })
+            .mockReturnValue({
+                carbsAbsorbed: 0,
+                currentDeviation: 3,
+                maxDeviation: 8,
+                minDeviation: -1,
+                slopeFromMaxDeviation: -0.4,
+                slopeFromMinDeviation: 0.2,
+                allDeviations: [3, 8, -1],
+            });
+
+        const result = recentCarbs(makeOpts(treatments), FIXED_DATE);
+        const r = result as { carbs: number; journalCarbs: number; mealCOB: number };
+
+        // Older meal's 40g journalCarbs should be subtracted
+        expect(r.carbs).toBe(20);
+        expect(r.journalCarbs).toBe(20);
+        expect(r.mealCOB).toBe(15);
     });
 });

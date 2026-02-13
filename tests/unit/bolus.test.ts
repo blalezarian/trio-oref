@@ -264,6 +264,27 @@ describe('processBolusGroup', () => {
         expect(result.insulin).toBe('5');
     });
 
+    it('breaks and logs when encountering a null/undefined event in the group', () => {
+        // Lines 244-246: if (!event) → log and break
+        const events: PumpHistoryEvent[] = [
+            null as unknown as PumpHistoryEvent, // falsy event
+            {
+                _type: 'Bolus',
+                timestamp: '2025-01-15T12:00:00.000Z',
+                amount: 3,
+                programmed: 3,
+                duration: 0,
+            },
+        ];
+        const processed: BolusTreatment[] = [];
+        const result = processBolusGroup(events, processed);
+        expect(console.log).toHaveBeenCalledWith(
+            expect.stringContaining('XXX'),
+        );
+        // After break, finalize with empty accumulator
+        expect(result.eventType).toBe('<none>');
+    });
+
     it('assigns square bolus for non-zero duration', () => {
         const events: PumpHistoryEvent[] = [{
             _type: 'Bolus',

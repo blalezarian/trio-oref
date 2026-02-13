@@ -108,6 +108,26 @@ describe('findActiveRate', () => {
         const single: BasalScheduleEntry[] = [{ i: 0, minutes: 0, rate: 0.5 }];
         expect(findActiveRate(single, 720)).toBe(0.5);
     });
+
+    it('handles entries with undefined minutes (falls back to 0)', () => {
+        const sorted: BasalScheduleEntry[] = [
+            { rate: 0.8 },                       // minutes undefined → treated as 0
+            { minutes: 360, rate: 1.0 },
+            { minutes: 480, rate: 1.2 },
+        ];
+        // minuteOfDay 200: >= 0 (entry[0].minutes ?? 0) && < 360 (entry[1].minutes ?? 0)
+        expect(findActiveRate(sorted, 200)).toBe(0.8);
+    });
+
+    it('handles adjacent entry with undefined minutes', () => {
+        const sorted: BasalScheduleEntry[] = [
+            { minutes: 0, rate: 0.8 },
+            { rate: 1.0 },                       // minutes undefined → treated as 0
+            { minutes: 480, rate: 1.2 },
+        ];
+        // minuteOfDay 200: entry[1].minutes ?? 0 = 0, so 200 >= 0 (entry[1]) and < 480 (entry[2])
+        expect(findActiveRate(sorted, 200)).toBe(1.0);
+    });
 });
 
 // ---------------------------------------------------------------------------

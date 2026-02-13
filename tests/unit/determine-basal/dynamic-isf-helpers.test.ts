@@ -274,4 +274,37 @@ describe('buildTDDReasonString', () => {
         );
         expect(result).not.toContain('Middleware');
     });
+
+    it('does not append middleware when value is "Nothing changed"', () => {
+        const result = buildTDDReasonString(
+            false, false, '', '', '', '', '',
+            0.5, 'Nothing changed' as never,
+        );
+        expect(result).not.toContain('Middleware');
+    });
+
+    it('clamps SMB ratio at 1 when smb_delivery_ratio exceeds 1', () => {
+        const result = buildTDDReasonString(
+            false, false, '', '', '', '', '',
+            1.5, '' as never,
+        );
+        expect(result).toContain('SMB Ratio: 1');
+    });
+
+    it('concatenates all log strings when dynISFenabled and tddAdjBasal', () => {
+        // Explicitly test the dynISFenabled=true, tddAdjBasal=true branch body
+        // with distinguishable strings to verify concatenation order
+        const result = buildTDDReasonString(
+            true,
+            true,
+            '[DynISF]',
+            '[Formula]',
+            '[Limit]',
+            '[AF]',
+            '[BasalRatio]',
+            0.5,
+            '' as never,
+        );
+        expect(result).toBe('[DynISF][Formula][Limit][AF][BasalRatio]');
+    });
 });

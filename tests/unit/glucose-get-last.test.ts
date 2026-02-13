@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import {
     getLastGlucose,
     getDateFromEntry,
@@ -447,6 +447,32 @@ describe('getLastGlucose', () => {
 
         // delta = (120-39)/5*5 = 81
         expect(result.delta).toBe(81);
+    });
+
+    it('logs error and skips entry when date fields are missing', () => {
+        const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
+        // Second entry has glucose but no date fields → getDateFromEntry returns falsy
+        const data: GlucoseEntry[] = [
+            entry(120, 0),
+            { glucose: 110, device: 'TestCGM', noise: 1 }, // no date, display_time, or dateString
+        ];
+        const result = getLastGlucose(data);
+        expect(consoleSpy).toHaveBeenCalledWith('Error: date field not found: cannot calculate avgdelta');
+        // Only 1 entry processed (the second was skipped), so delta = 0
+        expect(result.delta).toBe(0);
+        consoleSpy.mockRestore();
+    });
+
+    it('handles entry with glucose null (skipped by loop guard)', () => {
+        // entry.glucose == null path at line 46
+        const data: GlucoseEntry[] = [
+            entry(120, 0),
+            { glucose: null as unknown as number, date: FIXED_DATE - 5 * MS_PER_MINUTE, device: 'TestCGM', noise: 1 },
+            entry(110, 10),
+        ];
+        const result = getLastGlucose(data);
+        // The null-glucose entry is skipped; only 10m entry used
+        expect(result.short_avgdelta).toBe(5);
     });
 
     it('assigns short delta entries in 2.5-7.5 range to both short and last deltas', () => {

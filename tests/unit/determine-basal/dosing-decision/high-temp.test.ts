@@ -455,6 +455,58 @@ describe('handleSMB', () => {
         expect(ctx.result.reason).toContain('Microbolusing 0.5U');
     });
 
+    it('uses default SMB/UAM minutes when profile values are undefined', () => {
+        // When maxSMBBasalMinutes and maxUAMSMBBasalMinutes are undefined on the profile,
+        // handleSMB should default both to DEFAULT_MAX_SMB_BASAL_MINUTES (30)
+        const ctx = makeTestContext({
+            inputs: {
+                bg: 150,
+                threshold: 65,
+                microBolusAllowed: true,
+                iob_data: {
+                    iob: 2.0,
+                    lastBolusTime: Date.now() - 600000,
+                    activity: 0.05,
+                    basaliob: 0.5,
+                    bolusiob: 1.5,
+                    netbasalinsulin: 0.5,
+                    bolusinsulin: 3.0,
+                    time: new Date('2025-01-15T12:00:00Z'),
+                } as IOBData,
+                systemTime: new Date(),
+                profile: {
+                    current_basal: 1.0,
+                    out_units: 'mg/dL',
+                    max_basal: 4.0,
+                    // maxSMBBasalMinutes and maxUAMSMBBasalMinutes intentionally omitted (undefined)
+                    bolus_increment: 0.1,
+                    smb_delivery_ratio: 0.5,
+                    max_iob: 10,
+                    max_daily_safety_multiplier: 3,
+                    current_basal_safety_multiplier: 4,
+                    autosens_max: 1.2,
+                    autosens_min: 0.7,
+                    dia: 5,
+                    curve: 'rapid-acting',
+                    useCustomPeakTime: false,
+                    insulinPeakTime: 75,
+                    max_daily_basal: 2.0,
+                    min_bg: 80,
+                    max_bg: 120,
+                    sens: 50,
+                    carb_ratio: 10,
+                } as Profile,
+            },
+            enableSMB: true,
+            insulinReq: 1.0,
+        });
+
+        const outcome = handleSMB(ctx);
+
+        // Should complete without error; SMB minutes default to 30
+        expect(outcome).toBeDefined();
+    });
+
     it('returns { done: true } when durationReq > 0 (zero temp needed)', () => {
         // Set up conditions where worstCaseInsulinReq produces positive durationReq:
         // smbTarget = target_bg = 100

@@ -139,6 +139,29 @@ describe('findActiveScheduledTarget', () => {
         const result = findActiveScheduledTarget(targets, new Date());
         expect(result.low).toBe(100);
     });
+
+    it('handles entries with undefined offset (falls back to 0)', () => {
+        const targets = [
+            { low: 90, high: 100 },   // offset undefined → 0
+            { offset: 960, low: 95, high: 105 },
+        ];
+        // Noon local = 720 minutes → between offset 0 and 960
+        const result = findActiveScheduledTarget(targets, new Date());
+        expect(result.low).toBe(90);
+    });
+
+    it('returns correct middle entry from three-entry schedule', () => {
+        vi.setSystemTime(new Date(2025, 0, 15, 10, 0, 0));
+        const targets = [
+            { offset: 0, low: 90, high: 100 },
+            { offset: 480, low: 100, high: 110 },   // 8:00 AM
+            { offset: 960, low: 95, high: 105 },     // 4:00 PM
+        ];
+        // 10:00 AM → between 480 and 960 → second entry
+        const result = findActiveScheduledTarget(targets, new Date());
+        expect(result.low).toBe(100);
+        expect(result.high).toBe(110);
+    });
 });
 
 // ---------------------------------------------------------------------------

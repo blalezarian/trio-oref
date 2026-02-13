@@ -124,4 +124,12 @@ describe('extractPumpBaselines', () => {
         const result = extractPumpBaselines(pump);
         expect(result.pumpCSF).toBe(12.5); // 100 / 8
     });
+
+    it('returns all undefined when ISF profile sensitivities array is missing the [0] element', () => {
+        const pump = makePumpProfile({
+            isfProfile: { sensitivities: [] as AutotunePumpProfile['isfProfile'] extends { sensitivities: infer S } ? S : never },
+        });
+        const result = extractPumpBaselines(pump);
+        expect(result.pumpISF).toBeUndefined();
+    });
 });

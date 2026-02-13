@@ -122,4 +122,13 @@ describe('resolveLastBgTime', () => {
         const result = resolveLastBgTime(prev, bucket);
         expect((result as Date).getTime()).toBe(new Date('2025-01-15T11:00:00.000Z').getTime());
     });
+
+    it('falls back to firstBucket display_time when prevEntry.display_time has no T', () => {
+        // prevEntry has no time fields, firstBucket has display_time
+        const prev = {} as GlucoseEntry;
+        const bucket = { display_time: '2025-01-15 10:00:00' } as GlucoseEntry;
+        const result = resolveLastBgTime(prev, bucket);
+        expect(result).toBeInstanceOf(Date);
+        expect((result as Date).getTime()).not.toBeNaN();
+    });
 });

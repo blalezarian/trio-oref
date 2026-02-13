@@ -87,4 +87,28 @@ describe('tunePeakTime', () => {
             "Leaving insulinPeakTime unchanged at 65",
         );
     });
+
+    it('does not adjust up when threshold is not met (best > 2 but improvement too small)', () => {
+        // meanBest > 2 and RMSBest > 2, but deviations[3] does NOT meet 0.99 threshold
+        const devs = makePeakDeviations([
+            { meanDeviation: 11, RMSDeviation: 12 },
+            { meanDeviation: 9, RMSDeviation: 10 },
+            { meanDeviation: 7, RMSDeviation: 8 },  // current at index 2
+            { meanDeviation: 6.95, RMSDeviation: 7.95 }, // NOT below 7*0.99=6.93 / 8*0.99=7.92
+            { meanDeviation: 2, RMSDeviation: 2 },
+        ]);
+        expect(tunePeakTime(devs, 65)).toBe(65); // unchanged
+    });
+
+    it('does not adjust down when threshold is not met (best < 2 but improvement too small)', () => {
+        // meanBest < 2 and RMSBest < 2, but deviations[1] does NOT meet threshold
+        const devs = makePeakDeviations([
+            { meanDeviation: 5, RMSDeviation: 7 },
+            { meanDeviation: 6.95, RMSDeviation: 7.95 }, // NOT below current * 0.99
+            { meanDeviation: 7, RMSDeviation: 8 },  // current at index 2
+            { meanDeviation: 9, RMSDeviation: 10 },
+            { meanDeviation: 11, RMSDeviation: 12 },
+        ]);
+        expect(tunePeakTime(devs, 65)).toBe(65); // unchanged
+    });
 });

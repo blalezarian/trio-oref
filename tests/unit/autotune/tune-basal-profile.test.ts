@@ -435,6 +435,20 @@ describe('tuneBasalProfile', () => {
         expect(result!.bounds).toEqual({ autotuneMax: 1.2, autotuneMin: 0.7 });
     });
 
+    it('skips pump profile capping when pumpBasalProfile is empty', () => {
+        // Line 54: pumpBasalProfile[0] is falsy → hourlyPumpProfile is never set
+        const basalProfile = [makeBasalEntry({ rate: 1.0, minutes: 0 })];
+        const pumpProfile: AutotuneBasalProfileEntry[] = [];
+        const pump: AutotunePumpProfile = {
+            basalprofile: pumpProfile,
+            autosens_max: 1.2,
+            autosens_min: 0.7,
+        };
+        const result = tuneBasalProfile(basalProfile, pumpProfile, [], 40, pump);
+        expect(result).toBeDefined();
+        expect(result!.basalProfile.length).toBe(24);
+    });
+
     it('applies deviations to adjust basal rates', () => {
         const basalProfile = [makeBasalEntry({ rate: 1.0, minutes: 0 })];
         const pumpProfile = [makeBasalEntry({ rate: 1.0, minutes: 0 })];

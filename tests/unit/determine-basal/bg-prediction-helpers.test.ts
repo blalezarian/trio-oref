@@ -227,6 +227,22 @@ describe('clipAndTrimPredictions', () => {
         expect(result.eventualBG).toBeGreaterThanOrEqual(240);
     });
 
+    it('does not update eventualBG from UAM when UAMpredBGs is empty (falsy last element)', () => {
+        // When UAMpredBGs is empty, UAMpredBGs[UAMpredBGs.length-1] is undefined (falsy),
+        // so eventualBG should not be updated from UAM predictions.
+        const inputs = makeClipInputs({
+            eventualBG: 100,
+            enableUAM: true,
+            carbImpact: 5,
+            UAMpredBGs: [],
+        });
+        const result = clipAndTrimPredictions(inputs);
+        // eventualBG stays at the original 100 (not updated by UAM)
+        expect(result.eventualBG).toBe(100);
+        // UAM array is still assigned to predBGs even though empty
+        expect(result.predBGs.UAM).toBeDefined();
+    });
+
     it('returns lastIOBpredBG as rounded last element of IOBpredBGs', () => {
         const inputs = makeClipInputs({
             IOBpredBGs: [120, 115, 110, 105, 100, 95, 90, 85, 80, 75, 70, 65, 62],
