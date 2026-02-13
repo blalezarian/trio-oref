@@ -122,26 +122,51 @@ export function calculateCarbsRequired(ctx: DosingContext): PhaseOutcome {
         console.error(`BG projected to remain above ${convert_bg(threshold, profile)} for ${ctx.minutesAboveThreshold}minutes`);
     }
 
-    // include at least minutesAboveThreshold worth of zero temps in calculating carbsReq
-    // always include at least 30m worth of zero temp (carbs to 80, low temp up to target)
-    const zeroTempDuration = ctx.minutesAboveThreshold;
-    // BG undershoot, minus effect of zero temps until hitting min_bg, converted to grams, minus COB
-    let zeroTempEffect = profile.current_basal * overrideFactor * adjustedSens * zeroTempDuration / MINUTES_PER_HOUR;
-    // don't count the last 25% of COB against carbsReq
-    const COBforCarbsReq = Math.max(0, meal_data.mealCOB - COB_DISCOUNT_FRACTION * meal_data.carbs);
-    ctx.carbsReq = (ctx.bgUndershoot - zeroTempEffect) / carbSensFactor - COBforCarbsReq;
-    zeroTempEffect = round(zeroTempEffect);
-    ctx.carbsReq = round(ctx.carbsReq);
-    console.error(`naive_eventualBG: ${naive_eventualBG} bgUndershoot: ${ctx.bgUndershoot} zeroTempDuration: ${zeroTempDuration} zeroTempEffect: ${zeroTempEffect} carbsReq: ${ctx.carbsReq}`);
+    const { zeroTempEffect, carbsReq } = calculateZeroTempEffectAndCarbsReq(
+        ctx.minutesAboveThreshold, ctx.bgUndershoot,
+        profile.current_basal, overrideFactor, adjustedSens, carbSensFactor,
+        meal_data.mealCOB, meal_data.carbs,
+    );
+    ctx.carbsReq = carbsReq;
+    console.error(`naive_eventualBG: ${naive_eventualBG} bgUndershoot: ${ctx.bgUndershoot} zeroTempDuration: ${ctx.minutesAboveThreshold} zeroTempEffect: ${zeroTempEffect} carbsReq: ${ctx.carbsReq}`);
 
     if (meal_data.reason == "Could not parse clock data") {
         console.error("carbsReq unknown: Could not parse clock data");
-    } else if (ctx.carbsReq >= (profile.carbsReqThreshold as number) && ctx.minutesAboveThreshold <= CARBS_REQ_WINDOW_MINUTES) {
+        return { done: false };
+    }
+
+    if (ctx.carbsReq >= (profile.carbsReqThreshold as number) && ctx.minutesAboveThreshold <= CARBS_REQ_WINDOW_MINUTES) {
         result.carbsReq = ctx.carbsReq;
         result.reason += `${ctx.carbsReq} add'l carbs req w/in ${ctx.minutesAboveThreshold}m; `;
     }
 
     return { done: false };
+}
+
+// ---------------------------------------------------------------------------
+// calculateCarbsRequired helpers
+// ---------------------------------------------------------------------------
+
+/** Calculates zero-temp BG effect and carbs required from bgUndershoot and prediction data. */
+function calculateZeroTempEffectAndCarbsReq(
+    minutesAboveThreshold: number,
+    bgUndershoot: number,
+    current_basal: number,
+    overrideFactor: number,
+    adjustedSens: number,
+    carbSensFactor: number,
+    mealCOB: number,
+    carbs: number,
+): { zeroTempEffect: number; carbsReq: number } {
+    // include at least minutesAboveThreshold worth of zero temps in calculating carbsReq
+    // always include at least 30m worth of zero temp (carbs to 80, low temp up to target)
+    const zeroTempDuration = minutesAboveThreshold;
+    // BG undershoot, minus effect of zero temps until hitting min_bg, converted to grams, minus COB
+    const rawZeroTempEffect = current_basal * overrideFactor * adjustedSens * zeroTempDuration / MINUTES_PER_HOUR;
+    // don't count the last 25% of COB against carbsReq
+    const COBforCarbsReq = Math.max(0, mealCOB - COB_DISCOUNT_FRACTION * carbs);
+    const rawCarbsReq = (bgUndershoot - rawZeroTempEffect) / carbSensFactor - COBforCarbsReq;
+    return { zeroTempEffect: round(rawZeroTempEffect), carbsReq: round(rawCarbsReq) };
 }
 
 // ---------------------------------------------------------------------------
