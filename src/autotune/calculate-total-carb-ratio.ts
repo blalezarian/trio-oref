@@ -7,7 +7,7 @@ export interface TotalCRResult {
     CRTotalInsulin: number;
 }
 
-export function calculateTotalCR(
+export function calculateTotalCarbRatio(
     CRData: AutotuneCRDatum[],
     ISF: number,
 ): TotalCRResult {

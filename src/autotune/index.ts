@@ -10,7 +10,7 @@ import {
 } from '../constants';
 import { tuneDIA } from './tune-dia';
 import { tunePeakTime } from './tune-peak';
-import { calculateTotalCR } from './calculate-total-cr';
+import { calculateTotalCarbRatio } from './calculate-total-carb-ratio';
 import { tuneBasalProfile } from './tune-basal-profile';
 import { tuneCSF } from './tune-csf';
 import { tuneCarbRatio } from './tune-carb-ratio';
@@ -104,7 +104,7 @@ export function autotuneProfile(
     const bounds = basalResult.bounds;
 
     // --- Calculate total CR ---
-    const { totalCR } = calculateTotalCR(CRData, ISF);
+    const { totalCR } = calculateTotalCarbRatio(CRData, ISF);
 
     // --- Tune CSF ---
     const newCSF = tuneCSF(
