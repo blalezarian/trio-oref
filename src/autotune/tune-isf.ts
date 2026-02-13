@@ -1,4 +1,3 @@
-
 import { percentile } from '../utils/percentile';
 import type {
     AutotuneGlucoseDatum,
@@ -93,7 +92,7 @@ export function tuneISF(
 
     let fullNewISF = currentISF;
     if (isfGlucose.length < MIN_ISF_DATA_POINTS) {
-        console.error("Only found", isfGlucose.length, "ISF data points, leaving ISF unchanged at", currentISF);
+        console.error(`Only found ${isfGlucose.length} ISF data points, leaving ISF unchanged at ${currentISF}`);
     } else {
         fullNewISF = currentISF * p50ratios;
     }
@@ -101,45 +100,54 @@ export function tuneISF(
 
     const adjustmentFraction = isfAdjustmentFraction ?? DEFAULT_ISF_ADJUSTMENT_FRACTION;
 
-    // low autosens ratio = high ISF
-    const maxISF = (pumpISF as number) / bounds.autotuneMin;
-    // high autosens ratio = low ISF
-    const minISF = (pumpISF as number) / bounds.autotuneMax;
-
-    let adjustedISF: number | undefined;
-    let newISF: number | undefined;
-
-    if (pumpISF !== undefined) {
-        if (fullNewISF < 0) {
-            adjustedISF = currentISF;
-        } else {
-            adjustedISF = adjustmentFraction * fullNewISF + (1 - adjustmentFraction) * pumpISF;
-        }
-
-        // Cap adjustedISF before applying adjustment fraction blend
-        if (adjustedISF > maxISF) {
-            console.error("Limiting adjusted ISF of", adjustedISF.toFixed(2), "to", maxISF.toFixed(2), "(which is pump ISF of", pumpISF, "/", bounds.autotuneMin, ")");
-            adjustedISF = maxISF;
-        } else if (adjustedISF < minISF) {
-            console.error("Limiting adjusted ISF of", adjustedISF.toFixed(2), "to", minISF.toFixed(2), "(which is pump ISF of", pumpISF, "/", bounds.autotuneMax, ")");
-            adjustedISF = minISF;
-        }
-
-        // Blend 80% old + 20% adjusted
-        newISF = (1 - AUTOTUNE_ADJUSTMENT_FRACTION) * currentISF
-            + AUTOTUNE_ADJUSTMENT_FRACTION * adjustedISF;
-
-        if (newISF > maxISF) {
-            console.error("Limiting ISF of", newISF.toFixed(2), "to", maxISF.toFixed(2), "(which is pump ISF of", pumpISF, "/", bounds.autotuneMin, ")");
-            newISF = maxISF;
-        } else if (newISF < minISF) {
-            console.error("Limiting ISF of", newISF.toFixed(2), "to", minISF.toFixed(2), "(which is pump ISF of", pumpISF, "/", bounds.autotuneMax, ")");
-            newISF = minISF;
-        }
+    // Guard: pumpISF is required for bounding logic
+    if (pumpISF === undefined) {
+        return {
+            newISF: NaN,
+            oldISF: currentISF,
+            p50deviation,
+            p50BGI,
+            p50ratios,
+            fullNewISF,
+            adjustedISF: NaN,
+        };
     }
 
-    const roundedNewISF = Math.round((newISF as number) * 1000) / 1000;
-    const roundedAdjustedISF = Math.round((adjustedISF as number) * 1000) / 1000;
+    // low autosens ratio = high ISF
+    const maxISF = pumpISF / bounds.autotuneMin;
+    // high autosens ratio = low ISF
+    const minISF = pumpISF / bounds.autotuneMax;
+
+    let adjustedISF: number;
+    if (fullNewISF < 0) {
+        adjustedISF = currentISF;
+    } else {
+        adjustedISF = adjustmentFraction * fullNewISF + (1 - adjustmentFraction) * pumpISF;
+    }
+
+    // Cap adjustedISF before applying adjustment fraction blend
+    if (adjustedISF > maxISF) {
+        console.error(`Limiting adjusted ISF of ${adjustedISF.toFixed(2)} to ${maxISF.toFixed(2)} (which is pump ISF of ${pumpISF} / ${bounds.autotuneMin})`);
+        adjustedISF = maxISF;
+    } else if (adjustedISF < minISF) {
+        console.error(`Limiting adjusted ISF of ${adjustedISF.toFixed(2)} to ${minISF.toFixed(2)} (which is pump ISF of ${pumpISF} / ${bounds.autotuneMax})`);
+        adjustedISF = minISF;
+    }
+
+    // Blend 80% old + 20% adjusted
+    let newISF = (1 - AUTOTUNE_ADJUSTMENT_FRACTION) * currentISF
+        + AUTOTUNE_ADJUSTMENT_FRACTION * adjustedISF;
+
+    if (newISF > maxISF) {
+        console.error(`Limiting ISF of ${newISF.toFixed(2)} to ${maxISF.toFixed(2)} (which is pump ISF of ${pumpISF} / ${bounds.autotuneMin})`);
+        newISF = maxISF;
+    } else if (newISF < minISF) {
+        console.error(`Limiting ISF of ${newISF.toFixed(2)} to ${minISF.toFixed(2)} (which is pump ISF of ${pumpISF} / ${bounds.autotuneMax})`);
+        newISF = minISF;
+    }
+
+    const roundedNewISF = Math.round(newISF * 1000) / 1000;
+    const roundedAdjustedISF = Math.round(adjustedISF * 1000) / 1000;
 
     return {
         newISF: roundedNewISF,

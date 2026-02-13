@@ -82,7 +82,7 @@ describe('tuneDIA', () => {
         ]);
         tuneDIA(devs, 5);
         expect(console.error).toHaveBeenCalledWith(
-            "Adjusting insulinEndTime from", 5, "to", 4, "hours",
+            "Adjusting insulinEndTime from 5 to 4 hours",
         );
     });
 
@@ -90,7 +90,7 @@ describe('tuneDIA', () => {
         const devs = makeDiaDeviations();
         tuneDIA(devs, 5);
         expect(console.error).toHaveBeenCalledWith(
-            "Leaving insulinEndTime unchanged at", 5, "hours",
+            "Leaving insulinEndTime unchanged at 5 hours",
         );
     });
 });

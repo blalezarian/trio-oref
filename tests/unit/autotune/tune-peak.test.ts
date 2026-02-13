@@ -76,7 +76,7 @@ describe('tunePeakTime', () => {
         ]);
         tunePeakTime(devs, 65);
         expect(console.error).toHaveBeenCalledWith(
-            "Adjusting insulinPeakTime from", 65, "to", 60, "minutes",
+            "Adjusting insulinPeakTime from 65 to 60 minutes",
         );
     });
 
@@ -84,7 +84,7 @@ describe('tunePeakTime', () => {
         const devs = makePeakDeviations();
         tunePeakTime(devs, 65);
         expect(console.error).toHaveBeenCalledWith(
-            "Leaving insulinPeakTime unchanged at", 65,
+            "Leaving insulinPeakTime unchanged at 65",
         );
     });
 });
