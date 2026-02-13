@@ -249,22 +249,21 @@ describe('buildTDDReasonString', () => {
         expect(result).not.toContain('SMB Ratio');
     });
 
-    it('appends middleware info when middleware is a function', () => {
+    it('does not append middleware when middleware is a function', () => {
         const fn = (x: unknown) => x;
         const result = buildTDDReasonString(
             false, false, '', '', '', '', '',
             0.5, fn as never,
         );
-        expect(result).toContain('Middleware:');
+        expect(result).not.toContain('Middleware');
     });
 
-    it('appends middleware even when undefined (legacy behavior)', () => {
-        // The legacy check `(middleWare as unknown) !== ""` is true for undefined
+    it('does not append middleware when undefined', () => {
         const result = buildTDDReasonString(
             false, false, '', '', '', '', '',
             0.5, undefined,
         );
-        expect(result).toContain('Middleware: undefined');
+        expect(result).not.toContain('Middleware');
     });
 
     it('does not append middleware when empty string', () => {

@@ -306,7 +306,7 @@ export function buildTDDReasonString(
     }
 
     // Not confident but something like this in iAPS v3.0.3
-    if ((middleWare as unknown) !== "" && (middleWare as unknown) !== "Nothing changed"){
+    if (typeof middleWare === 'string' && middleWare !== "" && middleWare !== "Nothing changed") {
         tddReason += `, Middleware: ${middleWare}`;
     }
 
