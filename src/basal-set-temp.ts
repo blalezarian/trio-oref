@@ -1,4 +1,3 @@
-'use strict';
 
 import { round_basal } from './utils/round-basal';
 import {
@@ -7,12 +6,20 @@ import {
     MAX_TEMP_BASAL_DURATION_MINUTES,
 } from './constants';
 
+// ---------------------------------------------------------------------------
+// Constants
+// ---------------------------------------------------------------------------
+
 /** Duration tolerance (minutes) when comparing current temp to suggested */
 const TEMP_DURATION_TOLERANCE_MINUTES = 10;
 /** Upper rate tolerance factor for current temp comparison */
 const RATE_TOLERANCE_HIGH = 1.2;
 /** Lower rate tolerance factor for current temp comparison */
 const RATE_TOLERANCE_LOW = 0.8;
+
+// ---------------------------------------------------------------------------
+// Types
+// ---------------------------------------------------------------------------
 
 interface TempBasalProfile {
   current_basal: number;
@@ -35,11 +42,6 @@ interface CurrentTemp {
   rate: number;
 }
 
-function reason(rT: TempBasalResult, msg: string): void {
-  rT.reason = (rT.reason ? rT.reason + '. ' : '') + msg;
-  console.error(msg);
-}
-
 interface TempBasalFunctionsInterface {
   getMaxSafeBasal: (profile: TempBasalProfile) => number;
   setTempBasal: (
@@ -51,53 +53,118 @@ interface TempBasalFunctionsInterface {
   ) => TempBasalResult;
 }
 
-const tempBasalFunctions = {} as TempBasalFunctionsInterface;
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
 
-tempBasalFunctions.getMaxSafeBasal = (profile: TempBasalProfile): number => {
+/** Append a message to the result reason string and log it */
+function appendReason(result: TempBasalResult, message: string): void {
+    result.reason = (result.reason ? result.reason + '. ' : '') + message;
+    console.error(message);
+}
 
-    const max_daily_safety_multiplier = (isNaN(profile.max_daily_safety_multiplier!) || profile.max_daily_safety_multiplier === null) ? DEFAULT_MAX_DAILY_SAFETY_MULTIPLIER : profile.max_daily_safety_multiplier;
-    const current_basal_safety_multiplier = (isNaN(profile.current_basal_safety_multiplier!) || profile.current_basal_safety_multiplier === null) ? DEFAULT_CURRENT_BASAL_SAFETY_MULTIPLIER : profile.current_basal_safety_multiplier;
-
-    return Math.min(profile.max_basal, max_daily_safety_multiplier * profile.max_daily_basal, current_basal_safety_multiplier * profile.current_basal);
-};
-
-tempBasalFunctions.setTempBasal = (rate: number, duration: number, profile: TempBasalProfile, rT: TempBasalResult, currenttemp?: CurrentTemp): TempBasalResult => {
-    const maxSafeBasal = tempBasalFunctions.getMaxSafeBasal(profile);
-
-    if (rate < 0) {
-        rate = 0;
-    } else if (rate > maxSafeBasal) {
-        rate = maxSafeBasal;
+/** Resolve a safety multiplier, falling back to the default if null or NaN */
+function resolveMultiplier(value: number | null, defaultValue: number): number {
+    if (value === null || isNaN(value)) {
+        return defaultValue;
     }
+    return value;
+}
 
-    const suggestedRate = round_basal(rate, profile);
-    if (currenttemp?.duration !== undefined && currenttemp?.rate !== undefined && currenttemp.duration > (duration-TEMP_DURATION_TOLERANCE_MINUTES) && currenttemp.duration <= MAX_TEMP_BASAL_DURATION_MINUTES && suggestedRate <= currenttemp.rate * RATE_TOLERANCE_HIGH && suggestedRate >= currenttemp.rate * RATE_TOLERANCE_LOW && duration > 0 ) {
-        rT.reason += " "+currenttemp.duration+"m left and " + currenttemp.rate + " ~ req " + suggestedRate + "U/hr: no temp required";
+/** Check whether the current temp basal is close enough to the suggestion to keep */
+function isCurrentTempAcceptable(
+    currenttemp: CurrentTemp,
+    suggestedRate: number,
+    duration: number,
+): boolean {
+    return currenttemp.duration > (duration - TEMP_DURATION_TOLERANCE_MINUTES)
+        && currenttemp.duration <= MAX_TEMP_BASAL_DURATION_MINUTES
+        && suggestedRate <= currenttemp.rate * RATE_TOLERANCE_HIGH
+        && suggestedRate >= currenttemp.rate * RATE_TOLERANCE_LOW
+        && duration > 0;
+}
+
+// ---------------------------------------------------------------------------
+// Main functions
+// ---------------------------------------------------------------------------
+
+/** Calculate the maximum safe basal rate from profile safety constraints */
+function getMaxSafeBasal(profile: TempBasalProfile): number {
+    const dailyMultiplier = resolveMultiplier(
+        profile.max_daily_safety_multiplier,
+        DEFAULT_MAX_DAILY_SAFETY_MULTIPLIER,
+    );
+    const currentMultiplier = resolveMultiplier(
+        profile.current_basal_safety_multiplier,
+        DEFAULT_CURRENT_BASAL_SAFETY_MULTIPLIER,
+    );
+
+    return Math.min(
+        profile.max_basal,
+        dailyMultiplier * profile.max_daily_basal,
+        currentMultiplier * profile.current_basal,
+    );
+}
+
+/** Set or cancel a temp basal, enforcing safety limits and tolerance checks */
+function setTempBasal(
+    rate: number,
+    duration: number,
+    profile: TempBasalProfile,
+    rT: TempBasalResult,
+    currenttemp?: CurrentTemp,
+): TempBasalResult {
+    const clampedRate = Math.min(Math.max(0, rate), getMaxSafeBasal(profile));
+    const suggestedRate = round_basal(clampedRate, profile);
+
+    // If a current temp is running and close enough to the suggestion, keep it
+    if (currenttemp?.duration != null && currenttemp?.rate != null
+        && isCurrentTempAcceptable(currenttemp, suggestedRate, duration)) {
+        rT.reason += ` ${currenttemp.duration}m left and ${currenttemp.rate} ~ req ${suggestedRate}U/hr: no temp required`;
         return rT;
     }
 
+    // When suggested rate matches the profile rate, handle neutral temp logic
     if (suggestedRate === profile.current_basal) {
-      if (profile.skip_neutral_temps === true) {
-        if (currenttemp?.duration !== undefined && currenttemp.duration > 0) {
-          reason(rT, 'Suggested rate is same as profile rate, a temp basal is active, canceling current temp');
-          rT.duration = 0;
-          rT.rate = 0;
-          return rT;
-        } else {
-          reason(rT, 'Suggested rate is same as profile rate, no temp basal is active, doing nothing');
-          return rT;
+        if (profile.skip_neutral_temps) {
+            if (currenttemp?.duration != null && currenttemp.duration > 0) {
+                appendReason(rT, 'Suggested rate is same as profile rate, a temp basal is active, canceling current temp');
+                rT.duration = 0;
+                rT.rate = 0;
+                return rT;
+            }
+            appendReason(rT, 'Suggested rate is same as profile rate, no temp basal is active, doing nothing');
+            return rT;
         }
-      } else {
-        reason(rT, 'Setting neutral temp basal of ' + profile.current_basal + 'U/hr');
+        appendReason(rT, `Setting neutral temp basal of ${profile.current_basal}U/hr`);
         rT.duration = duration;
         rT.rate = suggestedRate;
         return rT;
-      }
-    } else {
-      rT.duration = duration;
-      rT.rate = suggestedRate;
-      return rT;
     }
+
+    // Normal case: set the new temp basal
+    rT.duration = duration;
+    rT.rate = suggestedRate;
+    return rT;
+}
+
+// ---------------------------------------------------------------------------
+// Exports
+// ---------------------------------------------------------------------------
+
+const tempBasalFunctions: TempBasalFunctionsInterface = {
+    getMaxSafeBasal,
+    setTempBasal,
 };
 
 export default tempBasalFunctions;
+export {
+    tempBasalFunctions,
+    getMaxSafeBasal,
+    setTempBasal,
+    // Helpers
+    appendReason,
+    resolveMultiplier,
+    isCurrentTempAcceptable,
+};
+export type { TempBasalProfile, TempBasalResult, CurrentTemp };
