@@ -1,5 +1,4 @@
 import { defineConfig } from 'vitest/config';
-import path from 'path';
 
 export default defineConfig({
   test: {
@@ -10,29 +9,23 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       include: [
-        'src/determine-basal/**/*.{js,ts}',
-        'src/iob/**/*.{js,ts}',
-        'src/meal/**/*.{js,ts}',
-        'src/profile/**/*.{js,ts}',
-        'src/autosens/**/*.{js,ts}',
-        'src/cob/**/*.{js,ts}',
-        'src/glucose/**/*.{js,ts}',
-        'src/set-temp-basal/**/*.{js,ts}',
-        'src/bolus/**/*.{js,ts}',
-        'src/utils/**/*.{js,ts}',
-        'src/shared/**/*.{js,ts}',
-        'src/autotune-prep/**/*.{js,ts}',
-        'src/autotune/**/*.{js,ts}',
-        'src/deprecated/**/*.{js,ts}',
+        'src/determine-basal/**/*.ts',
+        'src/iob/**/*.ts',
+        'src/meal/**/*.ts',
+        'src/profile/**/*.ts',
+        'src/autosens/**/*.ts',
+        'src/cob/**/*.ts',
+        'src/glucose/**/*.ts',
+        'src/set-temp-basal/**/*.ts',
+        'src/bolus/**/*.ts',
+        'src/utils/**/*.ts',
+        'src/shared/**/*.ts',
+        'src/autotune-prep/**/*.ts',
+        'src/autotune/**/*.ts',
+        'src/deprecated/**/*.ts',
       ],
       reporter: ['text', 'text-summary', 'html', 'json'],
       reportsDirectory: 'coverage',
-    },
-  },
-  resolve: {
-    alias: {
-      '@lib': path.resolve(__dirname, 'src'),
-      '@tests': path.resolve(__dirname, 'tests'),
     },
   },
 });
