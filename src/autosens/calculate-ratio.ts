@@ -1,4 +1,5 @@
 import { percentile } from '../utils/percentile';
+import { roundTo2dp } from '../utils/rounding';
 import { MEDIAN_PERCENTILE } from '../shared/constants';
 
 // ---------------------------------------------------------------------------
@@ -72,7 +73,7 @@ export function calculateAutosensRatio(
         console.log(`Ratio limited from ${rawRatio} to ${ratio}`);
     }
 
-    ratio = Math.round(ratio * 100) / 100;
+    ratio = roundTo2dp(ratio);
     const newisf = Math.round(profile.sens / ratio);
     console.log(`ISF adjusted from ${profile.sens} to ${newisf}`);
 

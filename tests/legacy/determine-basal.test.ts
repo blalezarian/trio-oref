@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 
-import { round_basal } from '../../src/utils/round-basal';
+import { round_basal } from '../../src/utils/rounding';
 import { determine_basal } from '../../src/determine-basal/determine-basal';
 import { tempBasalFunctions } from '../../src/set-temp-basal/index';
 

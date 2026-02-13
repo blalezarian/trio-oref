@@ -4,6 +4,7 @@ import type {
     AutotunePumpProfile,
     AutotuneBounds,
 } from './types';
+import { roundTo2dp, roundTo3dp } from '../utils/rounding';
 import {
     AUTOTUNE_ADJUSTMENT_FRACTION,
     DEFAULT_AUTOSENS_MAX,
@@ -119,7 +120,7 @@ export function convertToHourlyProfile(
         hourly[hour].i = hour;
         hourly[hour].minutes = hour * 60;
         hourly[hour].start = ("000" + hour).slice(-2) + ":00:00";
-        hourly[hour].rate = Math.round(hourly[hour].rate * 1000) / 1000;
+        hourly[hour].rate = roundTo3dp(hourly[hour].rate);
     }
 
     return hourly;
@@ -153,7 +154,7 @@ export function sumDeviationsByHour(
     }
 
     for (let hour = 0; hour < HOURS_PER_DAY; hour++) {
-        hourlyDeviations[hour] = Math.round(hourlyDeviations[hour] * 1000) / 1000;
+        hourlyDeviations[hour] = roundTo3dp(hourlyDeviations[hour]);
     }
 
     return hourlyDeviations;
@@ -169,14 +170,14 @@ export function adjustBasalsByDeviations(
         const deviations = hourlyDeviations[hour];
         console.log(`Hour ${hour} total deviations: ${deviations} mg/dL`);
 
-        const basalNeeded = Math.round(AUTOTUNE_ADJUSTMENT_FRACTION * deviations / ISF * 100) / 100;
+        const basalNeeded = roundTo2dp(AUTOTUNE_ADJUSTMENT_FRACTION * deviations / ISF);
         console.log(`Hour ${hour} basal adjustment needed: ${basalNeeded} U/hr`);
 
         if (basalNeeded > 0) {
             for (let offset = -PRIOR_HOURS; offset < 0; offset++) {
                 const targetHour = wrapHour(hour + offset);
                 newProfile[targetHour].rate += basalNeeded / PRIOR_HOURS;
-                newProfile[targetHour].rate = Math.round(newProfile[targetHour].rate * 1000) / 1000;
+                newProfile[targetHour].rate = roundTo3dp(newProfile[targetHour].rate);
             }
         } else if (basalNeeded < 0) {
             let threeHourBasal = 0;
@@ -187,7 +188,7 @@ export function adjustBasalsByDeviations(
             for (let offset = -PRIOR_HOURS; offset < 0; offset++) {
                 const targetHour = wrapHour(hour + offset);
                 newProfile[targetHour].rate = newProfile[targetHour].rate * adjustmentRatio;
-                newProfile[targetHour].rate = Math.round(newProfile[targetHour].rate * 1000) / 1000;
+                newProfile[targetHour].rate = roundTo3dp(newProfile[targetHour].rate);
             }
         }
     }

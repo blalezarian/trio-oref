@@ -1,4 +1,5 @@
 import type { AutotuneDiaDeviation } from './types';
+import { roundTo3dp } from '../utils/rounding';
 import {
     AUTOTUNE_IMPROVEMENT_THRESHOLD,
     MAX_DIA_HOURS,
@@ -33,11 +34,11 @@ export function tuneDIA(
     for (let candidateIdx = 0; candidateIdx < diaDeviations.length; candidateIdx++) {
         const candidate = diaDeviations[candidateIdx];
         if (candidate.meanDeviation < minMeanDev) {
-            minMeanDev = Math.round(candidate.meanDeviation * 1000) / 1000;
+            minMeanDev = roundTo3dp(candidate.meanDeviation);
             meanBest = candidateIdx;
         }
         if (candidate.RMSDeviation < minRMSDev) {
-            minRMSDev = Math.round(candidate.RMSDeviation * 1000) / 1000;
+            minRMSDev = roundTo3dp(candidate.RMSDeviation);
             RMSBest = candidateIdx;
         }
     }

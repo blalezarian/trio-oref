@@ -5,7 +5,7 @@ import {
     DEFAULT_MAX_SMB_BASAL_MINUTES,
 } from '../../shared/constants';
 
-import { round_basal } from '../../utils/round-basal';
+import { round_basal } from '../../utils/rounding';
 
 import {
     TEMP_ACTIVE_DURATION_MINUTES,

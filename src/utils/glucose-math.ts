@@ -1,8 +1,6 @@
 import type { GlucoseEntry } from '../types/index';
 import { PRED_INTERVAL_MINUTES } from '../shared/constants';
-
-/** Rounding scale for 2 decimal places */
-const ROUND_SCALE_2DP = 100;
+import { roundTo2dp } from './rounding';
 
 /**
  * Normalize sgv -> glucose field on glucose entries.
@@ -22,7 +20,7 @@ export function calculateBGImpact(
     iobActivity: number,
     isf: number
 ): number {
-    return Math.round((-iobActivity * isf * PRED_INTERVAL_MINUTES) * ROUND_SCALE_2DP) / ROUND_SCALE_2DP;
+    return roundTo2dp(-iobActivity * isf * PRED_INTERVAL_MINUTES);
 }
 
 /**
@@ -41,5 +39,5 @@ export function calculateDeviation(
     if (bg !== undefined && minBGTarget !== undefined && bg < minBGTarget && deviation > 0) {
         deviation = 0;
     }
-    return Math.round(deviation * ROUND_SCALE_2DP) / ROUND_SCALE_2DP;
+    return roundTo2dp(deviation);
 }

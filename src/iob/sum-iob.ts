@@ -8,6 +8,7 @@ import {
     EXPONENTIAL_MIN_TD,
     MS_PER_HOUR,
 } from '../shared/constants';
+import { roundTo3dp, roundTo4dp } from '../utils/rounding';
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -15,10 +16,6 @@ import {
 
 /** Bolus threshold below which insulin is considered basal (U) */
 const BOLUS_DETECTION_THRESHOLD = 0.1;
-/** Rounding scale for 3 decimal places */
-const ROUND_SCALE_3DP = 1000;
-/** Rounding scale for 4 decimal places */
-const ROUND_SCALE_4DP = 10000;
 
 // ---------------------------------------------------------------------------
 // Main function
@@ -115,12 +112,12 @@ export function iobTotal(opts: IobTotalOpts, time: Date): IobTotalResult | Recor
     });
 
     return {
-        iob: Math.round(iob * ROUND_SCALE_3DP) / ROUND_SCALE_3DP,
-        activity: Math.round(activity * ROUND_SCALE_4DP) / ROUND_SCALE_4DP,
-        basaliob: Math.round(basaliob * ROUND_SCALE_3DP) / ROUND_SCALE_3DP,
-        bolusiob: Math.round(bolusiob * ROUND_SCALE_3DP) / ROUND_SCALE_3DP,
-        netbasalinsulin: Math.round(netbasalinsulin * ROUND_SCALE_3DP) / ROUND_SCALE_3DP,
-        bolusinsulin: Math.round(bolusinsulin * ROUND_SCALE_3DP) / ROUND_SCALE_3DP,
+        iob: roundTo3dp(iob),
+        activity: roundTo4dp(activity),
+        basaliob: roundTo3dp(basaliob),
+        bolusiob: roundTo3dp(bolusiob),
+        netbasalinsulin: roundTo3dp(netbasalinsulin),
+        bolusinsulin: roundTo3dp(bolusinsulin),
         time: time
     };
 }

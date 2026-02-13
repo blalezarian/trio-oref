@@ -1,4 +1,5 @@
 import type { AutotuneBounds } from './types';
+import { roundTo3dp } from '../utils/rounding';
 import {
     AUTOTUNE_ADJUSTMENT_FRACTION,
     MAX_CARB_RATIO,
@@ -50,7 +51,7 @@ export function tuneCarbRatio(
         }
     }
 
-    newCR = Math.round(newCR * 1000) / 1000;
+    newCR = roundTo3dp(newCR);
     console.log(`oldCR: ${currentCarbRatio} fullNewCR: ${fullNewCR} newCR: ${newCR}`);
 
     return newCR;

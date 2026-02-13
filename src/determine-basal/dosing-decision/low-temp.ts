@@ -3,7 +3,7 @@ import {
     TEMP_BASAL_DURATION_MINUTES,
 } from '../../shared/constants';
 
-import { round_basal } from '../../utils/round-basal';
+import { round_basal } from '../../utils/rounding';
 
 import {
     TEMP_SHORT_DURATION_MINUTES,

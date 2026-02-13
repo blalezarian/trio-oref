@@ -18,12 +18,7 @@ export interface DosedResult {
     insulin: number;
 }
 
-// ---------------------------------------------------------------------------
-// Constants
-// ---------------------------------------------------------------------------
-
-/** Rounding scale for 3 decimal places */
-const ROUND_SCALE_3DP = 1000;
+import { roundTo3dp } from '../utils/rounding';
 
 // ---------------------------------------------------------------------------
 // Main function
@@ -48,7 +43,7 @@ export function insulinDosed(opts: DosedOpts): { insulin?: number } {
     }
 
     return {
-        insulin: Math.round(total * ROUND_SCALE_3DP) / ROUND_SCALE_3DP,
+        insulin: roundTo3dp(total),
     };
 }
 

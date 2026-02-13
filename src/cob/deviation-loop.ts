@@ -8,6 +8,7 @@ import {
     MIN_VALID_GLUCOSE_MGDL,
     MS_PER_5_MIN,
 } from '../shared/constants';
+import { roundTo2dp, roundTo3dp } from '../utils/rounding';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -27,10 +28,6 @@ export interface CarbAbsorptionResult {
 // Constants
 // ---------------------------------------------------------------------------
 
-/** Rounding scale for 3 decimal places */
-const ROUND_SCALE_3DP = 1000;
-/** Rounding scale for 2 decimal places */
-const ROUND_SCALE_2DP = 100;
 /** Minimum trailing buckets required for delta calculations */
 const TRAILING_BUCKETS_REQUIRED = 3;
 /** Initial sentinel for min-deviation slope (large positive to be overwritten) */
@@ -81,13 +78,13 @@ export function analyzeAbsorption(
 
         // First entry: calculate current deviation
         if (bucketIdx === 0) {
-            currentDeviation = Math.round((avgDelta - bgImpact) * ROUND_SCALE_3DP) / ROUND_SCALE_3DP;
+            currentDeviation = roundTo3dp(avgDelta - bgImpact);
             if (carbImpactTime > bgTime) {
                 allDeviations.push(Math.round(currentDeviation));
             }
         } else if (carbImpactTime > bgTime) {
             // Subsequent entries within CI window: track deviation slope
-            const avgDeviation = Math.round((avgDelta - bgImpact) * ROUND_SCALE_3DP) / ROUND_SCALE_3DP;
+            const avgDeviation = roundTo3dp(avgDelta - bgImpact);
             const deviationSlope = (avgDeviation - (currentDeviation as number)) / (bgTime.getTime() - carbImpactTime.getTime()) * MS_PER_5_MIN;
 
             if (avgDeviation > maxDeviation) {
@@ -153,9 +150,7 @@ export function resolveGlucoseDeltas(
         return 'skip';
     }
 
-    const avgDelta = Math.round(
-        (bg - trailingBg) / TRAILING_BUCKETS_REQUIRED * ROUND_SCALE_2DP
-    ) / ROUND_SCALE_2DP;
+    const avgDelta = roundTo2dp((bg - trailingBg) / TRAILING_BUCKETS_REQUIRED);
     const delta = bg - (bucketed_data[bucketIdx + 1].glucose ?? 0);
 
     return { bg, delta, avgDelta };

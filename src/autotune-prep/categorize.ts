@@ -16,11 +16,8 @@ import {
     AUTOSENS_MIN_VALID_BG,
     BUCKETING_MERGE_THRESHOLD_MIN,
 } from '../shared/constants';
+import { roundTo2dp, roundTo3dp } from '../utils/rounding';
 
-/** Rounding scale for 3 decimal places */
-const ROUND_SCALE_3DP = 1000;
-/** Rounding scale for 2 decimal places */
-const ROUND_SCALE_2DP = 100;
 /** Minimum CSF data points to consider 1h of carb absorption confirmed */
 const MIN_CSF_FOR_CONFIRMED_MEALS = 12;
 /** Number of lookback glucose entries used to compute avgDelta */
@@ -297,18 +294,18 @@ function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
         const basal2hAgo = getCurrentBasalRate(opts.pumpbasalprofile, BGDate2hAgo);
         const basal3hAgo = getCurrentBasalRate(opts.pumpbasalprofile, BGDate3hAgo);
         const sum = [currentPumpBasal,basal1hAgo,basal2hAgo,basal3hAgo].reduce((acc, rate) => (acc as number) + (rate as number)) as number;
-        IOBInputs.profile.currentBasal = Math.round((sum/BASAL_LOOKBACK_HOURS)*ROUND_SCALE_3DP)/ROUND_SCALE_3DP;
+        IOBInputs.profile.currentBasal = roundTo3dp(sum/BASAL_LOOKBACK_HOURS);
 
         // this is the current autotuned basal, used for everything else besides IOB calculations
         const currentBasal = getCurrentBasalRate(opts.basalprofile, BGDate) as number;
 
         // basalBGI is BGI of basal insulin activity.
-        const basalBGI = Math.round(( currentBasal * sens / MINUTES_PER_HOUR * PRED_INTERVAL_MINUTES )*ROUND_SCALE_2DP)/ROUND_SCALE_2DP; // U/hr * mg/dL/U * 1 hr / 60 minutes * 5 = mg/dL/5m
+        const basalBGI = roundTo2dp( currentBasal * sens / MINUTES_PER_HOUR * PRED_INTERVAL_MINUTES ); // U/hr * mg/dL/U * 1 hr / 60 minutes * 5 = mg/dL/5m
         // call iob since calculated elsewhere
         const iob = getIOB(IOBInputs as IobInputs)[0];
 
         // activity times ISF times 5 minutes is BGI
-        const bgImpact = Math.round(( -iob.activity * sens * PRED_INTERVAL_MINUTES )*ROUND_SCALE_2DP)/ROUND_SCALE_2DP;
+        const bgImpact = roundTo2dp( -iob.activity * sens * PRED_INTERVAL_MINUTES );
         // datum = one glucose data point (being prepped to store in output)
         glucoseDatum.BGI = bgImpact;
         // calculating deviation

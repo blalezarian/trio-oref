@@ -2,6 +2,7 @@ import type {
     AutotuneGlucoseDatum,
     AutotuneBounds,
 } from './types';
+import { roundTo2dp, roundTo3dp } from '../utils/rounding';
 import { AUTOTUNE_ADJUSTMENT_FRACTION } from '../shared/constants';
 
 // ---------------------------------------------------------------------------
@@ -21,7 +22,7 @@ export function tuneCSF(
 
     const fullNewCSF = totalMealCarbs === 0
         ? currentCSF
-        : Math.round((rawTotalDeviations / totalMealCarbs) * 100) / 100;
+        : roundTo2dp(rawTotalDeviations / totalMealCarbs);
 
     // Blend 80% old + 20% new
     let newCSF = (1 - AUTOTUNE_ADJUSTMENT_FRACTION) * currentCSF
@@ -40,9 +41,9 @@ export function tuneCSF(
         }
     }
 
-    const oldCSF = Math.round(currentCSF * 1000) / 1000;
-    newCSF = Math.round(newCSF * 1000) / 1000;
-    const totalDeviations = Math.round(rawTotalDeviations * 1000) / 1000;
+    const oldCSF = roundTo3dp(currentCSF);
+    newCSF = roundTo3dp(newCSF);
+    const totalDeviations = roundTo3dp(rawTotalDeviations);
     console.log(`totalMealCarbs: ${totalMealCarbs} totalDeviations: ${totalDeviations} oldCSF ${oldCSF} fullNewCSF: ${fullNewCSF} newCSF: ${newCSF}`);
 
     return newCSF;

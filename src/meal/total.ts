@@ -2,15 +2,7 @@ import { detectCarbAbsorption as calcMealCOB } from '../cob/index';
 import type { CarbTreatment, GlucoseEntry, PumpHistoryEvent } from '../types/index';
 import type { IobProfile, HistoryBasalProfileEntry } from '../iob/types';
 import { MS_PER_HOUR, DEFAULT_MAX_MEAL_ABSORPTION_HOURS } from '../shared/constants';
-
-// ---------------------------------------------------------------------------
-// Constants
-// ---------------------------------------------------------------------------
-
-/** Rounding scale for 3 decimal places */
-const ROUND_SCALE_3DP = 1000;
-/** Rounding scale for 2 decimal places */
-const ROUND_SCALE_2DP = 100;
+import { round, roundTo2dp, roundTo3dp } from '../utils/rounding';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -150,16 +142,16 @@ function recentCarbs(opts: RecentCarbsOpts, time: Date): RecentCarbsResult | Rec
     mealCOB = applyZombieCarbSafety(mealCOB, deviationResult.currentDeviation, deviationResult.maxDeviation);
 
     return {
-        carbs: Math.round(carbs * ROUND_SCALE_3DP) / ROUND_SCALE_3DP,
-        nsCarbs: Math.round(totals.nsCarbs * ROUND_SCALE_3DP) / ROUND_SCALE_3DP,
-        bwCarbs: Math.round(totals.bwCarbs * ROUND_SCALE_3DP) / ROUND_SCALE_3DP,
-        journalCarbs: Math.round(totals.journalCarbs * ROUND_SCALE_3DP) / ROUND_SCALE_3DP,
+        carbs: roundTo3dp(carbs),
+        nsCarbs: roundTo3dp(totals.nsCarbs),
+        bwCarbs: roundTo3dp(totals.bwCarbs),
+        journalCarbs: roundTo3dp(totals.journalCarbs),
         mealCOB: Math.round(mealCOB),
-        currentDeviation: Math.round(deviationResult.currentDeviation * ROUND_SCALE_2DP) / ROUND_SCALE_2DP,
-        maxDeviation: Math.round(deviationResult.maxDeviation * ROUND_SCALE_2DP) / ROUND_SCALE_2DP,
-        minDeviation: Math.round(deviationResult.minDeviation * ROUND_SCALE_2DP) / ROUND_SCALE_2DP,
-        slopeFromMaxDeviation: Math.round(deviationResult.slopeFromMaxDeviation * ROUND_SCALE_3DP) / ROUND_SCALE_3DP,
-        slopeFromMinDeviation: Math.round(deviationResult.slopeFromMinDeviation * ROUND_SCALE_3DP) / ROUND_SCALE_3DP,
+        currentDeviation: roundTo2dp(deviationResult.currentDeviation),
+        maxDeviation: roundTo2dp(deviationResult.maxDeviation),
+        minDeviation: roundTo2dp(deviationResult.minDeviation),
+        slopeFromMaxDeviation: roundTo3dp(deviationResult.slopeFromMaxDeviation),
+        slopeFromMinDeviation: roundTo3dp(deviationResult.slopeFromMinDeviation),
         allDeviations: deviationResult.allDeviations,
         lastCarbTime,
         bwFound: totals.bwFound,
@@ -169,13 +161,6 @@ function recentCarbs(opts: RecentCarbsOpts, time: Date): RecentCarbsResult | Rec
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
-
-/** Round a number to the given number of decimal places */
-function round(value: number, digits?: number): number {
-    if (!digits) { digits = 0; }
-    const scale = Math.pow(10, digits);
-    return Math.round(value * scale) / scale;
-}
 
 /** Resolve max meal absorption time from profile, falling back to default */
 function resolveMaxAbsorptionTime(profile: IobProfile): number {

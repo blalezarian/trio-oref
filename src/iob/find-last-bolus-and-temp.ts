@@ -1,8 +1,6 @@
 import type { EpochMillis } from '../types/index';
 import type { IobTreatment } from './types';
-
-/** Rounding scale for 2 decimal places */
-const ROUND_SCALE_2DP = 100;
+import { roundTo2dp } from '../utils/rounding';
 
 export interface LastBolusAndTemp {
     lastBolusTime: EpochMillis;
@@ -22,7 +20,7 @@ export function findLastBolusAndTemp(treatments: IobTreatment[]): LastBolusAndTe
         } else if (typeof(treatment.rate) === 'number' && treatment.duration ) {
             if ( treatment.date > lastTemp.date ) {
                 lastTemp = treatment;
-                lastTemp.duration = Math.round((lastTemp.duration as number)*ROUND_SCALE_2DP)/ROUND_SCALE_2DP;
+                lastTemp.duration = roundTo2dp(lastTemp.duration as number);
             }
         }
     });

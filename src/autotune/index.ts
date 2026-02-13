@@ -3,6 +3,7 @@ import type {
     AutotunePreviousProfile,
     AutotunePumpProfile,
 } from './types';
+import { roundTo3dp } from '../utils/rounding';
 import {
     ULTRA_RAPID_PEAK,
     RAPID_ACTING_PEAK,
@@ -113,7 +114,7 @@ export function autotuneProfile(
     autotuneOutput.isfProfile = isfProfile;
     autotuneOutput.sens = ISF;
     autotuneOutput.csf = CSF;
-    carbRatio = Math.round(carbRatio * 1000) / 1000;
+    carbRatio = roundTo3dp(carbRatio);
     autotuneOutput.carb_ratio = carbRatio;
     autotuneOutput.dia = newDIA;
     autotuneOutput.insulinPeakTime = newPeak;

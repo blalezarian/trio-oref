@@ -4,7 +4,7 @@ import {
     getDateFromEntry,
     filterValidGlucoseData,
     average,
-    roundTo2Dp,
+    roundTo2dp,
     computeAvgDelta,
 } from '../../src/glucose/index';
 import type { GlucoseEntry } from '../../src/types/index';
@@ -118,15 +118,15 @@ describe('average', () => {
 });
 
 // ---------------------------------------------------------------------------
-// roundTo2Dp
+// roundTo2dp
 // ---------------------------------------------------------------------------
 
-describe('roundTo2Dp', () => {
+describe('roundTo2dp', () => {
     it('rounds to 2 decimal places', () => {
-        expect(roundTo2Dp(1.234)).toBe(1.23);
-        expect(roundTo2Dp(1.235)).toBe(1.24);
-        expect(roundTo2Dp(1.2)).toBe(1.2);
-        expect(roundTo2Dp(1)).toBe(1);
+        expect(roundTo2dp(1.234)).toBe(1.23);
+        expect(roundTo2dp(1.235)).toBe(1.24);
+        expect(roundTo2dp(1.2)).toBe(1.2);
+        expect(roundTo2dp(1)).toBe(1);
     });
 });
 

@@ -1,4 +1,5 @@
 import type { AutotuneCRDatum } from './types';
+import { roundTo3dp } from '../utils/rounding';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -33,8 +34,8 @@ export function calculateTotalCarbRatio(
         }
     }
 
-    CRTotalInsulin = Math.round(CRTotalInsulin * 1000) / 1000;
-    const totalCR = Math.round(CRTotalCarbs / CRTotalInsulin * 1000) / 1000;
+    CRTotalInsulin = roundTo3dp(CRTotalInsulin);
+    const totalCR = roundTo3dp(CRTotalCarbs / CRTotalInsulin);
     console.log(`CRTotalCarbs: ${CRTotalCarbs} CRTotalInsulin: ${CRTotalInsulin} totalCR: ${totalCR}`);
 
     return { totalCR, CRTotalCarbs, CRTotalInsulin };

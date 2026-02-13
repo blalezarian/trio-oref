@@ -10,7 +10,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { round_basal } from '../../../src/utils/round-basal';
+import { round_basal } from '../../../src/utils/rounding';
 
 describe('round-basal characterization tests', () => {
   // -------------------------------------------------------------------------

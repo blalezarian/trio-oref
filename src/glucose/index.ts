@@ -1,5 +1,6 @@
 import type { GlucoseEntry, GlucoseStatus } from '../types/index';
 import { MS_PER_MINUTE, PRED_INTERVAL_MINUTES, MIN_VALID_GLUCOSE_MGDL } from '../shared/constants';
+import { roundTo2dp } from '../utils/rounding';
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -15,9 +16,6 @@ const SHORT_DELTA_MAX_MINUTES = 17.5;
 const LAST_DELTA_MAX_MINUTES = 7.5;
 /** Upper bound (minutes ago) for long delta calculations (~20-40m) */
 const LONG_DELTA_MAX_MINUTES = 42.5;
-/** Scale factor for rounding to 2 decimal places */
-const ROUND_SCALE_2DP = 100;
-
 // ---------------------------------------------------------------------------
 // Main function
 // ---------------------------------------------------------------------------
@@ -80,11 +78,11 @@ function getLastGlucose(data: GlucoseEntry[]): GlucoseStatus {
     }
 
     return {
-        delta: roundTo2Dp(average(lastDeltas)),
-        glucose: roundTo2Dp(now.glucose ?? 0),
+        delta: roundTo2dp(average(lastDeltas)),
+        glucose: roundTo2dp(now.glucose ?? 0),
         noise: Math.round(Number(now.noise)),
-        short_avgdelta: roundTo2Dp(average(shortDeltas)),
-        long_avgdelta: roundTo2Dp(average(longDeltas)),
+        short_avgdelta: roundTo2dp(average(shortDeltas)),
+        long_avgdelta: roundTo2dp(average(longDeltas)),
         date: nowDate,
         last_cal: lastCal,
         device: now.device,
@@ -120,11 +118,6 @@ function average(values: number[]): number {
     return values.reduce((sum, v) => sum + v, 0) / values.length;
 }
 
-/** Round a number to 2 decimal places */
-function roundTo2Dp(value: number): number {
-    return Math.round(value * ROUND_SCALE_2DP) / ROUND_SCALE_2DP;
-}
-
 /** Compute the average delta (rate of BG change) in mg/dL per 5 minutes */
 function computeAvgDelta(
     nowGlucose: number,
@@ -141,6 +134,6 @@ export {
     getDateFromEntry,
     filterValidGlucoseData,
     average,
-    roundTo2Dp,
+    roundTo2dp,  // re-exported from '../utils/rounding'
     computeAvgDelta,
 };

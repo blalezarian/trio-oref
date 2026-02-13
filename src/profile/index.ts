@@ -1,4 +1,5 @@
 import { getCurrentBasalRate, getMaxDailyBasalRate, getMaxBasalRate } from './basal';
+import { roundTo3dp } from '../utils/rounding';
 import { getCurrentBGTarget } from './targets';
 import type { TargetsInputs } from './targets';
 import { isfLookup } from './isf';
@@ -48,7 +49,7 @@ function generate(inputs: ProfileInputs, opts?: ProfileOpts): ProfileDefaults | 
   profile.basalprofile = inputs.basals;
 
   profile.basalprofile.forEach((basalEntry) => {
-    basalEntry.rate = Math.round(basalEntry.rate * 1000) / 1000;
+    basalEntry.rate = roundTo3dp(basalEntry.rate);
   });
 
   profile.max_daily_basal = getMaxDailyBasalRate(inputs);

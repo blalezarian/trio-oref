@@ -5,6 +5,7 @@ import { categorizeBGDatums as categorize } from './categorize';
 import type { CategorizeResult, CategorizeGlucoseDatum } from './categorize';
 import type { PumpHistoryEvent, InsulinCurve } from '../types/index';
 import { ULTRA_RAPID_PEAK, RAPID_ACTING_PEAK, HOURS_PER_DAY } from '../shared/constants';
+import { roundTo3dp } from '../utils/rounding';
 
 /** Sentinel value for minimum-deviations search initialization */
 const DEVIATION_SENTINEL = 1000000;
@@ -14,9 +15,6 @@ const DIA_SEARCH_RANGE = 2;
 const PEAK_SEARCH_RANGE = 10;
 /** Peak time search step size (minutes) */
 const PEAK_SEARCH_STEP = 5;
-/** Rounding scale for 3 decimal places */
-const ROUND_SCALE_3DP = 1000;
-
 interface AutotunePrepBasalProfileEntry {
   i: number;
   start: string;
@@ -155,9 +153,9 @@ function generate(inputs: AutotunePrepInputs): AutotunePrepResult {
           }
         }
 
-        meanDeviation = Math.round(Math.abs(deviations/basalGlucose.length)*ROUND_SCALE_3DP)/ROUND_SCALE_3DP;
-        SMRDeviation = Math.round(Math.pow(sqrtDeviations/basalGlucose.length,2)*ROUND_SCALE_3DP)/ROUND_SCALE_3DP;
-        RMSDeviation = Math.round(Math.pow(deviationsSq/basalGlucose.length,0.5)*ROUND_SCALE_3DP)/ROUND_SCALE_3DP;
+        meanDeviation = roundTo3dp(Math.abs(deviations/basalGlucose.length));
+        SMRDeviation = roundTo3dp(Math.pow(sqrtDeviations/basalGlucose.length,2));
+        RMSDeviation = roundTo3dp(Math.pow(deviationsSq/basalGlucose.length,0.5));
         consoleLog(`insulinEndTime ${dia} meanDeviation: ${meanDeviation} SMRDeviation: ${SMRDeviation} RMSDeviation: ${RMSDeviation} (mg/dL)`);
         diaDeviations.push({
             dia: dia,
@@ -167,9 +165,9 @@ function generate(inputs: AutotunePrepInputs): AutotunePrepResult {
         });
         autotunePrepOutput.diaDeviations = diaDeviations;
 
-        deviations = Math.round(deviations*ROUND_SCALE_3DP)/ROUND_SCALE_3DP;
+        deviations = roundTo3dp(deviations);
         if (deviations < minDeviations) {
-          minDeviations = Math.round(deviations*ROUND_SCALE_3DP)/ROUND_SCALE_3DP;
+          minDeviations = roundTo3dp(deviations);
           newDIA = dia;
         }
       }
@@ -221,9 +219,9 @@ function generate(inputs: AutotunePrepInputs): AutotunePrepResult {
         }
         console.log(deviationsSq);
 
-        meanDeviation = Math.round(deviations/basalGlucose.length*ROUND_SCALE_3DP)/ROUND_SCALE_3DP;
-        SMRDeviation = Math.round(Math.pow(sqrtDeviations/basalGlucose.length,2)*ROUND_SCALE_3DP)/ROUND_SCALE_3DP;
-        RMSDeviation = Math.round(Math.pow(deviationsSq/basalGlucose.length,0.5)*ROUND_SCALE_3DP)/ROUND_SCALE_3DP;
+        meanDeviation = roundTo3dp(deviations/basalGlucose.length);
+        SMRDeviation = roundTo3dp(Math.pow(sqrtDeviations/basalGlucose.length,2));
+        RMSDeviation = roundTo3dp(Math.pow(deviationsSq/basalGlucose.length,0.5));
         consoleLog(`insulinPeakTime ${peak} meanDeviation: ${meanDeviation} SMRDeviation: ${SMRDeviation} RMSDeviation: ${RMSDeviation} (mg/dL)`);
         peakDeviations.push({
             peak: peak,
@@ -233,9 +231,9 @@ function generate(inputs: AutotunePrepInputs): AutotunePrepResult {
         });
         autotunePrepOutput.diaDeviations = diaDeviations;
 
-        deviations = Math.round(deviations*ROUND_SCALE_3DP)/ROUND_SCALE_3DP;
+        deviations = roundTo3dp(deviations);
         if (deviations < minDeviations) {
-          minDeviations = Math.round(deviations*ROUND_SCALE_3DP)/ROUND_SCALE_3DP;
+          minDeviations = roundTo3dp(deviations);
           newPeak = peak;
         }
       }

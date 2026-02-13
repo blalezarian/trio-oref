@@ -1,4 +1,5 @@
 import { percentile } from '../utils/percentile';
+import { roundTo3dp } from '../utils/rounding';
 import type {
     AutotuneGlucoseDatum,
     AutotuneBounds,
@@ -45,9 +46,9 @@ export function tuneISF(
 ): TuneISFResult {
     const { deviations, BGIs, ratios } = collectISFStatistics(isfGlucose);
 
-    const p50deviation = Math.round(percentile(deviations, MEDIAN_PERCENTILE) * 1000) / 1000;
-    const p50BGI = Math.round(percentile(BGIs, MEDIAN_PERCENTILE) * 1000) / 1000;
-    const p50ratios = Math.round(percentile(ratios, MEDIAN_PERCENTILE) * 1000) / 1000;
+    const p50deviation = roundTo3dp(percentile(deviations, MEDIAN_PERCENTILE));
+    const p50BGI = roundTo3dp(percentile(BGIs, MEDIAN_PERCENTILE));
+    const p50ratios = roundTo3dp(percentile(ratios, MEDIAN_PERCENTILE));
 
     let fullNewISF = currentISF;
     if (isfGlucose.length < MIN_ISF_DATA_POINTS) {
@@ -55,7 +56,7 @@ export function tuneISF(
     } else {
         fullNewISF = currentISF * p50ratios;
     }
-    fullNewISF = Math.round(fullNewISF * 1000) / 1000;
+    fullNewISF = roundTo3dp(fullNewISF);
 
     const adjustmentFraction = isfAdjustmentFraction ?? DEFAULT_ISF_ADJUSTMENT_FRACTION;
 
@@ -105,8 +106,8 @@ export function tuneISF(
         newISF = minISF;
     }
 
-    const roundedNewISF = Math.round(newISF * 1000) / 1000;
-    const roundedAdjustedISF = Math.round(adjustedISF * 1000) / 1000;
+    const roundedNewISF = roundTo3dp(newISF);
+    const roundedAdjustedISF = roundTo3dp(adjustedISF);
 
     return {
         newISF: roundedNewISF,

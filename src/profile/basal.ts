@@ -1,5 +1,4 @@
-/** Rounding scale for basal rate precision (3 decimal places) */
-const BASAL_ROUND_SCALE = 1000;
+import { roundTo3dp } from '../utils/rounding';
 
 interface BasalScheduleEntry {
   i?: number;
@@ -25,7 +24,7 @@ function getCurrentBasalRate(schedules: BasalScheduleEntry[], now: Date = new Da
         return;
     }
     const basalRate = findActiveRate(sorted, toMinuteOfDay(now));
-    return Math.round(basalRate * BASAL_ROUND_SCALE) / BASAL_ROUND_SCALE;
+    return roundTo3dp(basalRate);
 }
 
 /** Return the highest rate in the basal schedule */
@@ -33,7 +32,7 @@ function getMaxDailyBasalRate(inputs: BasalInputs): number {
     const maxRate = inputs.basals.reduce((max, entry) =>
         Number(entry.rate) > Number(max.rate) ? entry : max
     );
-    return (Number(maxRate.rate) * BASAL_ROUND_SCALE) / BASAL_ROUND_SCALE;
+    return Number(maxRate.rate);
 }
 
 /** Return the pump's configured max basal rate */

@@ -4,7 +4,7 @@ import {
     MAX_BG_TARGET,
 } from '../shared/constants';
 
-import { round_basal } from '../utils/round-basal';
+import { round_basal } from '../utils/rounding';
 
 import type {
     GlucoseStatus,
