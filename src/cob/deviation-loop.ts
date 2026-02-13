@@ -10,7 +10,7 @@ import {
 } from '../constants';
 
 // ---------------------------------------------------------------------------
-// Output interface
+// Types
 // ---------------------------------------------------------------------------
 
 export interface CarbAbsorptionResult {
@@ -24,6 +24,17 @@ export interface CarbAbsorptionResult {
 }
 
 // ---------------------------------------------------------------------------
+// Constants
+// ---------------------------------------------------------------------------
+
+/** Rounding scale for 3 decimal places */
+const ROUND_SCALE_3DP = 1000;
+/** Rounding scale for 2 decimal places */
+const ROUND_SCALE_2DP = 100;
+/** Minimum trailing buckets required for delta calculations */
+const TRAILING_BUCKETS_REQUIRED = 3;
+
+// ---------------------------------------------------------------------------
 // Main analysis loop
 // ---------------------------------------------------------------------------
 
@@ -35,7 +46,7 @@ export function analyzeAbsorption(
     profile: IobProfile,
     treatments: IobTreatment[],
     mealTime: Date,
-    ciTime: Date
+    carbImpactTime: Date,
 ): CarbAbsorptionResult {
     let carbsAbsorbed = 0;
     let currentDeviation: number;
@@ -44,41 +55,46 @@ export function analyzeAbsorption(
     let maxDeviation = 0;
     let minDeviation = 999;
     const allDeviations: number[] = [];
-    let bgTime: Date | undefined;
-    for (let i=0; i < bucketed_data.length-3; ++i) {
-        bgTime = new Date(bucketed_data[i].date!);
 
-        const sens = isfLookup(profile.isfProfile!,bgTime);
+    for (let i = 0; i < bucketed_data.length - TRAILING_BUCKETS_REQUIRED; ++i) {
+        const bgTime = new Date(bucketed_data[i].date!);
+        const sens = isfLookup(profile.isfProfile!, bgTime);
 
+        // Resolve glucose and deltas (if glucose undefined, values stay undefined/NaN)
         let bg: number;
         let avgDelta: number;
         let delta: number;
         if (bucketed_data[i].glucose !== undefined) {
             bg = bucketed_data[i].glucose!;
-            if ( bg < MIN_VALID_GLUCOSE_MGDL || bucketed_data[i+3].glucose! < MIN_VALID_GLUCOSE_MGDL) {
+            if (bg < MIN_VALID_GLUCOSE_MGDL || (bucketed_data[i + TRAILING_BUCKETS_REQUIRED].glucose ?? 0) < MIN_VALID_GLUCOSE_MGDL) {
                 process.stderr.write("!");
                 continue;
             }
-            avgDelta = (bg - bucketed_data[i+3].glucose!)/3;
-            delta = (bg - bucketed_data[i+1].glucose!);
-        } else { console.error("Could not find glucose data"); }
+            avgDelta = (bg - (bucketed_data[i + TRAILING_BUCKETS_REQUIRED].glucose ?? 0)) / TRAILING_BUCKETS_REQUIRED;
+            delta = bg - (bucketed_data[i + 1].glucose ?? 0);
+        } else {
+            console.error("Could not find glucose data");
+        }
 
-        avgDelta = Math.round(avgDelta! * 100) / 100;
-        iob_inputs.clock=bgTime;
+        avgDelta = Math.round(avgDelta! * ROUND_SCALE_2DP) / ROUND_SCALE_2DP;
+        iob_inputs.clock = bgTime;
         iob_inputs.profile.current_basal = getCurrentBasalRate(basalprofile, bgTime)!;
         const iob = get_iob(iob_inputs as IobInputs, true, treatments)[0];
 
         const bgImpact = calculateBGImpact(iob.activity, sens);
         const deviation = calculateDeviation(delta!, bgImpact);
-        // calculate the deviation right now, for use in min_5m
-        if (i===0) {
-            currentDeviation = Math.round((avgDelta - bgImpact)*1000)/1000;
-            if (ciTime > bgTime) {
+
+        // First entry: calculate current deviation
+        if (i === 0) {
+            currentDeviation = Math.round((avgDelta - bgImpact) * ROUND_SCALE_3DP) / ROUND_SCALE_3DP;
+            if (carbImpactTime > bgTime) {
                 allDeviations.push(Math.round(currentDeviation));
             }
-        } else if (ciTime > bgTime) {
-            const avgDeviation = Math.round((avgDelta - bgImpact)*1000)/1000;
-            const deviationSlope = (avgDeviation-currentDeviation!)/(bgTime.getTime()-ciTime.getTime())*MS_PER_5_MIN;
+        } else if (carbImpactTime > bgTime) {
+            // Subsequent entries within CI window: track deviation slope
+            const avgDeviation = Math.round((avgDelta - bgImpact) * ROUND_SCALE_3DP) / ROUND_SCALE_3DP;
+            const deviationSlope = (avgDeviation - currentDeviation!) / (bgTime.getTime() - carbImpactTime.getTime()) * MS_PER_5_MIN;
+
             if (avgDeviation > maxDeviation) {
                 slopeFromMaxDeviation = Math.min(0, deviationSlope);
                 maxDeviation = avgDeviation;
@@ -91,24 +107,21 @@ export function analyzeAbsorption(
             allDeviations.push(Math.round(avgDeviation));
         }
 
-        // if bgTime is more recent than mealTime
-        if(bgTime > mealTime) {
-            // figure out how many carbs that represents
-            // if currentDeviation is > 2 * min_5m_carbimpact, assume currentDeviation/2 worth of carbs were absorbed
-            // but always assume at least profile.min_5m_carbimpact (3mg/dL/5m by default) absorption
-            const carbImpact = Math.max(deviation, currentDeviation!/2, profile.min_5m_carbimpact!);
+        // After meal: estimate carb absorption from deviations
+        if (bgTime > mealTime) {
+            const carbImpact = Math.max(deviation, currentDeviation! / 2, profile.min_5m_carbimpact!);
             const absorbed = carbImpact * profile.carb_ratio! / sens;
-            // and add that to the running total carbsAbsorbed
             carbsAbsorbed += absorbed;
         }
     }
+
     return {
-        "carbsAbsorbed": carbsAbsorbed
-    ,   "currentDeviation": currentDeviation!
-    ,   "maxDeviation": maxDeviation
-    ,   "minDeviation": minDeviation
-    ,   "slopeFromMaxDeviation": slopeFromMaxDeviation
-    ,   "slopeFromMinDeviation": slopeFromMinDeviation
-    ,   "allDeviations": allDeviations
-    }
+        carbsAbsorbed,
+        currentDeviation: currentDeviation!,
+        maxDeviation,
+        minDeviation,
+        slopeFromMaxDeviation,
+        slopeFromMinDeviation,
+        allDeviations,
+    };
 }
