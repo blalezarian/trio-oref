@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import findMealInputs from '../../../src/meal/history';
+import findMealInputs, { hasDuplicateEntry } from '../../../src/meal/history';
 import type { PumpHistoryEvent, CarbTreatment } from '../../../src/types/index';
 
 const FIXED_TIME = '2025-01-15T12:00:00.000Z';
@@ -7,6 +7,62 @@ const FIXED_TIME = '2025-01-15T12:00:00.000Z';
 function makeHistory(overrides: Partial<PumpHistoryEvent> = {}): PumpHistoryEvent {
     return { timestamp: FIXED_TIME, ...overrides };
 }
+
+// ---------------------------------------------------------------------------
+// hasDuplicateEntry
+// ---------------------------------------------------------------------------
+
+describe('hasDuplicateEntry', () => {
+    it('returns true for exact timestamp match with property defined', () => {
+        const entries: CarbTreatment[] = [
+            { timestamp: FIXED_TIME, carbs: 30 },
+        ];
+        expect(hasDuplicateEntry(entries, FIXED_TIME, 'carbs')).toBe(true);
+    });
+
+    it('returns false when property is undefined on matching timestamp', () => {
+        const entries: CarbTreatment[] = [
+            { timestamp: FIXED_TIME },
+        ];
+        expect(hasDuplicateEntry(entries, FIXED_TIME, 'carbs')).toBe(false);
+    });
+
+    it('returns true for timestamp within 2-second tolerance', () => {
+        const entries: CarbTreatment[] = [
+            { timestamp: '2025-01-15T12:00:01.000Z', carbs: 30 },
+        ];
+        expect(hasDuplicateEntry(entries, FIXED_TIME, 'carbs')).toBe(true);
+    });
+
+    it('returns false for timestamp outside 2-second tolerance', () => {
+        const entries: CarbTreatment[] = [
+            { timestamp: '2025-01-15T12:00:03.000Z', carbs: 30 },
+        ];
+        expect(hasDuplicateEntry(entries, FIXED_TIME, 'carbs')).toBe(false);
+    });
+
+    it('returns false for empty entries array', () => {
+        expect(hasDuplicateEntry([], FIXED_TIME, 'carbs')).toBe(false);
+    });
+
+    it('checks the specified property independently', () => {
+        const entries: CarbTreatment[] = [
+            { timestamp: FIXED_TIME, carbs: 30 },
+        ];
+        expect(hasDuplicateEntry(entries, FIXED_TIME, 'bolus')).toBe(false);
+    });
+
+    it('detects bolus duplicates', () => {
+        const entries: CarbTreatment[] = [
+            { timestamp: FIXED_TIME, bolus: 2.5 },
+        ];
+        expect(hasDuplicateEntry(entries, FIXED_TIME, 'bolus')).toBe(true);
+    });
+});
+
+// ---------------------------------------------------------------------------
+// findMealInputs
+// ---------------------------------------------------------------------------
 
 describe('findMealInputs', () => {
 
