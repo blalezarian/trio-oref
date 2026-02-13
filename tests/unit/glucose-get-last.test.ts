@@ -1,5 +1,12 @@
 import { describe, it, expect } from 'vitest';
-import getLastGlucose from '../../src/glucose-get-last';
+import {
+    getLastGlucose,
+    getDateFromEntry,
+    filterValidGlucoseData,
+    average,
+    roundTo2Dp,
+    computeAvgDelta,
+} from '../../src/glucose-get-last';
 import type { GlucoseEntry } from '../../src/types/index';
 
 const FIXED_TIME = '2025-01-15T12:00:00.000Z';
@@ -20,6 +27,133 @@ function entry(
         ...overrides,
     };
 }
+
+// ---------------------------------------------------------------------------
+// getDateFromEntry
+// ---------------------------------------------------------------------------
+
+describe('getDateFromEntry', () => {
+    it('returns entry.date when present', () => {
+        expect(getDateFromEntry({ glucose: 100, date: FIXED_DATE })).toBe(FIXED_DATE);
+    });
+
+    it('falls back to display_time when date is missing', () => {
+        expect(getDateFromEntry({ glucose: 100, display_time: FIXED_TIME })).toBe(FIXED_DATE);
+    });
+
+    it('falls back to dateString when date and display_time are missing', () => {
+        expect(getDateFromEntry({ glucose: 100, dateString: FIXED_TIME })).toBe(FIXED_DATE);
+    });
+
+    it('returns NaN-ish value when no date fields are present', () => {
+        const result = getDateFromEntry({ glucose: 100 });
+        expect(result).toBeFalsy();
+    });
+
+    it('falls through invalid display_time to dateString', () => {
+        const result = getDateFromEntry({
+            glucose: 100,
+            date: 0,
+            display_time: 'not-a-date',
+            dateString: FIXED_TIME,
+        });
+        expect(result).toBe(FIXED_DATE);
+    });
+});
+
+// ---------------------------------------------------------------------------
+// filterValidGlucoseData
+// ---------------------------------------------------------------------------
+
+describe('filterValidGlucoseData', () => {
+    it('removes entries with no glucose or sgv', () => {
+        const data: GlucoseEntry[] = [
+            { glucose: 100, date: FIXED_DATE },
+            { date: FIXED_DATE - MS_PER_MINUTE },
+            { glucose: 120, date: FIXED_DATE - 2 * MS_PER_MINUTE },
+        ];
+        const result = filterValidGlucoseData(data);
+        expect(result).toHaveLength(2);
+    });
+
+    it('normalizes sgv to glucose', () => {
+        const data: GlucoseEntry[] = [
+            { sgv: 130, date: FIXED_DATE },
+        ];
+        const result = filterValidGlucoseData(data);
+        expect(result[0].glucose).toBe(130);
+    });
+
+    it('removes entries with glucose=0', () => {
+        const data: GlucoseEntry[] = [
+            { glucose: 0, date: FIXED_DATE },
+            { glucose: 100, date: FIXED_DATE - MS_PER_MINUTE },
+        ];
+        const result = filterValidGlucoseData(data);
+        expect(result).toHaveLength(1);
+        expect(result[0].glucose).toBe(100);
+    });
+});
+
+// ---------------------------------------------------------------------------
+// average
+// ---------------------------------------------------------------------------
+
+describe('average', () => {
+    it('returns 0 for empty array', () => {
+        expect(average([])).toBe(0);
+    });
+
+    it('returns the single value for a one-element array', () => {
+        expect(average([42])).toBe(42);
+    });
+
+    it('computes the mean of multiple values', () => {
+        expect(average([10, 20, 30])).toBe(20);
+    });
+
+    it('handles negative values', () => {
+        expect(average([-10, 10])).toBe(0);
+    });
+});
+
+// ---------------------------------------------------------------------------
+// roundTo2Dp
+// ---------------------------------------------------------------------------
+
+describe('roundTo2Dp', () => {
+    it('rounds to 2 decimal places', () => {
+        expect(roundTo2Dp(1.234)).toBe(1.23);
+        expect(roundTo2Dp(1.235)).toBe(1.24);
+        expect(roundTo2Dp(1.2)).toBe(1.2);
+        expect(roundTo2Dp(1)).toBe(1);
+    });
+});
+
+// ---------------------------------------------------------------------------
+// computeAvgDelta
+// ---------------------------------------------------------------------------
+
+describe('computeAvgDelta', () => {
+    it('computes rate of change in mg/dL per 5 minutes', () => {
+        // (130 - 120) / 5 * 5 = 10
+        expect(computeAvgDelta(130, 120, 5)).toBe(10);
+    });
+
+    it('handles 10-minute gap (normalizes to 5-minute rate)', () => {
+        // (130 - 120) / 10 * 5 = 5
+        expect(computeAvgDelta(130, 120, 10)).toBe(5);
+    });
+
+    it('returns negative for falling glucose', () => {
+        // (100 - 120) / 5 * 5 = -20
+        expect(computeAvgDelta(100, 120, 5)).toBe(-20);
+    });
+});
+
+// ---------------------------------------------------------------------------
+// getLastGlucose (integration)
+// ---------------------------------------------------------------------------
 
 describe('getLastGlucose', () => {
 

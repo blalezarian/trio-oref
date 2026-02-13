@@ -1,5 +1,10 @@
+
 import type { GlucoseEntry, GlucoseStatus } from './types/index';
 import { MS_PER_MINUTE, PRED_INTERVAL_MINUTES, MIN_VALID_GLUCOSE_MGDL } from './constants';
+
+// ---------------------------------------------------------------------------
+// Constants
+// ---------------------------------------------------------------------------
 
 /** Lower bound (minutes ago) for averaging current BG reading */
 const NOW_AVERAGING_MIN_MINUTES = -2;
@@ -14,86 +19,129 @@ const LONG_DELTA_MAX_MINUTES = 42.5;
 /** Scale factor for rounding to 2 decimal places */
 const ROUND_SCALE_2DP = 100;
 
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+/** Resolve the timestamp (epoch ms) from whichever date field is present */
 function getDateFromEntry(entry: GlucoseEntry): number {
-  return entry.date || Date.parse(entry.display_time as string) || Date.parse(entry.dateString as string);
+    return entry.date
+        || Date.parse(entry.display_time ?? '')
+        || Date.parse(entry.dateString ?? '');
 }
 
-const getLastGlucose = (data: GlucoseEntry[]): GlucoseStatus => {
-    data = data.filter((obj) => {
-      return obj.glucose || obj.sgv;
-    }).map(function prepGlucose (obj) {
-        //Support the NS sgv field to avoid having to convert in a custom way
-        obj.glucose = obj.glucose || obj.sgv;
-        if ( obj.glucose !== null ) {
-            return obj;
-        }
-    }) as GlucoseEntry[];
+/** Filter entries with a glucose/sgv value and normalize sgv → glucose */
+function filterValidGlucoseData(data: GlucoseEntry[]): GlucoseEntry[] {
+    return data
+        .filter((entry) => Boolean(entry.glucose || entry.sgv))
+        .map((entry) => {
+            entry.glucose = entry.glucose || entry.sgv;
+            return entry;
+        });
+}
 
-    const now = data[0];
-    let now_date = getDateFromEntry(now);
-    const last_deltas: number[] = [];
-    const short_deltas: number[] = [];
-    const long_deltas: number[] = [];
-    let last_cal = 0;
+/** Average an array of numbers, returning 0 for empty arrays */
+function average(values: number[]): number {
+    if (values.length === 0) {
+        return 0;
+    }
+    return values.reduce((sum, v) => sum + v, 0) / values.length;
+}
 
-    for (let i=1; i < data.length; i++) {
-        // if we come across a cal record, don't process any older SGVs
-        if (data[i] !== undefined && data[i].type === "cal") {
-            last_cal = i;
+/** Round a number to 2 decimal places */
+function roundTo2Dp(value: number): number {
+    return Math.round(value * ROUND_SCALE_2DP) / ROUND_SCALE_2DP;
+}
+
+/** Compute the average delta (rate of BG change) in mg/dL per 5 minutes */
+function computeAvgDelta(
+    nowGlucose: number,
+    thenGlucose: number,
+    minutesAgo: number,
+): number {
+    return (nowGlucose - thenGlucose) / minutesAgo * PRED_INTERVAL_MINUTES;
+}
+
+// ---------------------------------------------------------------------------
+// Main function
+// ---------------------------------------------------------------------------
+
+/** Calculate glucose status (current BG, deltas, noise) from recent CGM data */
+function getLastGlucose(data: GlucoseEntry[]): GlucoseStatus {
+    const filtered = filterValidGlucoseData(data);
+
+    const now = filtered[0];
+    let nowDate = getDateFromEntry(now);
+    const lastDeltas: number[] = [];
+    const shortDeltas: number[] = [];
+    const longDeltas: number[] = [];
+    let lastCal = 0;
+
+    for (let i = 1; i < filtered.length; i++) {
+        const entry = filtered[i];
+
+        // Stop processing at calibration records
+        if (entry.type === 'cal') {
+            lastCal = i;
             break;
         }
-        // only use data from the same device as the most recent BG data point
-        if (data[i] !== undefined && data[i].glucose! >= MIN_VALID_GLUCOSE_MGDL && data[i].device === now.device) {
-            const then = data[i];
-            const then_date = getDateFromEntry(then);
-            let avgdelta = 0;
-            let minutesago: number;
-            if (then_date !== undefined && now_date !== undefined) {
-                minutesago = Math.round( (now_date - then_date) / MS_PER_MINUTE );
-                // multiply by 5 to get the same units as delta, i.e. mg/dL/5m
-                const change = now.glucose! - then.glucose!;
-                avgdelta = change/minutesago * PRED_INTERVAL_MINUTES;
-            } else { console.error("Error: date field not found: cannot calculate avgdelta"); }
-            // use the average of all data points in the last 2.5m for all further "now" calculations
-            if (NOW_AVERAGING_MIN_MINUTES < minutesago! && minutesago! <= NOW_AVERAGING_MAX_MINUTES) {
-                now.glucose = ( now.glucose! + then.glucose! ) / 2;
-                now_date = ( now_date + then_date ) / 2;
-            // short_deltas are calculated from everything ~5-15 minutes ago
-            } else if (NOW_AVERAGING_MAX_MINUTES < minutesago! && minutesago! <= SHORT_DELTA_MAX_MINUTES) {
-                short_deltas.push(avgdelta);
-                // last_deltas are calculated from everything ~5 minutes ago
-                if (NOW_AVERAGING_MAX_MINUTES < minutesago! && minutesago! < LAST_DELTA_MAX_MINUTES) {
-                    last_deltas.push(avgdelta);
-                }
-            // long_deltas are calculated from everything ~20-40 minutes ago
-            } else if (SHORT_DELTA_MAX_MINUTES < minutesago! && minutesago! < LONG_DELTA_MAX_MINUTES) {
-                long_deltas.push(avgdelta);
-            }
+
+        // Only use entries from the same device with valid glucose
+        if (entry.glucose == null || entry.glucose < MIN_VALID_GLUCOSE_MGDL || entry.device !== now.device) {
+            continue;
         }
-    }
-    let last_delta = 0;
-    let short_avgdelta = 0;
-    let long_avgdelta = 0;
-    if (last_deltas.length > 0) {
-        last_delta = last_deltas.reduce((a, b) => { return a + b; }) / last_deltas.length;
-    }
-    if (short_deltas.length > 0) {
-        short_avgdelta = short_deltas.reduce((a, b) => { return a + b; }) / short_deltas.length;
-    }
-    if (long_deltas.length > 0) {
-        long_avgdelta = long_deltas.reduce((a, b) => { return a + b; }) / long_deltas.length;
+
+        const entryDate = getDateFromEntry(entry);
+        if (!entryDate || !nowDate) {
+            console.error("Error: date field not found: cannot calculate avgdelta");
+            continue;
+        }
+
+        const minutesAgo = Math.round((nowDate - entryDate) / MS_PER_MINUTE);
+        const avgDelta = computeAvgDelta(now.glucose ?? 0, entry.glucose, minutesAgo);
+
+        // Average readings within 2.5 minutes into the current reading
+        if (NOW_AVERAGING_MIN_MINUTES < minutesAgo && minutesAgo <= NOW_AVERAGING_MAX_MINUTES) {
+            now.glucose = ((now.glucose ?? 0) + entry.glucose) / 2;
+            nowDate = (nowDate + entryDate) / 2;
+            continue;
+        }
+
+        // Short deltas: ~5-17.5 minutes ago
+        if (NOW_AVERAGING_MAX_MINUTES < minutesAgo && minutesAgo <= SHORT_DELTA_MAX_MINUTES) {
+            shortDeltas.push(avgDelta);
+            // Last deltas: ~5-7.5 minutes ago (subset of short)
+            if (minutesAgo < LAST_DELTA_MAX_MINUTES) {
+                lastDeltas.push(avgDelta);
+            }
+            continue;
+        }
+
+        // Long deltas: ~17.5-42.5 minutes ago
+        if (SHORT_DELTA_MAX_MINUTES < minutesAgo && minutesAgo < LONG_DELTA_MAX_MINUTES) {
+            longDeltas.push(avgDelta);
+        }
     }
 
     return {
-        delta: Math.round( last_delta * ROUND_SCALE_2DP ) / ROUND_SCALE_2DP
-        , glucose: Math.round( now.glucose! * ROUND_SCALE_2DP ) / ROUND_SCALE_2DP
-        , noise: Math.round(now.noise!)
-        , short_avgdelta: Math.round( short_avgdelta * ROUND_SCALE_2DP ) / ROUND_SCALE_2DP
-        , long_avgdelta: Math.round( long_avgdelta * ROUND_SCALE_2DP ) / ROUND_SCALE_2DP
-        , date: now_date
-        , last_cal: last_cal
-        , device: now.device
+        delta: roundTo2Dp(average(lastDeltas)),
+        glucose: roundTo2Dp(now.glucose ?? 0),
+        noise: Math.round(Number(now.noise)),
+        short_avgdelta: roundTo2Dp(average(shortDeltas)),
+        long_avgdelta: roundTo2Dp(average(longDeltas)),
+        date: nowDate,
+        last_cal: lastCal,
+        device: now.device,
     };
-};
+}
 
 export default getLastGlucose;
+export {
+    getLastGlucose,
+    // Helpers
+    getDateFromEntry,
+    filterValidGlucoseData,
+    average,
+    roundTo2Dp,
+    computeAvgDelta,
+};
