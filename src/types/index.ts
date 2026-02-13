@@ -58,6 +58,12 @@ export type BGUnits = 'mg/dL' | 'mmol/L';
 /** Meal absorption phase marker */
 export type MealAbsorptionPhase = 'start' | 'end';
 
+/** Unix timestamp in milliseconds (e.g. Date.now(), Date.getTime()) */
+export type EpochMillis = number;
+
+/** ISO 8601 date string (e.g. "2025-01-15T12:00:00.000Z") */
+export type ISODateString = string;
+
 // ---------------------------------------------------------------------------
 // Pump History Event — raw events from Medtronic pump or Nightscout
 // ---------------------------------------------------------------------------

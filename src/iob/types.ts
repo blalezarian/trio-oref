@@ -4,6 +4,8 @@ import type {
     Treatment,
     IOBContribution,
     InsulinCurve,
+    EpochMillis,
+    ISODateString,
 } from '../types/index';
 
 // ---------------------------------------------------------------------------
