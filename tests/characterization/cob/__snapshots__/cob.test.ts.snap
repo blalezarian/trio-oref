@@ -24,7 +24,7 @@ exports[`determine-basal/cob (detectCarbAbsorption) characterization tests > buc
 }
 `;
 
-exports[`determine-basal/cob (detectCarbAbsorption) characterization tests > ciTime filter: entries more recent than ciTime skipped > skips BG entries that are after ciTime (hoursAgo < 0) 1`] = `
+exports[`determine-basal/cob (detectCarbAbsorption) characterization tests > carbImpactTime filter: entries more recent than carbImpactTime skipped > skips BG entries that are after carbImpactTime (hoursAgo < 0) 1`] = `
 {
   "allDeviations": [],
   "carbsAbsorbed": 4,
@@ -36,7 +36,7 @@ exports[`determine-basal/cob (detectCarbAbsorption) characterization tests > ciT
 }
 `;
 
-exports[`determine-basal/cob (detectCarbAbsorption) characterization tests > ciTime filtering > only considers last ~45min of data when ciTime is set 1`] = `
+exports[`determine-basal/cob (detectCarbAbsorption) characterization tests > carbImpactTime filtering > only considers last ~45min of data when carbImpactTime is set 1`] = `
 {
   "allDeviations": [
     2,
@@ -55,7 +55,7 @@ exports[`determine-basal/cob (detectCarbAbsorption) characterization tests > ciT
 }
 `;
 
-exports[`determine-basal/cob (detectCarbAbsorption) characterization tests > ciTime strictly greater than bgTime at i===0 > pushes currentDeviation to allDeviations when ciTime > bgTime at first iteration 1`] = `
+exports[`determine-basal/cob (detectCarbAbsorption) characterization tests > carbImpactTime strictly greater than bgTime at i===0 > pushes currentDeviation to allDeviations when carbImpactTime > bgTime at first iteration 1`] = `
 {
   "allDeviations": [
     3,

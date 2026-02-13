@@ -32,7 +32,7 @@ interface COBInputs {
     };
     basalprofile: HistoryBasalProfileEntry[];
     mealTime: number;
-    ciTime?: number;
+    carbImpactTime?: number;
 }
 
 interface RecentCarbsResult {
@@ -184,7 +184,7 @@ function recentCarbs(opts: RecentCarbsOpts, time: Date): RecentCarbsResult | Rec
     totals.journalCarbs -= journalCarbsToRemove;
 
     // Calculate deviation data over the full absorption window
-    cobInputs.ciTime = nowMs;
+    cobInputs.carbImpactTime = nowMs;
     cobInputs.mealTime = nowMs - maxMealAbsorptionTime * MS_PER_HOUR;
     const c = calcMealCOB(cobInputs);
 

@@ -64,7 +64,7 @@ function makeInputs(
   overrides: {
     profile?: Record<string, unknown>;
     history?: unknown[];
-    ciTime?: number | string;
+    carbImpactTime?: number | string;
   } = {},
 ) {
   const profile = makeProfile(overrides.profile || {});
@@ -77,7 +77,7 @@ function makeInputs(
     },
     basalprofile: BASAL_PROFILE,
     mealTime: NOW - mealTimeMinsAgo * 60_000,
-    ...(overrides.ciTime !== undefined ? { ciTime: overrides.ciTime } : {}),
+    ...(overrides.carbImpactTime !== undefined ? { carbImpactTime: overrides.carbImpactTime } : {}),
   } as any;
 }
 
@@ -201,11 +201,11 @@ describe('determine-basal/cob (detectCarbAbsorption) characterization tests', ()
     });
   });
 
-  describe('ciTime filtering', () => {
-    it('only considers last ~45min of data when ciTime is set', () => {
-      // 10 readings spanning 50 minutes; ciTime = NOW means only ~45 min considered
+  describe('carbImpactTime filtering', () => {
+    it('only considers last ~45min of data when carbImpactTime is set', () => {
+      // 10 readings spanning 50 minutes; carbImpactTime = NOW means only ~45 min considered
       const glucose = makeGlucoseData(150, [2, 2, 2, 2, 2, 2, 2, 2, 2]);
-      const inputs = makeInputs(glucose, 60, { ciTime: NOW });
+      const inputs = makeInputs(glucose, 60, { carbImpactTime: NOW });
       const result = detectCarbAbsorption(inputs);
       expect(result).toMatchSnapshot();
     });
@@ -245,16 +245,16 @@ describe('determine-basal/cob (detectCarbAbsorption) characterization tests', ()
   });
 
   // -------------------------------------------------------------------------
-  // ciTime filter: hoursAgo < 0 (line 65)
-  // Glucose entries more recent than ciTime are skipped
+  // carbImpactTime filter: hoursAgo < 0 (line 65)
+  // Glucose entries more recent than carbImpactTime are skipped
   // -------------------------------------------------------------------------
-  describe('ciTime filter: entries more recent than ciTime skipped', () => {
-    it('skips BG entries that are after ciTime (hoursAgo < 0)', () => {
-      // Set ciTime to 15 minutes ago; glucose entries span from now to 30m ago
-      // Entries at NOW, NOW-5m, NOW-10m will be more recent than ciTime (NOW-15m) => hoursAgo < 0
-      const ciTime = NOW - 15 * 60_000;
+  describe('carbImpactTime filter: entries more recent than carbImpactTime skipped', () => {
+    it('skips BG entries that are after carbImpactTime (hoursAgo < 0)', () => {
+      // Set carbImpactTime to 15 minutes ago; glucose entries span from now to 30m ago
+      // Entries at NOW, NOW-5m, NOW-10m will be more recent than carbImpactTime (NOW-15m) => hoursAgo < 0
+      const carbImpactTime = NOW - 15 * 60_000;
       const glucose = makeGlucoseData(150, [2, 2, 2, 2, 2, 2]);
-      const inputs = makeInputs(glucose, 60, { ciTime });
+      const inputs = makeInputs(glucose, 60, { carbImpactTime });
       const result = detectCarbAbsorption(inputs);
       expect(result).toMatchSnapshot();
     });
@@ -312,14 +312,14 @@ describe('determine-basal/cob (detectCarbAbsorption) characterization tests', ()
   });
 
   // -------------------------------------------------------------------------
-  // ciTime > bgTime at i===0 (line 155 true branch)
+  // carbImpactTime > bgTime at i===0 (line 155 true branch)
   // -------------------------------------------------------------------------
-  describe('ciTime strictly greater than bgTime at i===0', () => {
-    it('pushes currentDeviation to allDeviations when ciTime > bgTime at first iteration', () => {
-      // Set ciTime to slightly in the future of the newest glucose entry
-      const ciTime = NOW + 1 * 60_000; // 1 minute after newest BG
+  describe('carbImpactTime strictly greater than bgTime at i===0', () => {
+    it('pushes currentDeviation to allDeviations when carbImpactTime > bgTime at first iteration', () => {
+      // Set carbImpactTime to slightly in the future of the newest glucose entry
+      const carbImpactTime = NOW + 1 * 60_000; // 1 minute after newest BG
       const glucose = makeGlucoseData(150, [3, 3, 3, 3, 3, 3]);
-      const inputs = makeInputs(glucose, 60, { ciTime });
+      const inputs = makeInputs(glucose, 60, { carbImpactTime });
       const result = detectCarbAbsorption(inputs);
       expect(result).toMatchSnapshot();
     });
@@ -335,7 +335,7 @@ describe('determine-basal/cob (detectCarbAbsorption) characterization tests', ()
       // bgi from no IOB is ~0
       // currentDeviation = 20 - 0 = 20; 20/2 = 10 > 8 (min_5m_carbimpact)
       const glucose = makeGlucoseData(200, [20, 20, 20, 20, 20, 20]);
-      const inputs = makeInputs(glucose, 30, { ciTime: NOW + 60_000 });
+      const inputs = makeInputs(glucose, 30, { carbImpactTime: NOW + 60_000 });
       const result = detectCarbAbsorption(inputs);
       expect(result).toMatchSnapshot();
     });

@@ -15,7 +15,7 @@ interface CarbAbsorptionInputs {
   };
   basalprofile: HistoryBasalProfileEntry[];
   mealTime: number | string | Date;
-  ciTime?: number | string | Date;
+  carbImpactTime?: number | string | Date;
 }
 
 export function detectCarbAbsorption(inputs: CarbAbsorptionInputs): CarbAbsorptionResult {
@@ -27,7 +27,7 @@ export function detectCarbAbsorption(inputs: CarbAbsorptionInputs): CarbAbsorpti
     /* TODO why does declaring profile break tests-command-behavior.tests.sh? */
     profile = inputs.iob_inputs.profile;
     const mealTime = new Date(inputs.mealTime as string | number);
-    const ciTime = new Date(inputs.ciTime as string | number);
+    const carbImpactTime = new Date(inputs.carbImpactTime as string | number);
 
     // get treatments from pumphistory once, not every time we get_iob()
     const treatments = find_insulin(inputs.iob_inputs as IobInputs);
@@ -35,7 +35,7 @@ export function detectCarbAbsorption(inputs: CarbAbsorptionInputs): CarbAbsorpti
     const bucketed_data = bucketGlucoseWithInterpolation(
         glucose_data,
         mealTime,
-        ciTime,
+        carbImpactTime,
         profile.maxMealAbsorptionTime!
     );
 
@@ -46,6 +46,6 @@ export function detectCarbAbsorption(inputs: CarbAbsorptionInputs): CarbAbsorpti
         profile,
         treatments,
         mealTime,
-        ciTime
+        carbImpactTime
     );
 }
