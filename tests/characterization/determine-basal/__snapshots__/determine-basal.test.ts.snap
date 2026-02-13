@@ -403,14 +403,13 @@ exports[`determine-basal branch coverage tests > SMB scheduling: startTime == en
     ],
   },
   "rate": 3.5,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 180, Middleware: undefined; Eventual BG 180 >= 110,  insulinReq 1.75; maxBolus 0.5. Microbolusing 0.5U. adj. req. rate: 4.4 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 999, minGuardBG 999, IOBpredBG 180, Middleware: undefined; Eventual BG 180 >= 110, adj. req. rate: 4.4 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,
   "temp": "absolute",
   "threshold": 75,
   "tick": "+0",
-  "units": 0.5,
 }
 `;
 
@@ -17394,7 +17393,7 @@ exports[`determine-basal characterization tests > smb-schedule > SMB scheduled o
     ],
   },
   "rate": 3.5,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 24, BGI: -1, CR: 10, Target: 110, minPredBG 173, minGuardBG 173, IOBpredBG 173, Middleware: undefined; Eventual BG 184 >= 110,  insulinReq 1.58; maxBolus 0.5. Waiting NaNm NaNs to microbolus again. adj. req. rate: 4.05 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 24, BGI: -1, CR: 10, Target: 110, minPredBG 173, minGuardBG 173, IOBpredBG 173, Middleware: undefined; Eventual BG 184 >= 110, adj. req. rate: 4.05 to maxSafeBasal: 3.5, no temp, setting 3.5U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,

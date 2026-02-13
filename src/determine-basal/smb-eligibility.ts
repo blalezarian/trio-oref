@@ -23,11 +23,9 @@ export function enable_smb(
          * SMBs will be disabled from [start, end), such that if an SMB is scheduled to be disabled from 10 AM to 2 PM,
          * an SMB will not be allowed from 10:00:00 until 1:59:59.
          */
-        // BUG: new Date(time.getHours()) creates a Date from epoch ms, not the hour number.
-        // This breaks SMB time-range scheduling (currentHour is always a Date, not 0-23).
-        let currentHour = new Date(time.getHours()) as unknown as number;
-        let startTime = trio_custom_variables.start;
-        let endTime = trio_custom_variables.end;
+        const currentHour = time.getHours();
+        const startTime = trio_custom_variables.start;
+        const endTime = trio_custom_variables.end;
 
         if (startTime < endTime && (currentHour >= startTime && currentHour < endTime)) {
             console.error("SMB disabled: current time is in SMB disabled scheduled")
