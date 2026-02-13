@@ -4,7 +4,7 @@ import path from 'path';
 export default defineConfig({
   test: {
     globals: true,
-    include: ['tests/characterization/**/*.test.ts'],
+    include: ['tests/characterization/**/*.test.ts', 'tests/unit/**/*.test.ts'],
     testTimeout: 30000,
     snapshotSerializers: [],
     coverage: {

@@ -4,7 +4,8 @@
   "description": "openaps oref0 reference implementation of the reference design",
   "scripts": {
     "test": "make test",
-    "test:char": "vitest run",
+    "test:char": "vitest run tests/characterization",
+    "test:unit": "vitest run tests/unit",
     "test:char:watch": "vitest",
     "test:char:update": "vitest run --update",
     "test:all": "make test && vitest run",
