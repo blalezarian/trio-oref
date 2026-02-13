@@ -5,8 +5,8 @@ import tempBasalFunctions, {
     appendReason,
     resolveMultiplier,
     isCurrentTempAcceptable,
-} from '../../src/basal/index';
-import type { TempBasalProfile, TempBasalResult, CurrentTemp } from '../../src/basal/index';
+} from '../../src/set-temp-basal/index';
+import type { TempBasalProfile, TempBasalResult, CurrentTemp } from '../../src/set-temp-basal/index';
 
 // ---------------------------------------------------------------------------
 // Helpers

@@ -17,7 +17,7 @@ export default defineConfig({
         'src/autosens/**/*.{js,ts}',
         'src/cob/**/*.{js,ts}',
         'src/glucose/**/*.{js,ts}',
-        'src/basal/**/*.{js,ts}',
+        'src/set-temp-basal/**/*.{js,ts}',
         'src/bolus/**/*.{js,ts}',
         'src/utils/**/*.{js,ts}',
         'src/shared/**/*.{js,ts}',

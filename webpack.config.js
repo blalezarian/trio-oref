@@ -28,7 +28,7 @@ module.exports = {
     meal: './src/meal/index.ts',
     "determineBasal": './src/determine-basal/index.ts',
     "glucoseGetLast": './src/glucose/index.ts',
-    "basalSetTemp": './src/basal/index.ts',
+    "basalSetTemp": './src/set-temp-basal/index.ts',
     autosens: './src/autosens/index.ts',
     profile: './src/profile/index.ts',
     "autotunePrep": './src/autotune-prep/index.ts',
