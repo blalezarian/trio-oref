@@ -145,7 +145,7 @@ function handleCGMError(
 ): DetermineBasalResult {
     if (currenttemp.rate >= basal) { // high temp is running
         basalResult.reason += `. Replacing high temp basal of ${currenttemp.rate} with neutral temp of ${basal}`;
-        basalResult.deliverAt = deliverAt as unknown as string;
+        basalResult.deliverAt = deliverAt;
         basalResult.temp = 'absolute';
         basalResult.duration = TEMP_BASAL_DURATION_MINUTES;
         basalResult.rate = basal;
@@ -154,7 +154,7 @@ function handleCGMError(
 
     if ( currenttemp.rate === 0 && currenttemp.duration > TEMP_BASAL_DURATION_MINUTES ) { //shorten long zero temps to 30m
         basalResult.reason += `. Shortening ${currenttemp.duration}m long zero temp to 30m. `;
-        basalResult.deliverAt = deliverAt as unknown as string;
+        basalResult.deliverAt = deliverAt;
         basalResult.temp = 'absolute';
         basalResult.duration = TEMP_BASAL_DURATION_MINUTES;
         basalResult.rate = 0;

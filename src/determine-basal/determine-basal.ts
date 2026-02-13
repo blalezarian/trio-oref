@@ -173,7 +173,7 @@ export function determine_basal(
         eventualBG,
         insulinReq: 0,
         reservoir: reservoir_data,
-        deliverAt: deliverAt as unknown as string,
+        deliverAt,
         sensitivityRatio,
         CR: round(carbRatio, 1),
         current_target: target_bg,

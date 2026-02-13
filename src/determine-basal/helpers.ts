@@ -92,7 +92,7 @@ export function validateIOBAndTemps(
     const tempModulus = (lastTempAge + currenttemp.duration) % TEMP_BASAL_DURATION_MINUTES;
     console.log(`currenttemp:${currenttemp.rate} lastTempAge:${lastTempAge}m, tempModulus:${tempModulus}m`);
     result.temp = 'absolute';
-    result.deliverAt = deliverAt as unknown as string;
+    result.deliverAt = deliverAt;
     if ( microBolusAllowed && currenttemp && iob_data.lastTemp && currenttemp.rate !== iob_data.lastTemp.rate && lastTempAge > TEMP_AGE_STALE_MINUTES && currenttemp.duration ) {
         result.reason = `Warning: currenttemp rate ${currenttemp.rate} != lastTemp rate ${iob_data.lastTemp.rate} from pumphistory; canceling temp`; // reason.conclusion started
         return { earlyReturn: tempBasalFunctions.setTempBasal(0, 0, profile, result, currenttemp) };

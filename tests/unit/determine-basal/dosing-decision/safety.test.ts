@@ -357,7 +357,7 @@ describe('checkTopOfHourCancel', () => {
         (ctx.inputs.profile as { skip_neutral_temps: boolean }).skip_neutral_temps = true;
         ctx.enableSMB = false;
         // deliverAt at 55 minutes past the hour (>= TOP_OF_HOUR_WINDOW_MINUTES = 55)
-        ctx.result.deliverAt = new Date('2025-01-15T12:55:00Z') as unknown as string;
+        ctx.result.deliverAt = new Date('2025-01-15T12:55:00Z');
 
         const outcome = checkTopOfHourCancel(ctx);
 
@@ -377,7 +377,7 @@ describe('checkTopOfHourCancel', () => {
         (ctx.inputs.profile as { skip_neutral_temps: boolean }).skip_neutral_temps = true;
         ctx.enableSMB = true;
         // deliverAt at 55 minutes past the hour
-        ctx.result.deliverAt = new Date('2025-01-15T12:55:00Z') as unknown as string;
+        ctx.result.deliverAt = new Date('2025-01-15T12:55:00Z');
 
         const outcome = checkTopOfHourCancel(ctx);
 

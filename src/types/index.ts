@@ -629,7 +629,7 @@ export interface DetermineBasalResult {
   /** Grams of carbs needed to reach target (for alerts) */
   carbsReq?: number;
   /** Timestamp for when to deliver the recommendation */
-  deliverAt?: string;
+  deliverAt?: Date;
   /** Current carbs on board (echoed from meal_data) */
   mealCOB?: number;
 
