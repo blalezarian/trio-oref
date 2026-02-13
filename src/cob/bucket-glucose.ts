@@ -45,6 +45,38 @@ function resolveLastBucketTime(
     return undefined;
 }
 
+/** Fills in interpolated 5-minute BG data points across a gap in CGM readings. */
+export function interpolateMissingPoints(
+    bucketed_data: BucketedGlucose[],
+    startBucketIndex: number,
+    lastBgTime: Date,
+    lastValidBg: number,
+    targetBg: number,
+    elapsedMinutes: number,
+): { bucketIndex: number; lastBgTime: Date } {
+    const cappedMinutes = Math.min(MAX_INTERPOLATION_GAP_MINUTES, Math.abs(elapsedMinutes));
+    let remaining = cappedMinutes;
+    let bucketIndex = startBucketIndex;
+    let lastBg = lastValidBg;
+    let currentBgTime = lastBgTime;
+
+    while (remaining > PRED_INTERVAL_MINUTES) {
+        const previousBgTime = new Date(currentBgTime.getTime() - MS_PER_5_MIN);
+        bucketIndex++;
+        bucketed_data[bucketIndex] = {} as BucketedGlucose;
+        bucketed_data[bucketIndex].date = previousBgTime.getTime();
+        const gapDelta = targetBg - lastBg;
+        const previousBg = lastBg + (PRED_INTERVAL_MINUTES / remaining * gapDelta);
+        bucketed_data[bucketIndex].glucose = Math.round(previousBg);
+
+        remaining -= PRED_INTERVAL_MINUTES;
+        lastBg = previousBg;
+        currentBgTime = new Date(previousBgTime);
+    }
+
+    return { bucketIndex, lastBgTime: currentBgTime };
+}
+
 // ---------------------------------------------------------------------------
 // Main function
 // ---------------------------------------------------------------------------
@@ -111,23 +143,14 @@ export function bucketGlucoseWithInterpolation(
 
         // --- Case 1: Large gap (> 8 min) → interpolate missing data points ---
         if (Math.abs(elapsed_minutes) > BUCKETING_GAP_THRESHOLD_MIN) {
-            let lastBg = glucose_data[lastValidIndex].glucose ?? 0;
-            const cappedMinutes = Math.min(MAX_INTERPOLATION_GAP_MINUTES, Math.abs(elapsed_minutes));
-            let remaining = cappedMinutes;
-
-            while (remaining > PRED_INTERVAL_MINUTES) {
-                const previousBgTime = new Date((lastBgTime as Date).getTime() - MS_PER_5_MIN);
-                bucketIndex++;
-                bucketed_data[bucketIndex] = {} as BucketedGlucose;
-                bucketed_data[bucketIndex].date = previousBgTime.getTime();
-                const gapDelta = (glucose_data[glucoseIdx].glucose ?? 0) - lastBg;
-                const previousBg = lastBg + (PRED_INTERVAL_MINUTES / remaining * gapDelta);
-                bucketed_data[bucketIndex].glucose = Math.round(previousBg);
-
-                remaining -= PRED_INTERVAL_MINUTES;
-                lastBg = previousBg;
-                lastBgTime = new Date(previousBgTime);
-            }
+            const gapResult = interpolateMissingPoints(
+                bucketed_data, bucketIndex, lastBgTime as Date,
+                glucose_data[lastValidIndex].glucose ?? 0,
+                glucose_data[glucoseIdx].glucose ?? 0,
+                elapsed_minutes,
+            );
+            bucketIndex = gapResult.bucketIndex;
+            lastBgTime = gapResult.lastBgTime;
         }
         // --- Case 2: Medium gap (> 2 min) → new bucket ---
         else if (Math.abs(elapsed_minutes) > BUCKETING_MERGE_THRESHOLD_MIN) {
