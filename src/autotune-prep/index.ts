@@ -2,7 +2,8 @@
 
 import find_meals from '../meal/history';
 import categorize from './categorize';
-import type { PumpHistoryEvent, InsulinCurve, MealAbsorptionPhase } from '../types/index';
+import type { CategorizeResult, CategorizeGlucoseDatum } from './categorize';
+import type { PumpHistoryEvent, InsulinCurve } from '../types/index';
 import { ULTRA_RAPID_PEAK, RAPID_ACTING_PEAK, HOURS_PER_DAY } from '../shared/constants';
 
 /** Sentinel value for minimum-deviations search initialization */
@@ -74,34 +75,7 @@ interface PeakDeviation {
   RMSDeviation: number;
 }
 
-interface AutotunePrepGlucoseDatum {
-  glucose: number;
-  date: number;
-  dateString: string;
-  displayTime?: string;
-  avgDelta: string;
-  BGI: number;
-  deviation: string;
-  mealAbsorption?: MealAbsorptionPhase;
-  mealCarbs?: number;
-}
-
-interface AutotunePrepCRDatum {
-  CRInitialIOB: number;
-  CRInitialBG: number;
-  CRInitialCarbTime: Date;
-  CREndIOB: number;
-  CREndBG: number;
-  CREndTime: Date;
-  CRCarbs: number;
-  CRInsulin?: number;
-}
-
-interface AutotunePrepResult {
-  CRData: AutotunePrepCRDatum[];
-  CSFGlucoseData: AutotunePrepGlucoseDatum[];
-  ISFGlucoseData: AutotunePrepGlucoseDatum[];
-  basalGlucoseData: AutotunePrepGlucoseDatum[];
+interface AutotunePrepResult extends CategorizeResult {
   diaDeviations?: DiaDeviation[];
   peakDeviations?: PeakDeviation[];
 }
@@ -121,7 +95,7 @@ function generate(inputs: AutotunePrepInputs): AutotunePrepResult {
   , categorize_uam_as_basal: inputs.categorize_uam_as_basal
   };
 
-  const autotunePrepOutput: AutotunePrepResult = categorize(opts) as unknown as AutotunePrepResult;
+  const autotunePrepOutput: AutotunePrepResult = categorize(opts);
 
   if (inputs.tune_insulin_curve) {
     if (opts.profile.curve === 'bilinear') {
@@ -144,7 +118,7 @@ function generate(inputs: AutotunePrepInputs): AutotunePrepResult {
       let deviations: number;
       let deviationsSq: number;
       let curveOutput: AutotunePrepResult;
-      let basalGlucose: AutotunePrepGlucoseDatum[];
+      let basalGlucose: CategorizeGlucoseDatum[];
       let meanDeviation: number;
       let SMRDeviation: number;
       let RMSDeviation: number;
@@ -155,7 +129,7 @@ function generate(inputs: AutotunePrepInputs): AutotunePrepResult {
 
         opts.profile.dia = dia;
 
-        curveOutput = categorize(opts) as unknown as AutotunePrepResult;
+        curveOutput = categorize(opts);
         basalGlucose = curveOutput.basalGlucoseData;
 
         for (let hourIdx=0; hourIdx < HOURS_PER_DAY; ++hourIdx) {

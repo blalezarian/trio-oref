@@ -101,6 +101,7 @@ interface CategorizeOpts {
 
 interface CategorizeGlucoseDatum {
   glucose: number;
+  sgv?: number;
   date: number;
   dateString: string;
   displayTime?: string;
@@ -498,6 +499,7 @@ function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
 function toGlucoseDatum(entry: CategorizeGlucoseEntry): CategorizeGlucoseDatum {
     return {
         glucose: entry.glucose!,
+        ...(entry.sgv !== undefined && { sgv: entry.sgv }),
         date: entry.date!,
         dateString: entry.dateString!,
         ...(entry.displayTime !== undefined && { displayTime: entry.displayTime }),

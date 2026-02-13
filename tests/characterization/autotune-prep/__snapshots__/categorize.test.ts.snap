@@ -1450,6 +1450,7 @@ exports[`autotune-prep/categorize (categorizeBGDatums) characterization tests > 
       "dateString": "2025-01-15T11:10:00.000Z",
       "deviation": "1.00",
       "glucose": 114,
+      "sgv": 114,
     },
     {
       "BGI": 0,
@@ -1458,6 +1459,7 @@ exports[`autotune-prep/categorize (categorizeBGDatums) characterization tests > 
       "dateString": "2025-01-15T11:15:00.000Z",
       "deviation": "1.00",
       "glucose": 115,
+      "sgv": 115,
     },
     {
       "BGI": 0,
@@ -1466,6 +1468,7 @@ exports[`autotune-prep/categorize (categorizeBGDatums) characterization tests > 
       "dateString": "2025-01-15T11:20:00.000Z",
       "deviation": "1.00",
       "glucose": 116,
+      "sgv": 116,
     },
     {
       "BGI": 0,
@@ -1474,6 +1477,7 @@ exports[`autotune-prep/categorize (categorizeBGDatums) characterization tests > 
       "dateString": "2025-01-15T11:25:00.000Z",
       "deviation": "1.00",
       "glucose": 117,
+      "sgv": 117,
     },
     {
       "BGI": 0,
@@ -1482,6 +1486,7 @@ exports[`autotune-prep/categorize (categorizeBGDatums) characterization tests > 
       "dateString": "2025-01-15T11:30:00.000Z",
       "deviation": "1.00",
       "glucose": 118,
+      "sgv": 118,
     },
     {
       "BGI": 0,
@@ -1490,6 +1495,7 @@ exports[`autotune-prep/categorize (categorizeBGDatums) characterization tests > 
       "dateString": "2025-01-15T11:35:00.000Z",
       "deviation": "1.00",
       "glucose": 119,
+      "sgv": 119,
     },
     {
       "BGI": 0,
@@ -1498,6 +1504,7 @@ exports[`autotune-prep/categorize (categorizeBGDatums) characterization tests > 
       "dateString": "2025-01-15T11:40:00.000Z",
       "deviation": "1.00",
       "glucose": 120,
+      "sgv": 120,
     },
     {
       "BGI": 0,
@@ -1506,6 +1513,7 @@ exports[`autotune-prep/categorize (categorizeBGDatums) characterization tests > 
       "dateString": "2025-01-15T11:45:00.000Z",
       "deviation": "1.00",
       "glucose": 121,
+      "sgv": 121,
     },
     {
       "BGI": 0,
@@ -1514,6 +1522,7 @@ exports[`autotune-prep/categorize (categorizeBGDatums) characterization tests > 
       "dateString": "2025-01-15T11:50:00.000Z",
       "deviation": "1.00",
       "glucose": 122,
+      "sgv": 122,
     },
     {
       "BGI": 0,
@@ -1522,6 +1531,7 @@ exports[`autotune-prep/categorize (categorizeBGDatums) characterization tests > 
       "dateString": "2025-01-15T11:55:00.000Z",
       "deviation": "1.00",
       "glucose": 123,
+      "sgv": 123,
     },
   ],
 }
