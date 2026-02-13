@@ -20,7 +20,7 @@ export function detectSensitivity(inputs: AutosensInputs): AutosensResult {
         profile,
     } = prepareAutosensData(inputs);
 
-    const { deviations, avgDeltas, bgis, deviationSum } = analyzeDeviations(
+    const { deviations, avgDeltas, bgis } = analyzeDeviations(
         bucketed_data,
         meals,
         iob_inputs,
@@ -40,7 +40,6 @@ export function detectSensitivity(inputs: AutosensInputs): AutosensResult {
     const { pSensitive, pResistant } = analyzePercentiles(deviations, avgDeltas, bgis);
     return calculateAutosensRatio(
         deviations,
-        deviationSum,
         pSensitive,
         pResistant,
         {

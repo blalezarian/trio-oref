@@ -78,7 +78,6 @@ interface AutosensProfile {
 /** Calculate final autosens ratio and adjusted ISF */
 export function calculateAutosensRatio(
     deviations: number[],
-    _deviationSum: number,
     pSensitive: number,
     pResistant: number,
     profile: AutosensProfile

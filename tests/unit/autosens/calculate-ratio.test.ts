@@ -87,40 +87,40 @@ describe('calculateAutosensRatio', () => {
     };
 
     it('returns ratio 1.0 when pSensitive=0 and pResistant=0', () => {
-        const result = calculateAutosensRatio([0, 0, 0], 0, 0, 0, baseProfile);
+        const result = calculateAutosensRatio([0, 0, 0], 0, 0, baseProfile);
         expect(result.ratio).toBe(1);
         expect(result.newisf).toBe(40);
     });
 
     it('detects sensitivity (pSensitive < 0)', () => {
-        const result = calculateAutosensRatio([-1, -2, -3], -6, -2, 0, baseProfile);
+        const result = calculateAutosensRatio([-1, -2, -3], -2, 0, baseProfile);
         expect(result.ratio).toBeLessThan(1);
     });
 
     it('detects resistance (pResistant > 0)', () => {
-        const result = calculateAutosensRatio([1, 2, 3], 6, 0, 2, baseProfile);
+        const result = calculateAutosensRatio([1, 2, 3], 0, 2, baseProfile);
         expect(result.ratio).toBeGreaterThan(1);
     });
 
     it('clamps ratio to autosens_max', () => {
         // Very high pResistant
-        const result = calculateAutosensRatio([10, 20, 30], 60, 0, 20, baseProfile);
+        const result = calculateAutosensRatio([10, 20, 30], 0, 20, baseProfile);
         expect(result.ratio).toBeLessThanOrEqual(1.2);
     });
 
     it('clamps ratio to autosens_min', () => {
         // Very low pSensitive
-        const result = calculateAutosensRatio([-10, -20, -30], -60, -20, 0, baseProfile);
+        const result = calculateAutosensRatio([-10, -20, -30], -20, 0, baseProfile);
         expect(result.ratio).toBeGreaterThanOrEqual(0.7);
     });
 
     it('adjusts newisf based on ratio', () => {
-        const result = calculateAutosensRatio([0, 0, 0], 0, 0, 0, baseProfile);
+        const result = calculateAutosensRatio([0, 0, 0], 0, 0, baseProfile);
         expect(result.newisf).toBe(Math.round(baseProfile.sens / result.ratio));
     });
 
     it('rounds ratio to 2 decimal places', () => {
-        const result = calculateAutosensRatio([-1], -1, -1, 0, baseProfile);
+        const result = calculateAutosensRatio([-1], -1, 0, baseProfile);
         const decimalPlaces = result.ratio.toString().split('.')[1]?.length ?? 0;
         expect(decimalPlaces).toBeLessThanOrEqual(2);
     });

@@ -36,7 +36,6 @@ export interface DeviationAnalysisResult {
     deviations: number[];
     avgDeltas: number[];
     bgis: number[];
-    deviationSum: number;
 }
 
 // ---------------------------------------------------------------------------
@@ -58,7 +57,7 @@ export function analyzeDeviations(
     const avgDeltas: number[] = [];
     const bgis: number[] = [];
     const deviations: number[] = [];
-    let deviationSum = 0;
+
 
     // State variables at function scope to preserve var-hoisted semantics
     let treatment: CarbTreatment;
@@ -226,7 +225,7 @@ export function analyzeDeviations(
             avgDeltas.push(avgDelta);
             bgis.push(bgImpact);
             deviations.push(deviation);
-            deviationSum += deviation;
+
         } else {
             process.stderr.write("x");
         }
@@ -265,5 +264,5 @@ export function analyzeDeviations(
 
     process.stderr.write(" ");
 
-    return { deviations, avgDeltas, bgis, deviationSum };
+    return { deviations, avgDeltas, bgis };
 }
