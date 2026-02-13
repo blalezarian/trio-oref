@@ -1,7 +1,7 @@
 import tz from 'moment-timezone';
-import basal from '../profile/basal';
+import { basalLookup } from '../profile/basal';
 import getIOB from '../iob/index';
-import ISF from '../profile/isf';
+import { isfLookup as ISFLookup } from '../profile/isf';
 import find_insulin from '../iob/extract-treatments';
 import dosed from './dosed';
 import type { PumpHistoryEvent, CarbTreatment, InsulinCurve, MealAbsorptionPhase } from '../types/index';
@@ -274,7 +274,7 @@ function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
         avgDelta = (avgDelta as unknown as number).toFixed(2);
         glucoseDatum.avgDelta = avgDelta;
 
-        const sens = ISF.isfLookup(IOBInputs.profile.isfProfile,BGDate);
+        const sens = ISFLookup(IOBInputs.profile.isfProfile,BGDate);
         IOBInputs.clock=BGDate.toISOString();
         // trim down IOBInputs.history to just the data for 6h prior to BGDate
         const newHistory: PumpHistoryEvent[] = [];
@@ -289,18 +289,18 @@ function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
         // for IOB calculations, use the average of the last 4 hours' basals to help convergence;
         // this helps since the basal this hour could be different from previous, especially if with autotune they start to diverge.
         // use the pumpbasalprofile to properly calculate IOB during periods where no temp basal is set
-        const currentPumpBasal = basal.basalLookup(opts.pumpbasalprofile, BGDate);
+        const currentPumpBasal = basalLookup(opts.pumpbasalprofile, BGDate);
         const BGDate1hAgo = new Date((BGTime as number)-1*MS_PER_HOUR);
         const BGDate2hAgo = new Date((BGTime as number)-2*MS_PER_HOUR);
         const BGDate3hAgo = new Date((BGTime as number)-3*MS_PER_HOUR);
-        const basal1hAgo = basal.basalLookup(opts.pumpbasalprofile, BGDate1hAgo);
-        const basal2hAgo = basal.basalLookup(opts.pumpbasalprofile, BGDate2hAgo);
-        const basal3hAgo = basal.basalLookup(opts.pumpbasalprofile, BGDate3hAgo);
+        const basal1hAgo = basalLookup(opts.pumpbasalprofile, BGDate1hAgo);
+        const basal2hAgo = basalLookup(opts.pumpbasalprofile, BGDate2hAgo);
+        const basal3hAgo = basalLookup(opts.pumpbasalprofile, BGDate3hAgo);
         const sum = [currentPumpBasal,basal1hAgo,basal2hAgo,basal3hAgo].reduce((a, b) => a! + b!)!;
         IOBInputs.profile.currentBasal = Math.round(((sum as number)/4)*ROUND_SCALE_3DP)/ROUND_SCALE_3DP;
 
         // this is the current autotuned basal, used for everything else besides IOB calculations
-        const currentBasal: number = basal.basalLookup(opts.basalprofile, BGDate)!;
+        const currentBasal: number = basalLookup(opts.basalprofile, BGDate)!;
 
         // basalBGI is BGI of basal insulin activity.
         const basalBGI = Math.round(( currentBasal * sens / MINUTES_PER_HOUR * PRED_INTERVAL_MINUTES )*ROUND_SCALE_2DP)/ROUND_SCALE_2DP; // U/hr * mg/dL/U * 1 hr / 60 minutes * 5 = mg/dL/5m

@@ -1,11 +1,11 @@
 
 
 
-import * as basal from './basal';
-import targets from './targets';
+import { basalLookup, maxDailyBasal, maxBasalLookup } from './basal';
+import { bgTargetsLookup } from './targets';
 import type { TempTarget, TargetsInputs } from './targets';
-import isf from './isf';
-import carb_ratios from './carbs';
+import { isfLookup } from './isf';
+import { carbRatioLookup } from './carbs';
 import _ from 'lodash';
 import type { InsulinCurve, CarbRatioUnits, BGUnits } from '../types/index';
 import {
@@ -256,15 +256,15 @@ function generate (inputs: ProfileInputs, opts?: ProfileOpts): ProfileDefaults |
   }
   profile.skip_neutral_temps = inputs.skip_neutral_temps!;
 
-  profile.current_basal = basal.basalLookup(inputs.basals);
+  profile.current_basal = basalLookup(inputs.basals);
   profile.basalprofile = inputs.basals;
 
   _.forEach(profile.basalprofile, (basalentry: { rate: number; [key: string]: unknown }) => {
     basalentry.rate = Math.round(basalentry.rate * 1000) / 1000;
   });
 
-  profile.max_daily_basal = basal.maxDailyBasal(inputs);
-  profile.max_basal = basal.maxBasalLookup(inputs);
+  profile.max_daily_basal = maxDailyBasal(inputs);
+  profile.max_basal = maxBasalLookup(inputs);
   if (profile.current_basal === 0) {
     console.error("current_basal of",profile.current_basal,"is not supported");
     return -1;
@@ -278,7 +278,7 @@ function generate (inputs: ProfileInputs, opts?: ProfileOpts): ProfileDefaults |
     return -1;
   }
 
-  const range = targets.bgTargetsLookup(inputs as TargetsInputs, profile);
+  const range = bgTargetsLookup(inputs as TargetsInputs, profile);
   profile.out_units = inputs.targets.user_preferred_units;
   profile.min_bg = Math.round(range.min_bg!);
   profile.max_bg = Math.round(range.max_bg!);
@@ -294,14 +294,14 @@ function generate (inputs: ProfileInputs, opts?: ProfileOpts): ProfileDefaults |
   delete profile.bg_targets!.raw;
 
   profile.temptargetSet = range.temptargetSet;
-  profile.sens = isf.isfLookup(inputs.isf);
+  profile.sens = isfLookup(inputs.isf);
   profile.isfProfile = inputs.isf;
   if (profile.sens! < MIN_SUPPORTED_ISF) {
     console.error("ISF of",profile.sens,"is not supported");
     return -1;
   }
   if (inputs.carbratio !== undefined) {
-    profile.carb_ratio = carb_ratios.carbRatioLookup(inputs, profile);
+    profile.carb_ratio = carbRatioLookup(inputs, profile);
     profile.carb_ratios = inputs.carbratio;
   } else {
     console.error("Profile wasn't given carb ratio data, cannot calculate carb_ratio");

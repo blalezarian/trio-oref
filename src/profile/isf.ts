@@ -57,10 +57,4 @@ function isfLookup(isf_data: ISFData, timestamp?: Date): number {
     return isfSchedule.sensitivity;
 }
 
-interface ISFLookupFn {
-  (isf_data: ISFData, timestamp?: Date): number;
-  isfLookup: (isf_data: ISFData, timestamp?: Date) => number;
-}
-
-(isfLookup as ISFLookupFn).isfLookup = isfLookup;
-export default isfLookup as ISFLookupFn;
+export { isfLookup };

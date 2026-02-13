@@ -11,7 +11,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import bgTargetsLookup from '../../../src/profile/targets';
+import { bgTargetsLookup, bound_target_range } from '../../../src/profile/targets';
 
 const FIXED_TIME = '2025-01-15T12:00:00.000Z';
 
@@ -269,12 +269,12 @@ describe('profile/targets (bgTargetsLookup) characterization tests', () => {
   // -------------------------------------------------------------------------
   describe('bound_target_range', () => {
     it('directly calling bound_target_range with normal values', () => {
-      const result = bgTargetsLookup.bound_target_range({ low: 100, high: 120 });
+      const result = bound_target_range({ low: 100, high: 120 });
       expect(result).toMatchSnapshot();
     });
 
     it('directly calling bound_target_range with mmol values < 20', () => {
-      const result = bgTargetsLookup.bound_target_range({ low: 5.5, high: 6.5 });
+      const result = bound_target_range({ low: 5.5, high: 6.5 });
       expect(result).toMatchSnapshot();
     });
   });

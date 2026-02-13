@@ -102,14 +102,4 @@ function bound_target_range (target: BGTarget): BGTarget {
     return target
 }
 
-interface BGTargetsLookupFn {
-  (inputs: TargetsInputs, profile: TargetsProfile): BGTarget;
-  bgTargetsLookup: (inputs: TargetsInputs, profile: TargetsProfile) => BGTarget;
-  lookup: (inputs: TargetsInputs, profile: TargetsProfile) => BGTarget;
-  bound_target_range: (target: BGTarget) => BGTarget;
-}
-
-(bgTargetsLookup as BGTargetsLookupFn).bgTargetsLookup = bgTargetsLookup;
-(bgTargetsLookup as BGTargetsLookupFn).lookup = lookup;
-(bgTargetsLookup as BGTargetsLookupFn).bound_target_range = bound_target_range;
-export default bgTargetsLookup as BGTargetsLookupFn;
+export { bgTargetsLookup, lookup, bound_target_range };

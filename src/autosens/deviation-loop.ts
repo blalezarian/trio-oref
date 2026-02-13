@@ -1,6 +1,6 @@
-import basal from '../profile/basal';
+import { basalLookup } from '../profile/basal';
 import get_iob from '../iob/index';
-import isf from '../profile/isf';
+import { isfLookup } from '../profile/isf';
 import tz from 'moment-timezone';
 import { calculateBGImpact, calculateDeviation } from '../utils/glucose-math';
 import { tempTargetRunning } from './temp-target';
@@ -75,7 +75,7 @@ export function analyzeDeviations(
     for (let i=3; i < bucketed_data.length; ++i) {
         bgTime = new Date(bucketed_data[i].date!);
 
-        const sens = isf.isfLookup(profile.isfProfile!,bgTime);
+        const sens = isfLookup(profile.isfProfile!,bgTime);
 
         let bg: number;
         let avgDelta: number;
@@ -97,7 +97,7 @@ export function analyzeDeviations(
 
         avgDelta = parseFloat(avgDelta.toFixed(2));
         iob_inputs.clock=bgTime;
-        iob_inputs.profile.current_basal = basal.basalLookup(basalprofile, bgTime)!;
+        iob_inputs.profile.current_basal = basalLookup(basalprofile, bgTime)!;
         // make sure autosens doesn't use temptarget-adjusted insulin calculations
         iob_inputs.profile.temptargetSet = false;
         const iob = get_iob(iob_inputs as IobInputs, true, treatments)[0];

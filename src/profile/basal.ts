@@ -55,4 +55,3 @@ function maxBasalLookup (inputs: BasalInputs): number {
 
 
 export { maxDailyBasal, maxBasalLookup, basalLookup };
-export default { maxDailyBasal, maxBasalLookup, basalLookup };

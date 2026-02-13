@@ -53,10 +53,4 @@ function carbRatioLookup (inputs: CarbsInputs, profile: Record<string, unknown>,
     } else { return; }
 }
 
-interface CarbRatioLookupFn {
-  (inputs: CarbsInputs, profile: Record<string, unknown>, now?: Date): number | undefined;
-  carbRatioLookup: (inputs: CarbsInputs, profile: Record<string, unknown>, now?: Date) => number | undefined;
-}
-
-(carbRatioLookup as CarbRatioLookupFn).carbRatioLookup = carbRatioLookup;
-export default carbRatioLookup as CarbRatioLookupFn;
+export { carbRatioLookup };

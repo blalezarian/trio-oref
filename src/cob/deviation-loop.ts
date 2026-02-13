@@ -1,6 +1,6 @@
-import basal from '../profile/basal';
+import { basalLookup } from '../profile/basal';
 import get_iob from '../iob/index';
-import isf from '../profile/isf';
+import { isfLookup } from '../profile/isf';
 import { calculateBGImpact, calculateDeviation } from '../utils/glucose-math';
 import type { BucketedGlucose } from '../types/index';
 import type { IobProfile, HistoryBasalProfileEntry, IobInputs, IobTreatment } from '../iob/types';
@@ -48,7 +48,7 @@ export function analyzeAbsorption(
     for (let i=0; i < bucketed_data.length-3; ++i) {
         bgTime = new Date(bucketed_data[i].date!);
 
-        const sens = isf.isfLookup(profile.isfProfile!,bgTime);
+        const sens = isfLookup(profile.isfProfile!,bgTime);
 
         let bg: number;
         let avgDelta: number;
@@ -65,7 +65,7 @@ export function analyzeAbsorption(
 
         avgDelta = Math.round(avgDelta! * 100) / 100;
         iob_inputs.clock=bgTime;
-        iob_inputs.profile.current_basal = basal.basalLookup(basalprofile, bgTime)!;
+        iob_inputs.profile.current_basal = basalLookup(basalprofile, bgTime)!;
         const iob = get_iob(iob_inputs as IobInputs, true, treatments)[0];
 
         const bgImpact = calculateBGImpact(iob.activity, sens);

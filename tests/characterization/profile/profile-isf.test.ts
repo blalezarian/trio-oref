@@ -28,7 +28,7 @@ describe('profile/isf (isfLookup) characterization tests', () => {
   async function getIsfLookup() {
     // Dynamic import after vi.resetModules() gives a fresh module instance
     const mod = await import('../../../src/profile/isf.js');
-    return mod.default;
+    return mod.isfLookup;
   }
 
   // -------------------------------------------------------------------------
