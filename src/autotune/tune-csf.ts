@@ -5,6 +5,50 @@ import type {
 import { AUTOTUNE_ADJUSTMENT_FRACTION } from '../shared/constants';
 
 // ---------------------------------------------------------------------------
+// Main function
+// ---------------------------------------------------------------------------
+
+/** Tune carb sensitivity factor (CSF) based on meal deviation accumulation */
+export function tuneCSF(
+    csfGlucose: AutotuneGlucoseDatum[],
+    currentCSF: number,
+    min5mCarbimpact: number | undefined,
+    pumpCSF: number | undefined,
+    bounds: AutotuneBounds,
+): number {
+    const { totalMealCarbs, totalDeviations: rawTotalDeviations } =
+        accumulateMealDeviations(csfGlucose, min5mCarbimpact);
+
+    const fullNewCSF = totalMealCarbs === 0
+        ? currentCSF
+        : Math.round((rawTotalDeviations / totalMealCarbs) * 100) / 100;
+
+    // Blend 80% old + 20% new
+    let newCSF = (1 - AUTOTUNE_ADJUSTMENT_FRACTION) * currentCSF
+        + AUTOTUNE_ADJUSTMENT_FRACTION * fullNewCSF;
+
+    // Safety cap to autosens bounds
+    if (pumpCSF !== undefined) {
+        const maxCSF = pumpCSF * bounds.autotuneMax;
+        const minCSF = pumpCSF * bounds.autotuneMin;
+        if (newCSF > maxCSF) {
+            console.error(`Limiting CSF to ${maxCSF.toFixed(2)} (which is ${bounds.autotuneMax} * pump CSF of ${pumpCSF})`);
+            newCSF = maxCSF;
+        } else if (newCSF < minCSF) {
+            console.error(`Limiting CSF to ${minCSF.toFixed(2)} (which is ${bounds.autotuneMin} * pump CSF of ${pumpCSF})`);
+            newCSF = minCSF;
+        }
+    }
+
+    const oldCSF = Math.round(currentCSF * 1000) / 1000;
+    newCSF = Math.round(newCSF * 1000) / 1000;
+    const totalDeviations = Math.round(rawTotalDeviations * 1000) / 1000;
+    console.error(`totalMealCarbs: ${totalMealCarbs} totalDeviations: ${totalDeviations} oldCSF ${oldCSF} fullNewCSF: ${fullNewCSF} newCSF: ${newCSF}`);
+
+    return newCSF;
+}
+
+// ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
 
@@ -47,48 +91,4 @@ export function accumulateMealDeviations(
     if (totalDeviations === 0) { totalDeviations += currentDeviations; }
 
     return { totalMealCarbs, totalDeviations };
-}
-
-// ---------------------------------------------------------------------------
-// Main function
-// ---------------------------------------------------------------------------
-
-/** Tune carb sensitivity factor (CSF) based on meal deviation accumulation */
-export function tuneCSF(
-    csfGlucose: AutotuneGlucoseDatum[],
-    currentCSF: number,
-    min5mCarbimpact: number | undefined,
-    pumpCSF: number | undefined,
-    bounds: AutotuneBounds,
-): number {
-    const { totalMealCarbs, totalDeviations: rawTotalDeviations } =
-        accumulateMealDeviations(csfGlucose, min5mCarbimpact);
-
-    const fullNewCSF = totalMealCarbs === 0
-        ? currentCSF
-        : Math.round((rawTotalDeviations / totalMealCarbs) * 100) / 100;
-
-    // Blend 80% old + 20% new
-    let newCSF = (1 - AUTOTUNE_ADJUSTMENT_FRACTION) * currentCSF
-        + AUTOTUNE_ADJUSTMENT_FRACTION * fullNewCSF;
-
-    // Safety cap to autosens bounds
-    if (pumpCSF !== undefined) {
-        const maxCSF = pumpCSF * bounds.autotuneMax;
-        const minCSF = pumpCSF * bounds.autotuneMin;
-        if (newCSF > maxCSF) {
-            console.error(`Limiting CSF to ${maxCSF.toFixed(2)} (which is ${bounds.autotuneMax} * pump CSF of ${pumpCSF})`);
-            newCSF = maxCSF;
-        } else if (newCSF < minCSF) {
-            console.error(`Limiting CSF to ${minCSF.toFixed(2)} (which is ${bounds.autotuneMin} * pump CSF of ${pumpCSF})`);
-            newCSF = minCSF;
-        }
-    }
-
-    const oldCSF = Math.round(currentCSF * 1000) / 1000;
-    newCSF = Math.round(newCSF * 1000) / 1000;
-    const totalDeviations = Math.round(rawTotalDeviations * 1000) / 1000;
-    console.error(`totalMealCarbs: ${totalMealCarbs} totalDeviations: ${totalDeviations} oldCSF ${oldCSF} fullNewCSF: ${fullNewCSF} newCSF: ${newCSF}`);
-
-    return newCSF;
 }

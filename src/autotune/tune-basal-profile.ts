@@ -36,6 +36,51 @@ export interface TuneBasalResult {
 type ProfileType = 'basal' | 'pump';
 
 // ---------------------------------------------------------------------------
+// Main function
+// ---------------------------------------------------------------------------
+
+/** Tune the 24-hour basal profile by adjusting rates based on glucose deviations */
+export function tuneBasalProfile(
+    basalProfile: AutotuneBasalProfileEntry[],
+    pumpBasalProfile: AutotuneBasalProfileEntry[],
+    basalGlucose: AutotuneGlucoseDatum[],
+    ISF: number,
+    pumpProfile: AutotunePumpProfile,
+): TuneBasalResult | undefined {
+    const hourlyBasalProfile = convertToHourlyProfile(basalProfile, 'basal');
+    if (!hourlyBasalProfile) { return undefined; }
+
+    let hourlyPumpProfile: AutotuneBasalProfileEntry[] | undefined;
+    if (pumpBasalProfile && pumpBasalProfile[0]) {
+        hourlyPumpProfile = convertToHourlyProfile(pumpBasalProfile, 'pump');
+        if (!hourlyPumpProfile) { return undefined; }
+    }
+
+    const newHourlyBasalProfile = hourlyBasalProfile.map(entry => ({ ...entry }));
+
+    const hourlyDeviations = sumDeviationsByHour(basalGlucose);
+    adjustBasalsByDeviations(newHourlyBasalProfile, hourlyDeviations, ISF);
+
+    const bounds: AutotuneBounds = {
+        autotuneMax: pumpProfile.autosens_max ?? DEFAULT_AUTOSENS_MAX,
+        autotuneMin: pumpProfile.autosens_min ?? DEFAULT_AUTOSENS_MIN,
+    };
+
+    if (hourlyPumpProfile) {
+        capBasalRates(newHourlyBasalProfile, hourlyPumpProfile, bounds);
+    }
+
+    smoothUntunedHours(hourlyBasalProfile, newHourlyBasalProfile);
+
+    console.error(newHourlyBasalProfile);
+
+    return {
+        basalProfile: newHourlyBasalProfile,
+        bounds,
+    };
+}
+
+// ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
 
@@ -204,49 +249,4 @@ export function smoothUntunedHours(
             lastAdjustedHour = hour;
         }
     }
-}
-
-// ---------------------------------------------------------------------------
-// Main function
-// ---------------------------------------------------------------------------
-
-/** Tune the 24-hour basal profile by adjusting rates based on glucose deviations */
-export function tuneBasalProfile(
-    basalProfile: AutotuneBasalProfileEntry[],
-    pumpBasalProfile: AutotuneBasalProfileEntry[],
-    basalGlucose: AutotuneGlucoseDatum[],
-    ISF: number,
-    pumpProfile: AutotunePumpProfile,
-): TuneBasalResult | undefined {
-    const hourlyBasalProfile = convertToHourlyProfile(basalProfile, 'basal');
-    if (!hourlyBasalProfile) { return undefined; }
-
-    let hourlyPumpProfile: AutotuneBasalProfileEntry[] | undefined;
-    if (pumpBasalProfile && pumpBasalProfile[0]) {
-        hourlyPumpProfile = convertToHourlyProfile(pumpBasalProfile, 'pump');
-        if (!hourlyPumpProfile) { return undefined; }
-    }
-
-    const newHourlyBasalProfile = hourlyBasalProfile.map(entry => ({ ...entry }));
-
-    const hourlyDeviations = sumDeviationsByHour(basalGlucose);
-    adjustBasalsByDeviations(newHourlyBasalProfile, hourlyDeviations, ISF);
-
-    const bounds: AutotuneBounds = {
-        autotuneMax: pumpProfile.autosens_max ?? DEFAULT_AUTOSENS_MAX,
-        autotuneMin: pumpProfile.autosens_min ?? DEFAULT_AUTOSENS_MIN,
-    };
-
-    if (hourlyPumpProfile) {
-        capBasalRates(newHourlyBasalProfile, hourlyPumpProfile, bounds);
-    }
-
-    smoothUntunedHours(hourlyBasalProfile, newHourlyBasalProfile);
-
-    console.error(newHourlyBasalProfile);
-
-    return {
-        basalProfile: newHourlyBasalProfile,
-        bounds,
-    };
 }

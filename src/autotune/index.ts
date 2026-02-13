@@ -26,34 +26,6 @@ export interface PumpBaselines {
 }
 
 // ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-
-/** Resolve insulin peak time: custom value if set, otherwise curve-based default */
-export function resolvePeakTime(
-    profile: AutotunePreviousProfile,
-): number | undefined {
-    if (profile.useCustomPeakTime) {
-        return profile.insulinPeakTime;
-    }
-    return profile.curve === 'ultra-rapid' ? ULTRA_RAPID_PEAK : RAPID_ACTING_PEAK;
-}
-
-/** Extract pump baseline ISF, carb ratio, and CSF from pump profile */
-export function extractPumpBaselines(
-    pumpProfile: AutotunePumpProfile,
-): PumpBaselines {
-    const isfProfile = pumpProfile.isfProfile;
-    if (!isfProfile?.sensitivities[0]) {
-        return { pumpISF: undefined, pumpCarbRatio: undefined, pumpCSF: undefined };
-    }
-    const pumpISF = isfProfile.sensitivities[0].sensitivity;
-    const pumpCarbRatio = pumpProfile.carb_ratio;
-    const pumpCSF = pumpISF / (pumpCarbRatio as number);
-    return { pumpISF, pumpCarbRatio, pumpCSF };
-}
-
-// ---------------------------------------------------------------------------
 // Main function
 // ---------------------------------------------------------------------------
 
@@ -150,6 +122,34 @@ export function autotuneProfile(
     }
 
     return autotuneOutput;
+}
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+/** Resolve insulin peak time: custom value if set, otherwise curve-based default */
+export function resolvePeakTime(
+    profile: AutotunePreviousProfile,
+): number | undefined {
+    if (profile.useCustomPeakTime) {
+        return profile.insulinPeakTime;
+    }
+    return profile.curve === 'ultra-rapid' ? ULTRA_RAPID_PEAK : RAPID_ACTING_PEAK;
+}
+
+/** Extract pump baseline ISF, carb ratio, and CSF from pump profile */
+export function extractPumpBaselines(
+    pumpProfile: AutotunePumpProfile,
+): PumpBaselines {
+    const isfProfile = pumpProfile.isfProfile;
+    if (!isfProfile?.sensitivities[0]) {
+        return { pumpISF: undefined, pumpCarbRatio: undefined, pumpCSF: undefined };
+    }
+    const pumpISF = isfProfile.sensitivities[0].sensitivity;
+    const pumpCarbRatio = pumpProfile.carb_ratio;
+    const pumpCSF = pumpISF / (pumpCarbRatio as number);
+    return { pumpISF, pumpCarbRatio, pumpCSF };
 }
 
 // ---------------------------------------------------------------------------

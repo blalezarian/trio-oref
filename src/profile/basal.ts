@@ -13,30 +13,6 @@ interface BasalInputs {
 }
 
 // ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-
-/** Convert a Date to its minute-of-day (0–1439) */
-function toMinuteOfDay(date: Date): number {
-    return date.getHours() * 60 + date.getMinutes();
-}
-
-/** Sort basal schedule entries by their schedule index (copies, does not mutate) */
-function sortByScheduleIndex(schedules: BasalScheduleEntry[]): BasalScheduleEntry[] {
-    return [...schedules].sort((a, b) => (a.i ?? 0) - (b.i ?? 0));
-}
-
-/** Find the active rate from a sorted schedule for a given minute-of-day */
-function findActiveRate(sorted: BasalScheduleEntry[], minuteOfDay: number): number {
-    for (let entryIdx = 0; entryIdx < sorted.length - 1; entryIdx++) {
-        if (minuteOfDay >= (sorted[entryIdx].minutes ?? 0) && minuteOfDay < (sorted[entryIdx + 1].minutes ?? 0)) {
-            return sorted[entryIdx].rate;
-        }
-    }
-    return sorted[sorted.length - 1].rate;
-}
-
-// ---------------------------------------------------------------------------
 // Main functions
 // ---------------------------------------------------------------------------
 
@@ -63,6 +39,30 @@ function getMaxDailyBasalRate(inputs: BasalInputs): number {
 /** Return the pump's configured max basal rate */
 function getMaxBasalRate(inputs: BasalInputs): number {
     return inputs.settings.maxBasal;
+}
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+/** Convert a Date to its minute-of-day (0–1439) */
+function toMinuteOfDay(date: Date): number {
+    return date.getHours() * 60 + date.getMinutes();
+}
+
+/** Sort basal schedule entries by their schedule index (copies, does not mutate) */
+function sortByScheduleIndex(schedules: BasalScheduleEntry[]): BasalScheduleEntry[] {
+    return [...schedules].sort((a, b) => (a.i ?? 0) - (b.i ?? 0));
+}
+
+/** Find the active rate from a sorted schedule for a given minute-of-day */
+function findActiveRate(sorted: BasalScheduleEntry[], minuteOfDay: number): number {
+    for (let entryIdx = 0; entryIdx < sorted.length - 1; entryIdx++) {
+        if (minuteOfDay >= (sorted[entryIdx].minutes ?? 0) && minuteOfDay < (sorted[entryIdx + 1].minutes ?? 0)) {
+            return sorted[entryIdx].rate;
+        }
+    }
+    return sorted[sorted.length - 1].rate;
 }
 
 export {

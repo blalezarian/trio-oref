@@ -32,47 +32,6 @@ export interface TuneISFResult {
 }
 
 // ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-
-/** Collect and sort deviations, BGIs, avgDeltas, and ratios from ISF glucose data */
-export function collectISFStatistics(
-    isfGlucose: AutotuneGlucoseDatum[],
-): {
-    deviations: number[];
-    BGIs: number[];
-    avgDeltas: number[];
-    ratios: number[];
-} {
-    const deviations: number[] = [];
-    const BGIs: number[] = [];
-    const avgDeltas: number[] = [];
-    const ratios: number[] = [];
-
-    for (const datum of isfGlucose) {
-        const deviation = parseFloat(datum.deviation);
-        deviations.push(deviation);
-
-        const bgi = parseFloat(String(datum.BGI));
-        BGIs.push(bgi);
-
-        const avgDelta = parseFloat(datum.avgDelta);
-        avgDeltas.push(avgDelta);
-
-        const ratio = 1 + deviation / bgi;
-        ratios.push(ratio);
-    }
-
-    // Sort all arrays for percentile calculation
-    avgDeltas.sort((a, b) => a - b);
-    BGIs.sort((a, b) => a - b);
-    deviations.sort((a, b) => a - b);
-    ratios.sort((a, b) => a - b);
-
-    return { deviations, BGIs, avgDeltas, ratios };
-}
-
-// ---------------------------------------------------------------------------
 // Main function
 // ---------------------------------------------------------------------------
 
@@ -158,4 +117,45 @@ export function tuneISF(
         fullNewISF,
         adjustedISF: roundedAdjustedISF,
     };
+}
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+/** Collect and sort deviations, BGIs, avgDeltas, and ratios from ISF glucose data */
+export function collectISFStatistics(
+    isfGlucose: AutotuneGlucoseDatum[],
+): {
+    deviations: number[];
+    BGIs: number[];
+    avgDeltas: number[];
+    ratios: number[];
+} {
+    const deviations: number[] = [];
+    const BGIs: number[] = [];
+    const avgDeltas: number[] = [];
+    const ratios: number[] = [];
+
+    for (const datum of isfGlucose) {
+        const deviation = parseFloat(datum.deviation);
+        deviations.push(deviation);
+
+        const bgi = parseFloat(String(datum.BGI));
+        BGIs.push(bgi);
+
+        const avgDelta = parseFloat(datum.avgDelta);
+        avgDeltas.push(avgDelta);
+
+        const ratio = 1 + deviation / bgi;
+        ratios.push(ratio);
+    }
+
+    // Sort all arrays for percentile calculation
+    avgDeltas.sort((a, b) => a - b);
+    BGIs.sort((a, b) => a - b);
+    deviations.sort((a, b) => a - b);
+    ratios.sort((a, b) => a - b);
+
+    return { deviations, BGIs, avgDeltas, ratios };
 }

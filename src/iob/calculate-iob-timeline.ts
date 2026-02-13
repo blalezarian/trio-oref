@@ -46,23 +46,22 @@ export function generate (
     }
 
     const opts: IobGenerateOpts = {
-        treatments: treatments
-    , profile: inputs.profile
-    , calculate: iobCalc
+        treatments: treatments,
+        profile: inputs.profile,
+        calculate: iobCalc,
+        ...(inputs.autosens && { autosens: inputs.autosens }),
     };
-    if ( inputs.autosens ) {
-        opts.autosens = inputs.autosens;
-    }
+
     const optsWithZeroTemp: IobGenerateOpts = {
-        treatments: treatmentsWithZeroTemp
-    , profile: inputs.profile
-    , calculate: iobCalc
+        treatments: treatmentsWithZeroTemp,
+        profile: inputs.profile,
+        calculate: iobCalc
     };
 
     const iobArray: IobIndexEntry[] = [];
-    if (! /(Z|[+-][0-2][0-9]:?[034][05])+/.test(inputs.clock) ) {
-        console.error(`Warning: clock input ${inputs.clock} is unzoned; please pass clock-zoned.json instead`);
-    }
+    
+    warnIfUnzonedClock(inputs.clock);
+    
     const clock = new Date(inputs.clock);
 
     const { lastBolusTime, lastTemp } = findLastBolusAndTemp(treatments);
@@ -78,3 +77,19 @@ export function generate (
     iobArray[0].lastTemp = lastTemp;
     return iobArray;
 }
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+export function isZonedClock(clock: string): boolean {
+    const CLOCK_TZ_REGEX = /(Z|[+-][0-2][0-9]:?[034][05])+$/;
+    return CLOCK_TZ_REGEX.test(clock);
+}
+
+export function warnIfUnzonedClock(clock: string): boolean {
+    const ok = isZonedClock(clock);
+    if (!ok) { console.error(`Warning: clock input ${clock} is unzoned; please pass clock-zoned.json instead`); }
+    return ok;
+}
+

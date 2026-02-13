@@ -5,19 +5,6 @@ import type {
 import { MS_PER_MINUTE } from '../shared/constants';
 
 // ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-
-/** Deep-clone a TempEvent, preserving Date fields, works in Swift with JavaScriptCore */
-function cloneTempEvent(event: TempEvent): TempEvent {
-    return {
-        ...event,
-        started_at: event.started_at ? new Date(event.started_at.getTime()) : undefined,
-        created_at: event.created_at ? new Date(event.created_at.getTime()) : undefined,
-    };
-}
-
-// ---------------------------------------------------------------------------
 // Main function
 // ---------------------------------------------------------------------------
 
@@ -110,4 +97,17 @@ export function splitAroundSuspends (
     }
 
     return events;
+}
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+/** Deep-clone a TempEvent, preserving Date fields, works in Swift with JavaScriptCore */
+function cloneTempEvent(event: TempEvent): TempEvent {
+    return {
+        ...event,
+        started_at: event.started_at ? new Date(event.started_at.getTime()) : undefined,
+        created_at: event.created_at ? new Date(event.created_at.getTime()) : undefined,
+    };
 }

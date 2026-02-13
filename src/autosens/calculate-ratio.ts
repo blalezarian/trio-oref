@@ -33,6 +33,53 @@ interface AutosensProfile {
 }
 
 // ---------------------------------------------------------------------------
+// Main function
+// ---------------------------------------------------------------------------
+
+/** Calculate final autosens ratio and adjusted ISF */
+export function calculateAutosensRatio(
+    deviations: number[],
+    pSensitive: number,
+    pResistant: number,
+    profile: AutosensProfile,
+): AutosensResult {
+    const squareDeviations = deviations.reduce(
+        (acc, deviation) => acc + deviation * deviation,
+        0,
+    );
+    const rmsDev = Math.sqrt(squareDeviations / deviations.length);
+    console.error(`RMS deviation: ${rmsDev.toFixed(2)}`);
+
+    let basalOff = 0;
+
+    if (pSensitive < 0) {
+        basalOff = pSensitive * DEVIATIONS_PER_HOUR / profile.sens;
+        process.stderr.write("Insulin sensitivity detected: ");
+    } else if (pResistant > 0) {
+        basalOff = pResistant * DEVIATIONS_PER_HOUR / profile.sens;
+        process.stderr.write("Insulin resistance detected: ");
+    } else {
+        console.error("Sensitivity normal.");
+    }
+
+    let ratio = 1 + (basalOff / profile.max_daily_basal);
+
+    const rawRatio = ratio;
+    ratio = Math.max(ratio, profile.autosens_min);
+    ratio = Math.min(ratio, profile.autosens_max);
+
+    if (ratio !== rawRatio) {
+        console.error(`Ratio limited from ${rawRatio} to ${ratio}`);
+    }
+
+    ratio = Math.round(ratio * 100) / 100;
+    const newisf = Math.round(profile.sens / ratio);
+    console.error(`ISF adjusted from ${profile.sens} to ${newisf}`);
+
+    return { ratio, newisf };
+}
+
+// ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
 
@@ -81,51 +128,4 @@ export function analyzePercentiles(
     const pResistant = percentile(deviations, MEDIAN_PERCENTILE);
 
     return { pSensitive, pResistant };
-}
-
-// ---------------------------------------------------------------------------
-// Main function
-// ---------------------------------------------------------------------------
-
-/** Calculate final autosens ratio and adjusted ISF */
-export function calculateAutosensRatio(
-    deviations: number[],
-    pSensitive: number,
-    pResistant: number,
-    profile: AutosensProfile,
-): AutosensResult {
-    const squareDeviations = deviations.reduce(
-        (acc, deviation) => acc + deviation * deviation,
-        0,
-    );
-    const rmsDev = Math.sqrt(squareDeviations / deviations.length);
-    console.error(`RMS deviation: ${rmsDev.toFixed(2)}`);
-
-    let basalOff = 0;
-
-    if (pSensitive < 0) {
-        basalOff = pSensitive * DEVIATIONS_PER_HOUR / profile.sens;
-        process.stderr.write("Insulin sensitivity detected: ");
-    } else if (pResistant > 0) {
-        basalOff = pResistant * DEVIATIONS_PER_HOUR / profile.sens;
-        process.stderr.write("Insulin resistance detected: ");
-    } else {
-        console.error("Sensitivity normal.");
-    }
-
-    let ratio = 1 + (basalOff / profile.max_daily_basal);
-
-    const rawRatio = ratio;
-    ratio = Math.max(ratio, profile.autosens_min);
-    ratio = Math.min(ratio, profile.autosens_max);
-
-    if (ratio !== rawRatio) {
-        console.error(`Ratio limited from ${rawRatio} to ${ratio}`);
-    }
-
-    ratio = Math.round(ratio * 100) / 100;
-    const newisf = Math.round(profile.sens / ratio);
-    console.error(`ISF adjusted from ${profile.sens} to ${newisf}`);
-
-    return { ratio, newisf };
 }

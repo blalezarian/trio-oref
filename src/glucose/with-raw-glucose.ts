@@ -44,24 +44,6 @@ interface CleanCal {
 }
 
 // ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-
-/** Parse and validate a calibration record into numeric fields */
-function cleanCal(cal: RawGlucoseCal): CleanCal {
-    const scale = parseFloat(cal.scale as string) || 0;
-    const intercept = parseFloat(cal.intercept as string) || 0;
-    const slope = parseFloat(cal.slope as string) || 0;
-
-    return {
-        scale,
-        intercept,
-        slope,
-        valid: !(slope === 0 || scale === 0),
-    };
-}
-
-// ---------------------------------------------------------------------------
 // Main function
 // ---------------------------------------------------------------------------
 
@@ -111,6 +93,24 @@ function withRawGlucose(
     }
 
     return entry;
+}
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+/** Parse and validate a calibration record into numeric fields */
+function cleanCal(cal: RawGlucoseCal): CleanCal {
+    const scale = parseFloat(cal.scale as string) || 0;
+    const intercept = parseFloat(cal.intercept as string) || 0;
+    const slope = parseFloat(cal.slope as string) || 0;
+
+    return {
+        scale,
+        intercept,
+        slope,
+        valid: !(slope === 0 || scale === 0),
+    };
 }
 
 // ---------------------------------------------------------------------------

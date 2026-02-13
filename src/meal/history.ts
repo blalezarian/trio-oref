@@ -26,35 +26,6 @@ interface MealHistoryInputs {
 }
 
 // ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-
-/** Check whether an entry with the same timestamp (±2s) and property already exists */
-function hasDuplicateEntry(
-    entries: CarbTreatment[],
-    timestamp: string,
-    property: keyof CarbTreatment,
-): boolean {
-    const targetTime = new Date(timestamp).getTime();
-    const toleranceMin = targetTime - TIMESTAMP_MATCH_TOLERANCE_MS;
-    const toleranceMax = targetTime + TIMESTAMP_MATCH_TOLERANCE_MS;
-
-    for (const entry of entries) {
-        if (entry[property] === undefined) {
-            continue;
-        }
-        if (entry.timestamp === timestamp) {
-            return true;
-        }
-        const entryTime = new Date(entry.timestamp).getTime();
-        if (entryTime > toleranceMin && entryTime < toleranceMax) {
-            return true;
-        }
-    }
-    return false;
-}
-
-// ---------------------------------------------------------------------------
 // Main function
 // ---------------------------------------------------------------------------
 
@@ -179,6 +150,35 @@ function findMealInputs(inputs: MealHistoryInputs): CarbTreatment[] {
     }
 
     return mealInputs;
+}
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+/** Check whether an entry with the same timestamp (±2s) and property already exists */
+function hasDuplicateEntry(
+    entries: CarbTreatment[],
+    timestamp: string,
+    property: keyof CarbTreatment,
+): boolean {
+    const targetTime = new Date(timestamp).getTime();
+    const toleranceMin = targetTime - TIMESTAMP_MATCH_TOLERANCE_MS;
+    const toleranceMax = targetTime + TIMESTAMP_MATCH_TOLERANCE_MS;
+
+    for (const entry of entries) {
+        if (entry[property] === undefined) {
+            continue;
+        }
+        if (entry.timestamp === timestamp) {
+            return true;
+        }
+        const entryTime = new Date(entry.timestamp).getTime();
+        if (entryTime > toleranceMin && entryTime < toleranceMax) {
+            return true;
+        }
+    }
+    return false;
 }
 
 // ---------------------------------------------------------------------------

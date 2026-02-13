@@ -19,49 +19,6 @@ const LONG_DELTA_MAX_MINUTES = 42.5;
 const ROUND_SCALE_2DP = 100;
 
 // ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-
-/** Resolve the timestamp (epoch ms) from whichever date field is present */
-function getDateFromEntry(entry: GlucoseEntry): number {
-    return entry.date
-        || Date.parse(entry.display_time ?? '')
-        || Date.parse(entry.dateString ?? '');
-}
-
-/** Filter entries with a glucose/sgv value and normalize sgv → glucose */
-function filterValidGlucoseData(data: GlucoseEntry[]): GlucoseEntry[] {
-    return data
-        .filter((entry) => Boolean(entry.glucose || entry.sgv))
-        .map((entry) => {
-            entry.glucose = entry.glucose || entry.sgv;
-            return entry;
-        });
-}
-
-/** Average an array of numbers, returning 0 for empty arrays */
-function average(values: number[]): number {
-    if (values.length === 0) {
-        return 0;
-    }
-    return values.reduce((sum, v) => sum + v, 0) / values.length;
-}
-
-/** Round a number to 2 decimal places */
-function roundTo2Dp(value: number): number {
-    return Math.round(value * ROUND_SCALE_2DP) / ROUND_SCALE_2DP;
-}
-
-/** Compute the average delta (rate of BG change) in mg/dL per 5 minutes */
-function computeAvgDelta(
-    nowGlucose: number,
-    thenGlucose: number,
-    minutesAgo: number,
-): number {
-    return (nowGlucose - thenGlucose) / minutesAgo * PRED_INTERVAL_MINUTES;
-}
-
-// ---------------------------------------------------------------------------
 // Main function
 // ---------------------------------------------------------------------------
 
@@ -132,6 +89,49 @@ function getLastGlucose(data: GlucoseEntry[]): GlucoseStatus {
         last_cal: lastCal,
         device: now.device,
     };
+}
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+/** Resolve the timestamp (epoch ms) from whichever date field is present */
+function getDateFromEntry(entry: GlucoseEntry): number {
+    return entry.date
+        || Date.parse(entry.display_time ?? '')
+        || Date.parse(entry.dateString ?? '');
+}
+
+/** Filter entries with a glucose/sgv value and normalize sgv → glucose */
+function filterValidGlucoseData(data: GlucoseEntry[]): GlucoseEntry[] {
+    return data
+        .filter((entry) => Boolean(entry.glucose || entry.sgv))
+        .map((entry) => {
+            entry.glucose = entry.glucose || entry.sgv;
+            return entry;
+        });
+}
+
+/** Average an array of numbers, returning 0 for empty arrays */
+function average(values: number[]): number {
+    if (values.length === 0) {
+        return 0;
+    }
+    return values.reduce((sum, v) => sum + v, 0) / values.length;
+}
+
+/** Round a number to 2 decimal places */
+function roundTo2Dp(value: number): number {
+    return Math.round(value * ROUND_SCALE_2DP) / ROUND_SCALE_2DP;
+}
+
+/** Compute the average delta (rate of BG change) in mg/dL per 5 minutes */
+function computeAvgDelta(
+    nowGlucose: number,
+    thenGlucose: number,
+    minutesAgo: number,
+): number {
+    return (nowGlucose - thenGlucose) / minutesAgo * PRED_INTERVAL_MINUTES;
 }
 
 export default getLastGlucose;

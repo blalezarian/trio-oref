@@ -39,6 +39,30 @@ export interface TargetsProfile {
 }
 
 // ---------------------------------------------------------------------------
+// Main functions
+// ---------------------------------------------------------------------------
+
+/** Resolve which BG target is currently active (scheduled + temp overrides) */
+function resolveCurrentTarget(
+    inputs: TargetsInputs,
+    profile: TargetsProfile,
+    now: Date = new Date(),
+): BGTarget {
+    const scheduled = findActiveScheduledTarget(inputs.targets.targets, now);
+    const withProfile = applyProfileOverride(scheduled, profile);
+    return applyTempTargetOverride(withProfile, inputs.temptargets, now);
+}
+
+/** Return the current BG target, resolved and clamped to safety bounds */
+function getCurrentBGTarget(
+    inputs: TargetsInputs,
+    profile: TargetsProfile,
+    now: Date = new Date(),
+): BGTarget {
+    return clampTargetRange(resolveCurrentTarget(inputs, profile, now));
+}
+
+// ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
 
@@ -132,30 +156,6 @@ function clampTargetRange(target: BGTarget): BGTarget {
     target.max_bg = clampToSafeRange(target.high);
     target.min_bg = clampToSafeRange(target.low);
     return target;
-}
-
-// ---------------------------------------------------------------------------
-// Main functions
-// ---------------------------------------------------------------------------
-
-/** Resolve which BG target is currently active (scheduled + temp overrides) */
-function resolveCurrentTarget(
-    inputs: TargetsInputs,
-    profile: TargetsProfile,
-    now: Date = new Date(),
-): BGTarget {
-    const scheduled = findActiveScheduledTarget(inputs.targets.targets, now);
-    const withProfile = applyProfileOverride(scheduled, profile);
-    return applyTempTargetOverride(withProfile, inputs.temptargets, now);
-}
-
-/** Return the current BG target, resolved and clamped to safety bounds */
-function getCurrentBGTarget(
-    inputs: TargetsInputs,
-    profile: TargetsProfile,
-    now: Date = new Date(),
-): BGTarget {
-    return clampTargetRange(resolveCurrentTarget(inputs, profile, now));
 }
 
 export {

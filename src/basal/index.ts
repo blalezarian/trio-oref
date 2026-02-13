@@ -53,37 +53,6 @@ interface TempBasalFunctionsInterface {
 }
 
 // ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-
-/** Append a message to the result reason string and log it */
-function appendReason(requestedTempBasalResult: TempBasalResult, message: string): void {
-    requestedTempBasalResult.reason = (requestedTempBasalResult.reason ? requestedTempBasalResult.reason + '. ' : '') + message;
-    console.error(message);
-}
-
-/** Resolve a safety multiplier, falling back to the default if null or NaN */
-function resolveMultiplier(value: number | null, defaultValue: number): number {
-    if (value === null || isNaN(value)) {
-        return defaultValue;
-    }
-    return value;
-}
-
-/** Check whether the current temp basal is close enough to the suggestion to keep */
-function isCurrentTempAcceptable(
-    currenttemp: CurrentTemp,
-    suggestedRate: number,
-    duration: number,
-): boolean {
-    return currenttemp.duration > (duration - TEMP_DURATION_TOLERANCE_MINUTES)
-        && currenttemp.duration <= MAX_TEMP_BASAL_DURATION_MINUTES
-        && suggestedRate <= currenttemp.rate * RATE_TOLERANCE_HIGH
-        && suggestedRate >= currenttemp.rate * RATE_TOLERANCE_LOW
-        && duration > 0;
-}
-
-// ---------------------------------------------------------------------------
 // Main functions
 // ---------------------------------------------------------------------------
 
@@ -145,6 +114,37 @@ function setTempBasal(
     requestedTempBasalResult.duration = duration;
     requestedTempBasalResult.rate = suggestedRate;
     return requestedTempBasalResult;
+}
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+/** Append a message to the result reason string and log it */
+function appendReason(requestedTempBasalResult: TempBasalResult, message: string): void {
+    requestedTempBasalResult.reason = (requestedTempBasalResult.reason ? requestedTempBasalResult.reason + '. ' : '') + message;
+    console.error(message);
+}
+
+/** Resolve a safety multiplier, falling back to the default if null or NaN */
+function resolveMultiplier(value: number | null, defaultValue: number): number {
+    if (value === null || isNaN(value)) {
+        return defaultValue;
+    }
+    return value;
+}
+
+/** Check whether the current temp basal is close enough to the suggestion to keep */
+function isCurrentTempAcceptable(
+    currenttemp: CurrentTemp,
+    suggestedRate: number,
+    duration: number,
+): boolean {
+    return currenttemp.duration > (duration - TEMP_DURATION_TOLERANCE_MINUTES)
+        && currenttemp.duration <= MAX_TEMP_BASAL_DURATION_MINUTES
+        && suggestedRate <= currenttemp.rate * RATE_TOLERANCE_HIGH
+        && suggestedRate >= currenttemp.rate * RATE_TOLERANCE_LOW
+        && duration > 0;
 }
 
 // ---------------------------------------------------------------------------

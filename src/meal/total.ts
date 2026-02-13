@@ -52,87 +52,6 @@ interface RecentCarbsResult {
 }
 
 // ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-
-/** Round a number to the given number of decimal places */
-function round(value: number, digits?: number): number {
-    if (!digits) { digits = 0; }
-    const scale = Math.pow(10, digits);
-    return Math.round(value * scale) / scale;
-}
-
-/** Resolve max meal absorption time from profile, falling back to default */
-function resolveMaxAbsorptionTime(profile: IobProfile): number {
-    if (typeof profile.maxMealAbsorptionTime === 'number' && !isNaN(profile.maxMealAbsorptionTime)) {
-        return profile.maxMealAbsorptionTime;
-    }
-    console.error(`Bad profile.maxMealAbsorptionTime: ${profile.maxMealAbsorptionTime}`);
-    return DEFAULT_MAX_MEAL_ABSORPTION_HOURS;
-}
-
-/** Classify and accumulate a treatment's carbs into the appropriate source bucket */
-function accumulateCarbsByType(
-    treatment: CarbTreatment,
-    totals: { nsCarbs: number; bwCarbs: number; journalCarbs: number; bwFound: boolean },
-): void {
-    if ((treatment.nsCarbs ?? 0) >= 1) {
-        totals.nsCarbs += treatment.nsCarbs ?? 0;
-    } else if ((treatment.bwCarbs ?? 0) >= 1) {
-        totals.bwCarbs += treatment.bwCarbs ?? 0;
-        totals.bwFound = true;
-    } else if ((treatment.journalCarbs ?? 0) >= 1) {
-        totals.journalCarbs += treatment.journalCarbs ?? 0;
-    } else {
-        console.error(`Treatment carbs unclassified: ${JSON.stringify(treatment)}`);
-    }
-}
-
-/** Track carbs from a fully-absorbed treatment for later subtraction (mirrors accumulateCarbsByType) */
-function accumulateRemovalsByType(
-    treatment: CarbTreatment,
-    removals: { carbs: number; nsCarbs: number; bwCarbs: number; journalCarbs: number },
-): void {
-    removals.carbs += treatment.carbs ?? 0;
-    if ((treatment.nsCarbs ?? 0) >= 1) {
-        removals.nsCarbs += treatment.nsCarbs ?? 0;
-    } else if ((treatment.bwCarbs ?? 0) >= 1) {
-        removals.bwCarbs += treatment.bwCarbs ?? 0;
-    } else if ((treatment.journalCarbs ?? 0) >= 1) {
-        removals.journalCarbs += treatment.journalCarbs ?? 0;
-    }
-}
-
-/** Reset removal counters when a non-absorbed meal is encountered */
-function resetRemovalTotals(
-    removals: { carbs: number; nsCarbs: number; bwCarbs: number; journalCarbs: number },
-): void {
-    removals.carbs = 0;
-    removals.nsCarbs = 0;
-    removals.bwCarbs = 0;
-    // Note: journalCarbs intentionally not reset (matches original behavior)
-}
-
-/** Zero mealCOB when deviation data is null/undefined (zombie-carb safety) */
-function applyZombieCarbSafety(
-    mealCOB: number,
-    currentDeviation: number,
-    maxDeviation: number,
-): number {
-    if (currentDeviation === undefined || currentDeviation === null) {
-        console.error("");
-        console.error("Warning: setting mealCOB to 0 because currentDeviation is null/undefined");
-        mealCOB = 0;
-    }
-    if (maxDeviation === undefined || maxDeviation === null) {
-        console.error("");
-        console.error("Warning: setting mealCOB to 0 because maxDeviation is 0 or undefined");
-        mealCOB = 0;
-    }
-    return mealCOB;
-}
-
-// ---------------------------------------------------------------------------
 // Main function
 // ---------------------------------------------------------------------------
 
@@ -245,6 +164,87 @@ function recentCarbs(opts: RecentCarbsOpts, time: Date): RecentCarbsResult | Rec
         lastCarbTime,
         bwFound: totals.bwFound,
     };
+}
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+/** Round a number to the given number of decimal places */
+function round(value: number, digits?: number): number {
+    if (!digits) { digits = 0; }
+    const scale = Math.pow(10, digits);
+    return Math.round(value * scale) / scale;
+}
+
+/** Resolve max meal absorption time from profile, falling back to default */
+function resolveMaxAbsorptionTime(profile: IobProfile): number {
+    if (typeof profile.maxMealAbsorptionTime === 'number' && !isNaN(profile.maxMealAbsorptionTime)) {
+        return profile.maxMealAbsorptionTime;
+    }
+    console.error(`Bad profile.maxMealAbsorptionTime: ${profile.maxMealAbsorptionTime}`);
+    return DEFAULT_MAX_MEAL_ABSORPTION_HOURS;
+}
+
+/** Classify and accumulate a treatment's carbs into the appropriate source bucket */
+function accumulateCarbsByType(
+    treatment: CarbTreatment,
+    totals: { nsCarbs: number; bwCarbs: number; journalCarbs: number; bwFound: boolean },
+): void {
+    if ((treatment.nsCarbs ?? 0) >= 1) {
+        totals.nsCarbs += treatment.nsCarbs ?? 0;
+    } else if ((treatment.bwCarbs ?? 0) >= 1) {
+        totals.bwCarbs += treatment.bwCarbs ?? 0;
+        totals.bwFound = true;
+    } else if ((treatment.journalCarbs ?? 0) >= 1) {
+        totals.journalCarbs += treatment.journalCarbs ?? 0;
+    } else {
+        console.error(`Treatment carbs unclassified: ${JSON.stringify(treatment)}`);
+    }
+}
+
+/** Track carbs from a fully-absorbed treatment for later subtraction (mirrors accumulateCarbsByType) */
+function accumulateRemovalsByType(
+    treatment: CarbTreatment,
+    removals: { carbs: number; nsCarbs: number; bwCarbs: number; journalCarbs: number },
+): void {
+    removals.carbs += treatment.carbs ?? 0;
+    if ((treatment.nsCarbs ?? 0) >= 1) {
+        removals.nsCarbs += treatment.nsCarbs ?? 0;
+    } else if ((treatment.bwCarbs ?? 0) >= 1) {
+        removals.bwCarbs += treatment.bwCarbs ?? 0;
+    } else if ((treatment.journalCarbs ?? 0) >= 1) {
+        removals.journalCarbs += treatment.journalCarbs ?? 0;
+    }
+}
+
+/** Reset removal counters when a non-absorbed meal is encountered */
+function resetRemovalTotals(
+    removals: { carbs: number; nsCarbs: number; bwCarbs: number; journalCarbs: number },
+): void {
+    removals.carbs = 0;
+    removals.nsCarbs = 0;
+    removals.bwCarbs = 0;
+    // Note: journalCarbs intentionally not reset (matches original behavior)
+}
+
+/** Zero mealCOB when deviation data is null/undefined (zombie-carb safety) */
+function applyZombieCarbSafety(
+    mealCOB: number,
+    currentDeviation: number,
+    maxDeviation: number,
+): number {
+    if (currentDeviation === undefined || currentDeviation === null) {
+        console.error("");
+        console.error("Warning: setting mealCOB to 0 because currentDeviation is null/undefined");
+        mealCOB = 0;
+    }
+    if (maxDeviation === undefined || maxDeviation === null) {
+        console.error("");
+        console.error("Warning: setting mealCOB to 0 because maxDeviation is 0 or undefined");
+        mealCOB = 0;
+    }
+    return mealCOB;
 }
 
 // ---------------------------------------------------------------------------

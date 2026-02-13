@@ -62,6 +62,48 @@ interface BolusAccumulator {
 }
 
 // ---------------------------------------------------------------------------
+// Main function
+// ---------------------------------------------------------------------------
+
+/** Reduce pump history events into categorized bolus results */
+export function reduceBoluses(treatments: BolusTreatment[]): BolusResult[] {
+    const results: BolusResult[] = [];
+    const processedEvents: BolusTreatment[] = [];
+
+    for (const [treatmentIdx, treatment] of treatments.entries()) {
+        if (wasAlreadyProcessed(treatment, processedEvents)) continue;
+
+        switch (treatment._type) {
+            case 'Bolus':
+            case 'BolusWizard': {
+                const relatedEvents = findRelatedEvents(
+                    treatment,
+                    treatments.slice(treatmentIdx + 1),
+                    BOLUS_GROUPING_MINUTES,
+                );
+                const bolusGroup = [
+                    treatment,
+                    ...relatedEvents,
+                ] as PumpHistoryEvent[];
+                results.push(processBolusGroup(bolusGroup, processedEvents));
+                break;
+            }
+            case 'JournalEntryMealMarker':
+                // Mutates input, matching original behavior
+                (treatment as BolusResult).carbs = treatment.carb_input as string;
+                (treatment as BolusResult).eventType = 'Carb Correction';
+                results.push(treatment as BolusResult);
+                break;
+            default:
+                results.push(treatment as BolusResult);
+                break;
+        }
+    }
+
+    return results;
+}
+
+// ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
 
@@ -238,48 +280,6 @@ export function processBolusGroup(
     }
 
     return finalizeBolusGroup(accumulator);
-}
-
-// ---------------------------------------------------------------------------
-// Main function
-// ---------------------------------------------------------------------------
-
-/** Reduce pump history events into categorized bolus results */
-export function reduceBoluses(treatments: BolusTreatment[]): BolusResult[] {
-    const results: BolusResult[] = [];
-    const processedEvents: BolusTreatment[] = [];
-
-    for (const [treatmentIdx, treatment] of treatments.entries()) {
-        if (wasAlreadyProcessed(treatment, processedEvents)) continue;
-
-        switch (treatment._type) {
-            case 'Bolus':
-            case 'BolusWizard': {
-                const relatedEvents = findRelatedEvents(
-                    treatment,
-                    treatments.slice(treatmentIdx + 1),
-                    BOLUS_GROUPING_MINUTES,
-                );
-                const bolusGroup = [
-                    treatment,
-                    ...relatedEvents,
-                ] as PumpHistoryEvent[];
-                results.push(processBolusGroup(bolusGroup, processedEvents));
-                break;
-            }
-            case 'JournalEntryMealMarker':
-                // Mutates input, matching original behavior
-                (treatment as BolusResult).carbs = treatment.carb_input as string;
-                (treatment as BolusResult).eventType = 'Carb Correction';
-                results.push(treatment as BolusResult);
-                break;
-            default:
-                results.push(treatment as BolusResult);
-                break;
-        }
-    }
-
-    return results;
 }
 
 // ---------------------------------------------------------------------------

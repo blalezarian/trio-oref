@@ -37,7 +37,7 @@ vi.mock('../../../src/iob/calculate-single-iob', () => ({
     iobCalc: vi.fn(),
 }));
 
-import { generate } from '../../../src/iob/calculate-iob-timeline';
+import { generate, isZonedClock, warnIfUnzonedClock } from '../../../src/iob/calculate-iob-timeline';
 import { calcTempTreatments } from '../../../src/iob/extract-treatments';
 import { iobTotal } from '../../../src/iob/sum-iob';
 import { findLastBolusAndTemp } from '../../../src/iob/find-last-bolus-and-temp';
@@ -496,5 +496,55 @@ describe('generate (calculate-iob-timeline)', () => {
             const opts = firstCall[0];
             expect(opts.profile).toBe(profile);
         });
+    });
+});
+
+// ---------------------------------------------------------------------------
+// isZonedClock
+// ---------------------------------------------------------------------------
+
+describe('isZonedClock', () => {
+    it('returns true for Z suffix', () => {
+        expect(isZonedClock('2025-01-15T12:00:00.000Z')).toBe(true);
+    });
+
+    it('returns true for positive UTC offset', () => {
+        expect(isZonedClock('2025-01-15T12:00:00.000+05:30')).toBe(true);
+    });
+
+    it('returns true for negative UTC offset', () => {
+        expect(isZonedClock('2025-01-15T12:00:00.000-05:00')).toBe(true);
+    });
+
+    it('returns true for offset without colon', () => {
+        expect(isZonedClock('2025-01-15T12:00:00.000+0530')).toBe(true);
+    });
+
+    it('returns false for unzoned clock', () => {
+        expect(isZonedClock('2025-01-15T12:00:00.000')).toBe(false);
+    });
+
+    it('returns false for empty string', () => {
+        expect(isZonedClock('')).toBe(false);
+    });
+});
+
+// ---------------------------------------------------------------------------
+// warnIfUnzonedClock
+// ---------------------------------------------------------------------------
+
+describe('warnIfUnzonedClock', () => {
+    it('returns true and does not log for zoned clock', () => {
+        const spy = vi.spyOn(console, 'error').mockImplementation(() => {});
+        expect(warnIfUnzonedClock('2025-01-15T12:00:00.000Z')).toBe(true);
+        expect(spy).not.toHaveBeenCalled();
+        spy.mockRestore();
+    });
+
+    it('returns false and logs warning for unzoned clock', () => {
+        const spy = vi.spyOn(console, 'error').mockImplementation(() => {});
+        expect(warnIfUnzonedClock('2025-01-15T12:00:00.000')).toBe(false);
+        expect(spy).toHaveBeenCalledWith(expect.stringContaining('unzoned'));
+        spy.mockRestore();
     });
 });
