@@ -103,6 +103,7 @@ interface CategorizeGlucoseDatum {
   glucose: number;
   date: number;
   dateString: string;
+  displayTime?: string;
   avgDelta: string;
   BGI: number;
   deviation: string;
@@ -405,7 +406,7 @@ function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
             }
             type="csf";
             glucoseDatum.mealCarbs = mealCarbs;
-            CSFGlucoseData.push(glucoseDatum as unknown as CategorizeGlucoseDatum);
+            CSFGlucoseData.push(toGlucoseDatum(glucoseDatum));
         } else {
           // check previous "type" value, and if it was csf, set a mealAbsorption end flag
           if ( type === "csf" ) {
@@ -424,7 +425,7 @@ function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
                 console.log(`${glucoseDatum.uamAbsorption} uannnounced meal absorption`);
             }
             type="uam";
-            UAMGlucoseData.push(glucoseDatum as unknown as CategorizeGlucoseDatum);
+            UAMGlucoseData.push(toGlucoseDatum(glucoseDatum));
           } else {
             if ( type === "uam" ) {
                 console.log("end unannounced meal absorption");
@@ -438,14 +439,14 @@ function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
             // unless avgDelta is positive: then that's some sort of unexplained rise we don't want to use for ISF, so that means basals
             if (basalBGI > -BASAL_BGI_RATIO * bgImpact) {
                 type="basal";
-                basalGlucoseData.push(glucoseDatum as unknown as CategorizeGlucoseDatum);
+                basalGlucoseData.push(toGlucoseDatum(glucoseDatum));
             } else {
                 if ( avgDelta > 0 && avgDelta > -AVG_DELTA_BGI_MULTIPLIER*bgImpact ) {
                     type="basal"
-                    basalGlucoseData.push(glucoseDatum as unknown as CategorizeGlucoseDatum);
+                    basalGlucoseData.push(toGlucoseDatum(glucoseDatum));
                 } else {
                     type="ISF";
-                    ISFGlucoseData.push(glucoseDatum as unknown as CategorizeGlucoseDatum);
+                    ISFGlucoseData.push(toGlucoseDatum(glucoseDatum));
                 }
             }
           }
@@ -491,6 +492,23 @@ function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
+
+/** Construct a CategorizeGlucoseDatum from a fully-populated entry.
+ *  Called after the main loop has assigned glucose, date, dateString, avgDelta, BGI, deviation. */
+function toGlucoseDatum(entry: CategorizeGlucoseEntry): CategorizeGlucoseDatum {
+    return {
+        glucose: entry.glucose!,
+        date: entry.date!,
+        dateString: entry.dateString!,
+        ...(entry.displayTime !== undefined && { displayTime: entry.displayTime }),
+        avgDelta: entry.avgDelta!,
+        BGI: entry.BGI!,
+        deviation: entry.deviation!,
+        ...(entry.mealAbsorption !== undefined && { mealAbsorption: entry.mealAbsorption }),
+        ...(entry.mealCarbs !== undefined && { mealCarbs: entry.mealCarbs }),
+        ...(entry.uamAbsorption !== undefined && { uamAbsorption: entry.uamAbsorption }),
+    };
+}
 
 /** Remove treatments older than the oldest bucketed glucose value. Mutates treatments array. */
 function trimOldTreatments(
