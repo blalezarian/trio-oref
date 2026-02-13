@@ -383,15 +383,13 @@ export function calculateDosingDecision(inputs: DosingDecisionInputs): Determine
         insulinForManualBolus = round((eventualBG - target_bg) / adjustedSens, 2);
         // if that would put us over max_iob, then reduce accordingly
         if (insulinReq > max_iob-iob_data.iob) {
-            // BUG: operator precedence — ("text" + max_iob as number) - iob_data.iob evaluates as NaN. Console output only.
-            console.error(("SMB limited by maxIOB: " + max_iob as unknown as number)-iob_data.iob + " (. insulinReq: " + insulinReq + " U)");
+            console.error(`SMB limited by maxIOB: ${max_iob - iob_data.iob} (. insulinReq: ${insulinReq} U)`);
             result.reason += "max_iob " + max_iob + ", ";
             insulinReq = max_iob-iob_data.iob;
         } else { console.error("SMB not limited by maxIOB ( insulinReq: " + insulinReq + " U).");}
 
         if (insulinForManualBolus > max_iob-iob_data.iob) {
-            // BUG: operator precedence — ("text" + max_iob as number) - iob_data.iob evaluates as NaN. Console output only.
-            console.error(("Ev. Bolus limited by maxIOB: " + max_iob as unknown as number)-iob_data.iob + " (. insulinForManualBolus: " + insulinForManualBolus + " U)");
+            console.error(`Ev. Bolus limited by maxIOB: ${max_iob - iob_data.iob} (. insulinForManualBolus: ${insulinForManualBolus} U)`);
             result.reason += "max_iob " + max_iob + ", ";
         } else { console.error("Ev. Bolus would not be limited by maxIOB ( insulinForManualBolus: " + insulinForManualBolus + " U).");}
 
