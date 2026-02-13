@@ -1,4 +1,4 @@
-import { getTime } from '../utils/medtronic-clock';
+import { scheduleOffsetToEpoch } from '../utils/time';
 import { MS_PER_MINUTE, MMOL_L_DETECTION_THRESHOLD, MIN_BG_TARGET, MAX_BG_TARGET, MMOL_TO_MGDL_FACTOR } from '../shared/constants';
 import type { BGUnits } from '../types/index';
 
@@ -71,8 +71,8 @@ function findActiveScheduledTarget(targets: BGTarget[], now: Date): BGTarget {
     const nowMs = now.getTime();
 
     for (let entryIdx = 0; entryIdx < targets.length - 1; entryIdx++) {
-        const entryStart = getTime(targets[entryIdx].offset ?? 0);
-        const nextStart = getTime(targets[entryIdx + 1].offset ?? 0);
+        const entryStart = scheduleOffsetToEpoch(targets[entryIdx].offset ?? 0);
+        const nextStart = scheduleOffsetToEpoch(targets[entryIdx + 1].offset ?? 0);
 
         if (nowMs >= entryStart && nowMs < nextStart) {
             return targets[entryIdx];

@@ -8,8 +8,8 @@ const { mockGetTime } = vi.hoisted(() => {
     return { mockGetTime };
 });
 
-vi.mock('../../src/utils/medtronic-clock', () => ({
-    getTime: mockGetTime,
+vi.mock('../../src/utils/time', () => ({
+    scheduleOffsetToEpoch: mockGetTime,
 }));
 
 import { carbRatioLookup } from '../../src/profile/carbs';

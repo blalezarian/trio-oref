@@ -1,7 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { bucketGlucoseWithInterpolation, interpolateMissingPoints } from '../../../src/cob/bucket-glucose';
 import { resolveGlucoseDeltas } from '../../../src/cob/deviation-loop';
-import { resolveGlucoseTime } from '../../../src/utils/glucose-time';
 import type { GlucoseEntry, BucketedGlucose } from '../../../src/types/index';
 
 const FIXED_TIME = '2025-01-15T12:00:00.000Z';
@@ -19,37 +18,6 @@ function makeGlucoseEntry(
         ...overrides,
     };
 }
-
-// ---------------------------------------------------------------------------
-// resolveGlucoseTime (shared util)
-// ---------------------------------------------------------------------------
-
-describe('resolveGlucoseTime', () => {
-    it('parses display_time with T replaced by space', () => {
-        const result = resolveGlucoseTime({ display_time: '2025-01-15T12:00:00' });
-        expect(result).toBeInstanceOf(Date);
-        expect(result!.getTime()).not.toBeNaN();
-    });
-
-    it('parses dateString as-is', () => {
-        const result = resolveGlucoseTime({ dateString: '2025-01-15T12:00:00.000Z' });
-        expect(result).toBeInstanceOf(Date);
-        expect(result!.getTime()).toBe(new Date('2025-01-15T12:00:00.000Z').getTime());
-    });
-
-    it('prefers display_time over dateString', () => {
-        const result = resolveGlucoseTime({
-            display_time: '2025-01-15T11:00:00',
-            dateString: '2025-01-15T12:00:00.000Z',
-        });
-        // display_time is used, not dateString
-        expect(result).toBeInstanceOf(Date);
-    });
-
-    it('returns undefined when neither field is present', () => {
-        expect(resolveGlucoseTime({})).toBeUndefined();
-    });
-});
 
 // ---------------------------------------------------------------------------
 // bucketGlucoseWithInterpolation

@@ -7,7 +7,7 @@ import {
     PRED_INTERVAL_MINUTES,
     BUCKETING_MERGE_THRESHOLD_MIN,
 } from '../shared/constants';
-import { resolveGlucoseTime } from '../utils/glucose-time';
+import { resolveGlucoseTime } from '../utils/time';
 
 // ---------------------------------------------------------------------------
 // Constants

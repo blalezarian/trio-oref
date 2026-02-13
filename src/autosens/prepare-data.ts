@@ -1,7 +1,7 @@
 import find_insulin from '../iob/extract-treatments';
 import find_meals from '../meal/history';
 import { normalizeGlucoseData } from '../utils/glucose-math';
-import { resolveGlucoseTime } from '../utils/glucose-time';
+import { resolveGlucoseTime } from '../utils/time';
 import type { PumpHistoryEvent, GlucoseEntry, CarbTreatment } from '../types/index';
 import type { IobProfile, HistoryBasalProfileEntry, IobInputs, IobTreatment } from '../iob/types';
 import type { TempTarget } from '../profile/targets';

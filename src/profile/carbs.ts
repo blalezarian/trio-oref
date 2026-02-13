@@ -1,4 +1,4 @@
-import { getTime } from '../utils/medtronic-clock';
+import { scheduleOffsetToEpoch } from '../utils/time';
 import { MIN_CARB_RATIO, MAX_CARB_RATIO } from '../shared/constants';
 import type { CarbRatioUnits } from '../types/index';
 
@@ -33,7 +33,7 @@ function carbRatioLookup(inputs: CarbsInputs, now: Date = new Date()): number | 
     let carbRatio = schedule[schedule.length - 1];
 
     for (let entryIdx = 0; entryIdx < schedule.length - 1; entryIdx++) {
-        if (now.getTime() >= getTime(schedule[entryIdx].offset) && now.getTime() < getTime(schedule[entryIdx + 1].offset)) {
+        if (now.getTime() >= scheduleOffsetToEpoch(schedule[entryIdx].offset) && now.getTime() < scheduleOffsetToEpoch(schedule[entryIdx + 1].offset)) {
             carbRatio = schedule[entryIdx];
             break;
         }
