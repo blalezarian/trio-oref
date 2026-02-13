@@ -1,38 +1,25 @@
-#javeincludes
-dist/
-
-#npx files
-#webpack.config.js
-Change source code in Oref0.rtf
-package-lock.json
-package.json
-
-
-bower_components/
+# dependencies
 node_modules/
 
-bundle/bundle.out.js
+# build output
+dist/
 
-.idea/
-*.iml
-my.env
-
-*.env
-static/bower_components/
-.*.sw?
-.DS_Store
-
-.vagrant
-/iisnode
-
-# istanbul output
+# coverage
 coverage/
 
-npm-debug.log
-bin/__pycache__
+# environment
+*.env
 
-*.pyc
+# OS
+.DS_Store
 
-bash-unit-test-temp
+# editors
+.idea/
+*.iml
+.*.sw?
 
+# local dev notes
 .local/
+
+# python bytecache
+*.pyc
