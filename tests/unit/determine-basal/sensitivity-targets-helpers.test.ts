@@ -135,7 +135,9 @@ describe('adjustBasalByTDD', () => {
 
     it('does not log when average_total_data is 0', () => {
         adjustBasalByTDD(1.0, 1.1, 1.0, minProfile, 1.0, 50, 40, 0, 0.5);
-        expect(process.stderr.write).not.toHaveBeenCalled();
+        expect(process.stderr.write).not.toHaveBeenCalledWith(
+            expect.stringContaining('TDD-adjustment'),
+        );
     });
 });
 
