@@ -1,6 +1,4 @@
 
-import tz from 'moment-timezone';
-import _ from 'lodash';
 import type { PumpHistoryEvent } from '../types/index';
 import type {
     IobInputs,
@@ -24,9 +22,9 @@ export function calcTempTreatments (
     zeroTempDuration?: number,
 ): IobTreatment[] {
     let pumpHistory: PumpHistoryEvent[] = inputs.history;
-    const profile_data = inputs.profile;
+    const profileData = inputs.profile;
     const autosens_data = inputs.autosens;
-    const now = new Date(tz(inputs.clock));
+    const now = new Date(inputs.clock);
 
     if(inputs.history24) {
         pumpHistory = [...inputs.history, ...inputs.history24];
@@ -40,10 +38,10 @@ export function calcTempTreatments (
 
     // Check for overlapping events and adjust event lengths in case of overlap
 
-    let tempHistory = _.sortBy(rawTempHistory, 'date');
+    let tempHistory = [...rawTempHistory].sort((a, b) => a.date - b.date);
 
     for (let i=0; i+1 < tempHistory.length; i++) {
-        if (tempHistory[i].date + tempHistory[i].duration!*MS_PER_MINUTE > tempHistory[i+1].date) {
+        if (tempHistory[i].date + (tempHistory[i].duration as number)*MS_PER_MINUTE > tempHistory[i+1].date) {
             tempHistory[i].duration = (tempHistory[i+1].date - tempHistory[i].date)/MS_PER_MINUTE;
             // Delete AndroidAPS "Cancel TBR records" in which duration is not populated
             if (tempHistory[i+1].duration === null) {
@@ -52,29 +50,29 @@ export function calcTempTreatments (
         }
     }
 
-    // Create an array of moments to slit the temps by
+    // Create an array of moments to split the temps by
     // currently supports basal changes
 
     const splitterEvents: SplitterEvent[] = [];
 
-    _.forEach(profile_data.basalprofile, (o) => {
-        splitterEvents.push({ type: 'recurring' as const, minutes: o.minutes });
-    });
+    for (const basalEntry of (profileData.basalprofile ?? [])) {
+        splitterEvents.push({ type: 'recurring' as const, minutes: basalEntry.minutes });
+    }
 
     // iterate through the events and split at basal break points if needed
 
     let splitHistoryByBasal: TempEvent[] = [];
 
-    _.forEach(tempHistory, (o) => {
-        splitHistoryByBasal = splitHistoryByBasal.concat(splitTimespan(o,splitterEvents));
-    });
+    for (const tempEvent of tempHistory) {
+        splitHistoryByBasal = splitHistoryByBasal.concat(splitTimespan(tempEvent, splitterEvents));
+    }
 
-    tempHistory = _.sortBy(tempHistory, (o) => { return o.date; });
+    tempHistory = [...tempHistory].sort((a, b) => a.date - b.date);
 
     let suspend_zeros_iob: boolean = false;
 
-    if (profile_data.suspend_zeros_iob !== undefined) {
-        suspend_zeros_iob = profile_data.suspend_zeros_iob;
+    if (profileData.suspend_zeros_iob !== undefined) {
+        suspend_zeros_iob = profileData.suspend_zeros_iob;
     }
 
     let splitHistory: TempEvent[];
@@ -84,25 +82,24 @@ export function calcTempTreatments (
         // times as required to account for pump suspends
         splitHistory = [];
 
-        _.forEach(splitHistoryByBasal, (o) => {
-            const splitEvents = splitAroundSuspends(o, pumpSuspends, firstResumeTime, suspendedPrior, lastSuspendTime, currentlySuspended);
+        for (const basalEvent of splitHistoryByBasal) {
+            const splitEvents = splitAroundSuspends(basalEvent, pumpSuspends, firstResumeTime, suspendedPrior, lastSuspendTime, currentlySuspended);
             splitHistory = splitHistory.concat(splitEvents);
-        });
+        }
 
         let zTempSuspendBasals: TempEvent[] = [];
 
         // Any existing temp basals during times the pump was suspended are now deleted
         // Add 0 temp basals to negate the profile basal rates during times pump is suspended
-        _.forEach(pumpSuspends, (o) => {
-            const zTempBasal: TempEvent[] = [{
+        for (const suspendEvent of pumpSuspends) {
+            zTempSuspendBasals.push({
                 _type: 'SuspendBasal',
                 rate: 0,
-                duration: o.duration,
-                date: o.date,
-                started_at: o.started_at
-            }];
-            zTempSuspendBasals = zTempSuspendBasals.concat(zTempBasal);
-        });
+                duration: suspendEvent.duration,
+                date: suspendEvent.date,
+                started_at: suspendEvent.started_at
+            });
+        }
 
         // Add temp suspend basal for maximum DIA (8) up to the resume time
         // if there is no matching suspend in the history before the first
@@ -120,9 +117,9 @@ export function calcTempTreatments (
 
             const suspendStart = new Date(max_dia_ago);
             const suspendStartDate = suspendStart.getTime()
-            const started_at = new Date(tz(suspendStart.toISOString()));
+            const started_at = new Date(suspendStart.toISOString());
 
-            const zTempBasal: TempEvent[] = [{
+            zTempSuspendBasals.push({
                // add _type to aid debugging. It isn't used
                // anywhere.
                 _type: 'SuspendBasal',
@@ -130,43 +127,41 @@ export function calcTempTreatments (
                 duration: (firstResumeDate - max_dia_ago)/MS_PER_MINUTE,
                 date: suspendStartDate,
                 started_at: started_at
-            }];
-            zTempSuspendBasals = zTempSuspendBasals.concat(zTempBasal);
+            });
         }
 
         if (currentlySuspended) {
             const suspendStart = new Date(lastSuspendTime);
             const suspendStartDate = suspendStart.getTime()
-            const started_at = new Date(tz(suspendStart.toISOString()));
+            const started_at = new Date(suspendStart.toISOString());
 
-            const zTempBasal: TempEvent[] = [{
+            zTempSuspendBasals.push({
                 _type: 'SuspendBasal',
                 rate: 0,
                 duration: (now.getTime() - suspendStartDate)/MS_PER_MINUTE,
                 date: suspendStartDate,
                 timestamp: lastSuspendTime,
                 started_at: started_at
-            }];
-            zTempSuspendBasals = zTempSuspendBasals.concat(zTempBasal);
+            });
         }
 
         // Add the new 0 temp basals to the splitHistory.
         // We have to split the new zero temp basals by the profile
         // basals just like the other temp basals.
-        _.forEach(zTempSuspendBasals, (o) => {
-            splitHistory = splitHistory.concat(splitTimespan(o,splitterEvents));
-        });
+        for (const suspendBasal of zTempSuspendBasals) {
+            splitHistory = splitHistory.concat(splitTimespan(suspendBasal, splitterEvents));
+        }
     } else {
         splitHistory = splitHistoryByBasal;
     }
 
-    splitHistory = _.sortBy(splitHistory, (o) => { return o.date; });
+    splitHistory = [...splitHistory].sort((a, b) => a.date - b.date);
 
     // Convert net basals to treatment boluses
-    const netBasalBoluses = convertNetBasalsToTreatments(splitHistory, profile_data, autosens_data);
+    const netBasalBoluses = convertNetBasalsToTreatments(splitHistory, profileData, autosens_data);
 
     let all_data: TempEvent[] = [...tempBoluses, ...netBasalBoluses, ...tempHistory];
-    all_data = _.sortBy(all_data, 'date');
+    all_data.sort((a, b) => a.date - b.date);
     return all_data;
 }
 export default calcTempTreatments;

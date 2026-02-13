@@ -21,7 +21,7 @@ export function findLastBolusAndTemp(treatments: IobTreatment[]): LastBolusAndTe
         } else if (typeof(treatment.rate) === 'number' && treatment.duration ) {
             if ( treatment.date > lastTemp.date ) {
                 lastTemp = treatment;
-                lastTemp.duration = Math.round(lastTemp.duration!*ROUND_SCALE_2DP)/ROUND_SCALE_2DP;
+                lastTemp.duration = Math.round((lastTemp.duration as number)*ROUND_SCALE_2DP)/ROUND_SCALE_2DP;
             }
         }
     });

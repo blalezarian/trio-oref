@@ -1,9 +1,6 @@
 
-import tz from 'moment-timezone';
-import _ from 'lodash';
 import type { PumpHistoryEvent } from '../types/index';
 import type {
-    TempEvent,
     SuspendEvent,
     SuspendResumeData,
 } from './types';
@@ -15,34 +12,36 @@ export function extractSuspendResumeData(
     let pumpSuspends: SuspendEvent[] = [];
     let pumpResumes: SuspendEvent[] = [];
     let suspendedPrior = false;
-    let firstResumeTime: string = undefined!;
-    let lastSuspendTime: string = undefined!;
+    let firstResumeTime: string | undefined;
+    let lastSuspendTime: string | undefined;
     let currentlySuspended: number | false = false;
 
     for (let i=0; i < pumpHistory.length; i++) {
-        const temp: TempEvent = {} as TempEvent;
-
         const current: PumpHistoryEvent = pumpHistory[i];
 
         if (current._type === "PumpSuspend") {
-            temp.timestamp = current.timestamp;
-            temp.started_at = new Date(tz(current.timestamp));
-            temp.date = temp.started_at.getTime();
-            pumpSuspends.push(temp as SuspendEvent);
+            const started_at = new Date(current.timestamp as string);
+            pumpSuspends.push({
+                timestamp: current.timestamp,
+                started_at,
+                date: started_at.getTime(),
+            });
         } else if (current._type === "PumpResume") {
-            temp.timestamp = current.timestamp;
-            temp.started_at = new Date(tz(current.timestamp));
-            temp.date = temp.started_at.getTime();
-            pumpResumes.push(temp as SuspendEvent);
+            const started_at = new Date(current.timestamp as string);
+            pumpResumes.push({
+                timestamp: current.timestamp,
+                started_at,
+                date: started_at.getTime(),
+            });
         }
     }
 
-    pumpSuspends = _.sortBy(pumpSuspends, 'date');
+    pumpSuspends.sort((a, b) => a.date - b.date);
 
-    pumpResumes = _.sortBy(pumpResumes, 'date');
+    pumpResumes.sort((a, b) => a.date - b.date);
 
     if (pumpResumes.length > 0) {
-        firstResumeTime = pumpResumes[0].timestamp!;
+        firstResumeTime = pumpResumes[0].timestamp as string;
 
         // Check to see if our first resume was prior to our first suspend
         // indicating suspend was prior to our first event.
@@ -52,30 +51,30 @@ export function extractSuspendResumeData(
 
     }
 
-    let j=0;  // matching pumpResumes entry;
+    let resumeIndex=0;  // matching pumpResumes entry;
 
     let i: number;
     // Match the resumes with the suspends to get durations
     for (i=0; i < pumpSuspends.length; i++) {
-        for (; j < pumpResumes.length; j++) {
-            if (pumpResumes[j].date > pumpSuspends[i].date) {
+        for (; resumeIndex < pumpResumes.length; resumeIndex++) {
+            if (pumpResumes[resumeIndex].date > pumpSuspends[i].date) {
                 break;
             }
         }
 
-        if ((j >= pumpResumes.length) && !currentlySuspended) {
+        if ((resumeIndex >= pumpResumes.length) && !currentlySuspended) {
             // even though it isn't the last suspend, we have reached
             // the final suspend. Set resume last so the
             // algorithm knows to suspend all the way
             // through the last record beginning at the last suspend
             // since we don't have a matching resume.
             currentlySuspended = 1;
-            lastSuspendTime = pumpSuspends[i].timestamp!;
+            lastSuspendTime = pumpSuspends[i].timestamp as string;
 
             break;
         }
 
-        pumpSuspends[i].duration = (pumpResumes[j].date - pumpSuspends[i].date)/MS_PER_MINUTE;
+        pumpSuspends[i].duration = (pumpResumes[resumeIndex].date - pumpSuspends[i].date)/MS_PER_MINUTE;
 
     }
 
@@ -97,5 +96,11 @@ export function extractSuspendResumeData(
         pumpSuspends.splice(i+1, pumpSuspends.length-i-1);
     }
 
-    return { pumpSuspends, suspendedPrior, firstResumeTime, lastSuspendTime, currentlySuspended };
+    return {
+        pumpSuspends,
+        suspendedPrior,
+        firstResumeTime: firstResumeTime as string,
+        lastSuspendTime: lastSuspendTime as string,
+        currentlySuspended,
+    };
 }

@@ -2643,7 +2643,7 @@ exports[`iob/history (calcTempTreatments) characterization tests > splitAroundSu
     "duration": -10,
     "rate": 2,
     "started_at": "[NOW-10m]",
-    "timestamp": "2025-01-15T03:50:00-08:00",
+    "timestamp": "2025-01-15T11:50:00.000Z",
   },
   {
     "date": "[NOW+1m]",

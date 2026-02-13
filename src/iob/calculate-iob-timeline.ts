@@ -1,5 +1,3 @@
-
-import tz from 'moment-timezone';
 import { calcTempTreatments } from './extract-treatments';
 import { iobCalc } from './calculate-single-iob';
 import { iobTotal } from './sum-iob';
@@ -51,7 +49,7 @@ export function generate (
     if (! /(Z|[+-][0-2][0-9]:?[034][05])+/.test(inputs.clock) ) {
         console.error(`Warning: clock input ${inputs.clock} is unzoned; please pass clock-zoned.json instead`);
     }
-    const clock = new Date(tz(inputs.clock));
+    const clock = new Date(inputs.clock);
 
     const { lastBolusTime, lastTemp } = findLastBolusAndTemp(treatments);
     const iStop = currentIOBOnly ? 1 : IOB_PREDICTION_HORIZON_MINUTES;
