@@ -61,32 +61,40 @@ export function generateBGPredictions(
     threshold: number,
     meal_data: MealData,
 ): BGPredictionResult {
-// Initialize and calculate variables used for predicting BGs
-    const COBpredBGs: number[] = [];
-    const IOBpredBGs: number[] = [];
-    const UAMpredBGs: number[] = [];
-    const ZTpredBGs: number[] = [];
-    COBpredBGs.push(bg);
-    IOBpredBGs.push(bg);
-    ZTpredBGs.push(bg);
-    UAMpredBGs.push(bg);
+    // Prediction arrays (seeded with current BG)
+    const IOBpredBGs: number[] = [bg];
+    const ZTpredBGs: number[] = [bg];
+    const COBpredBGs: number[] = [bg];
+    const UAMpredBGs: number[] = [bg];
 
+    // Min/max prediction tracking (sentinel = not yet calculated)
     let minIOBPredBG = PRED_BG_SENTINEL;
     let minCOBPredBG = PRED_BG_SENTINEL;
     let minUAMPredBG = PRED_BG_SENTINEL;
+    let minIOBGuardBG = PRED_BG_SENTINEL;
     let minCOBGuardBG = PRED_BG_SENTINEL;
     let minUAMGuardBG = PRED_BG_SENTINEL;
-    let minIOBGuardBG = PRED_BG_SENTINEL;
     let minZTGuardBG = PRED_BG_SENTINEL;
-    let IOBpredBG = eventualBG;
     let maxIOBPredBG = bg;
     let maxCOBPredBG = bg;
-    let UAMduration = 0;
-    let remainingCItotal = 0;
-    const remainingCIs: number[] = [];
-    const predCIs: number[] = [];
+
+    // Running loop state
+    let IOBpredBG = eventualBG;
     let COBpredBG: number | undefined;
     let UAMpredBG: number | undefined;
+    let UAMduration = 0;
+    let remainingCItotal = 0;
+    const predCIs: number[] = [];
+    const remainingCIs: number[] = [];
+
+    // Loop-invariant: dynamic ISF logarithmic path flag
+    const useDynISFLog = dynISFenabled && !enable_sigmoid;
+
+    // Loop-invariant: insulin peak timing for minPredBG calculations
+    // look ahead 60m (regardless of insulin type) so as to be less aggressive on slower insulins
+    // add 30m to allow for insulin delivery (SMBs or temps) = 90m total
+    const insulinPeak5m = INSULIN_PEAK_WAIT_MINUTES / PRED_INTERVAL_MINUTES;
+
     try {
         iobArray.forEach((iobTick: IOBData) => {
             const predBGI = round(( -iobTick.activity * adjustedSens * PRED_INTERVAL_MINUTES ), 2);
@@ -97,16 +105,16 @@ export function generateBGPredictions(
             const predDev = carbImpact * ( 1 - Math.min(1,IOBpredBGs.length/(MINUTES_PER_HOUR/PRED_INTERVAL_MINUTES)) );
 
             // Adding dynamic ISF in predictions for ZT and IOB. Modification from Tim Street's AAPS but with default as off:
-            switch(true) {
-                case dynISFenabled && !enable_sigmoid:
-                    IOBpredBG = IOBpredBGs[IOBpredBGs.length-1] + (round(( -iobTick.activity * (DYNAMIC_ISF_LOG_DENOMINATOR / ( tdd * adjustmentFactor * (Math.log((Math.max( IOBpredBGs[IOBpredBGs.length-1],MIN_VALID_GLUCOSE_MGDL) / insulinFactor ) + 1 ) ) )) * PRED_INTERVAL_MINUTES ),2)) + predDev;
-                    ZTpredBG = ZTpredBGs[ZTpredBGs.length-1] + (round(( -(iobTick.iobWithZeroTemp as IOBEntry).activity * (DYNAMIC_ISF_LOG_DENOMINATOR / ( tdd * adjustmentFactor * (Math.log(( Math.max(ZTpredBGs[ZTpredBGs.length-1],MIN_VALID_GLUCOSE_MGDL) / insulinFactor ) + 1 ) ) )) * PRED_INTERVAL_MINUTES ), 2));
-                    console.log(`Dynamic ISF (Logarithmic Formula) adjusted predictions for IOB and ZT: IOBpredBG: ${round(IOBpredBG, 2)} , ZTpredBG: ${round(ZTpredBG, 2)}`);
-                    break;
-                default:
-                    IOBpredBG = IOBpredBGs[IOBpredBGs.length-1] + predBGI + predDev;
-                    // calculate predBGs with long zero temp without deviations
-                    ZTpredBG = ZTpredBGs[ZTpredBGs.length-1] + predZTBGI;
+            if (useDynISFLog) {
+                const dynIOBBGI = calculateDynISFBGImpact(iobTick.activity, IOBpredBGs[IOBpredBGs.length-1], tdd, adjustmentFactor, insulinFactor);
+                const dynZTBGI = calculateDynISFBGImpact((iobTick.iobWithZeroTemp as IOBEntry).activity, ZTpredBGs[ZTpredBGs.length-1], tdd, adjustmentFactor, insulinFactor);
+                IOBpredBG = IOBpredBGs[IOBpredBGs.length-1] + dynIOBBGI + predDev;
+                ZTpredBG = ZTpredBGs[ZTpredBGs.length-1] + dynZTBGI;
+                console.log(`Dynamic ISF (Logarithmic Formula) adjusted predictions for IOB and ZT: IOBpredBG: ${round(IOBpredBG, 2)} , ZTpredBG: ${round(ZTpredBG, 2)}`);
+            } else {
+                IOBpredBG = IOBpredBGs[IOBpredBGs.length-1] + predBGI + predDev;
+                // calculate predBGs with long zero temp without deviations
+                ZTpredBG = ZTpredBGs[ZTpredBGs.length-1] + predZTBGI;
             }
 
             // for COBpredBGs, predicted carb impact drops linearly from current carb impact down to zero
@@ -134,13 +142,12 @@ export function generateBGPredictions(
             }
 
             // Adding dynamic ISF in predictions for UAM. Modification from Tim Street's AAPS but with default as off:
-            switch(true) {
-                case dynISFenabled && !enable_sigmoid:
-                    UAMpredBG = UAMpredBGs[UAMpredBGs.length-1] + (round(( -iobTick.activity * (DYNAMIC_ISF_LOG_DENOMINATOR / ( tdd * adjustmentFactor * (Math.log(( Math.max(UAMpredBGs[UAMpredBGs.length-1],MIN_VALID_GLUCOSE_MGDL) / insulinFactor ) + 1 ) ) )) * PRED_INTERVAL_MINUTES ),2)) + Math.min(0, predDev) + predUCI;
-                    console.log(`Dynamic ISF (Logarithmic Formula) adjusted prediction for UAM: UAMpredBG: ${round(UAMpredBG as number, 2)}`);
-                    break;
-                default:
-                    UAMpredBG = UAMpredBGs[UAMpredBGs.length-1] + predBGI + Math.min(0, predDev) + predUCI;
+            if (useDynISFLog) {
+                const dynUAMBGI = calculateDynISFBGImpact(iobTick.activity, UAMpredBGs[UAMpredBGs.length-1], tdd, adjustmentFactor, insulinFactor);
+                UAMpredBG = UAMpredBGs[UAMpredBGs.length-1] + dynUAMBGI + Math.min(0, predDev) + predUCI;
+                console.log(`Dynamic ISF (Logarithmic Formula) adjusted prediction for UAM: UAMpredBG: ${round(UAMpredBG as number, 2)}`);
+            } else {
+                UAMpredBG = UAMpredBGs[UAMpredBGs.length-1] + predBGI + Math.min(0, predDev) + predUCI;
             }
             // truncate all BG predictions at 4 hours
             if ( IOBpredBGs.length < PRED_BG_MAX_LENGTH ) { IOBpredBGs.push(IOBpredBG); }
@@ -154,11 +161,7 @@ export function generateBGPredictions(
             if ( ZTpredBG < minZTGuardBG ) { minZTGuardBG = round(ZTpredBG); }
 
             // set minPredBGs starting when currently-dosed insulin activity will peak
-            // look ahead 60m (regardless of insulin type) so as to be less aggressive on slower insulins
-            // add 30m to allow for insulin delivery (SMBs or temps)
-            const insulinPeakTime = INSULIN_PEAK_WAIT_MINUTES;
-            const insulinPeak5m = insulinPeakTime/PRED_INTERVAL_MINUTES;
-            // wait 90m before setting minIOBPredBG
+            // wait 90m (insulinPeak5m intervals) before setting minIOBPredBG
             if ( IOBpredBGs.length > insulinPeak5m && (IOBpredBG < minIOBPredBG) ) { minIOBPredBG = round(IOBpredBG); }
             if ( IOBpredBG > maxIOBPredBG ) { maxIOBPredBG = IOBpredBG; }
             // wait 85-105m before setting COB and 60m for UAM minPredBGs
@@ -229,6 +232,20 @@ export function generateBGPredictions(
 // ---------------------------------------------------------------------------
 // Extracted helpers
 // ---------------------------------------------------------------------------
+
+/** Calculates BG impact for a single prediction tick using the logarithmic dynamic ISF formula. */
+export function calculateDynISFBGImpact(
+    activity: number,
+    lastPredBG: number,
+    tdd: number,
+    adjustmentFactor: number,
+    insulinFactor: number,
+): number {
+    const dynamicSens = DYNAMIC_ISF_LOG_DENOMINATOR / (
+        tdd * adjustmentFactor * Math.log(Math.max(lastPredBG, MIN_VALID_GLUCOSE_MGDL) / insulinFactor + 1)
+    );
+    return round(-activity * dynamicSens * PRED_INTERVAL_MINUTES, 2);
+}
 
 /** Clips prediction arrays to valid BG range, trims flat tails, and builds the PredBGs result object. */
 export function clipAndTrimPredictions(inputs: ClipAndTrimInputs): ClipAndTrimResult {

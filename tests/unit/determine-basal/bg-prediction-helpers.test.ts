@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import {
+    calculateDynISFBGImpact,
     clipAndTrimPredictions,
     calculateMinAndGuardBGs,
 } from '../../../src/determine-basal/bg-predictions';
@@ -21,6 +22,41 @@ beforeEach(() => {
     vi.spyOn(console, 'log').mockImplementation(() => {});
     vi.spyOn(console, 'error').mockImplementation(() => {});
     vi.spyOn(process.stderr, 'write').mockImplementation(() => true);
+});
+
+// ---------------------------------------------------------------------------
+// calculateDynISFBGImpact
+// ---------------------------------------------------------------------------
+
+describe('calculateDynISFBGImpact', () => {
+    // Formula: round(-activity * (1800 / (tdd * adjustmentFactor * ln(max(lastPredBG, 39) / insulinFactor + 1))) * 5, 2)
+    // Where 1800 = DYNAMIC_ISF_LOG_DENOMINATOR, 39 = MIN_VALID_GLUCOSE_MGDL, 5 = PRED_INTERVAL_MINUTES
+
+    it('computes negative impact for positive activity (insulin lowering BG)', () => {
+        // activity=0.05, lastPredBG=120, tdd=50, adjustmentFactor=0.8, insulinFactor=75
+        // dynamicSens = 1800 / (50 * 0.8 * ln(120/75 + 1)) = 1800 / (40 * ln(2.6))
+        // ln(2.6) ≈ 0.9555; dynamicSens ≈ 1800 / 38.22 ≈ 47.10
+        // result = round(-0.05 * 47.10 * 5, 2) = round(-11.775, 2) = -11.78
+        const result = calculateDynISFBGImpact(0.05, 120, 50, 0.8, 75);
+        expect(result).toBe(-11.77);
+    });
+
+    it('returns -0 for zero activity (round preserves sign)', () => {
+        const result = calculateDynISFBGImpact(0, 120, 50, 0.8, 75);
+        expect(result).toBe(-0);
+    });
+
+    it('clamps lastPredBG to MIN_VALID_GLUCOSE_MGDL (39) when below', () => {
+        // lastPredBG=10 -> uses 39 in the formula
+        const clamped = calculateDynISFBGImpact(0.05, 10, 50, 0.8, 75);
+        const atMin = calculateDynISFBGImpact(0.05, 39, 50, 0.8, 75);
+        expect(clamped).toBe(atMin);
+    });
+
+    it('returns positive impact for negative activity (insulin wearing off)', () => {
+        const result = calculateDynISFBGImpact(-0.03, 100, 50, 0.8, 75);
+        expect(result).toBeGreaterThan(0);
+    });
 });
 
 /** Build a default ClipAndTrimInputs with overrides. */
