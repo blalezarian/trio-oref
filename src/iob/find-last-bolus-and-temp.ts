@@ -1,10 +1,11 @@
+import type { EpochMillis } from '../types/index';
 import type { IobTreatment } from './types';
 
 /** Rounding scale for 2 decimal places */
 const ROUND_SCALE_2DP = 100;
 
 export interface LastBolusAndTemp {
-    lastBolusTime: number;
+    lastBolusTime: EpochMillis;
     lastTemp: IobTreatment;
 }
 
@@ -13,8 +14,8 @@ export interface LastBolusAndTemp {
  * temp basal. Used by generate() to annotate the first IOB array entry.
  */
 export function findLastBolusAndTemp(treatments: IobTreatment[]): LastBolusAndTemp {
-    let lastBolusTime: number = new Date(0).getTime();
-    let lastTemp: IobTreatment = { date: new Date(0).getTime() } as IobTreatment;
+    let lastBolusTime: EpochMillis = 0;
+    let lastTemp: IobTreatment = { date: 0 } as IobTreatment;
     treatments.forEach((treatment: IobTreatment) => {
         if (treatment.insulin && treatment.started_at) {
             lastBolusTime = Math.max(lastBolusTime, treatment.started_at.getTime());
