@@ -126,7 +126,7 @@ export function calcTempTreatments (
 
             const suspendStart = new Date(max_dia_ago);
             const suspendStartDate = suspendStart.getTime()
-            const started_at = new Date(suspendStart.toISOString());
+            const started_at = new Date(suspendStart.getTime());
 
             zTempSuspendBasals.push({
                // add _type to aid debugging. It isn't used
@@ -142,7 +142,7 @@ export function calcTempTreatments (
         if (currentlySuspended) {
             const suspendStart = new Date(lastSuspendTime);
             const suspendStartDate = suspendStart.getTime()
-            const started_at = new Date(suspendStart.toISOString());
+            const started_at = new Date(suspendStart.getTime());
 
             zTempSuspendBasals.push({
                 _type: 'SuspendBasal',
