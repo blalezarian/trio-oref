@@ -1,4 +1,3 @@
-import tz from 'moment-timezone';
 import { getCurrentBasalRate } from '../profile/basal';
 import getIOB from '../iob/index';
 import { isfLookup as ISFLookup } from '../profile/isf';
@@ -130,8 +129,8 @@ function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
     const treatments = opts.treatments;
     // this sorts the treatments collection in order.
     treatments.sort((a: CarbTreatment, b: CarbTreatment) => {
-        const aDate = new Date(tz(a.timestamp));
-        const bDate = new Date(tz(b.timestamp));
+        const aDate = new Date(a.timestamp);
+        const bDate = new Date(b.timestamp);
         return bDate.getTime() - aDate.getTime();
     });
     const profileData = opts.profile;
@@ -154,7 +153,7 @@ function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
 
             if (!obj.dateString)
             {
-                obj.dateString = new Date(tz(obj.date)).toISOString();
+                obj.dateString = new Date(obj.date as number).toISOString();
             }
             return obj;
         }).filter((obj: CategorizeGlucoseEntry) => {
@@ -184,7 +183,7 @@ function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
     let k=0; // index of first value used by bucket
     let i: number;
     // variables used across multiple for-loops (were function-scoped with var)
-    let BGTime: number | string;
+    let BGTime: number;
     let treatment: CarbTreatment;
     let treatmentDate: Date;
     let treatmentTime: number;
@@ -194,7 +193,7 @@ function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
     for (i=1; i < glucoseData.length; ++i) {
         BGTime = glucoseData[i].date!;
         const lastBGTime = glucoseData[k].date!;
-        const elapsedMinutes = ((BGTime as number) - lastBGTime)/MS_PER_MINUTE;
+        const elapsedMinutes = (BGTime - lastBGTime)/MS_PER_MINUTE;
 
         if(Math.abs(elapsedMinutes) >= BUCKETING_MERGE_THRESHOLD_MIN) {
             j++; // move to next bucket
@@ -212,7 +211,7 @@ function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
     for (i=treatments.length-1; i>0; --i) {
         treatment = treatments[i];
         if (treatment) {
-            treatmentDate = new Date(tz(treatment.timestamp));
+            treatmentDate = new Date(treatment.timestamp);
             treatmentTime = treatmentDate.getTime();
             glucoseDatum = bucketedData[bucketedData.length-1];
             if (glucoseDatum) {
@@ -245,7 +244,7 @@ function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
         treatment = treatments[treatments.length-1];
         let myCarbs = 0;
         if (treatment) {
-            treatmentDate = new Date(tz(treatment.timestamp));
+            treatmentDate = new Date(treatment.timestamp);
             treatmentTime = treatmentDate.getTime();
             if ( treatmentTime < BGTime ) {
                 if (treatment.carbs! >= 1) {
@@ -290,9 +289,9 @@ function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
         // this helps since the basal this hour could be different from previous, especially if with autotune they start to diverge.
         // use the pumpbasalprofile to properly calculate IOB during periods where no temp basal is set
         const currentPumpBasal = getCurrentBasalRate(opts.pumpbasalprofile, BGDate);
-        const BGDate1hAgo = new Date((BGTime as number)-1*MS_PER_HOUR);
-        const BGDate2hAgo = new Date((BGTime as number)-2*MS_PER_HOUR);
-        const BGDate3hAgo = new Date((BGTime as number)-3*MS_PER_HOUR);
+        const BGDate1hAgo = new Date(BGTime-1*MS_PER_HOUR);
+        const BGDate2hAgo = new Date(BGTime-2*MS_PER_HOUR);
+        const BGDate3hAgo = new Date(BGTime-3*MS_PER_HOUR);
         const basal1hAgo = getCurrentBasalRate(opts.pumpbasalprofile, BGDate1hAgo);
         const basal2hAgo = getCurrentBasalRate(opts.pumpbasalprofile, BGDate2hAgo);
         const basal3hAgo = getCurrentBasalRate(opts.pumpbasalprofile, BGDate3hAgo);
@@ -453,9 +452,8 @@ function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
           }
         }
         // debug line to print out all the things
-        const BGDateArray = BGDate.toString().split(" ");
-        BGTime = BGDateArray[4];
-        console.error(absorbing.toString(),"mealCOB:",mealCOB.toFixed(1),"mealCarbs:",mealCarbs,"BGI:",bgImpact.toFixed(1),"IOB:",iob.iob.toFixed(1),"at",BGTime,"dev:",dev5m,"avgDev:",deviation,"avgDelta:",avgDelta,type,BG,myCarbs);
+        const BGTimeStr = BGDate.toString().split(" ")[4];
+        console.error(absorbing.toString(),"mealCOB:",mealCOB.toFixed(1),"mealCarbs:",mealCarbs,"BGI:",bgImpact.toFixed(1),"IOB:",iob.iob.toFixed(1),"at",BGTimeStr,"dev:",dev5m,"avgDev:",deviation,"avgDelta:",avgDelta,type,BG,myCarbs);
     }
 
     IOBInputs = {
