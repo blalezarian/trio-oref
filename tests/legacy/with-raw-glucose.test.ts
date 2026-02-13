@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 
-import withRawGlucose from '../../src/glucose/with-raw-glucose';
+import { withRawGlucose } from '../../src/glucose/with-raw-glucose';
 
 const cals = [{
   scale: 1

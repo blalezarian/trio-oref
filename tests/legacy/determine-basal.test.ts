@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 
 import { round_basal } from '../../src/utils/round-basal';
 import { determine_basal } from '../../src/determine-basal/determine-basal';
-import tempBasalFunctions from '../../src/set-temp-basal/index';
+import { tempBasalFunctions } from '../../src/set-temp-basal/index';
 
 describe('round_basal', () => {
     it('should round correctly without profile being passed in', () => {

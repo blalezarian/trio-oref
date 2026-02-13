@@ -7,7 +7,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import iob from '../../../src/iob/index';
+import { generate as iob } from '../../../src/iob/index';
 import type { PumpHistoryEvent } from '../../../src/types/index';
 
 const FIXED_TIME = '2025-01-15T12:00:00.000Z';

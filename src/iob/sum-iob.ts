@@ -124,5 +124,3 @@ export function iobTotal(opts: IobTotalOpts, time: Date): IobTotalResult | Recor
         time: time
     };
 }
-
-export default iobTotal;

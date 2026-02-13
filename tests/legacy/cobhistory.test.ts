@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import findMealInputs from '../../src/meal/history';
+import { findMealInputs } from '../../src/meal/history';
 import type { PumpHistoryEvent } from '../../src/types/index';
 
 describe('cobhistory', () => {

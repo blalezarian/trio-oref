@@ -251,7 +251,6 @@ function applyZombieCarbSafety(
 // Exports
 // ---------------------------------------------------------------------------
 
-export default recentCarbs;
 export {
     recentCarbs,
     // Helpers

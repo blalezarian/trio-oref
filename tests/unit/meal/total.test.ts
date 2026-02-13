@@ -8,7 +8,7 @@ vi.mock('../../../src/cob/index', () => ({
 }));
 
 // Import after mock setup
-import recentCarbs, {
+import { recentCarbs,
     round,
     resolveMaxAbsorptionTime,
     accumulateCarbsByType,

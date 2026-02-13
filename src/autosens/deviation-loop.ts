@@ -1,5 +1,5 @@
 import { getCurrentBasalRate } from '../profile/basal';
-import get_iob from '../iob/index';
+import { generate as get_iob } from '../iob/index';
 import { isfLookup } from '../profile/isf';
 import { calculateBGImpact, calculateDeviation } from '../utils/glucose-math';
 import { tempTargetRunning } from './temp-target';

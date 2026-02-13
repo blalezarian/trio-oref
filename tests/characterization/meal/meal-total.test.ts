@@ -10,7 +10,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import recentCarbs from '../../../src/meal/total';
+import { recentCarbs } from '../../../src/meal/total';
 import type { CarbTreatment, GlucoseEntry } from '../../../src/types/index';
 
 const FIXED_TIME = '2025-01-15T12:00:00.000Z';

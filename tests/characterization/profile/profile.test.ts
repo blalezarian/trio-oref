@@ -6,7 +6,8 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import profileModule from '../../../src/profile/index';
+import { generate as profileModule } from '../../../src/profile/index';
+import type { GenerateFn } from '../../../src/profile/types';
 
 // Pin clock to 12:00 UTC so basalLookup (which calls new Date()) is deterministic
 const FIXED_TIME = new Date('2025-01-15T12:00:00.000Z');
@@ -51,7 +52,7 @@ describe('profile characterization tests', () => {
 
   describe('defaults', () => {
     it('returns full default profile', () => {
-      expect(profileModule.defaults()).toMatchSnapshot();
+      expect((profileModule as GenerateFn).defaults()).toMatchSnapshot();
     });
   });
 
@@ -252,7 +253,7 @@ describe('profile characterization tests', () => {
     // displayedDefaults() — covers lines 84-117
     // -----------------------------------------------------------------------
     it('returns displayedDefaults subset of default profile', () => {
-      const result = profileModule.displayedDefaults();
+      const result = (profileModule as GenerateFn).displayedDefaults();
       expect(result).toMatchSnapshot();
     });
 

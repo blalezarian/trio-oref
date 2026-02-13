@@ -1,7 +1,7 @@
 import { getCurrentBasalRate } from '../profile/basal';
-import getIOB from '../iob/index';
+import { generate as getIOB } from '../iob/index';
 import { isfLookup as ISFLookup } from '../profile/isf';
-import find_insulin from '../iob/extract-treatments';
+import { calcTempTreatments as find_insulin } from '../iob/extract-treatments';
 import type { IobInputs } from '../iob/types';
 import { insulinDosed as dosed } from './dosed';
 import type { DosedOpts } from './dosed';
@@ -591,6 +591,5 @@ function mergeUAMData(
 // Exports
 // ---------------------------------------------------------------------------
 
-export default categorizeBGDatums;
 export { categorizeBGDatums, trimOldTreatments, mergeUAMData };
 export type { CategorizeOpts, CategorizeResult, CategorizeGlucoseDatum, CRDatum };

@@ -174,4 +174,3 @@ export function calcTempTreatments (
     all_data.sort((a, b) => a.date - b.date);
     return all_data;
 }
-export default calcTempTreatments;

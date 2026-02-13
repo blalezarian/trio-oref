@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import reduceBoluses from '../../src/bolus/index';
+import { reduceBoluses } from '../../src/bolus/index';
 import type { BolusTreatment, BolusResult } from '../../src/bolus/index';
 
 describe('bolus', () => {

@@ -17,7 +17,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import tuneAllTheThings from '../../../src/autotune/index';
+import { autotuneProfile as tuneAllTheThings } from '../../../src/autotune/index';
 
 // ---------------------------------------------------------------------------
 // Constants & helpers

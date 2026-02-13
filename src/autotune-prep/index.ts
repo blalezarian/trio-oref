@@ -1,7 +1,7 @@
 // Prep step before autotune.js can run; pulls in meal (carb) data and calls categorize.js
 
-import find_meals from '../meal/history';
-import categorize from './categorize';
+import { findMealInputs as find_meals } from '../meal/history';
+import { categorizeBGDatums as categorize } from './categorize';
 import type { CategorizeResult, CategorizeGlucoseDatum } from './categorize';
 import type { PumpHistoryEvent, InsulinCurve } from '../types/index';
 import { ULTRA_RAPID_PEAK, RAPID_ACTING_PEAK, HOURS_PER_DAY } from '../shared/constants';

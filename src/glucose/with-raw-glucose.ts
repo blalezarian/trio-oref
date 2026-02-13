@@ -117,7 +117,6 @@ function cleanCal(cal: RawGlucoseCal): CleanCal {
 // Exports
 // ---------------------------------------------------------------------------
 
-export default withRawGlucose;
 export {
     withRawGlucose,
     // Helpers

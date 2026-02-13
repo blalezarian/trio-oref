@@ -11,7 +11,7 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import fs from 'node:fs';
-import reduce from '../../../src/bolus/index';
+import { reduceBoluses as reduce } from '../../../src/bolus/index';
 
 // We need to mock fs.existsSync before requiring the module, but since
 // bolus.js calls require('fs') at runtime (inside the bolus function),

@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 
-import getLastGlucose from '../../src/glucose/index';
+import { getLastGlucose } from '../../src/glucose/index';
 
 describe('getLastGlucose', () => {
     it('should handle NS sgv fields', () => {

@@ -282,8 +282,3 @@ export function processBolusGroup(
     return finalizeBolusGroup(accumulator);
 }
 
-// ---------------------------------------------------------------------------
-// Exports
-// ---------------------------------------------------------------------------
-
-export default reduceBoluses;

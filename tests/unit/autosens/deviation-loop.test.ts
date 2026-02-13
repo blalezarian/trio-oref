@@ -10,7 +10,7 @@ const MS_PER_5_MIN = 300_000;
 
 // Mock get_iob to avoid full IOB calculation
 vi.mock('../../../src/iob/index', () => ({
-    default: () => [{ iob: 0.5, activity: 0.01 }],
+    generate: () => [{ iob: 0.5, activity: 0.01 }],
 }));
 
 function makeBasalProfile(): HistoryBasalProfileEntry[] {

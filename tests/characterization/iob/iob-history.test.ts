@@ -24,7 +24,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import calcTempTreatments from '../../../src/iob/extract-treatments';
+import { calcTempTreatments } from '../../../src/iob/extract-treatments';
 
 const FIXED_TIME = '2025-01-15T12:00:00.000Z';
 const NOW = new Date(FIXED_TIME).getTime();

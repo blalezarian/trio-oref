@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 
-import iob from '../../src/iob';
+import { generate as iob } from '../../src/iob';
 
 // Helper: subtract minutes from a Date and return a new Date
 const subtractMinutes = (date: Date, mins: number): Date => {

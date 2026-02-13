@@ -185,7 +185,6 @@ function hasDuplicateEntry(
 // Exports
 // ---------------------------------------------------------------------------
 
-export default findMealInputs;
 export {
     findMealInputs,
     // Helpers

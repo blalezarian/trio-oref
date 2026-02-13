@@ -9,7 +9,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import mealGenerate from '../../../src/meal/index';
+import { generate as mealGenerate } from '../../../src/meal/index';
 import type { PumpHistoryEvent, GlucoseEntry } from '../../../src/types/index';
 import type { IobProfile, HistoryBasalProfileEntry } from '../../../src/iob/types';
 
