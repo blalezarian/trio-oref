@@ -1,5 +1,5 @@
 import { getCurrentBasalRate, getMaxDailyBasalRate, getMaxBasalRate } from './basal';
-import { bgTargetsLookup } from './targets';
+import { getCurrentBGTarget } from './targets';
 import type { TargetsInputs } from './targets';
 import { isfLookup } from './isf';
 import { carbRatioLookup } from './carbs';
@@ -67,7 +67,7 @@ function generate (inputs: ProfileInputs, opts?: ProfileOpts): ProfileDefaults |
   }
 
   // --- BG targets ---
-  const range = bgTargetsLookup(inputs as TargetsInputs, profile);
+  const range = getCurrentBGTarget(inputs as TargetsInputs, profile);
   profile.out_units = inputs.targets.user_preferred_units;
   profile.min_bg = Math.round(range.min_bg!);
   profile.max_bg = Math.round(range.max_bg!);

@@ -1,5 +1,5 @@
 /**
- * Characterization tests for profile/targets.js (bgTargetsLookup)
+ * Characterization tests for profile/targets.js (getCurrentBGTarget)
  *
  * Tests the BG target lookup function including:
  * - Single target entry
@@ -11,7 +11,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { bgTargetsLookup, bound_target_range } from '../../../src/profile/targets';
+import { getCurrentBGTarget, clampTargetRange } from '../../../src/profile/targets';
 
 const FIXED_TIME = '2025-01-15T12:00:00.000Z';
 
@@ -26,7 +26,7 @@ function makeInputs(overrides: Record<string, unknown> = {}) {
   } as any;
 }
 
-describe('profile/targets (bgTargetsLookup) characterization tests', () => {
+describe('profile/targets (getCurrentBGTarget) characterization tests', () => {
   beforeEach(() => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date(FIXED_TIME));
@@ -42,7 +42,7 @@ describe('profile/targets (bgTargetsLookup) characterization tests', () => {
   describe('single target entry', () => {
     it('returns the single target with bound clamping applied', () => {
       const inputs = makeInputs();
-      const result = bgTargetsLookup(inputs, {});
+      const result = getCurrentBGTarget(inputs, {});
       expect(result).toMatchSnapshot();
     });
   });
@@ -64,7 +64,7 @@ describe('profile/targets (bgTargetsLookup) characterization tests', () => {
         },
         temptargets: [],
       };
-      const result = bgTargetsLookup(inputs, {});
+      const result = getCurrentBGTarget(inputs, {});
       expect(result).toMatchSnapshot();
     });
 
@@ -82,7 +82,7 @@ describe('profile/targets (bgTargetsLookup) characterization tests', () => {
         },
         temptargets: [],
       };
-      const result = bgTargetsLookup(inputs, {});
+      const result = getCurrentBGTarget(inputs, {});
       expect(result).toMatchSnapshot();
     });
 
@@ -100,7 +100,7 @@ describe('profile/targets (bgTargetsLookup) characterization tests', () => {
         },
         temptargets: [],
       };
-      const result = bgTargetsLookup(inputs, {});
+      const result = getCurrentBGTarget(inputs, {});
       expect(result).toMatchSnapshot();
     });
   });
@@ -111,7 +111,7 @@ describe('profile/targets (bgTargetsLookup) characterization tests', () => {
   describe('profile.target_bg override', () => {
     it('overrides low target when profile.target_bg is set', () => {
       const inputs = makeInputs();
-      const result = bgTargetsLookup(inputs, { target_bg: 100 });
+      const result = getCurrentBGTarget(inputs, { target_bg: 100 });
       expect(result).toMatchSnapshot();
     });
   });
@@ -132,7 +132,7 @@ describe('profile/targets (bgTargetsLookup) characterization tests', () => {
           },
         ],
       });
-      const result = bgTargetsLookup(inputs, {});
+      const result = getCurrentBGTarget(inputs, {});
       expect(result).toMatchSnapshot();
     });
 
@@ -148,7 +148,7 @@ describe('profile/targets (bgTargetsLookup) characterization tests', () => {
           },
         ],
       });
-      const result = bgTargetsLookup(inputs, {});
+      const result = getCurrentBGTarget(inputs, {});
       expect(result).toMatchSnapshot();
     });
 
@@ -164,7 +164,7 @@ describe('profile/targets (bgTargetsLookup) characterization tests', () => {
           },
         ],
       });
-      const result = bgTargetsLookup(inputs, {});
+      const result = getCurrentBGTarget(inputs, {});
       expect(result).toMatchSnapshot();
     });
 
@@ -178,7 +178,7 @@ describe('profile/targets (bgTargetsLookup) characterization tests', () => {
           },
         ],
       });
-      const result = bgTargetsLookup(inputs, {});
+      const result = getCurrentBGTarget(inputs, {});
       expect(result).toMatchSnapshot();
     });
 
@@ -200,7 +200,7 @@ describe('profile/targets (bgTargetsLookup) characterization tests', () => {
           },
         ],
       });
-      const result = bgTargetsLookup(inputs, {});
+      const result = getCurrentBGTarget(inputs, {});
       expect(result).toMatchSnapshot();
     });
   });
@@ -217,7 +217,7 @@ describe('profile/targets (bgTargetsLookup) characterization tests', () => {
         },
         temptargets: [],
       };
-      const result = bgTargetsLookup(inputs, {});
+      const result = getCurrentBGTarget(inputs, {});
       expect(result).toMatchSnapshot();
     });
 
@@ -229,7 +229,7 @@ describe('profile/targets (bgTargetsLookup) characterization tests', () => {
         },
         temptargets: [],
       };
-      const result = bgTargetsLookup(inputs, {});
+      const result = getCurrentBGTarget(inputs, {});
       expect(result).toMatchSnapshot();
     });
   });
@@ -239,7 +239,7 @@ describe('profile/targets (bgTargetsLookup) characterization tests', () => {
   // -------------------------------------------------------------------------
   describe('bound clamping', () => {
     it('clamps min_bg and max_bg to at least 80', () => {
-      // Even with very low values, bound_target_range clamps to 80
+      // Even with very low values, clampTargetRange clamps to 80
       const inputs = {
         targets: {
           user_preferred_units: 'mg/dL' as const,
@@ -247,7 +247,7 @@ describe('profile/targets (bgTargetsLookup) characterization tests', () => {
         },
         temptargets: [],
       };
-      const result = bgTargetsLookup(inputs, {});
+      const result = getCurrentBGTarget(inputs, {});
       expect(result).toMatchSnapshot();
     });
 
@@ -259,22 +259,22 @@ describe('profile/targets (bgTargetsLookup) characterization tests', () => {
         },
         temptargets: [],
       };
-      const result = bgTargetsLookup(inputs, {});
+      const result = getCurrentBGTarget(inputs, {});
       expect(result).toMatchSnapshot();
     });
   });
 
   // -------------------------------------------------------------------------
-  // bound_target_range (exported)
+  // clampTargetRange (exported)
   // -------------------------------------------------------------------------
-  describe('bound_target_range', () => {
-    it('directly calling bound_target_range with normal values', () => {
-      const result = bound_target_range({ low: 100, high: 120 });
+  describe('clampTargetRange', () => {
+    it('directly calling clampTargetRange with normal values', () => {
+      const result = clampTargetRange({ low: 100, high: 120 });
       expect(result).toMatchSnapshot();
     });
 
-    it('directly calling bound_target_range with mmol values < 20', () => {
-      const result = bound_target_range({ low: 5.5, high: 6.5 });
+    it('directly calling clampTargetRange with mmol values < 20', () => {
+      const result = clampTargetRange({ low: 5.5, high: 6.5 });
       expect(result).toMatchSnapshot();
     });
   });
@@ -294,7 +294,7 @@ describe('profile/targets (bgTargetsLookup) characterization tests', () => {
         },
         temptargets: {} as any,
       };
-      const result = bgTargetsLookup(inputs, {});
+      const result = getCurrentBGTarget(inputs, {});
       expect(result).toMatchSnapshot();
     });
   });
