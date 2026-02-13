@@ -1,10 +1,16 @@
 import { percentile } from '../utils/percentile';
-import type { InsulinCurve, MealAbsorptionPhase } from '../types/index';
+import type {
+    AutotuneInputs,
+    AutotuneBasalProfileEntry,
+    AutotuneISFProfile,
+    AutotunePreviousProfile,
+    AutotunePumpProfile,
+    AutotuneGlucoseDatum,
+    AutotuneCRDatum,
+} from './types';
 import {
     ULTRA_RAPID_PEAK,
     RAPID_ACTING_PEAK,
-    MAX_DIA_HOURS,
-    AUTOTUNE_IMPROVEMENT_THRESHOLD,
     AUTOTUNE_ADJUSTMENT_FRACTION,
     DEFAULT_AUTOSENS_MAX,
     DEFAULT_AUTOSENS_MIN,
@@ -12,104 +18,10 @@ import {
     MIN_CARB_RATIO,
     BASAL_SCALE_DEFAULT,
 } from '../constants';
-//rounding of basals for pumps
-//20 for omnipod to 0.05
-//40 for medtronic to 0.025
+import { tuneDIA } from './tune-dia';
+import { tunePeakTime } from './tune-peak';
+
 const basal_scale: number = BASAL_SCALE_DEFAULT;
-// does three things - tunes basals, ISF, and CSF
-
-interface AutotuneBasalProfileEntry {
-  i: number;
-  start: string;
-  rate: number;
-  minutes: number;
-  untuned?: number;
-}
-
-interface AutotuneISFProfile {
-  sensitivities: Array<{
-    offset: number;
-    sensitivity: number;
-    endOffset: number;
-  }>;
-}
-
-interface AutotunePreviousProfile {
-  basalprofile: AutotuneBasalProfileEntry[];
-  isfProfile: AutotuneISFProfile;
-  sens?: number;
-  carb_ratio: number;
-  csf?: number;
-  dia: number;
-  curve?: Exclude<InsulinCurve, 'bilinear'>;
-  useCustomPeakTime?: boolean;
-  insulinPeakTime?: number;
-  min_5m_carbimpact?: number;
-  [key: string]: unknown;
-}
-
-interface AutotunePumpProfile {
-  basalprofile: AutotuneBasalProfileEntry[];
-  isfProfile?: AutotuneISFProfile;
-  carb_ratio?: number;
-  autosens_min?: number;
-  autosens_max?: number;
-  autotune_isf_adjustmentFraction?: number;
-  [key: string]: unknown;
-}
-
-interface AutotuneGlucoseDatum {
-  glucose?: number;
-  date?: number;
-  displayTime?: string;
-  dateString?: string;
-  deviation: string;
-  BGI: number;
-  avgDelta: string;
-  mealAbsorption?: MealAbsorptionPhase;
-  mealCarbs?: number;
-}
-
-interface AutotuneCRDatum {
-  CRInitialIOB: number;
-  CRInitialBG: number;
-  CRInitialCarbTime: Date;
-  CREndIOB: number;
-  CREndBG: number;
-  CREndTime: Date;
-  CRCarbs: number;
-  CRInsulin: number;
-  CRInsulinTotal?: number;
-}
-
-interface AutotuneDiaDeviation {
-  dia: number;
-  meanDeviation: number;
-  SMRDeviation: number;
-  RMSDeviation: number;
-}
-
-interface AutotunePeakDeviation {
-  peak: number;
-  meanDeviation: number;
-  SMRDeviation: number;
-  RMSDeviation: number;
-}
-
-interface AutotunePreppedGlucose {
-  CRData: AutotuneCRDatum[];
-  CSFGlucoseData: AutotuneGlucoseDatum[];
-  ISFGlucoseData: AutotuneGlucoseDatum[];
-  basalGlucoseData: AutotuneGlucoseDatum[];
-  diaDeviations?: AutotuneDiaDeviation[];
-  peakDeviations?: AutotunePeakDeviation[];
-}
-
-interface AutotuneInputs {
-  previousAutotune: AutotunePreviousProfile;
-  pumpProfile: AutotunePumpProfile;
-  preppedGlucose: AutotunePreppedGlucose;
-}
 
 function tuneAllTheThings (inputs: AutotuneInputs): AutotunePreviousProfile | undefined {
 
@@ -167,97 +79,10 @@ function tuneAllTheThings (inputs: AutotuneInputs): AutotunePreviousProfile | un
     const peakDeviations = preppedGlucose.peakDeviations;
     //console.error(peakDeviations);
 
-    // tune DIA
-    let newDIA = DIA;
-    // variables shared across multiple for-loops (were function-scoped with var)
-    let i: number;
-    let minMeanDeviations: number;
-    let minRMSDeviations: number;
-    let meanBest: number;
-    let RMSBest: number;
-    let meanDeviations: number;
-    let RMSDeviations: number;
-    if (diaDeviations) {
-        const currentDIAMeanDev = diaDeviations[2].meanDeviation;
-        const currentDIARMSDev = diaDeviations[2].RMSDeviation;
-        //console.error(DIA,currentDIAMeanDev,currentDIARMSDev);
-        minMeanDeviations = 1000000;
-        minRMSDeviations = 1000000;
-        meanBest = 2;
-        RMSBest = 2;
-        for (i=0; i < diaDeviations.length; i++) {
-            meanDeviations = diaDeviations[i].meanDeviation;
-            RMSDeviations = diaDeviations[i].RMSDeviation;
-            if (meanDeviations < minMeanDeviations) {
-                minMeanDeviations = Math.round(meanDeviations*1000)/1000;
-                meanBest = i;
-            }
-            if (RMSDeviations < minRMSDeviations) {
-                minRMSDeviations = Math.round(RMSDeviations*1000)/1000;
-                RMSBest = i;
-            }
-        }
-        console.error("Best insulinEndTime for meanDeviations:",diaDeviations[meanBest].dia,"hours");
-        console.error("Best insulinEndTime for RMSDeviations:",diaDeviations[RMSBest].dia,"hours");
-        if ( meanBest < 2 && RMSBest < 2 ) {
-            if ( diaDeviations[1].meanDeviation < currentDIAMeanDev * AUTOTUNE_IMPROVEMENT_THRESHOLD && diaDeviations[1].RMSDeviation < currentDIARMSDev * AUTOTUNE_IMPROVEMENT_THRESHOLD ) {
-                newDIA = diaDeviations[1].dia;
-            }
-        } else if ( meanBest > 2 && RMSBest > 2 ) {
-            if ( diaDeviations[3].meanDeviation < currentDIAMeanDev * AUTOTUNE_IMPROVEMENT_THRESHOLD && diaDeviations[3].RMSDeviation < currentDIARMSDev * AUTOTUNE_IMPROVEMENT_THRESHOLD ) {
-                newDIA = diaDeviations[3].dia;
-            }
-        }
-        if ( newDIA > MAX_DIA_HOURS ) {
-            console.error("insulinEndTime maximum is 12h: not raising further");
-            newDIA=MAX_DIA_HOURS;
-        }
-        if ( newDIA !== DIA ) {
-            console.error("Adjusting insulinEndTime from",DIA,"to",newDIA,"hours");
-        } else {
-            console.error("Leaving insulinEndTime unchanged at",DIA,"hours");
-        }
-    }
+    const newDIA = tuneDIA(diaDeviations, DIA);
+    const newPeak = tunePeakTime(peakDeviations, peak);
 
-    // tune insulinPeakTime
-    let newPeak = peak;
-    if (peakDeviations && peakDeviations[2]) {
-        const currentPeakMeanDev = peakDeviations[2].meanDeviation;
-        const currentPeakRMSDev = peakDeviations[2].RMSDeviation;
-        //console.error(currentPeakMeanDev);
-        minMeanDeviations = 1000000;
-        minRMSDeviations = 1000000;
-        meanBest = 2;
-        RMSBest = 2;
-        for (i=0; i < peakDeviations.length; i++) {
-            meanDeviations = peakDeviations[i].meanDeviation;
-            RMSDeviations = peakDeviations[i].RMSDeviation;
-            if (meanDeviations < minMeanDeviations) {
-                minMeanDeviations = Math.round(meanDeviations*1000)/1000;
-                meanBest = i;
-            }
-            if (RMSDeviations < minRMSDeviations) {
-                minRMSDeviations = Math.round(RMSDeviations*1000)/1000;
-                RMSBest = i;
-            }
-        }
-        console.error("Best insulinPeakTime for meanDeviations:",peakDeviations[meanBest].peak,"minutes");
-        console.error("Best insulinPeakTime for RMSDeviations:",peakDeviations[RMSBest].peak,"minutes");
-        if ( meanBest < 2 && RMSBest < 2 ) {
-            if ( peakDeviations[1].meanDeviation < currentPeakMeanDev * AUTOTUNE_IMPROVEMENT_THRESHOLD && peakDeviations[1].RMSDeviation < currentPeakRMSDev * AUTOTUNE_IMPROVEMENT_THRESHOLD ) {
-                newPeak = peakDeviations[1].peak;
-            }
-        } else if ( meanBest > 2 && RMSBest > 2 ) {
-            if ( peakDeviations[3].meanDeviation < currentPeakMeanDev * AUTOTUNE_IMPROVEMENT_THRESHOLD && peakDeviations[3].RMSDeviation < currentPeakRMSDev * AUTOTUNE_IMPROVEMENT_THRESHOLD ) {
-                newPeak = peakDeviations[3].peak;
-            }
-        }
-        if ( newPeak !== peak ) {
-            console.error("Adjusting insulinPeakTime from",peak,"to",newPeak,"minutes");
-        } else {
-            console.error("Leaving insulinPeakTime unchanged at",peak);
-        }
-    }
+    let i: number;
 
 
 
