@@ -20,6 +20,7 @@ import {
 } from '../constants';
 import { tuneDIA } from './tune-dia';
 import { tunePeakTime } from './tune-peak';
+import { calculateTotalCR } from './calculate-total-cr';
 
 const basal_scale: number = BASAL_SCALE_DEFAULT;
 
@@ -84,34 +85,7 @@ function tuneAllTheThings (inputs: AutotuneInputs): AutotunePreviousProfile | un
 
     let i: number;
 
-
-
-    // Calculate carb ratio (CR) independently of CSF and ISF
-    // Use the time period from meal bolus/carbs until COB is zero and IOB is < currentBasal/2
-    // For now, if another meal IOB/COB stacks on top of it, consider them together
-    // Compare beginning and ending BGs, and calculate how much more/less insulin is needed to neutralize
-    // Use entered carbs vs. starting IOB + delivered insulin + needed-at-end insulin to directly calculate CR.
-
-    let CRTotalCarbs = 0;
-    let CRTotalInsulin = 0;
-    CRData.forEach((CRDatum: AutotuneCRDatum) => {
-        const CRBGChange = CRDatum.CREndBG - CRDatum.CRInitialBG;
-        const CRInsulinReq = CRBGChange / ISF;
-        const CRIOBChange = CRDatum.CREndIOB - CRDatum.CRInitialIOB;
-        CRDatum.CRInsulinTotal = CRDatum.CRInitialIOB + CRDatum.CRInsulin + CRInsulinReq;
-        //console.error(CRDatum.CRInitialIOB, CRDatum.CRInsulin, CRInsulinReq, CRDatum.CRInsulinTotal);
-        const CR = Math.round( CRDatum.CRCarbs / CRDatum.CRInsulinTotal * 1000 )/1000;
-        //console.error(CRBGChange, CRInsulinReq, CRIOBChange, CRDatum.CRInsulinTotal);
-        //console.error("CRCarbs:",CRDatum.CRCarbs,"CRInsulin:",CRDatum.CRInsulin,"CRDatum.CRInsulinTotal:",CRDatum.CRInsulinTotal,"CR:",CR);
-        if (CRDatum.CRInsulinTotal > 0) {
-            CRTotalCarbs += CRDatum.CRCarbs;
-            CRTotalInsulin += CRDatum.CRInsulinTotal;
-            //console.error("CRTotalCarbs:",CRTotalCarbs,"CRTotalInsulin:",CRTotalInsulin);
-        }
-    });
-    CRTotalInsulin = Math.round(CRTotalInsulin*1000)/1000;
-    const totalCR = Math.round( CRTotalCarbs / CRTotalInsulin * 1000 )/1000;
-    console.error("CRTotalCarbs:",CRTotalCarbs,"CRTotalInsulin:",CRTotalInsulin,"totalCR:",totalCR);
+    const { totalCR } = calculateTotalCR(CRData, ISF);
 
     // convert the basal profile to hourly if it isn't already
     const hourlyBasalProfile: AutotuneBasalProfileEntry[] = [];
