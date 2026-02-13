@@ -45,7 +45,7 @@ const getLastGlucose = (data: GlucoseEntry[]): GlucoseStatus => {
             break;
         }
         // only use data from the same device as the most recent BG data point
-        if (data[i] !== undefined && (data[i].glucose as number) >= MIN_VALID_GLUCOSE_MGDL && data[i].device === now.device) {
+        if (data[i] !== undefined && data[i].glucose! >= MIN_VALID_GLUCOSE_MGDL && data[i].device === now.device) {
             const then = data[i];
             const then_date = getDateFromEntry(then);
             let avgdelta = 0;
@@ -53,7 +53,7 @@ const getLastGlucose = (data: GlucoseEntry[]): GlucoseStatus => {
             if (then_date !== undefined && now_date !== undefined) {
                 minutesago = Math.round( (now_date - then_date) / MS_PER_MINUTE );
                 // multiply by 5 to get the same units as delta, i.e. mg/dL/5m
-                change = (now.glucose as number) - (then.glucose as number);
+                change = now.glucose! - then.glucose!;
                 avgdelta = change/minutesago * PRED_INTERVAL_MINUTES;
             } else { console.error("Error: date field not found: cannot calculate avgdelta"); }
             //if (i < 5) {
@@ -61,7 +61,7 @@ const getLastGlucose = (data: GlucoseEntry[]): GlucoseStatus => {
             //}
             // use the average of all data points in the last 2.5m for all further "now" calculations
             if (NOW_AVERAGING_MIN_MINUTES < minutesago! && minutesago! <= NOW_AVERAGING_MAX_MINUTES) {
-                now.glucose = ( (now.glucose as number) + (then.glucose as number) ) / 2;
+                now.glucose = ( now.glucose! + then.glucose! ) / 2;
                 now_date = ( now_date + then_date ) / 2;
                 //console.error(then.glucose, now.glucose);
             // short_deltas are calculated from everything ~5-15 minutes ago
@@ -94,8 +94,8 @@ const getLastGlucose = (data: GlucoseEntry[]): GlucoseStatus => {
 
     return {
         delta: Math.round( last_delta * ROUND_SCALE_2DP ) / ROUND_SCALE_2DP
-        , glucose: Math.round( (now.glucose as number) * ROUND_SCALE_2DP ) / ROUND_SCALE_2DP
-        , noise: Math.round(now.noise as number)
+        , glucose: Math.round( now.glucose! * ROUND_SCALE_2DP ) / ROUND_SCALE_2DP
+        , noise: Math.round(now.noise!)
         , short_avgdelta: Math.round( short_avgdelta * ROUND_SCALE_2DP ) / ROUND_SCALE_2DP
         , long_avgdelta: Math.round( long_avgdelta * ROUND_SCALE_2DP ) / ROUND_SCALE_2DP
         , date: now_date
