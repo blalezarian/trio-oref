@@ -47,7 +47,7 @@ function lookup (inputs: TargetsInputs, profile: TargetsProfile): BGTarget {
     let bgTargets = bgtargets_data.targets[bgtargets_data.targets.length - 1];
 
     for (let i = 0; i < bgtargets_data.targets.length - 1; i++) {
-        if ((now.getTime() >= getTime(bgtargets_data.targets[i].offset!)) && (now.getTime() < getTime(bgtargets_data.targets[i + 1].offset!))) {
+        if (now.getTime() >= getTime(bgtargets_data.targets[i].offset ?? 0) && now.getTime() < getTime(bgtargets_data.targets[i + 1].offset ?? 0)) {
             bgTargets = bgtargets_data.targets[i];
             break;
         }
@@ -62,24 +62,27 @@ function lookup (inputs: TargetsInputs, profile: TargetsProfile): BGTarget {
     let tempTargets = bgTargets;
 
     // sort tempTargets by date so we can process most recent first
-    try {
-        temptargets_data.sort((a, b) => { return new Date(b.created_at).getTime() - new Date(a.created_at).getTime() });
-    } catch (e) {
-        console.error("No temptargets found.");
+    if (temptargets_data && temptargets_data.length > 0) {
+        temptargets_data.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
     }
+
     for (let i = 0; i < temptargets_data.length; i++) {
-        const start = new Date(temptargets_data[i].created_at);
-        const expires = new Date(start.getTime() + temptargets_data[i].duration * MS_PER_MINUTE);
-        if (now >= start && temptargets_data[i].duration === 0) {
+        const tt = temptargets_data[i];
+        const start = new Date(tt.created_at);
+        const expires = new Date(start.getTime() + tt.duration * MS_PER_MINUTE);
+
+        if (now >= start && tt.duration === 0) {
             // cancel temp targets
             tempTargets = bgTargets;
             break;
-        } else if (! temptargets_data[i].targetBottom || ! temptargets_data[i].targetTop) {
-            console.error(`eventualBG target range invalid: ${temptargets_data[i].targetBottom}-${temptargets_data[i].targetTop}`);
+        }
+        if (!tt.targetBottom || !tt.targetTop) {
+            console.error(`eventualBG target range invalid: ${tt.targetBottom}-${tt.targetTop}`);
             break;
-        } else if (now >= start && now < expires ) {
-            tempTargets.high = temptargets_data[i].targetTop!;
-            tempTargets.low = temptargets_data[i].targetBottom!;
+        }
+        if (now >= start && now < expires) {
+            tempTargets.high = tt.targetTop;
+            tempTargets.low = tt.targetBottom;
             tempTargets.temptargetSet = true;
             break;
         }
