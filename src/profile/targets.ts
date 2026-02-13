@@ -1,4 +1,3 @@
-
 import { getTime } from '../utils/medtronic-clock';
 import { MS_PER_MINUTE, MMOL_L_DETECTION_THRESHOLD, MIN_BG_TARGET, MAX_BG_TARGET, MMOL_TO_MGDL_FACTOR } from '../shared/constants';
 import type { BGUnits } from '../types/index';
@@ -47,12 +46,12 @@ export interface TargetsProfile {
 function findActiveScheduledTarget(targets: BGTarget[], now: Date): BGTarget {
     const nowMs = now.getTime();
 
-    for (let i = 0; i < targets.length - 1; i++) {
-        const entryStart = getTime(targets[i].offset ?? 0);
-        const nextStart = getTime(targets[i + 1].offset ?? 0);
+    for (let entryIdx = 0; entryIdx < targets.length - 1; entryIdx++) {
+        const entryStart = getTime(targets[entryIdx].offset ?? 0);
+        const nextStart = getTime(targets[entryIdx + 1].offset ?? 0);
 
         if (nowMs >= entryStart && nowMs < nextStart) {
-            return targets[i];
+            return targets[entryIdx];
         }
     }
 

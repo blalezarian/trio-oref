@@ -1,6 +1,8 @@
-// From https://gist.github.com/IceCreamYou/6ffa1b18c4c8f6aeaad2
-// Returns the value at a given percentile in a sorted numeric array.
-// "Linear interpolation between closest ranks" method
+/**
+ * Return the value at a given percentile in a sorted numeric array.
+ * Uses "linear interpolation between closest ranks" method.
+ * From https://gist.github.com/IceCreamYou/6ffa1b18c4c8f6aeaad2
+ */
 export const percentile = (arr: number[], p: number): number => {
     if (arr.length === 0) return 0;
     if (typeof p !== 'number') throw new TypeError('p must be a number');
@@ -14,5 +16,5 @@ export const percentile = (arr: number[], p: number): number => {
 
     if (upper >= arr.length) return arr[lower];
     return arr[lower] * (1 - weight) + arr[upper] * weight;
-}
+};
 

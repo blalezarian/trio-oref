@@ -24,14 +24,15 @@ function resetISFCache(): void {
     lastResult = null;
 }
 
-function isfLookup(isf_data: ISFData, timestamp: Date = new Date()): number {
+/** Look up the ISF (mg/dL per unit) active at the given timestamp */
+function isfLookup(isfData: ISFData, timestamp: Date = new Date()): number {
     const nowMinutes = toMinuteOfDay(timestamp);
 
     if (lastResult && nowMinutes >= lastResult.offset && nowMinutes < (lastResult.endOffset ?? MINUTES_PER_DAY)) {
         return lastResult.sensitivity;
     }
 
-    const sorted = [...isf_data.sensitivities].sort((a, b) => a.offset - b.offset);
+    const sorted = [...isfData.sensitivities].sort((a, b) => a.offset - b.offset);
 
     if (sorted[0].offset !== 0) {
         return ISF_LOOKUP_ERROR;
@@ -40,10 +41,10 @@ function isfLookup(isf_data: ISFData, timestamp: Date = new Date()): number {
     let isfSchedule = sorted[sorted.length - 1];
     let endMinutes = MINUTES_PER_DAY;
 
-    for (let i = 0; i < sorted.length - 1; i++) {
-        if (nowMinutes >= sorted[i].offset && nowMinutes < sorted[i + 1].offset) {
-            endMinutes = sorted[i + 1].offset;
-            isfSchedule = sorted[i];
+    for (let entryIdx = 0; entryIdx < sorted.length - 1; entryIdx++) {
+        if (nowMinutes >= sorted[entryIdx].offset && nowMinutes < sorted[entryIdx + 1].offset) {
+            endMinutes = sorted[entryIdx + 1].offset;
+            isfSchedule = sorted[entryIdx];
             break;
         }
     }

@@ -19,22 +19,22 @@ interface CarbsInputs {
   carbratio?: CarbRatioData;
 }
 
-function carbRatioLookup (inputs: CarbsInputs, now: Date = new Date()): number | undefined {
-    const carbratio_data = inputs.carbratio;
-    if (!carbratio_data?.schedule) {
+function carbRatioLookup(inputs: CarbsInputs, now: Date = new Date()): number | undefined {
+    const carbratioData = inputs.carbratio;
+    if (!carbratioData?.schedule) {
         return;
     }
-    if (carbratio_data.units !== "grams" && carbratio_data.units !== "exchanges") {
-        console.error(`Error: Unsupported carb_ratio units ${carbratio_data.units}`);
+    if (carbratioData.units !== "grams" && carbratioData.units !== "exchanges") {
+        console.error(`Error: Unsupported carb_ratio units ${carbratioData.units}`);
         return;
     }
 
-    const schedule = carbratio_data.schedule;
+    const schedule = carbratioData.schedule;
     let carbRatio = schedule[schedule.length - 1];
 
-    for (let i = 0; i < schedule.length - 1; i++) {
-        if (now.getTime() >= getTime(schedule[i].offset) && now.getTime() < getTime(schedule[i + 1].offset)) {
-            carbRatio = schedule[i];
+    for (let entryIdx = 0; entryIdx < schedule.length - 1; entryIdx++) {
+        if (now.getTime() >= getTime(schedule[entryIdx].offset) && now.getTime() < getTime(schedule[entryIdx + 1].offset)) {
+            carbRatio = schedule[entryIdx];
             break;
         }
     }
@@ -45,7 +45,7 @@ function carbRatioLookup (inputs: CarbsInputs, now: Date = new Date()): number |
         return;
     }
 
-    if (carbratio_data.units === "exchanges") {
+    if (carbratioData.units === "exchanges") {
         carbRatio.ratio = GRAMS_PER_EXCHANGE / carbRatio.ratio;
     }
     return carbRatio.ratio;

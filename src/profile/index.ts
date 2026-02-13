@@ -20,7 +20,8 @@ const MIN_SUPPORTED_ISF = 5;
 // generate()
 // ---------------------------------------------------------------------------
 
-function generate (inputs: ProfileInputs, opts?: ProfileOpts): ProfileDefaults | -1 {
+/** Build a complete profile from pump settings, overriding defaults with provided inputs */
+function generate(inputs: ProfileInputs, opts?: ProfileOpts): ProfileDefaults | -1 {
   const profile: ProfileDefaults = opts && opts.type ? opts as ProfileDefaults : defaults();
 
   // Apply input overrides for any matching default prefs
@@ -32,7 +33,7 @@ function generate (inputs: ProfileInputs, opts?: ProfileOpts): ProfileDefaults |
 
   // --- DIA validation ---
   if (inputs.settings.insulin_action_curve <= 1) {
-    console.error('DIA of', profile.dia, 'is not supported');
+    console.error(`DIA of ${profile.dia} is not supported`);
     return -1;
   }
   profile.dia = inputs.settings.insulin_action_curve;
@@ -46,23 +47,23 @@ function generate (inputs: ProfileInputs, opts?: ProfileOpts): ProfileDefaults |
   profile.current_basal = getCurrentBasalRate(inputs.basals);
   profile.basalprofile = inputs.basals;
 
-  profile.basalprofile.forEach((basalentry) => {
-    basalentry.rate = Math.round(basalentry.rate * 1000) / 1000;
+  profile.basalprofile.forEach((basalEntry) => {
+    basalEntry.rate = Math.round(basalEntry.rate * 1000) / 1000;
   });
 
   profile.max_daily_basal = getMaxDailyBasalRate(inputs);
   profile.max_basal = getMaxBasalRate(inputs);
 
   if (profile.current_basal === 0) {
-    console.error("current_basal of", profile.current_basal, "is not supported");
+    console.error(`current_basal of ${profile.current_basal} is not supported`);
     return -1;
   }
   if (profile.max_daily_basal === 0) {
-    console.error("max_daily_basal of", profile.max_daily_basal, "is not supported");
+    console.error(`max_daily_basal of ${profile.max_daily_basal} is not supported`);
     return -1;
   }
   if ((profile.max_basal as number) < MIN_SUPPORTED_MAX_BASAL) {
-    console.error("max_basal of", profile.max_basal, "is not supported");
+    console.error(`max_basal of ${profile.max_basal} is not supported`);
     return -1;
   }
 
@@ -73,11 +74,11 @@ function generate (inputs: ProfileInputs, opts?: ProfileOpts): ProfileDefaults |
   profile.max_bg = Math.round(range.max_bg as number);
   profile.bg_targets = inputs.targets;
 
-  profile.bg_targets.targets.forEach((bg_entry) => {
-    bg_entry.high = Math.round(bg_entry.high);
-    bg_entry.low = Math.round(bg_entry.low);
-    bg_entry.min_bg = Math.round(bg_entry.min_bg as number);
-    bg_entry.max_bg = Math.round(bg_entry.max_bg as number);
+  profile.bg_targets.targets.forEach((bgEntry) => {
+    bgEntry.high = Math.round(bgEntry.high);
+    bgEntry.low = Math.round(bgEntry.low);
+    bgEntry.min_bg = Math.round(bgEntry.min_bg as number);
+    bgEntry.max_bg = Math.round(bgEntry.max_bg as number);
   });
 
   delete profile.bg_targets.raw;
@@ -87,7 +88,7 @@ function generate (inputs: ProfileInputs, opts?: ProfileOpts): ProfileDefaults |
   profile.sens = isfLookup(inputs.isf);
   profile.isfProfile = inputs.isf;
   if ((profile.sens as number) < MIN_SUPPORTED_ISF) {
-    console.error("ISF of", profile.sens, "is not supported");
+    console.error(`ISF of ${profile.sens} is not supported`);
     return -1;
   }
 

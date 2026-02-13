@@ -1,4 +1,3 @@
-import endsWith from 'lodash/endsWith';
 import { BASAL_SCALE_DEFAULT, BASAL_SCALE_MEDTRONIC } from '../shared/constants';
 
 /** Basal rate (U/hr) below which lowest_rate_scale is used */
@@ -14,6 +13,7 @@ interface RoundBasalProfile {
   model?: string;
 }
 
+/** Round a basal rate to the pump's supported increment based on pump model and rate magnitude */
 export const round_basal = (basal: number, profile?: RoundBasalProfile): number => {
 
     /* x23 and x54 pumps change basal increment depending on how much basal is being delivered:
@@ -22,36 +22,19 @@ export const round_basal = (basal: number, profile?: RoundBasalProfile): number 
             0.1u for 10 < x
       To round numbers nicely for the pump, use a scale factor of (1 / increment). */
 
-    let lowest_rate_scale = BASAL_SCALE_DEFAULT;
+    let lowestRateScale = BASAL_SCALE_DEFAULT;
 
-    // Has profile even been passed in?
-    if (profile)
-    {
-        // Make sure optional model has been set
-        if (typeof profile.model === 'string')
-        {
-            if (endsWith(profile.model, "54") || endsWith(profile.model, "23"))
-            {
-                lowest_rate_scale = BASAL_SCALE_MEDTRONIC;
-            }
+    if (profile && typeof profile.model === 'string') {
+        if (profile.model.endsWith("54") || profile.model.endsWith("23")) {
+            lowestRateScale = BASAL_SCALE_MEDTRONIC;
         }
     }
 
-    let rounded_basal = basal;
-    // Shouldn't need to check against 0 as pumps can't deliver negative basal anyway?
-    if (basal < BASAL_RATE_LOW_THRESHOLD)
-    {
-        rounded_basal = Math.round(basal * lowest_rate_scale) / lowest_rate_scale;
+    if (basal < BASAL_RATE_LOW_THRESHOLD) {
+        return Math.round(basal * lowestRateScale) / lowestRateScale;
     }
-    else if (basal < BASAL_RATE_MID_THRESHOLD)
-    {
-        rounded_basal = Math.round(basal * BASAL_SCALE_MID_RANGE) / BASAL_SCALE_MID_RANGE;
+    if (basal < BASAL_RATE_MID_THRESHOLD) {
+        return Math.round(basal * BASAL_SCALE_MID_RANGE) / BASAL_SCALE_MID_RANGE;
     }
-    else
-    {
-        rounded_basal = Math.round(basal * BASAL_SCALE_HIGH_RANGE) / BASAL_SCALE_HIGH_RANGE;
-    }
-
-    return rounded_basal;
-}
-
+    return Math.round(basal * BASAL_SCALE_HIGH_RANGE) / BASAL_SCALE_HIGH_RANGE;
+};

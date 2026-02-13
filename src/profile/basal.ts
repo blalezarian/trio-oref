@@ -1,4 +1,3 @@
-
 /** Rounding scale for basal rate precision (3 decimal places) */
 const BASAL_ROUND_SCALE = 1000;
 
@@ -29,9 +28,9 @@ function sortByScheduleIndex(schedules: BasalScheduleEntry[]): BasalScheduleEntr
 
 /** Find the active rate from a sorted schedule for a given minute-of-day */
 function findActiveRate(sorted: BasalScheduleEntry[], minuteOfDay: number): number {
-    for (let i = 0; i < sorted.length - 1; i++) {
-        if (minuteOfDay >= (sorted[i].minutes ?? 0) && minuteOfDay < (sorted[i + 1].minutes ?? 0)) {
-            return sorted[i].rate;
+    for (let entryIdx = 0; entryIdx < sorted.length - 1; entryIdx++) {
+        if (minuteOfDay >= (sorted[entryIdx].minutes ?? 0) && minuteOfDay < (sorted[entryIdx + 1].minutes ?? 0)) {
+            return sorted[entryIdx].rate;
         }
     }
     return sorted[sorted.length - 1].rate;
@@ -46,7 +45,7 @@ function getCurrentBasalRate(schedules: BasalScheduleEntry[], now: Date = new Da
     const sorted = sortByScheduleIndex(schedules);
     const lastRate = sorted[sorted.length - 1].rate;
     if (lastRate === 0) {
-        console.error("ERROR: bad basal schedule", schedules);
+        console.error(`ERROR: bad basal schedule ${JSON.stringify(schedules)}`);
         return;
     }
     const basalRate = findActiveRate(sorted, toMinuteOfDay(now));

@@ -141,7 +141,7 @@ describe('getCurrentBasalRate', () => {
             { i: 1, minutes: 360, rate: 0 },
         ];
         expect(getCurrentBasalRate(badSchedules, localTime(12, 0))).toBeUndefined();
-        expect(errorSpy).toHaveBeenCalledWith('ERROR: bad basal schedule', badSchedules);
+        expect(errorSpy).toHaveBeenCalledWith(`ERROR: bad basal schedule ${JSON.stringify(badSchedules)}`);
         errorSpy.mockRestore();
     });
 

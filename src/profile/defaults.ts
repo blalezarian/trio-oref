@@ -17,7 +17,8 @@ import {
 // defaults()
 // ---------------------------------------------------------------------------
 
-function defaults (): ProfileDefaults {
+/** Return the full set of default profile values */
+function defaults(): ProfileDefaults {
   return {
     max_iob: 0 // if max_iob is not provided, will default to zero
     , max_daily_safety_multiplier: DEFAULT_MAX_DAILY_SAFETY_MULTIPLIER
@@ -92,7 +93,8 @@ function defaults (): ProfileDefaults {
 // displayedDefaults()
 // ---------------------------------------------------------------------------
 
-function displayedDefaults (): Partial<ProfileDefaults> {
+/** Return the subset of default profile values intended for display to the user */
+function displayedDefaults(): Partial<ProfileDefaults> {
     const allDefaults = defaults();
     const profile: Record<string, unknown> = { };
 
@@ -126,7 +128,7 @@ function displayedDefaults (): Partial<ProfileDefaults> {
     profile.maxMealAbsorptionTime = allDefaults.maxMealAbsorptionTime;
 
     console.error(profile);
-    return profile as Partial<ProfileDefaults>
+    return profile as Partial<ProfileDefaults>;
 }
 
 export { defaults, displayedDefaults };
