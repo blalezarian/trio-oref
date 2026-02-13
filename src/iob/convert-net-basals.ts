@@ -1,5 +1,5 @@
 
-import { basalLookup } from '../profile/basal';
+import { getCurrentBasalRate } from '../profile/basal';
 import _ from 'lodash';
 import type {
     IobProfile,
@@ -28,7 +28,7 @@ export function convertNetBasalsToTreatments(
 
             let currentRate: number = profile_data.current_basal;
             if (!_.isEmpty(profile_data.basalprofile)) {
-                currentRate = basalLookup(profile_data.basalprofile,new Date(currentItem.timestamp!))!;
+                currentRate = getCurrentBasalRate(profile_data.basalprofile,new Date(currentItem.timestamp!))!;
             }
 
             if (profile_data.min_bg !== undefined && profile_data.max_bg !== undefined) {

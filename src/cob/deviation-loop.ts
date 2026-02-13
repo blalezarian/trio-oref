@@ -1,4 +1,4 @@
-import { basalLookup } from '../profile/basal';
+import { getCurrentBasalRate } from '../profile/basal';
 import get_iob from '../iob/index';
 import { isfLookup } from '../profile/isf';
 import { calculateBGImpact, calculateDeviation } from '../utils/glucose-math';
@@ -65,7 +65,7 @@ export function analyzeAbsorption(
 
         avgDelta = Math.round(avgDelta! * 100) / 100;
         iob_inputs.clock=bgTime;
-        iob_inputs.profile.current_basal = basalLookup(basalprofile, bgTime)!;
+        iob_inputs.profile.current_basal = getCurrentBasalRate(basalprofile, bgTime)!;
         const iob = get_iob(iob_inputs as IobInputs, true, treatments)[0];
 
         const bgImpact = calculateBGImpact(iob.activity, sens);

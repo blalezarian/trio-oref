@@ -1,7 +1,7 @@
 
 
 
-import { basalLookup, maxDailyBasal, maxBasalLookup } from './basal';
+import { getCurrentBasalRate, getMaxDailyBasalRate, getMaxBasalRate } from './basal';
 import { bgTargetsLookup } from './targets';
 import type { TempTarget, TargetsInputs } from './targets';
 import { isfLookup } from './isf';
@@ -256,15 +256,15 @@ function generate (inputs: ProfileInputs, opts?: ProfileOpts): ProfileDefaults |
   }
   profile.skip_neutral_temps = inputs.skip_neutral_temps!;
 
-  profile.current_basal = basalLookup(inputs.basals);
+  profile.current_basal = getCurrentBasalRate(inputs.basals);
   profile.basalprofile = inputs.basals;
 
   _.forEach(profile.basalprofile, (basalentry: { rate: number; [key: string]: unknown }) => {
     basalentry.rate = Math.round(basalentry.rate * 1000) / 1000;
   });
 
-  profile.max_daily_basal = maxDailyBasal(inputs);
-  profile.max_basal = maxBasalLookup(inputs);
+  profile.max_daily_basal = getMaxDailyBasalRate(inputs);
+  profile.max_basal = getMaxBasalRate(inputs);
   if (profile.current_basal === 0) {
     console.error("current_basal of",profile.current_basal,"is not supported");
     return -1;

@@ -1,4 +1,4 @@
-import { basalLookup } from '../profile/basal';
+import { getCurrentBasalRate } from '../profile/basal';
 import get_iob from '../iob/index';
 import { isfLookup } from '../profile/isf';
 import tz from 'moment-timezone';
@@ -97,7 +97,7 @@ export function analyzeDeviations(
 
         avgDelta = parseFloat(avgDelta.toFixed(2));
         iob_inputs.clock=bgTime;
-        iob_inputs.profile.current_basal = basalLookup(basalprofile, bgTime)!;
+        iob_inputs.profile.current_basal = getCurrentBasalRate(basalprofile, bgTime)!;
         // make sure autosens doesn't use temptarget-adjusted insulin calculations
         iob_inputs.profile.temptargetSet = false;
         const iob = get_iob(iob_inputs as IobInputs, true, treatments)[0];

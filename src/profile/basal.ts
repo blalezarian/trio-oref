@@ -1,6 +1,4 @@
 
-import _ from 'lodash';
-
 /** Rounding scale for basal rate precision (3 decimal places) */
 const BASAL_ROUND_SCALE = 1000;
 
@@ -15,43 +13,65 @@ interface BasalInputs {
   settings: { maxBasal: number };
 }
 
-/* Return basal rate(U / hr) at the provided timeOfDay */
-function basalLookup (schedules: BasalScheduleEntry[], now?: Date): number | undefined {
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
 
-    let nowDate = now;
+/** Convert a Date to its minute-of-day (0–1439) */
+function toMinuteOfDay(date: Date): number {
+    return date.getHours() * 60 + date.getMinutes();
+}
 
-    if (now === undefined) {
-      nowDate = new Date();
-    }
+/** Sort basal schedule entries by their schedule index (copies, does not mutate) */
+function sortByScheduleIndex(schedules: BasalScheduleEntry[]): BasalScheduleEntry[] {
+    return [...schedules].sort((a, b) => (a.i ?? 0) - (b.i ?? 0));
+}
 
-    const basalprofile_data = _.sortBy(schedules, (o: BasalScheduleEntry) => { return o.i; });
-    let basalRate = basalprofile_data[basalprofile_data.length-1].rate
-    if (basalRate === 0) {
-        console.error("ERROR: bad basal schedule",schedules);
-        return;
-    }
-    const nowMinutes = nowDate!.getHours() * 60 + nowDate!.getMinutes();
-
-    for (let i = 0; i < basalprofile_data.length - 1; i++) {
-        if ((nowMinutes >= basalprofile_data[i].minutes!) && (nowMinutes < basalprofile_data[i + 1].minutes!)) {
-            basalRate = basalprofile_data[i].rate;
-            break;
+/** Find the active rate from a sorted schedule for a given minute-of-day */
+function findActiveRate(sorted: BasalScheduleEntry[], minuteOfDay: number): number {
+    for (let i = 0; i < sorted.length - 1; i++) {
+        if (minuteOfDay >= (sorted[i].minutes ?? 0) && minuteOfDay < (sorted[i + 1].minutes ?? 0)) {
+            return sorted[i].rate;
         }
     }
-    return Math.round(basalRate*BASAL_ROUND_SCALE)/BASAL_ROUND_SCALE;
+    return sorted[sorted.length - 1].rate;
 }
 
+// ---------------------------------------------------------------------------
+// Main functions
+// ---------------------------------------------------------------------------
 
-function maxDailyBasal (inputs: BasalInputs): number {
-    const maxRate = _.maxBy(inputs.basals, (o: BasalScheduleEntry) => { return Number(o.rate); });
-    return (Number(maxRate!.rate) *BASAL_ROUND_SCALE)/BASAL_ROUND_SCALE;
+/** Return basal rate (U/hr) at the provided time of day */
+function getCurrentBasalRate(schedules: BasalScheduleEntry[], now: Date = new Date()): number | undefined {
+    const sorted = sortByScheduleIndex(schedules);
+    const lastRate = sorted[sorted.length - 1].rate;
+    if (lastRate === 0) {
+        console.error("ERROR: bad basal schedule", schedules);
+        return;
+    }
+    const basalRate = findActiveRate(sorted, toMinuteOfDay(now));
+    return Math.round(basalRate * BASAL_ROUND_SCALE) / BASAL_ROUND_SCALE;
 }
 
-/*Return maximum daily basal rate(U / hr) from profile.basals */
+/** Return the highest rate in the basal schedule */
+function getMaxDailyBasalRate(inputs: BasalInputs): number {
+    const maxRate = inputs.basals.reduce((max, entry) =>
+        Number(entry.rate) > Number(max.rate) ? entry : max
+    );
+    return (Number(maxRate.rate) * BASAL_ROUND_SCALE) / BASAL_ROUND_SCALE;
+}
 
-function maxBasalLookup (inputs: BasalInputs): number {
+/** Return the pump's configured max basal rate */
+function getMaxBasalRate(inputs: BasalInputs): number {
     return inputs.settings.maxBasal;
 }
 
-
-export { maxDailyBasal, maxBasalLookup, basalLookup };
+export {
+    getCurrentBasalRate,
+    getMaxDailyBasalRate,
+    getMaxBasalRate,
+    sortByScheduleIndex,
+    findActiveRate,
+    toMinuteOfDay,
+};
+export type { BasalScheduleEntry, BasalInputs };
