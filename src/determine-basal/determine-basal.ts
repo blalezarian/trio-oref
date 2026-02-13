@@ -166,6 +166,7 @@ export function determine_basal(
 
     // Initialize result (requestedTemp) object. Has to be done after eventualBG is calculated.
     result = {
+        reason: cgmValidation.reason ?? '',
         temp: 'absolute',
         bg,
         tick,
@@ -183,7 +184,7 @@ export function determine_basal(
         minGuardBG: undefined,
         minPredBG: undefined,
         threshold: convert_bg(threshold, profile),
-    } as unknown as DetermineBasalResult;
+    } as DetermineBasalResult;
 
     let enableSMB = false;
 
