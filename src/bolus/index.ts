@@ -2,226 +2,289 @@
 import type { PumpHistoryEvent, PumpHistoryEventType } from '../types/index';
 import { MS_PER_MINUTE } from '../shared/constants';
 
+// ---------------------------------------------------------------------------
+// Constants
+// ---------------------------------------------------------------------------
+
 /** Minutes window for grouping related bolus events */
 const BOLUS_GROUPING_MINUTES = 2;
-/** Percentage multiplier */
-const PERCENT = 100;
+/** Multiplier to convert ratio to percentage */
+const PERCENT_MULTIPLIER = 100;
+/** Path to IOB monitor file (read at runtime on device) */
+const IOB_FILE_PATH = './monitor/iob.json';
 
-interface BolusTreatment {
-  _type: PumpHistoryEventType | (string & {});
-  timestamp: string;
-  [key: string]: unknown;
+// ---------------------------------------------------------------------------
+// Types
+// ---------------------------------------------------------------------------
+
+export interface BolusTreatment {
+    _type: PumpHistoryEventType | (string & {});
+    timestamp: string;
+    /** Pass-through pump history fields */
+    [key: string]: unknown;
 }
 
-interface BolusResult {
-  eventType?: string;
-  insulin?: string;
-  carbs?: string;
-  ratio?: string;
-  bg?: string;
-  glucose?: string;
-  glucoseType?: string;
-  duration?: string;
-  notes?: string;
-  created_at?: string;
-  timestamp?: string;
-  [key: string]: unknown;
+export interface BolusResult {
+    eventType?: string;
+    insulin?: string;
+    carbs?: string;
+    ratio?: string;
+    bg?: string;
+    glucose?: string;
+    glucoseType?: string;
+    duration?: string;
+    notes?: string;
+    created_at?: string;
+    timestamp?: string;
+    /** Pass-through pump history fields */
+    [key: string]: unknown;
 }
 
 interface BolusAccumulator {
-  carbs?: string;
-  ratio?: string;
-  bg?: string;
-  glucose?: string;
-  glucoseType?: string;
-  wizard?: PumpHistoryEvent;
-  created_at?: string;
-  timestamp?: string;
-  duration?: string;
-  square?: PumpHistoryEvent;
-  bolus?: PumpHistoryEvent;
-  eventType?: string;
-  insulin?: number | string;
-  notes?: string[] | string;
-  [key: string]: unknown;
+    // --- Wizard data ---
+    carbs?: string;
+    ratio?: string;
+    bg?: string;
+    glucose?: string;
+    glucoseType?: string;
+    wizard?: PumpHistoryEvent;
+
+    // --- Bolus data ---
+    duration?: string;
+    square?: PumpHistoryEvent;
+    bolus?: PumpHistoryEvent;
+
+    // --- Result fields ---
+    eventType?: string;
+    insulin?: string;
+    notes?: string;
+    created_at?: string;
+    timestamp?: string;
 }
 
-function reduce (treatments: BolusTreatment[]): BolusResult[] {
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
 
-  const results: BolusResult[] = [ ];
+/** Check if an event was already processed in a previous bolus group */
+export function wasAlreadyProcessed(
+    event: BolusTreatment,
+    processedEvents: BolusTreatment[],
+): boolean {
+    return processedEvents.some(
+        (processed) => processed.timestamp === event.timestamp
+            && event._type === processed._type,
+    );
+}
 
-  let state: BolusAccumulator = { };
-  const previous: BolusTreatment[] = [ ];
+/** Find events within a time window from an origin event */
+export function findRelatedEvents(
+    origin: BolusTreatment,
+    candidates: BolusTreatment[],
+    windowMinutes: number,
+): BolusTreatment[] {
+    const windowMs = windowMinutes * MS_PER_MINUTE;
+    const originMs = Date.parse(origin.timestamp);
+    return candidates.slice().filter(
+        (candidate) => originMs - Date.parse(candidate.timestamp) <= windowMs,
+    );
+}
 
-  function in_previous (ev: BolusTreatment): boolean {
-    let found = false;
-    previous.forEach((elem: BolusTreatment) => {
-      if (elem.timestamp === ev.timestamp && ev._type === elem._type) {
-        found = true;
-      }
-    });
+/** Finalize a bolus group accumulator into a result with annotations */
+export function finalizeBolusGroup(accumulator: BolusAccumulator): BolusResult {
+    accumulator.eventType = '<none>';
 
-    return found;
-  }
+    // --- Compute total insulin ---
+    const squareAmount = accumulator.square
+        ? (accumulator.square.amount as number)
+        : 0;
+    const bolusAmount = accumulator.bolus
+        ? (accumulator.bolus.amount as number)
+        : 0;
+    const totalInsulin = squareAmount + bolusAmount;
 
-  function within_minutes_from (origin: BolusTreatment, tail: BolusTreatment[], minutes: number): BolusTreatment[] {
-    const ms = minutes * MS_PER_MINUTE;
-    const ts = Date.parse(origin.timestamp);
-    return /* candidates */ tail.slice( ).filter((elem: BolusTreatment) => {
-      const dt = Date.parse(elem.timestamp);
-      return ts - dt <= ms;
-    });
-  }
+    const hasInsulin = totalInsulin > 0;
+    const hasCarbs = !!accumulator.carbs && Number(accumulator.carbs) > 0;
 
-  function bolus (ev: PumpHistoryEvent, remaining: PumpHistoryEvent[]): void {
-    if (!ev) { console.error('XXX', ev, remaining); return; }
-    if (ev._type === 'BolusWizard') {
-      state.carbs = ev.carb_input!.toString( );
-      state.ratio = ev.carb_ratio!.toString( );
-      if (ev.bg) {
-        state.bg = ev.bg.toString( );
-        state.glucose = ev.bg.toString( );
-        state.glucoseType = ev._type;
-      }
-      state.wizard = ev;
-      state.created_at = state.timestamp = ev.timestamp;
-      previous.push(ev as BolusTreatment);
+    // --- Build annotations ---
+    const annotations: string[] = [];
+    const addNote = (...args: unknown[]): void => {
+        annotations.push(args.join(' '));
+    };
+
+    // Bolus type classification
+    if (accumulator.square && accumulator.bolus) {
+        addNote('DualWave bolus for', accumulator.square.duration, 'minutes');
+    } else if (accumulator.square && accumulator.wizard) {
+        addNote('Square wave bolus for', accumulator.square.duration, 'minutes');
+    } else if (accumulator.square) {
+        addNote('Solo Square wave bolus for', accumulator.square.duration, 'minutes');
+        addNote('No bolus wizard used.');
+    } else if (accumulator.bolus && accumulator.wizard) {
+        addNote('Normal bolus with wizard.');
+    } else if (accumulator.bolus) {
+        addNote('Normal bolus (solo, no bolus wizard).');
     }
 
-    if (ev._type === 'Bolus') {
-      state.duration = ev.duration!.toString( );
-      // if (state.square || state.bolus) { }
-      // state.insulin = (state.insulin ? state.insulin : 0) + ev.amount;
-      if (ev.duration && ev.duration > 0) {
-        state.square = ev;
-      } else {
-        if (state.bolus) {
-          state.bolus.amount = state.bolus.amount! + ev.amount!;
-        } else
-          state.bolus = ev;
-      }
-      state.created_at = state.timestamp = ev.timestamp;
-      previous.push(ev as BolusTreatment);
-    }
-
-    if (remaining && remaining.length > 0) {
-      if (state.bolus && state.wizard) {
-        // skip to end
-        return bolus({}, []);
-      }
-      // keep recursing
-      return bolus(remaining[0], remaining.slice(1));
-    } else {
-      // console.error("state", state);
-      // console.error("remaining", remaining);
-      state.eventType = '<none>';
-
-      state.insulin = ((state.insulin ? state.insulin : 0) as number) + (state.square ? state.square.amount! : 0) +
-            (state.bolus ? state.bolus.amount! : 0);
-      const has_insulin = state.insulin && (state.insulin as number) > 0;
-      const has_carbs = state.carbs && Number(state.carbs) > 0;
-      if (state.square && state.bolus) {
-        annotate("DualWave bolus for", state.square.duration, "minutes");
-      } else if (state.square && state.wizard) {
-        annotate("Square wave bolus for", state.square.duration, "minutes");
-      } else if (state.square) {
-        annotate("Solo Square wave bolus for", state.square.duration, "minutes");
-        annotate("No bolus wizard used.");
-      } else if (state.bolus && state.wizard) {
-        annotate("Normal bolus with wizard.");
-      } else if (state.bolus) {
-        annotate("Normal bolus (solo, no bolus wizard).");
-      }
-
-      if (has_insulin) {
-        const iobFile = "./monitor/iob.json";
+    // Read IOB file if insulin was delivered
+    if (hasInsulin) {
         const fs = require('fs');
-        if (fs.existsSync(iobFile)) {
-            const iob = JSON.parse(fs.readFileSync(iobFile));
+        if (fs.existsSync(IOB_FILE_PATH)) {
+            const iob = JSON.parse(fs.readFileSync(IOB_FILE_PATH));
             if (iob && Array.isArray(iob) && iob.length) {
-                annotate("Calculated IOB:", iob[0].iob);
+                addNote('Calculated IOB:', iob[0].iob);
             }
         }
-      }
+    }
 
-      if (state.bolus) {
-        annotate("Programmed bolus", state.bolus.programmed);
-        annotate("Delivered bolus", state.bolus.amount);
-        annotate("Percent delivered: ", (state.bolus.amount!/state.bolus.programmed! * PERCENT).toString( ) + '%');
-      }
-      if (state.square) {
-        annotate("Programmed square", state.square.programmed);
-        annotate("Delivered square", state.square.amount);
-        annotate("Success: ", (state.square.amount!/state.square.programmed! * PERCENT).toString( ) + '%');
-      }
-      if (state.wizard) {
-        state.created_at = state.wizard.timestamp;
-        annotate("Food estimate", state.wizard.food_estimate);
-        annotate("Correction estimate", state.wizard.correction_estimate);
-        annotate("Bolus estimate", state.wizard.bolus_estimate);
-        annotate("Target low", state.wizard.bg_target_low);
-        annotate("Target high", state.wizard.bg_target_high);
-        const delta = state.wizard.sensitivity! * (state.insulin as number) * -1;
-        annotate("Hypothetical glucose delta", delta);
-        if (state.bg && Number(state.bg) > 0) {
-          annotate('Glucose was:', state.bg);
-          // state.glucose = state.bg;
-          // TODO: annotate prediction
+    // Delivery details
+    if (accumulator.bolus) {
+        addNote('Programmed bolus', accumulator.bolus.programmed);
+        addNote('Delivered bolus', accumulator.bolus.amount);
+        const bolusPercent = (accumulator.bolus.amount as number)
+            / (accumulator.bolus.programmed as number) * PERCENT_MULTIPLIER;
+        addNote('Percent delivered: ', bolusPercent.toString() + '%');
+    }
+    if (accumulator.square) {
+        addNote('Programmed square', accumulator.square.programmed);
+        addNote('Delivered square', accumulator.square.amount);
+        const squarePercent = (accumulator.square.amount as number)
+            / (accumulator.square.programmed as number) * PERCENT_MULTIPLIER;
+        addNote('Success: ', squarePercent.toString() + '%');
+    }
+
+    // Wizard details
+    if (accumulator.wizard) {
+        accumulator.created_at = accumulator.wizard.timestamp;
+        addNote('Food estimate', accumulator.wizard.food_estimate);
+        addNote('Correction estimate', accumulator.wizard.correction_estimate);
+        addNote('Bolus estimate', accumulator.wizard.bolus_estimate);
+        addNote('Target low', accumulator.wizard.bg_target_low);
+        addNote('Target high', accumulator.wizard.bg_target_high);
+        const hypotheticalDelta = (accumulator.wizard.sensitivity as number) * totalInsulin * -1;
+        addNote('Hypothetical glucose delta', hypotheticalDelta);
+        if (accumulator.bg && Number(accumulator.bg) > 0) {
+            addNote('Glucose was:', accumulator.bg);
         }
-      }
-      if (has_carbs && has_insulin) {
-        state.eventType = 'Meal Bolus';
-      } else {
-        if (has_carbs && !has_insulin) {
-          state.eventType = 'Carb Correction';
-        }
-        if (!has_carbs && has_insulin) {
-          state.eventType = 'Correction Bolus';
-        }
-      }
-      if (state.notes && (state.notes as string[]).length > 0) {
-        state.notes = (state.notes as string[]).join("\n");
-      }
-      if (state.insulin) {
-        state.insulin = (state.insulin as number).toString( );
-      }
+    }
 
-      results.push(state as BolusResult);
-      state = { };
+    // --- Classify event type ---
+    if (hasCarbs && hasInsulin) {
+        accumulator.eventType = 'Meal Bolus';
+    } else if (hasCarbs) {
+        accumulator.eventType = 'Carb Correction';
+    } else if (hasInsulin) {
+        accumulator.eventType = 'Correction Bolus';
     }
-  }
 
-  function annotate (...args: unknown[]): void {
-    const msg = args.join(' ');
-    if (!state.notes) {
-      state.notes = [ ];
+    // --- Finalize fields ---
+    if (annotations.length > 0) {
+        accumulator.notes = annotations.join('\n');
     }
-    (state.notes as string[]).push(msg);
-  }
 
-  function step (current: BolusTreatment, index: number): void {
-    if (in_previous(current)) {
-      return;
+    // Preserve original behavior: stores raw number 0 when no insulin,
+    // string representation when > 0
+    (accumulator as Record<string, unknown>).insulin = totalInsulin;
+    if (totalInsulin) {
+        accumulator.insulin = totalInsulin.toString();
     }
-    switch (current._type) {
-      case 'Bolus':
-      case 'BolusWizard': {
-        const tail = within_minutes_from(current, treatments.slice(index+1), BOLUS_GROUPING_MINUTES);
-        bolus(current, tail);
-        break;
-      }
-      case 'JournalEntryMealMarker':
-        (current as BolusResult).carbs = current.carb_input as string;
-        (current as BolusResult).eventType = 'Carb Correction';
-        results.push(current as BolusResult);
-        break;
-      default:
-        results.push(current as BolusResult);
-        break;
-    }
-  }
-  treatments.forEach(step);
-  return results;
+
+    return accumulator as unknown as BolusResult;
 }
 
-export default reduce;
+/** Process a group of related bolus events into a single result */
+export function processBolusGroup(
+    events: PumpHistoryEvent[],
+    processedEvents: BolusTreatment[],
+): BolusResult {
+    const accumulator: BolusAccumulator = {};
+
+    for (const event of events) {
+        if (!event) {
+            console.error('XXX', event, events);
+            break;
+        }
+
+        if (event._type === 'BolusWizard') {
+            accumulator.carbs = (event.carb_input as number).toString();
+            accumulator.ratio = (event.carb_ratio as number).toString();
+            if (event.bg) {
+                accumulator.bg = event.bg.toString();
+                accumulator.glucose = event.bg.toString();
+                accumulator.glucoseType = event._type;
+            }
+            accumulator.wizard = event;
+            accumulator.created_at = accumulator.timestamp = event.timestamp;
+            processedEvents.push(event as BolusTreatment);
+        }
+
+        if (event._type === 'Bolus') {
+            accumulator.duration = (event.duration as number).toString();
+            if (event.duration && event.duration > 0) {
+                accumulator.square = event;
+            } else {
+                if (accumulator.bolus) {
+                    // Mutates input event, matching original behavior
+                    accumulator.bolus.amount = (accumulator.bolus.amount as number)
+                        + (event.amount as number);
+                } else {
+                    accumulator.bolus = event;
+                }
+            }
+            accumulator.created_at = accumulator.timestamp = event.timestamp;
+            processedEvents.push(event as BolusTreatment);
+        }
+
+        if (accumulator.bolus && accumulator.wizard) break;
+    }
+
+    return finalizeBolusGroup(accumulator);
+}
+
+// ---------------------------------------------------------------------------
+// Main function
+// ---------------------------------------------------------------------------
+
+/** Reduce pump history events into categorized bolus results */
+export function reduceBoluses(treatments: BolusTreatment[]): BolusResult[] {
+    const results: BolusResult[] = [];
+    const processedEvents: BolusTreatment[] = [];
+
+    for (const [treatmentIdx, treatment] of treatments.entries()) {
+        if (wasAlreadyProcessed(treatment, processedEvents)) continue;
+
+        switch (treatment._type) {
+            case 'Bolus':
+            case 'BolusWizard': {
+                const relatedEvents = findRelatedEvents(
+                    treatment,
+                    treatments.slice(treatmentIdx + 1),
+                    BOLUS_GROUPING_MINUTES,
+                );
+                const bolusGroup = [
+                    treatment,
+                    ...relatedEvents,
+                ] as PumpHistoryEvent[];
+                results.push(processBolusGroup(bolusGroup, processedEvents));
+                break;
+            }
+            case 'JournalEntryMealMarker':
+                // Mutates input, matching original behavior
+                (treatment as BolusResult).carbs = treatment.carb_input as string;
+                (treatment as BolusResult).eventType = 'Carb Correction';
+                results.push(treatment as BolusResult);
+                break;
+            default:
+                results.push(treatment as BolusResult);
+                break;
+        }
+    }
+
+    return results;
+}
+
+// ---------------------------------------------------------------------------
+// Exports
+// ---------------------------------------------------------------------------
+
+export default reduceBoluses;
