@@ -18,6 +18,7 @@
   "include": [
     "src/**/*.ts",
     "tests/characterization/**/*.ts",
+    "tests/unit/**/*.ts",
     "tests/types/**/*.ts"
   ],
   "exclude": [

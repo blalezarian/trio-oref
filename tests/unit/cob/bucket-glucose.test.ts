@@ -152,7 +152,7 @@ describe('interpolateMissingPoints', () => {
         expect(bucketed_data[1].glucose).toBeGreaterThan(100);
         expect(bucketed_data[1].glucose).toBeLessThan(200);
         // Second point should be closer to 200
-        expect(bucketed_data[2].glucose).toBeGreaterThan(bucketed_data[1].glucose);
+        expect(bucketed_data[2].glucose).toBeGreaterThan(bucketed_data[1].glucose!);
         // Check that bucketIndex is returned correctly
         expect(result.bucketIndex).toBe(2);
     });

@@ -1,9 +1,9 @@
-'use strict';
+import { describe, it, expect } from 'vitest';
+import reduceBoluses from '../../src/bolus/index';
+import type { BolusTreatment, BolusResult } from '../../src/bolus/index';
 
-var should = require('should');
-
-describe('bolus', function () {
-    var bolushistory = [
+describe('bolus', () => {
+    const bolushistory: BolusTreatment[] = [
         {
             "_type": "Bolus",
             "_description": "Bolus 2017-04-12T12:49:49 head[4], body[0] op[0x01]",
@@ -29,10 +29,9 @@ describe('bolus', function () {
             "_date": "752f4c4c11"
         }
     ];
-    it('should not skip closely-timed boluses', function () {
-        var reduce_boluses = require('../src/bolus/index').default;
-        var vals = reduce_boluses(bolushistory);
-        vals.length.should.equal(1);
-        vals[0].insulin.should.equal('3.2');
-    })
+    it('should not skip closely-timed boluses', () => {
+        const vals: BolusResult[] = reduceBoluses(bolushistory);
+        expect(vals.length).toBe(1);
+        expect(vals[0].insulin).toBe('3.2');
+    });
 });

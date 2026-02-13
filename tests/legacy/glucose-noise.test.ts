@@ -1,10 +1,8 @@
-'use strict';
+import { describe, it, expect } from 'vitest';
 
-require('should');
+import stats from '../../src/deprecated/calc-glucose-stats';
 
-var stats = require('../src/deprecated/calc-glucose-stats').default;
-
-describe('NOISE', function() {
+describe('NOISE', () => {
   it('should calculate Clean Sensor Noise', () => {
     const glucoseHist = [{
       status: 0,
@@ -84,13 +82,13 @@ describe('NOISE', function() {
 
     glucoseHist.push(currSGV);
 
-    var options = {
+    const options = {
       glucose_hist: glucoseHist
-    };
+    } as any;
 
     const newHist = stats.updateGlucoseStats(options);
 
-    newHist[0].noise.should.equal(1);
+    expect(newHist[0].noise).toBe(1);
   });
 
   it('should calculate Medium Sensor Noise', () => {
@@ -172,13 +170,12 @@ describe('NOISE', function() {
 
     glucoseHist.push(currSGV);
 
-    var options = {
+    const options = {
       glucose_hist: glucoseHist
-    };
+    } as any;
 
     const newHist = stats.updateGlucoseStats(options);
 
-    newHist[0].noise.should.equal(3);
+    expect(newHist[0].noise).toBe(3);
   });
 });
-

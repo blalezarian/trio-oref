@@ -89,7 +89,7 @@ describe('validateIOBAndTemps', () => {
     it('returns earlyReturn when iob_data.activity is undefined', () => {
         const result = { reason: '' } as DetermineBasalResult;
         const iob = makeIOBData();
-        (iob as Record<string, unknown>).activity = undefined;
+        (iob as unknown as Record<string, unknown>).activity = undefined;
 
         const outcome = validateIOBAndTemps(
             iob,
