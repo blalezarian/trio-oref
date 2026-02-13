@@ -2,7 +2,7 @@ import { calcTempTreatments as find_insulin } from '../iob/extract-treatments';
 import { findMealInputs as find_meals } from '../meal/history';
 import { normalizeGlucoseData } from '../utils/glucose-math';
 import { resolveGlucoseTime } from '../utils/time';
-import type { PumpHistoryEvent, GlucoseEntry, CarbTreatment } from '../types/index';
+import type { PumpHistoryEvent, GlucoseEntry, CarbTreatment, ISODateString } from '../types/index';
 import type { IobProfile, HistoryBasalProfileEntry, IobInputs, IobTreatment } from '../iob/types';
 import type { TempTarget } from '../profile/targets';
 import {
@@ -22,7 +22,7 @@ export interface AutosensInputs {
     iob_inputs: {
         profile: IobProfile;
         history: PumpHistoryEvent[];
-        clock: string | Date;
+        clock: ISODateString;
     };
     basalprofile: HistoryBasalProfileEntry[];
     carbs: PumpHistoryEvent[];

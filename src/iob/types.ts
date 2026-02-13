@@ -153,7 +153,7 @@ export interface IobIndexEntry {
         date: EpochMillis;
         rate?: number;
         duration?: number;
-        started_at?: Date | string;
+        started_at?: Date;
     };
 }
 

@@ -29,6 +29,7 @@ import type {
     Preferences,
     DetermineBasalResult,
     TrioCustomVariables,
+    ISODateString,
 } from '../types/index';
 
 import {
@@ -56,7 +57,7 @@ export function determine_basal(
     tempBasalFunctions: TempBasalFunctions,
     microBolusAllowed: boolean,
     reservoir_data: number | undefined,
-    currentTime: Date | string | undefined,
+    currentTime: Date | ISODateString | undefined,
     _pumphistory: unknown[],
     preferences: Preferences,
     _basalprofile: BasalEntry[] | undefined,

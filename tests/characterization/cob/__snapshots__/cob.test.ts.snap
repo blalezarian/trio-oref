@@ -3,7 +3,7 @@
 exports[`determine-basal/cob (detectCarbAbsorption) characterization tests > BG below 39 skipped > glucose entries below 39 are skipped in the bucketing loop 1`] = `
 {
   "allDeviations": [],
-  "carbsAbsorbed": 4,
+  "carbsAbsorbed": 6,
   "currentDeviation": 0,
   "maxDeviation": 0,
   "minDeviation": 999,
@@ -27,7 +27,7 @@ exports[`determine-basal/cob (detectCarbAbsorption) characterization tests > buc
 exports[`determine-basal/cob (detectCarbAbsorption) characterization tests > carbImpactTime filter: entries more recent than carbImpactTime skipped > skips BG entries that are after carbImpactTime (hoursAgo < 0) 1`] = `
 {
   "allDeviations": [],
-  "carbsAbsorbed": 4,
+  "carbsAbsorbed": 6,
   "currentDeviation": 2.67,
   "maxDeviation": 0,
   "minDeviation": 999,
@@ -46,7 +46,7 @@ exports[`determine-basal/cob (detectCarbAbsorption) characterization tests > car
     2,
     2,
   ],
-  "carbsAbsorbed": 12,
+  "carbsAbsorbed": 14,
   "currentDeviation": 2,
   "maxDeviation": 2,
   "minDeviation": 2,
@@ -61,8 +61,9 @@ exports[`determine-basal/cob (detectCarbAbsorption) characterization tests > car
     3,
     3,
     3,
+    3,
   ],
-  "carbsAbsorbed": 6,
+  "carbsAbsorbed": 8,
   "currentDeviation": 3,
   "maxDeviation": 3,
   "minDeviation": 3,
@@ -74,7 +75,7 @@ exports[`determine-basal/cob (detectCarbAbsorption) characterization tests > car
 exports[`determine-basal/cob (detectCarbAbsorption) characterization tests > display_time field compatibility > uses display_time instead of dateString for timestamps 1`] = `
 {
   "allDeviations": [],
-  "carbsAbsorbed": 6,
+  "carbsAbsorbed": 8,
   "currentDeviation": 0,
   "maxDeviation": 0,
   "minDeviation": 999,
@@ -98,7 +99,7 @@ exports[`determine-basal/cob (detectCarbAbsorption) characterization tests > emp
 exports[`determine-basal/cob (detectCarbAbsorption) characterization tests > falling BG > glucose falling produces negative deviations 1`] = `
 {
   "allDeviations": [],
-  "carbsAbsorbed": 6,
+  "carbsAbsorbed": 8,
   "currentDeviation": -8,
   "maxDeviation": 0,
   "minDeviation": 999,
@@ -110,7 +111,7 @@ exports[`determine-basal/cob (detectCarbAbsorption) characterization tests > fal
 exports[`determine-basal/cob (detectCarbAbsorption) characterization tests > first glucose entry below 39 > sets lastbgi to -1 when first glucose entry is below 39 1`] = `
 {
   "allDeviations": [],
-  "carbsAbsorbed": 4,
+  "carbsAbsorbed": 6,
   "currentDeviation": -15,
   "maxDeviation": 0,
   "minDeviation": 999,
@@ -122,7 +123,7 @@ exports[`determine-basal/cob (detectCarbAbsorption) characterization tests > fir
 exports[`determine-basal/cob (detectCarbAbsorption) characterization tests > gap interpolation > glucose entries more than 8 minutes apart triggers interpolation 1`] = `
 {
   "allDeviations": [],
-  "carbsAbsorbed": 8,
+  "carbsAbsorbed": 10,
   "currentDeviation": 5,
   "maxDeviation": 0,
   "minDeviation": 999,
@@ -134,7 +135,7 @@ exports[`determine-basal/cob (detectCarbAbsorption) characterization tests > gap
 exports[`determine-basal/cob (detectCarbAbsorption) characterization tests > glucose entry without display_time or dateString > logs error when BG entry has neither display_time nor dateString 1`] = `
 {
   "allDeviations": [],
-  "carbsAbsorbed": 4,
+  "carbsAbsorbed": 6,
   "currentDeviation": 5.83,
   "maxDeviation": 0,
   "minDeviation": 999,
@@ -149,8 +150,9 @@ exports[`determine-basal/cob (detectCarbAbsorption) characterization tests > lar
     20,
     20,
     20,
+    20,
   ],
-  "carbsAbsorbed": 15,
+  "carbsAbsorbed": 20,
   "currentDeviation": 20,
   "maxDeviation": 20,
   "minDeviation": 20,
@@ -162,7 +164,7 @@ exports[`determine-basal/cob (detectCarbAbsorption) characterization tests > lar
 exports[`determine-basal/cob (detectCarbAbsorption) characterization tests > lastbgTime from glucose_data[lastbgi].display_time > uses display_time from glucose_data when bucketed_data lacks display_time 1`] = `
 {
   "allDeviations": [],
-  "carbsAbsorbed": 8,
+  "carbsAbsorbed": 10,
   "currentDeviation": 5,
   "maxDeviation": 0,
   "minDeviation": 999,
@@ -174,7 +176,7 @@ exports[`determine-basal/cob (detectCarbAbsorption) characterization tests > las
 exports[`determine-basal/cob (detectCarbAbsorption) characterization tests > rising BG after meal > glucose rising 5-10 mg/dL per 5min after meal produces positive deviations and carbsAbsorbed 1`] = `
 {
   "allDeviations": [],
-  "carbsAbsorbed": 6,
+  "carbsAbsorbed": 8,
   "currentDeviation": 8,
   "maxDeviation": 0,
   "minDeviation": 999,
@@ -186,7 +188,7 @@ exports[`determine-basal/cob (detectCarbAbsorption) characterization tests > ris
 exports[`determine-basal/cob (detectCarbAbsorption) characterization tests > sgv field compatibility > uses sgv field when glucose is not present 1`] = `
 {
   "allDeviations": [],
-  "carbsAbsorbed": 6,
+  "carbsAbsorbed": 8,
   "currentDeviation": 0,
   "maxDeviation": 0,
   "minDeviation": 999,
@@ -198,7 +200,7 @@ exports[`determine-basal/cob (detectCarbAbsorption) characterization tests > sgv
 exports[`determine-basal/cob (detectCarbAbsorption) characterization tests > steady BG, no meal > flat glucose with meal in the past produces minimal deviations and near-zero carbsAbsorbed 1`] = `
 {
   "allDeviations": [],
-  "carbsAbsorbed": 6,
+  "carbsAbsorbed": 8,
   "currentDeviation": 0,
   "maxDeviation": 0,
   "minDeviation": 999,

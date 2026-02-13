@@ -3,7 +3,7 @@ import { generate as get_iob } from '../iob/index';
 import { isfLookup } from '../profile/isf';
 import { calculateBGImpact, calculateDeviation } from '../utils/glucose-math';
 import { tempTargetRunning } from './temp-target';
-import type { GlucoseEntry, CarbTreatment } from '../types/index';
+import type { GlucoseEntry, CarbTreatment, ISODateString } from '../types/index';
 import type { IobProfile, HistoryBasalProfileEntry, IobInputs, IobTreatment } from '../iob/types';
 import type { TempTarget } from '../profile/targets';
 import {
@@ -12,6 +12,7 @@ import {
     DEFAULT_AUTOSENS_LOOKBACK,
     AUTOSENS_MIN_VALID_BG,
 } from '../shared/constants';
+import { resolveGlucoseTime } from '../utils/time';
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -56,7 +57,7 @@ export interface DeviationAnalysisResult {
 export function analyzeDeviations(
     bucketed_data: (GlucoseEntry & { mealCarbs?: number })[],
     meals: CarbTreatment[],
-    iob_inputs: { profile: IobProfile; history: unknown[]; clock: string | Date },
+    iob_inputs: { profile: IobProfile; history: unknown[]; clock: ISODateString },
     basalprofile: HistoryBasalProfileEntry[],
     profile: IobProfile,
     treatments: IobTreatment[],
@@ -92,7 +93,10 @@ export function analyzeDeviations(
     const isfProfileData = profile.isfProfile as NonNullable<typeof profile.isfProfile>;
 
     for (let bucketIdx = TRAILING_BUCKETS; bucketIdx < bucketed_data.length; ++bucketIdx) {
-        bgTime = new Date(bucketed_data[bucketIdx].date as number);
+        const entry = bucketed_data[bucketIdx];
+        bgTime = entry.date != null
+            ? new Date(entry.date)
+            : (resolveGlucoseTime(entry) ?? new Date(NaN));
         const sens = isfLookup(isfProfileData, bgTime);
 
         // -----------------------------------------------------------------
@@ -125,7 +129,7 @@ export function analyzeDeviations(
         // Phase 2: Calculate IOB and deviation
         // -----------------------------------------------------------------
         avgDelta = parseFloat(avgDelta.toFixed(2));
-        iob_inputs.clock = bgTime;
+        iob_inputs.clock = bgTime.toISOString();
         iob_inputs.profile.current_basal = getCurrentBasalRate(basalprofile, bgTime) as number;
         iob_inputs.profile.temptargetSet = false;
         const iob = get_iob(iob_inputs as IobInputs, true, treatments)[0];

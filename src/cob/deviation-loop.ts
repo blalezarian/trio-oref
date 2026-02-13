@@ -2,13 +2,14 @@ import { getCurrentBasalRate } from '../profile/basal';
 import { generate as get_iob } from '../iob/index';
 import { isfLookup } from '../profile/isf';
 import { calculateBGImpact, calculateDeviation } from '../utils/glucose-math';
-import type { BucketedGlucose } from '../types/index';
+import type { BucketedGlucose, ISODateString } from '../types/index';
 import type { IobProfile, HistoryBasalProfileEntry, IobInputs, IobTreatment } from '../iob/types';
 import {
     MIN_VALID_GLUCOSE_MGDL,
     MS_PER_5_MIN,
 } from '../shared/constants';
 import { roundTo2dp, roundTo3dp } from '../utils/rounding';
+import { resolveGlucoseTime } from '../utils/time';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -44,7 +45,7 @@ const CURRENT_DEVIATION_DIVISOR = 2;
 /** Analyze glucose deviations and track carb absorption */
 export function analyzeAbsorption(
     bucketed_data: BucketedGlucose[],
-    iob_inputs: { profile: IobProfile; history: unknown[]; clock?: string | Date },
+    iob_inputs: { profile: IobProfile; history: unknown[]; clock?: ISODateString },
     basalprofile: HistoryBasalProfileEntry[],
     profile: IobProfile,
     treatments: IobTreatment[],
@@ -62,14 +63,17 @@ export function analyzeAbsorption(
     const isfProfileData = profile.isfProfile as NonNullable<typeof profile.isfProfile>;
 
     for (let bucketIdx = 0; bucketIdx < bucketed_data.length - TRAILING_BUCKETS_REQUIRED; ++bucketIdx) {
-        const bgTime = new Date(bucketed_data[bucketIdx].date as number);
+        const entry = bucketed_data[bucketIdx];
+        const bgTime = entry.date != null
+            ? new Date(entry.date)
+            : (resolveGlucoseTime(entry) ?? new Date(NaN));
         const sens = isfLookup(isfProfileData, bgTime);
 
         // Resolve glucose and deltas
         const glucoseDeltas = resolveGlucoseDeltas(bucketed_data, bucketIdx);
         if (glucoseDeltas === 'skip') continue;
         const { bg, delta, avgDelta } = glucoseDeltas;
-        iob_inputs.clock = bgTime;
+        iob_inputs.clock = bgTime.toISOString();
         iob_inputs.profile.current_basal = getCurrentBasalRate(basalprofile, bgTime) as number;
         const iob = get_iob(iob_inputs as IobInputs, true, treatments)[0];
 
