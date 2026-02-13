@@ -29,12 +29,8 @@ export function extractTempBasalsAndBoluses(
             current.timestamp = current.created_at;
         }
         const currentRecordTime = new Date(tz(current.timestamp));
-        //console.error(current);
-        //console.error(currentRecordTime,lastRecordTime);
         // ignore duplicate or out-of-order records (due to 1h and 24h overlap, or timezone changes)
         if (currentRecordTime > lastRecordTime) {
-            //console.error("",currentRecordTime," > ",lastRecordTime);
-            //process.stderr.write(".");
             continue;
         } else {
             lastRecordTime = currentRecordTime;
@@ -44,7 +40,6 @@ export function extractTempBasalsAndBoluses(
             temp.timestamp = current.timestamp;
             temp.started_at = new Date(tz(current.timestamp));
             if (temp.started_at > now) {
-                //console.error("Warning: ignoring",current.amount,"U bolus in the future at",temp.started_at);
                 process.stderr.write(` ${current.amount}U @ ${temp.started_at}`);
             } else {
                 temp.date = temp.started_at.getTime();
@@ -52,8 +47,8 @@ export function extractTempBasalsAndBoluses(
                 tempBoluses.push(temp);
             }
         } else if (current.eventType === "Meal Bolus" || current.eventType === "Correction Bolus" || current.eventType === "Snack Bolus" || current.eventType === "Bolus Wizard") {
-            //imports treatments entered through Nightscout Care Portal
-            //"Bolus Wizard" refers to the Nightscout Bolus Wizard, not the Medtronic Bolus Wizard
+            // imports treatments entered through Nightscout Care Portal
+            // "Bolus Wizard" refers to the Nightscout Bolus Wizard, not the Medtronic Bolus Wizard
             const temp: TempEvent = {} as TempEvent;
             temp.timestamp = current.created_at;
             temp.started_at = new Date(tz(temp.timestamp));

@@ -29,16 +29,11 @@ export function iobTotal(opts: IobTotalOpts, time: Date): IobTotalResult | Recor
     let bolusiob = 0;
     let netbasalinsulin = 0;
     let bolusinsulin = 0;
-    //var bolussnooze = 0;
     let activity = 0;
     if (!treatments) return {};
-    //if (typeof time === 'undefined') {
-        //var time = new Date();
-    //}
 
     // force minimum DIA of 3h
     if (dia < MIN_DIA_HOURS) {
-        //console.error("Warning; adjusting DIA from",dia,"to minimum of 3 hours");
         dia = MIN_DIA_HOURS;
     }
 
@@ -74,7 +69,6 @@ export function iobTotal(opts: IobTotalOpts, time: Date): IobTotalResult | Recor
 
     // Force minimum of 5 hour DIA when default requires a Long DIA.
     if (defaults.requireLongDia && dia < MIN_LONG_DIA_HOURS) {
-        //console.error('Pump DIA must be set to 5 hours or more with the new curves, please adjust your pump. Defaulting to 5 hour DIA.');
         dia = MIN_LONG_DIA_HOURS;
     }
 
@@ -102,9 +96,8 @@ export function iobTotal(opts: IobTotalOpts, time: Date): IobTotalResult | Recor
                         bolusinsulin += treatment.insulin;
                     }
                 }
-                //console.error(JSON.stringify(treatment));
             }
-        } // else { console.error("ignoring future treatment:",treatment); }
+        }
     });
 
     return {

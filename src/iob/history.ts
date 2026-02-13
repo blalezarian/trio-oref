@@ -29,7 +29,7 @@ export function calcTempTreatments (
     const now = new Date(tz(inputs.clock));
 
     if(inputs.history24) {
-        pumpHistory =  ([] as PumpHistoryEvent[]).concat(inputs.history).concat(inputs.history24);
+        pumpHistory = [...inputs.history, ...inputs.history24];
     }
 
     // Gather suspend/resume events and compute durations
@@ -58,10 +58,7 @@ export function calcTempTreatments (
     const splitterEvents: SplitterEvent[] = [];
 
     _.forEach(profile_data.basalprofile, (o) => {
-        const splitterEvent: SplitterEvent = {} as SplitterEvent;
-        splitterEvent.type = 'recurring';
-        splitterEvent.minutes = o.minutes;
-        splitterEvents.push(splitterEvent);
+        splitterEvents.push({ type: 'recurring' as const, minutes: o.minutes });
     });
 
     // iterate through the events and split at basal break points if needed
@@ -168,7 +165,7 @@ export function calcTempTreatments (
     // Convert net basals to treatment boluses
     const netBasalBoluses = convertNetBasalsToTreatments(splitHistory, profile_data, autosens_data);
 
-    let all_data: TempEvent[] =  ([] as TempEvent[]).concat(tempBoluses).concat(netBasalBoluses).concat(tempHistory);
+    let all_data: TempEvent[] = [...tempBoluses, ...netBasalBoluses, ...tempHistory];
     all_data = _.sortBy(all_data, 'date');
     return all_data;
 }

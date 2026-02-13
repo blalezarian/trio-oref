@@ -33,8 +33,6 @@ export function generate (
     } else {
         treatmentsWithZeroTemp = [];
     }
-    //console.error(treatments.length, treatmentsWithZeroTemp.length);
-    //console.error(treatments[treatments.length-1], treatmentsWithZeroTemp[treatmentsWithZeroTemp.length-1])
 
     const opts: IobGenerateOpts = {
         treatments: treatments
@@ -51,51 +49,31 @@ export function generate (
     };
 
     const iobArray: IobIndexEntry[] = [];
-    //console.error(inputs.clock);
     if (! /(Z|[+-][0-2][0-9]:?[034][05])+/.test(inputs.clock) ) {
         console.error(`Warning: clock input ${inputs.clock} is unzoned; please pass clock-zoned.json instead`);
     }
     const clock = new Date(tz(inputs.clock));
 
-    let lastBolusTime: number = new Date(0).getTime(); //clock.getTime());
+    let lastBolusTime: number = new Date(0).getTime();
     let lastTemp: IobTreatment = { date: new Date(0).getTime() } as IobTreatment;
-    //console.error(treatments[treatments.length-1]);
     treatments.forEach((treatment: IobTreatment) => {
         if (treatment.insulin && treatment.started_at) {
             lastBolusTime = Math.max(lastBolusTime, treatment.started_at.getTime());
-            //console.error(treatment.insulin,treatment.started_at,lastBolusTime);
         } else if (typeof(treatment.rate) === 'number' && treatment.duration ) {
             if ( treatment.date > lastTemp.date ) {
                 lastTemp = treatment;
                 lastTemp.duration = Math.round(lastTemp.duration!*ROUND_SCALE_2DP)/ROUND_SCALE_2DP;
             }
-
-            //console.error(treatment.rate, treatment.duration, treatment.started_at,lastTemp.started_at)
         }
-        //console.error(treatment.rate, treatment.duration, treatment.started_at,lastTemp.started_at)
-        //if (treatment.insulin && treatment.started_at) { console.error(treatment.insulin,treatment.started_at,lastBolusTime); }
     });
-    let iStop;
-    if (currentIOBOnly) {
-        // for COB calculation, we only need the zeroth element of iobArray
-        iStop=1
-    } else {
-        // predict IOB out to 4h, regardless of DIA
-        iStop=IOB_PREDICTION_HORIZON_MINUTES;
-    }
-    let t: Date;
+    const iStop = currentIOBOnly ? 1 : IOB_PREDICTION_HORIZON_MINUTES;
     for (let i=0; i<iStop; i+=PRED_INTERVAL_MINUTES){
-        t = new Date(clock.getTime() + i*MS_PER_MINUTE);
-        //console.error(t);
+        const t = new Date(clock.getTime() + i*MS_PER_MINUTE);
         const iob = iobTotal(opts as Parameters<typeof iobTotal>[0], t) as IobIndexEntry;
         const iobWithZeroTemp = iobTotal(optsWithZeroTemp as Parameters<typeof iobTotal>[0], t) as IobIndexEntry;
-        //console.error(opts.treatments[opts.treatments.length-1], optsWithZeroTemp.treatments[optsWithZeroTemp.treatments.length-1])
         iobArray.push(iob);
-        //console.error(iob.iob, iobWithZeroTemp.iob);
-        //console.error(iobArray.length-1, iobArray[iobArray.length-1]);
         iobArray[iobArray.length-1].iobWithZeroTemp = iobWithZeroTemp;
     }
-    //console.error(lastBolusTime);
     iobArray[0].lastBolusTime = lastBolusTime;
     iobArray[0].lastTemp = lastTemp;
     return iobArray;

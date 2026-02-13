@@ -34,10 +34,6 @@ export function convertNetBasalsToTreatments(
             if (profile_data.min_bg !== undefined && profile_data.max_bg !== undefined) {
                 target_bg = (profile_data.min_bg + profile_data.max_bg) / 2;
             }
-            //if (profile_data.temptargetSet && target_bg > 110) {
-                //sensitivityRatio = 2/(2+(target_bg-100)/40);
-                //currentRate = profile_data.current_basal * sensitivityRatio;
-            //}
             let sensitivityRatio: number | undefined;
             const profile = profile_data;
             const normalTarget = EXERCISE_NORMAL_TARGET; // evaluate high/low temptarget against 100, not scheduled basal (which might change)
@@ -54,7 +50,6 @@ export function convertNetBasalsToTreatments(
                 sensitivityRatio = c/(c+target_bg!-normalTarget);
             } else if (autosens_data !== undefined ) {
                 sensitivityRatio = autosens_data.ratio;
-                //process.stderr.write(`Autosens ratio: ${sensitivityRatio}; `);
             }
             if ( sensitivityRatio ) {
                 currentRate = currentRate * sensitivityRatio;
