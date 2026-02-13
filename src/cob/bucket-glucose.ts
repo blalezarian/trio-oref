@@ -116,7 +116,7 @@ export function bucketGlucoseWithInterpolation(
             let remaining = cappedMinutes;
 
             while (remaining > PRED_INTERVAL_MINUTES) {
-                const previousBgTime = new Date(lastBgTime!.getTime() - MS_PER_5_MIN);
+                const previousBgTime = new Date((lastBgTime as Date).getTime() - MS_PER_5_MIN);
                 bucketIndex++;
                 bucketed_data[bucketIndex] = {} as BucketedGlucose;
                 bucketed_data[bucketIndex].date = previousBgTime.getTime();
@@ -133,7 +133,7 @@ export function bucketGlucoseWithInterpolation(
         else if (Math.abs(elapsed_minutes) > BUCKETING_MERGE_THRESHOLD_MIN) {
             bucketIndex++;
             bucketed_data[bucketIndex] = glucose_data[i];
-            bucketed_data[bucketIndex].date = bgTime!.getTime();
+            bucketed_data[bucketIndex].date = (bgTime as Date).getTime();
         }
         // --- Case 3: Small gap (≤ 2 min) → merge into current bucket ---
         else {

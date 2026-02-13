@@ -98,20 +98,20 @@ describe('appendReason', () => {
     });
 
     it('appends message to empty reason', () => {
-        const rT = makeResult();
-        appendReason(rT, 'test message');
-        expect(rT.reason).toBe('test message');
+        const requestedTempBasalResult = makeResult();
+        appendReason(requestedTempBasalResult, 'test message');
+        expect(requestedTempBasalResult.reason).toBe('test message');
     });
 
     it('appends message with separator to existing reason', () => {
-        const rT = makeResult({ reason: 'first' });
-        appendReason(rT, 'second');
-        expect(rT.reason).toBe('first. second');
+        const requestedTempBasalResult = makeResult({ reason: 'first' });
+        appendReason(requestedTempBasalResult, 'second');
+        expect(requestedTempBasalResult.reason).toBe('first. second');
     });
 
     it('logs message to console.error', () => {
-        const rT = makeResult();
-        appendReason(rT, 'logged message');
+        const requestedTempBasalResult = makeResult();
+        appendReason(requestedTempBasalResult, 'logged message');
         expect(console.error).toHaveBeenCalledWith('logged message');
     });
 });
@@ -211,8 +211,8 @@ describe('setTempBasal', () => {
 
     it('clamps a negative rate to 0', () => {
         const profile = makeProfile({ current_basal: 1.0 });
-        const rT = makeResult();
-        const result = setTempBasal(-0.5, 30, profile, rT);
+        const requestedTempBasalResult = makeResult();
+        const result = setTempBasal(-0.5, 30, profile, requestedTempBasalResult);
 
         expect(result.rate).toBe(0);
         expect(result.duration).toBe(30);
@@ -226,8 +226,8 @@ describe('setTempBasal', () => {
             current_basal: 1,
             current_basal_safety_multiplier: 4,
         });
-        const rT = makeResult();
-        const result = setTempBasal(10, 30, profile, rT);
+        const requestedTempBasalResult = makeResult();
+        const result = setTempBasal(10, 30, profile, requestedTempBasalResult);
 
         expect(result.rate).toBe(4);
         expect(result.duration).toBe(30);
@@ -235,9 +235,9 @@ describe('setTempBasal', () => {
 
     it('does not change temp when current is within tolerance', () => {
         const profile = makeProfile();
-        const rT = makeResult({ reason: 'test' });
+        const requestedTempBasalResult = makeResult({ reason: 'test' });
         const currenttemp: CurrentTemp = { duration: 25, rate: 2.0 };
-        const result = setTempBasal(2.0, 30, profile, rT, currenttemp);
+        const result = setTempBasal(2.0, 30, profile, requestedTempBasalResult, currenttemp);
 
         expect(result.rate).toBeUndefined();
         expect(result.duration).toBeUndefined();
@@ -246,9 +246,9 @@ describe('setTempBasal', () => {
 
     it('cancels active temp when suggested rate matches profile rate and skip_neutral_temps', () => {
         const profile = makeProfile({ current_basal: 1.0, skip_neutral_temps: true });
-        const rT = makeResult();
+        const requestedTempBasalResult = makeResult();
         const currenttemp: CurrentTemp = { duration: 20, rate: 1.5 };
-        const result = setTempBasal(1.0, 30, profile, rT, currenttemp);
+        const result = setTempBasal(1.0, 30, profile, requestedTempBasalResult, currenttemp);
 
         expect(result.rate).toBe(0);
         expect(result.duration).toBe(0);
@@ -257,8 +257,8 @@ describe('setTempBasal', () => {
 
     it('does nothing when no temp active and skip_neutral_temps', () => {
         const profile = makeProfile({ current_basal: 1.0, skip_neutral_temps: true });
-        const rT = makeResult();
-        const result = setTempBasal(1.0, 30, profile, rT);
+        const requestedTempBasalResult = makeResult();
+        const result = setTempBasal(1.0, 30, profile, requestedTempBasalResult);
 
         expect(result.rate).toBeUndefined();
         expect(result.duration).toBeUndefined();
@@ -267,9 +267,9 @@ describe('setTempBasal', () => {
 
     it('does nothing when currenttemp has zero duration and skip_neutral_temps', () => {
         const profile = makeProfile({ current_basal: 1.0, skip_neutral_temps: true });
-        const rT = makeResult();
+        const requestedTempBasalResult = makeResult();
         const currenttemp: CurrentTemp = { duration: 0, rate: 0 };
-        const result = setTempBasal(1.0, 30, profile, rT, currenttemp);
+        const result = setTempBasal(1.0, 30, profile, requestedTempBasalResult, currenttemp);
 
         expect(result.rate).toBeUndefined();
         expect(result.duration).toBeUndefined();
@@ -278,8 +278,8 @@ describe('setTempBasal', () => {
 
     it('sets neutral temp basal when skip_neutral_temps is false', () => {
         const profile = makeProfile({ current_basal: 1.0, skip_neutral_temps: false });
-        const rT = makeResult();
-        const result = setTempBasal(1.0, 30, profile, rT);
+        const requestedTempBasalResult = makeResult();
+        const result = setTempBasal(1.0, 30, profile, requestedTempBasalResult);
 
         expect(result.rate).toBe(1.0);
         expect(result.duration).toBe(30);
@@ -288,8 +288,8 @@ describe('setTempBasal', () => {
 
     it('sets the suggested rate and duration', () => {
         const profile = makeProfile({ current_basal: 1.0 });
-        const rT = makeResult();
-        const result = setTempBasal(2.5, 30, profile, rT);
+        const requestedTempBasalResult = makeResult();
+        const result = setTempBasal(2.5, 30, profile, requestedTempBasalResult);
 
         expect(result.rate).toBe(2.5);
         expect(result.duration).toBe(30);
@@ -297,8 +297,8 @@ describe('setTempBasal', () => {
 
     it('rounds the rate via round_basal', () => {
         const profile = makeProfile({ current_basal: 1.0 });
-        const rT = makeResult();
-        const result = setTempBasal(0.33, 30, profile, rT);
+        const requestedTempBasalResult = makeResult();
+        const result = setTempBasal(0.33, 30, profile, requestedTempBasalResult);
 
         expect(result.rate).toBe(0.35);
         expect(result.duration).toBe(30);
@@ -306,8 +306,8 @@ describe('setTempBasal', () => {
 
     it('works via tempBasalFunctions object (default export)', () => {
         const profile = makeProfile({ current_basal: 1.0 });
-        const rT = makeResult();
-        const result = tempBasalFunctions.setTempBasal(2.5, 30, profile, rT);
+        const requestedTempBasalResult = makeResult();
+        const result = tempBasalFunctions.setTempBasal(2.5, 30, profile, requestedTempBasalResult);
 
         expect(result.rate).toBe(2.5);
         expect(result.duration).toBe(30);

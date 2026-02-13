@@ -123,7 +123,7 @@ export function determine_basal(
     const dynResult = calculateDynamicISF(
         glucose_status, profile, preferences, autosens_data,
         sensitivity, profileTarget, dynISFenabled, tdd,
-        weightedAverage, average_total_data, weightPercentage!, middleWare
+        weightedAverage, average_total_data, weightPercentage as number, middleWare
     );
     dynISFenabled = dynResult.dynISFenabled;
     tdd = dynResult.tdd;
@@ -140,7 +140,7 @@ export function determine_basal(
         glucose_status, profile, autosens_data, profileTarget, overrideTarget,
         bg, dynISFenabled, newRatio, tdd24h_14d_Ratio, overrideFactor,
         profile_current_basal, tdd_before, weightedAverage, average_total_data,
-        weightPercentage!, sensitivity, carbRatio, cgmValidation.basal, cgmValidation.reason
+        weightPercentage as number, sensitivity, carbRatio, cgmValidation.basal, cgmValidation.reason
     );
     if ('earlyReturn' in sensTargets) return sensTargets.earlyReturn;
     const { max_iob, target_bg, min_bg, max_bg, high_bg, sensitivityRatio, adjustedSens, isfreason, targetLog } = sensTargets;

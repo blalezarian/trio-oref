@@ -62,65 +62,65 @@ describe('basal-set-temp characterization tests', () => {
   describe('setTempBasal', () => {
     it('set high temp when no temp running', () => {
       const profile = makeProfile();
-      const rT = { reason: '' };
+      const requestedTempBasalResult = { reason: '' };
       const currenttemp = { duration: 0, rate: 0 };
-      const result = tempBasalFunctions.setTempBasal(2.0, 30, profile, rT, currenttemp);
+      const result = tempBasalFunctions.setTempBasal(2.0, 30, profile, requestedTempBasalResult, currenttemp);
       expect(result).toMatchSnapshot();
     });
 
     it('set zero temp when no temp running', () => {
       const profile = makeProfile();
-      const rT = { reason: '' };
+      const requestedTempBasalResult = { reason: '' };
       const currenttemp = { duration: 0, rate: 0 };
-      const result = tempBasalFunctions.setTempBasal(0, 30, profile, rT, currenttemp);
+      const result = tempBasalFunctions.setTempBasal(0, 30, profile, requestedTempBasalResult, currenttemp);
       expect(result).toMatchSnapshot();
     });
 
     it('rate clamped to zero when negative', () => {
       const profile = makeProfile();
-      const rT = { reason: '' };
+      const requestedTempBasalResult = { reason: '' };
       const currenttemp = { duration: 0, rate: 0 };
-      const result = tempBasalFunctions.setTempBasal(-1, 30, profile, rT, currenttemp);
+      const result = tempBasalFunctions.setTempBasal(-1, 30, profile, requestedTempBasalResult, currenttemp);
       expect(result).toMatchSnapshot();
     });
 
     it('rate clamped to maxSafeBasal when too high', () => {
       const profile = makeProfile({ max_basal: 2.0 });
-      const rT = { reason: '' };
+      const requestedTempBasalResult = { reason: '' };
       const currenttemp = { duration: 0, rate: 0 };
-      const result = tempBasalFunctions.setTempBasal(5.0, 30, profile, rT, currenttemp);
+      const result = tempBasalFunctions.setTempBasal(5.0, 30, profile, requestedTempBasalResult, currenttemp);
       expect(result).toMatchSnapshot();
     });
 
     it('similar temp already running — no change needed', () => {
       const profile = makeProfile();
-      const rT = { reason: '' };
+      const requestedTempBasalResult = { reason: '' };
       const currenttemp = { duration: 25, rate: 1.9 };
-      const result = tempBasalFunctions.setTempBasal(2.0, 30, profile, rT, currenttemp);
+      const result = tempBasalFunctions.setTempBasal(2.0, 30, profile, requestedTempBasalResult, currenttemp);
       expect(result).toMatchSnapshot();
     });
 
     it('neutral temp — rate equals current basal', () => {
       const profile = makeProfile();
-      const rT = { reason: '' };
+      const requestedTempBasalResult = { reason: '' };
       const currenttemp = { duration: 0, rate: 0 };
-      const result = tempBasalFunctions.setTempBasal(0.9, 30, profile, rT, currenttemp);
+      const result = tempBasalFunctions.setTempBasal(0.9, 30, profile, requestedTempBasalResult, currenttemp);
       expect(result).toMatchSnapshot();
     });
 
     it('neutral temp with skip_neutral_temps — does nothing', () => {
       const profile = makeProfile({ skip_neutral_temps: true });
-      const rT = { reason: '' };
+      const requestedTempBasalResult = { reason: '' };
       const currenttemp = { duration: 0, rate: 0 };
-      const result = tempBasalFunctions.setTempBasal(0.9, 30, profile, rT, currenttemp);
+      const result = tempBasalFunctions.setTempBasal(0.9, 30, profile, requestedTempBasalResult, currenttemp);
       expect(result).toMatchSnapshot();
     });
 
     it('neutral temp with skip_neutral_temps and active temp — cancels', () => {
       const profile = makeProfile({ skip_neutral_temps: true });
-      const rT = { reason: '' };
+      const requestedTempBasalResult = { reason: '' };
       const currenttemp = { duration: 20, rate: 1.5 };
-      const result = tempBasalFunctions.setTempBasal(0.9, 30, profile, rT, currenttemp);
+      const result = tempBasalFunctions.setTempBasal(0.9, 30, profile, requestedTempBasalResult, currenttemp);
       expect(result).toMatchSnapshot();
     });
   });

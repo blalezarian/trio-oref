@@ -10,6 +10,7 @@ import {
 
 import type {
     IOBData,
+    IOBEntry,
     Profile,
     MealData,
 } from '../types/index';
@@ -89,7 +90,7 @@ export function generateBGPredictions(
     try {
         iobArray.forEach((iobTick: IOBData) => {
             const predBGI = round(( -iobTick.activity * adjustedSens * PRED_INTERVAL_MINUTES ), 2);
-            const predZTBGI = round(( -iobTick.iobWithZeroTemp!.activity * adjustedSens * PRED_INTERVAL_MINUTES ), 2);
+            const predZTBGI = round(( -(iobTick.iobWithZeroTemp as IOBEntry).activity * adjustedSens * PRED_INTERVAL_MINUTES ), 2);
             let ZTpredBG = naive_eventualBG;
             // for IOBpredBGs, predicted deviation impact drops linearly from current deviation down to zero
             // over 60 minutes (data points every 5m)
@@ -99,7 +100,7 @@ export function generateBGPredictions(
             switch(true) {
                 case dynISFenabled && !enable_sigmoid:
                     IOBpredBG = IOBpredBGs[IOBpredBGs.length-1] + (round(( -iobTick.activity * (DYNAMIC_ISF_LOG_DENOMINATOR / ( tdd * adjustmentFactor * (Math.log((Math.max( IOBpredBGs[IOBpredBGs.length-1],MIN_VALID_GLUCOSE_MGDL) / insulinFactor ) + 1 ) ) )) * PRED_INTERVAL_MINUTES ),2)) + predDev;
-                    ZTpredBG = ZTpredBGs[ZTpredBGs.length-1] + (round(( -iobTick.iobWithZeroTemp!.activity * (DYNAMIC_ISF_LOG_DENOMINATOR / ( tdd * adjustmentFactor * (Math.log(( Math.max(ZTpredBGs[ZTpredBGs.length-1],MIN_VALID_GLUCOSE_MGDL) / insulinFactor ) + 1 ) ) )) * PRED_INTERVAL_MINUTES ), 2));
+                    ZTpredBG = ZTpredBGs[ZTpredBGs.length-1] + (round(( -(iobTick.iobWithZeroTemp as IOBEntry).activity * (DYNAMIC_ISF_LOG_DENOMINATOR / ( tdd * adjustmentFactor * (Math.log(( Math.max(ZTpredBGs[ZTpredBGs.length-1],MIN_VALID_GLUCOSE_MGDL) / insulinFactor ) + 1 ) ) )) * PRED_INTERVAL_MINUTES ), 2));
                     console.log("Dynamic ISF (Logarithmic Formula) )adjusted predictions for IOB and ZT: IOBpredBG: " + round(IOBpredBG,2) + " , ZTpredBG: " + round(ZTpredBG,2));
                     break;
                 default:

@@ -692,7 +692,7 @@ export interface TempBasalFunctions {
     rate: number,
     duration: number,
     profile: Profile,
-    rT: DetermineBasalResult,
+    requestedTempBasalResult: DetermineBasalResult,
     currenttemp: CurrentTemp,
   ) => DetermineBasalResult;
 }

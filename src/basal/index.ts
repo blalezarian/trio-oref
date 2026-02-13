@@ -48,7 +48,7 @@ interface TempBasalFunctionsInterface {
     rate: number,
     duration: number,
     profile: TempBasalProfile,
-    rT: TempBasalResult,
+    requestedTempBasalResult: TempBasalResult,
     currenttemp?: CurrentTemp,
   ) => TempBasalResult;
 }
@@ -58,8 +58,8 @@ interface TempBasalFunctionsInterface {
 // ---------------------------------------------------------------------------
 
 /** Append a message to the result reason string and log it */
-function appendReason(result: TempBasalResult, message: string): void {
-    result.reason = (result.reason ? result.reason + '. ' : '') + message;
+function appendReason(requestedTempBasalResult: TempBasalResult, message: string): void {
+    requestedTempBasalResult.reason = (requestedTempBasalResult.reason ? requestedTempBasalResult.reason + '. ' : '') + message;
     console.error(message);
 }
 
@@ -111,7 +111,7 @@ function setTempBasal(
     rate: number,
     duration: number,
     profile: TempBasalProfile,
-    rT: TempBasalResult,
+    requestedTempBasalResult: TempBasalResult,
     currenttemp?: CurrentTemp,
 ): TempBasalResult {
     const clampedRate = Math.min(Math.max(0, rate), getMaxSafeBasal(profile));
@@ -120,32 +120,32 @@ function setTempBasal(
     // If a current temp is running and close enough to the suggestion, keep it
     if (currenttemp?.duration != null && currenttemp?.rate != null
         && isCurrentTempAcceptable(currenttemp, suggestedRate, duration)) {
-        rT.reason += ` ${currenttemp.duration}m left and ${currenttemp.rate} ~ req ${suggestedRate}U/hr: no temp required`;
-        return rT;
+        requestedTempBasalResult.reason += ` ${currenttemp.duration}m left and ${currenttemp.rate} ~ req ${suggestedRate}U/hr: no temp required`;
+        return requestedTempBasalResult;
     }
 
     // When suggested rate matches the profile rate, handle neutral temp logic
     if (suggestedRate === profile.current_basal) {
         if (profile.skip_neutral_temps) {
             if (currenttemp?.duration != null && currenttemp.duration > 0) {
-                appendReason(rT, 'Suggested rate is same as profile rate, a temp basal is active, canceling current temp');
-                rT.duration = 0;
-                rT.rate = 0;
-                return rT;
+                appendReason(requestedTempBasalResult, 'Suggested rate is same as profile rate, a temp basal is active, canceling current temp');
+                requestedTempBasalResult.duration = 0;
+                requestedTempBasalResult.rate = 0;
+                return requestedTempBasalResult;
             }
-            appendReason(rT, 'Suggested rate is same as profile rate, no temp basal is active, doing nothing');
-            return rT;
+            appendReason(requestedTempBasalResult, 'Suggested rate is same as profile rate, no temp basal is active, doing nothing');
+            return requestedTempBasalResult;
         }
-        appendReason(rT, `Setting neutral temp basal of ${profile.current_basal}U/hr`);
-        rT.duration = duration;
-        rT.rate = suggestedRate;
-        return rT;
+        appendReason(requestedTempBasalResult, `Setting neutral temp basal of ${profile.current_basal}U/hr`);
+        requestedTempBasalResult.duration = duration;
+        requestedTempBasalResult.rate = suggestedRate;
+        return requestedTempBasalResult;
     }
 
     // Normal case: set the new temp basal
-    rT.duration = duration;
-    rT.rate = suggestedRate;
-    return rT;
+    requestedTempBasalResult.duration = duration;
+    requestedTempBasalResult.rate = suggestedRate;
+    return requestedTempBasalResult;
 }
 
 // ---------------------------------------------------------------------------

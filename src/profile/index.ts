@@ -54,30 +54,30 @@ function generate (inputs: ProfileInputs, opts?: ProfileOpts): ProfileDefaults |
   profile.max_basal = getMaxBasalRate(inputs);
 
   if (profile.current_basal === 0) {
-    console.error("current_basal of",profile.current_basal,"is not supported");
+    console.error("current_basal of", profile.current_basal, "is not supported");
     return -1;
   }
   if (profile.max_daily_basal === 0) {
-    console.error("max_daily_basal of",profile.max_daily_basal,"is not supported");
+    console.error("max_daily_basal of", profile.max_daily_basal, "is not supported");
     return -1;
   }
-  if (profile.max_basal! < MIN_SUPPORTED_MAX_BASAL) {
-    console.error("max_basal of",profile.max_basal,"is not supported");
+  if ((profile.max_basal as number) < MIN_SUPPORTED_MAX_BASAL) {
+    console.error("max_basal of", profile.max_basal, "is not supported");
     return -1;
   }
 
   // --- BG targets ---
   const range = getCurrentBGTarget(inputs as TargetsInputs, profile);
   profile.out_units = inputs.targets.user_preferred_units;
-  profile.min_bg = Math.round(range.min_bg!);
-  profile.max_bg = Math.round(range.max_bg!);
+  profile.min_bg = Math.round(range.min_bg as number);
+  profile.max_bg = Math.round(range.max_bg as number);
   profile.bg_targets = inputs.targets;
 
   profile.bg_targets.targets.forEach((bg_entry) => {
     bg_entry.high = Math.round(bg_entry.high);
     bg_entry.low = Math.round(bg_entry.low);
-    bg_entry.min_bg = Math.round(bg_entry.min_bg!);
-    bg_entry.max_bg = Math.round(bg_entry.max_bg!);
+    bg_entry.min_bg = Math.round(bg_entry.min_bg as number);
+    bg_entry.max_bg = Math.round(bg_entry.max_bg as number);
   });
 
   delete profile.bg_targets.raw;
@@ -86,8 +86,8 @@ function generate (inputs: ProfileInputs, opts?: ProfileOpts): ProfileDefaults |
   profile.temptargetSet = range.temptargetSet;
   profile.sens = isfLookup(inputs.isf);
   profile.isfProfile = inputs.isf;
-  if (profile.sens! < MIN_SUPPORTED_ISF) {
-    console.error("ISF of",profile.sens,"is not supported");
+  if ((profile.sens as number) < MIN_SUPPORTED_ISF) {
+    console.error("ISF of", profile.sens, "is not supported");
     return -1;
   }
 

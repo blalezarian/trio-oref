@@ -35,7 +35,7 @@ export function detectSensitivity(inputs: AutosensInputs): AutosensResult {
     // when we have less than 8h worth of deviation data, add up to 90m of zero deviations
     // this dampens any large sensitivity changes detected based on too little data, without ignoring them completely
     console.error("");
-    console.error("Using most recent",deviations.length,"deviations since",lastSiteChange);
+    console.error("Using most recent", deviations.length, "deviations since", lastSiteChange);
     padDeviations(deviations, DEFAULT_AUTOSENS_LOOKBACK, MAX_ZERO_DEVIATION_PAD);
     const { pSensitive, pResistant } = analyzePercentiles(deviations, avgDeltas, bgis);
     return calculateAutosensRatio(
@@ -43,10 +43,10 @@ export function detectSensitivity(inputs: AutosensInputs): AutosensResult {
         pSensitive,
         pResistant,
         {
-            sens: profile.sens!,
-            max_daily_basal: profile.max_daily_basal!,
-            autosens_min: profile.autosens_min!,
-            autosens_max: profile.autosens_max!,
+            sens: profile.sens as number,
+            max_daily_basal: profile.max_daily_basal as number,
+            autosens_min: profile.autosens_min as number,
+            autosens_max: profile.autosens_max as number,
         },
     );
 }

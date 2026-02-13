@@ -29,7 +29,7 @@ interface CarbAbsorptionInputs {
 /** Orchestrate COB detection: normalize glucose, bucket, and analyze absorption */
 export function detectCarbAbsorption(inputs: CarbAbsorptionInputs): CarbAbsorptionResult {
     const profile = inputs.iob_inputs.profile;
-    const glucose_data = normalizeGlucoseData(inputs.glucose_data!);
+    const glucose_data = normalizeGlucoseData(inputs.glucose_data as GlucoseEntry[]);
     const iob_inputs = inputs.iob_inputs;
     const basalprofile = inputs.basalprofile;
     const mealTime = new Date(inputs.mealTime as string | number);
@@ -42,7 +42,7 @@ export function detectCarbAbsorption(inputs: CarbAbsorptionInputs): CarbAbsorpti
         glucose_data,
         mealTime,
         carbImpactTime,
-        profile.maxMealAbsorptionTime!,
+        profile.maxMealAbsorptionTime as number,
     );
 
     return analyzeAbsorption(

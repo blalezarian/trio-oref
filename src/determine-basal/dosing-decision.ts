@@ -131,7 +131,7 @@ export function calculateDosingDecision(inputs: DosingDecisionInputs): Determine
         console.error("minGuardBG " + convert_bg(minGuardBG, profile) + " projected below " + convert_bg(threshold, profile) + " - disabling SMB");
         result.manualBolusErrorString = BOLUS_ERR_GUARD_BELOW_THRESHOLD;
         result.minGuardBG = minGuardBG;
-        result.insulinForManualBolus = round((result.eventualBG! - result.target_bg!) / adjustedSens, 2);
+        result.insulinForManualBolus = round(((result.eventualBG as number) - (result.target_bg as number)) / adjustedSens, 2);
 
         enableSMB = false;
     }
@@ -310,7 +310,7 @@ export function calculateDosingDecision(inputs: DosingDecisionInputs): Determine
             }
         }
 
-        result.insulinForManualBolus = round((result.eventualBG! - result.target_bg!) / adjustedSens, 2);
+        result.insulinForManualBolus = round(((result.eventualBG as number) - (result.target_bg as number)) / adjustedSens, 2);
 
         // if in SMB mode, don't cancel SMB zero temp
         if (! (microBolusAllowed && enableSMB)) {
@@ -332,7 +332,7 @@ export function calculateDosingDecision(inputs: DosingDecisionInputs): Determine
     if (Math.min(eventualBG,minPredBG) < max_bg) {
         if (minPredBG < min_bg && eventualBG > min_bg) {
             result.manualBolusErrorString = BOLUS_ERR_MIN_PRED_BELOW_MIN;
-            result.insulinForManualBolus = round((result.eventualBG! - result.target_bg!) / adjustedSens, 2);
+            result.insulinForManualBolus = round(((result.eventualBG as number) - (result.target_bg as number)) / adjustedSens, 2);
         }
 
         // Moving this out of the if condition in L1429, so that minPredBG is becomes always available in result object (aka Trio's determination)
@@ -446,10 +446,10 @@ export function calculateDosingDecision(inputs: DosingDecisionInputs): Determine
                 } else { console.error("SMB is not limited by maxSMBBasalMinutes. ( insulinReq: " + insulinReq + "U )"); }
             }
             // bolus 1/2 the insulinReq, up to maxBolus, rounding down to nearest bolus increment
-            const bolusIncrement = profile.bolus_increment!;
+            const bolusIncrement = profile.bolus_increment as number;
             const roundSMBTo = 1 / bolusIncrement;
 
-            const smb_ratio = Math.min(profile.smb_delivery_ratio!, 1);
+            const smb_ratio = Math.min(profile.smb_delivery_ratio as number, 1);
 
             if (smb_ratio != DEFAULT_SMB_DELIVERY_RATIO) {
                 console.error("SMB Delivery Ratio changed from default 0.5 to " + round(smb_ratio,2))

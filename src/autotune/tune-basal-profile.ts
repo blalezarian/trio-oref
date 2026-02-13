@@ -10,6 +10,7 @@ import {
     DEFAULT_AUTOSENS_MAX,
     DEFAULT_AUTOSENS_MIN,
     BASAL_SCALE_DEFAULT,
+    HOURS_PER_DAY,
 } from '../shared/constants';
 
 // ---------------------------------------------------------------------------
@@ -17,7 +18,6 @@ import {
 // ---------------------------------------------------------------------------
 
 const BASAL_SCALE = BASAL_SCALE_DEFAULT;
-const HOURS_PER_DAY = 24;
 const PRIOR_HOURS = 3;
 
 /** Weight given to old (untuned) rate when smoothing untuned hours */

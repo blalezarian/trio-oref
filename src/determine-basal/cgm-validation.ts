@@ -55,7 +55,7 @@ export function validateCGMData(
             console.log("Profile Override is active. Override " + round(overrideFactor * 100, 0) + "%. Override Expires in: " + overrideDuration + " min.");
     }
 
-    const bgTime = new Date(glucose_status.date!);
+    const bgTime = new Date(glucose_status.date as number);
     const minAgo = round( (systemTime.getTime() - bgTime.getTime()) / MS_PER_MINUTE ,1);
 
     const bg = glucose_status.glucose;

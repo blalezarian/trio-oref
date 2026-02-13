@@ -92,7 +92,7 @@ export function configureSensitivityAndTargets(
     let halfBasalTarget = EXERCISE_HALF_BASAL_TARGET;  // when temptarget is 160 mg/dL, run 50% basal (120 = 75%; 140 = 60%)
     // 80 mg/dL with low_temptarget_lowers_sensitivity would give 1.5x basal, but is limitLoged to autosens_max (1.2x by default)
     //if ( profile.half_basal_exercise_target ) {
-    halfBasalTarget = profile.half_basal_exercise_target!;
+    halfBasalTarget = profile.half_basal_exercise_target as number;
     //}
 
     let sensitivityRatio: number = undefined!;
@@ -211,7 +211,7 @@ export function configureSensitivityAndTargets(
     // min_bg thresholds: 80->60, 90->65, 100->70, 110->75, 120->80
     const threshold = min_bg - THRESHOLD_FACTOR*(min_bg-THRESHOLD_BG_OFFSET);
     // Set threshold to the user's setting, as long as it's between 60-120 and above the default calculated threshold
-    const thresholdFinal = Math.min(Math.max(profile.threshold_setting!, threshold, MIN_THRESHOLD_BG), MAX_THRESHOLD_BG);
+    const thresholdFinal = Math.min(Math.max(profile.threshold_setting as number, threshold, MIN_THRESHOLD_BG), MAX_THRESHOLD_BG);
     console.error(`Threshold set to ${convert_bg(thresholdFinal, profile)}`);
 
 // Adjust ISF based on sensitivityRatio

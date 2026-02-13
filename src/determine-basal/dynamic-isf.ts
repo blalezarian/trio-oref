@@ -210,7 +210,7 @@ export function calculateDynamicISF(
     else if (dynISFenabled && !profile.tddAdjBasal) { tddReason += dynamicISFLog + formula + limitLog + afLog; }
 
     if (DEFAULT_SMB_DELIVERY_RATIO !== profile.smb_delivery_ratio) {
-        tddReason += ", SMB Ratio: " + Math.min(profile.smb_delivery_ratio!, 1);
+        tddReason += ", SMB Ratio: " + Math.min(profile.smb_delivery_ratio as number, 1);
     }
 
     // Not confident but something like this in iAPS v3.0.3

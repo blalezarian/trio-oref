@@ -58,7 +58,6 @@ export function analyzeDeviations(
     const bgis: number[] = [];
     const deviations: number[] = [];
 
-
     // State variables at function scope to preserve var-hoisted semantics
     let treatment: CarbTreatment;
     let treatmentDate: Date;
@@ -79,9 +78,11 @@ export function analyzeDeviations(
     let mealStartCounter = 999;
     let type = "";
 
+    const isfProfileData = profile.isfProfile as NonNullable<typeof profile.isfProfile>;
+
     for (let i = TRAILING_BUCKETS; i < bucketed_data.length; ++i) {
-        bgTime = new Date(bucketed_data[i].date!);
-        const sens = isfLookup(profile.isfProfile!, bgTime);
+        bgTime = new Date(bucketed_data[i].date as number);
+        const sens = isfLookup(isfProfileData, bgTime);
 
         // -----------------------------------------------------------------
         // Phase 1: Validate BG and compute deltas
@@ -91,9 +92,9 @@ export function analyzeDeviations(
         let delta: number;
 
         if (bucketed_data[i].glucose !== undefined) {
-            bg = bucketed_data[i].glucose!;
-            last_bg = bucketed_data[i - 1].glucose!;
-            old_bg = bucketed_data[i - TRAILING_BUCKETS].glucose!;
+            bg = bucketed_data[i].glucose as number;
+            last_bg = bucketed_data[i - 1].glucose as number;
+            old_bg = bucketed_data[i - TRAILING_BUCKETS].glucose as number;
 
             if (isNaN(bg) || !bg || bg < AUTOSENS_MIN_VALID_BG
                 || isNaN(old_bg) || !old_bg || old_bg < AUTOSENS_MIN_VALID_BG
@@ -119,7 +120,7 @@ export function analyzeDeviations(
         const iob = get_iob(iob_inputs as IobInputs, true, treatments)[0];
 
         const bgImpact = calculateBGImpact(iob.activity, sens);
-        let deviation!: number;
+        let deviation = NaN;
         if (isNaN(delta)) {
             console.error("Bad delta: ", delta, bg, last_bg, old_bg);
         } else {
@@ -130,7 +131,7 @@ export function analyzeDeviations(
         // Phase 3: Track meal COB from treatment history
         // -----------------------------------------------------------------
         glucoseDatum = bucketed_data[i];
-        BGDate = new Date(glucoseDatum.date!);
+        BGDate = new Date(glucoseDatum.date as number);
         BGTime = BGDate.getTime();
 
         treatment = meals[meals.length - 1];
@@ -152,8 +153,8 @@ export function analyzeDeviations(
         // Phase 4: Calculate carb absorption for this 5m interval
         // -----------------------------------------------------------------
         if (mealCOB > 0) {
-            const carbImpact = Math.max(deviation, profile.min_5m_carbimpact!);
-            const absorbed = carbImpact * profile.carb_ratio! / sens;
+            const carbImpact = Math.max(deviation, profile.min_5m_carbimpact as number);
+            const absorbed = carbImpact * (profile.carb_ratio as number) / sens;
             if (absorbed) {
                 mealCOB = Math.max(0, mealCOB - absorbed);
             } else {
@@ -234,7 +235,7 @@ export function analyzeDeviations(
         // Phase 7: Exercise mode temp target adjustments
         // -----------------------------------------------------------------
         if (profile.high_temptarget_raises_sensitivity === true || profile.exercise_mode === true) {
-            const tempTarget = tempTargetRunning(temptargets, bgTime!);
+            const tempTarget = tempTargetRunning(temptargets, bgTime as Date);
             if ((tempTarget ?? 0) > EXERCISE_NORMAL_TARGET) {
                 const tempDeviation = -(tempTarget! - EXERCISE_NORMAL_TARGET) / TEMP_TARGET_DEVIATION_DIVISOR;
                 process.stderr.write("-");
@@ -245,8 +246,8 @@ export function analyzeDeviations(
         // -----------------------------------------------------------------
         // Phase 8: Hourly markers and lookback window
         // -----------------------------------------------------------------
-        const minutes = bgTime!.getMinutes();
-        const hours = bgTime!.getHours();
+        const minutes = (bgTime as Date).getMinutes();
+        const hours = (bgTime as Date).getHours();
         if (minutes >= 0 && minutes < 5) {
             process.stderr.write(`${hours}h`);
             // Add one neutral deviation every 2h to help decay over long exclusion periods

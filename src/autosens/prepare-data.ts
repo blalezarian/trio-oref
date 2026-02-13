@@ -55,7 +55,7 @@ export function determineSiteChangeTime(
     // Default: 24h lookback from first glucose reading (retrospective) or now
     let lastSiteChange: Date;
     if (retrospective) {
-        lastSiteChange = new Date(new Date(glucose_data[0].date!).getTime() - HOURS_PER_DAY * MS_PER_HOUR);
+        lastSiteChange = new Date(new Date(glucose_data[0].date as number).getTime() - HOURS_PER_DAY * MS_PER_HOUR);
     } else {
         lastSiteChange = new Date(Date.now() - HOURS_PER_DAY * MS_PER_HOUR);
     }
