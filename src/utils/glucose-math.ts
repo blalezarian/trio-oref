@@ -9,11 +9,11 @@ const ROUND_SCALE_2DP = 100;
  * Mutates objects in-place, returns a new array of the same references
  * (preserving the original .map() semantics from the source JS).
  */
-export function normalizeGlucoseData(data: GlucoseEntry[]): GlucoseEntry[] {
-    return data.map((obj: GlucoseEntry) => {
+export function normalizeGlucoseData(glucoseEntries: GlucoseEntry[]): GlucoseEntry[] {
+    return glucoseEntries.map((glucoseEntry: GlucoseEntry) => {
         //Support the NS sgv field to avoid having to convert in a custom way
-        obj.glucose = obj.glucose || obj.sgv;
-        return obj;
+        glucoseEntry.glucose = glucoseEntry.glucose || glucoseEntry.sgv;
+        return glucoseEntry;
     });
 }
 

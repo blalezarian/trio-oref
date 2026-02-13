@@ -137,29 +137,29 @@ function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
 
     let glucoseData: CategorizeGlucoseEntry[] = [ ];
     if (opts.glucose !== undefined) {
-        glucoseData = opts.glucose.map((obj: CategorizeGlucoseEntry) => {
+        glucoseData = opts.glucose.map((glucoseEntry: CategorizeGlucoseEntry) => {
             //Support the NS sgv field to avoid having to convert in a custom way
-            obj.glucose = obj.glucose || obj.sgv;
+            glucoseEntry.glucose = glucoseEntry.glucose || glucoseEntry.sgv;
 
-            if (!obj.date) {
-                if (obj.displayTime) {
+            if (!glucoseEntry.date) {
+                if (glucoseEntry.displayTime) {
                     // Attempt to get date from displayTime
-                    obj.date = new Date(obj.displayTime.replace('T', ' ')).getTime();
-                } else if (obj.dateString) {
+                    glucoseEntry.date = new Date(glucoseEntry.displayTime.replace('T', ' ')).getTime();
+                } else if (glucoseEntry.dateString) {
                     // Attempt to get date from dateString
-                    obj.date = new Date(obj.dateString).getTime();
+                    glucoseEntry.date = new Date(glucoseEntry.dateString).getTime();
                 }
             }
 
-            if (!obj.dateString)
+            if (!glucoseEntry.dateString)
             {
-                obj.dateString = new Date(obj.date as number).toISOString();
+                glucoseEntry.dateString = new Date(glucoseEntry.date as number).toISOString();
             }
-            return obj;
-        }).filter((obj: CategorizeGlucoseEntry) => {
+            return glucoseEntry;
+        }).filter((glucoseEntry: CategorizeGlucoseEntry) => {
             // Only take records with a valid date record
             // and a glucose value, which is also above 39
-            return (obj.date && obj.glucose && obj.glucose >=MIN_VALID_GLUCOSE_MGDL);
+            return (glucoseEntry.date && glucoseEntry.glucose && glucoseEntry.glucose >=MIN_VALID_GLUCOSE_MGDL);
         }).sort((a: CategorizeGlucoseEntry, b: CategorizeGlucoseEntry) => {
             // sort the collection in order
             return b.date! - a.date!;
