@@ -33,6 +33,12 @@ const ROUND_SCALE_3DP = 1000;
 const ROUND_SCALE_2DP = 100;
 /** Minimum trailing buckets required for delta calculations */
 const TRAILING_BUCKETS_REQUIRED = 3;
+/** Initial sentinel for min-deviation slope (large positive to be overwritten) */
+const SLOPE_INITIAL_HIGH = 999;
+/** Initial sentinel for min-deviation (large positive to be overwritten) */
+const MIN_DEVIATION_INITIAL = 999;
+/** Divisor for currentDeviation contribution to carbImpact */
+const CURRENT_DEVIATION_DIVISOR = 2;
 
 // ---------------------------------------------------------------------------
 // Main analysis loop
@@ -51,29 +57,29 @@ export function analyzeAbsorption(
     let carbsAbsorbed = 0;
     let currentDeviation: number | undefined;
     let slopeFromMaxDeviation = 0;
-    let slopeFromMinDeviation = 999;
+    let slopeFromMinDeviation = SLOPE_INITIAL_HIGH;
     let maxDeviation = 0;
-    let minDeviation = 999;
+    let minDeviation = MIN_DEVIATION_INITIAL;
     const allDeviations: number[] = [];
 
     const isfProfileData = profile.isfProfile as NonNullable<typeof profile.isfProfile>;
 
-    for (let i = 0; i < bucketed_data.length - TRAILING_BUCKETS_REQUIRED; ++i) {
-        const bgTime = new Date(bucketed_data[i].date as number);
+    for (let bucketIdx = 0; bucketIdx < bucketed_data.length - TRAILING_BUCKETS_REQUIRED; ++bucketIdx) {
+        const bgTime = new Date(bucketed_data[bucketIdx].date as number);
         const sens = isfLookup(isfProfileData, bgTime);
 
         // Resolve glucose and deltas (if glucose undefined, values stay undefined/NaN)
         let bg: number;
         let avgDelta = NaN;
         let delta = NaN;
-        if (bucketed_data[i].glucose !== undefined) {
-            bg = bucketed_data[i].glucose as number;
-            if (bg < MIN_VALID_GLUCOSE_MGDL || (bucketed_data[i + TRAILING_BUCKETS_REQUIRED].glucose ?? 0) < MIN_VALID_GLUCOSE_MGDL) {
+        if (bucketed_data[bucketIdx].glucose !== undefined) {
+            bg = bucketed_data[bucketIdx].glucose as number;
+            if (bg < MIN_VALID_GLUCOSE_MGDL || (bucketed_data[bucketIdx + TRAILING_BUCKETS_REQUIRED].glucose ?? 0) < MIN_VALID_GLUCOSE_MGDL) {
                 process.stderr.write("!");
                 continue;
             }
-            avgDelta = (bg - (bucketed_data[i + TRAILING_BUCKETS_REQUIRED].glucose ?? 0)) / TRAILING_BUCKETS_REQUIRED;
-            delta = bg - (bucketed_data[i + 1].glucose ?? 0);
+            avgDelta = (bg - (bucketed_data[bucketIdx + TRAILING_BUCKETS_REQUIRED].glucose ?? 0)) / TRAILING_BUCKETS_REQUIRED;
+            delta = bg - (bucketed_data[bucketIdx + 1].glucose ?? 0);
         } else {
             console.error("Could not find glucose data");
         }
@@ -87,7 +93,7 @@ export function analyzeAbsorption(
         const deviation = calculateDeviation(delta, bgImpact);
 
         // First entry: calculate current deviation
-        if (i === 0) {
+        if (bucketIdx === 0) {
             currentDeviation = Math.round((avgDelta - bgImpact) * ROUND_SCALE_3DP) / ROUND_SCALE_3DP;
             if (carbImpactTime > bgTime) {
                 allDeviations.push(Math.round(currentDeviation));
@@ -111,7 +117,7 @@ export function analyzeAbsorption(
 
         // After meal: estimate carb absorption from deviations
         if (bgTime > mealTime) {
-            const carbImpact = Math.max(deviation, (currentDeviation as number) / 2, profile.min_5m_carbimpact as number);
+            const carbImpact = Math.max(deviation, (currentDeviation as number) / CURRENT_DEVIATION_DIVISOR, profile.min_5m_carbimpact as number);
             const absorbed = carbImpact * (profile.carb_ratio as number) / sens;
             carbsAbsorbed += absorbed;
         }

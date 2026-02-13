@@ -154,7 +154,7 @@ describe('accumulateCarbsByType', () => {
         const spy = vi.spyOn(console, 'error').mockImplementation(() => {});
         const totals = { nsCarbs: 0, bwCarbs: 0, journalCarbs: 0, bwFound: false };
         accumulateCarbsByType({ timestamp: '', carbs: 10 }, totals);
-        expect(spy).toHaveBeenCalledWith('Treatment carbs unclassified:', expect.anything());
+        expect(spy).toHaveBeenCalledWith(expect.stringContaining('Treatment carbs unclassified:'));
         spy.mockRestore();
     });
 

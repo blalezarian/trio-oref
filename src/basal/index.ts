@@ -1,4 +1,3 @@
-
 import { round_basal } from '../utils/round-basal';
 import {
     DEFAULT_MAX_DAILY_SAFETY_MULTIPLIER,

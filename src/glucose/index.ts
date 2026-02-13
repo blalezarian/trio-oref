@@ -1,4 +1,3 @@
-
 import type { GlucoseEntry, GlucoseStatus } from '../types/index';
 import { MS_PER_MINUTE, PRED_INTERVAL_MINUTES, MIN_VALID_GLUCOSE_MGDL } from '../shared/constants';
 
@@ -77,12 +76,12 @@ function getLastGlucose(data: GlucoseEntry[]): GlucoseStatus {
     const longDeltas: number[] = [];
     let lastCal = 0;
 
-    for (let i = 1; i < filtered.length; i++) {
-        const entry = filtered[i];
+    for (let entryIdx = 1; entryIdx < filtered.length; entryIdx++) {
+        const entry = filtered[entryIdx];
 
         // Stop processing at calibration records
         if (entry.type === 'cal') {
-            lastCal = i;
+            lastCal = entryIdx;
             break;
         }
 

@@ -1,4 +1,3 @@
-
 import type { PumpHistoryEvent, PumpHistoryEventType } from '../types/index';
 import { MS_PER_MINUTE } from '../shared/constants';
 
@@ -189,7 +188,7 @@ export function finalizeBolusGroup(accumulator: BolusAccumulator): BolusResult {
         accumulator.insulin = totalInsulin.toString();
     }
 
-    return accumulator as unknown as BolusResult;
+    return accumulator as BolusResult;
 }
 
 /** Process a group of related bolus events into a single result */
@@ -201,7 +200,7 @@ export function processBolusGroup(
 
     for (const event of events) {
         if (!event) {
-            console.error('XXX', event, events);
+            console.error(`XXX ${JSON.stringify(event)} ${JSON.stringify(events)}`);
             break;
         }
 

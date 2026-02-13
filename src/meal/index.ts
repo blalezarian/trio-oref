@@ -1,4 +1,3 @@
-
 import { findMealInputs } from './history';
 import { recentCarbs } from './total';
 import type { PumpHistoryEvent, GlucoseEntry } from '../types/index';

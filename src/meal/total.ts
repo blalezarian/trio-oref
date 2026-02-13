@@ -67,7 +67,7 @@ function resolveMaxAbsorptionTime(profile: IobProfile): number {
     if (typeof profile.maxMealAbsorptionTime === 'number' && !isNaN(profile.maxMealAbsorptionTime)) {
         return profile.maxMealAbsorptionTime;
     }
-    console.error("Bad profile.maxMealAbsorptionTime:", profile.maxMealAbsorptionTime);
+    console.error(`Bad profile.maxMealAbsorptionTime: ${profile.maxMealAbsorptionTime}`);
     return DEFAULT_MAX_MEAL_ABSORPTION_HOURS;
 }
 
@@ -84,7 +84,7 @@ function accumulateCarbsByType(
     } else if ((treatment.journalCarbs ?? 0) >= 1) {
         totals.journalCarbs += treatment.journalCarbs ?? 0;
     } else {
-        console.error("Treatment carbs unclassified:", treatment);
+        console.error(`Treatment carbs unclassified: ${JSON.stringify(treatment)}`);
     }
 }
 
@@ -156,7 +156,7 @@ function recentCarbs(opts: RecentCarbsOpts, time: Date): RecentCarbsResult | Rec
         if (typeof myMealCOB === 'number' && !isNaN(myMealCOB)) {
             mealCOB = Math.max(mealCOB, myMealCOB);
         } else {
-            console.error("Bad myMealCOB:", myMealCOB, "mealCOB:", mealCOB, "carbs:", carbs, "myCarbsAbsorbed:", myCarbsAbsorbed);
+            console.error(`Bad myMealCOB: ${myMealCOB} mealCOB: ${mealCOB} carbs: ${carbs} myCarbsAbsorbed: ${myCarbsAbsorbed}`);
         }
 
         // Track removal candidates for fully-absorbed earlier meals
@@ -186,23 +186,23 @@ function recentCarbs(opts: RecentCarbsOpts, time: Date): RecentCarbsResult | Rec
     // Calculate deviation data over the full absorption window
     cobInputs.carbImpactTime = nowMs;
     cobInputs.mealTime = nowMs - maxMealAbsorptionTime * MS_PER_HOUR;
-    const c = calcMealCOB(cobInputs);
+    const deviationResult = calcMealCOB(cobInputs);
 
     // Apply maxCOB safety cap
     if (typeof profileData.maxCOB === 'number' && !isNaN(profileData.maxCOB)) {
         mealCOB = Math.min(profileData.maxCOB, mealCOB);
         console.error(`mealCOB: ${round(mealCOB, 1)} with maxCOB ${profileData.maxCOB}g and maxMealAbsorptionTime ${maxMealAbsorptionTime}hrs.`);
     } else {
-        console.error("Bad profile.maxCOB:", profileData.maxCOB);
+        console.error(`Bad profile.maxCOB: ${profileData.maxCOB}`);
     }
 
     // Zombie-carb safety: zero COB when deviations are null/undefined
-    if (c.currentDeviation === undefined || c.currentDeviation === null) {
+    if (deviationResult.currentDeviation === undefined || deviationResult.currentDeviation === null) {
         console.error("");
         console.error("Warning: setting mealCOB to 0 because currentDeviation is null/undefined");
         mealCOB = 0;
     }
-    if (c.maxDeviation === undefined || c.maxDeviation === null) {
+    if (deviationResult.maxDeviation === undefined || deviationResult.maxDeviation === null) {
         console.error("");
         console.error("Warning: setting mealCOB to 0 because maxDeviation is 0 or undefined");
         mealCOB = 0;
@@ -214,12 +214,12 @@ function recentCarbs(opts: RecentCarbsOpts, time: Date): RecentCarbsResult | Rec
         bwCarbs: Math.round(totals.bwCarbs * ROUND_SCALE_3DP) / ROUND_SCALE_3DP,
         journalCarbs: Math.round(totals.journalCarbs * ROUND_SCALE_3DP) / ROUND_SCALE_3DP,
         mealCOB: Math.round(mealCOB),
-        currentDeviation: Math.round(c.currentDeviation * ROUND_SCALE_2DP) / ROUND_SCALE_2DP,
-        maxDeviation: Math.round(c.maxDeviation * ROUND_SCALE_2DP) / ROUND_SCALE_2DP,
-        minDeviation: Math.round(c.minDeviation * ROUND_SCALE_2DP) / ROUND_SCALE_2DP,
-        slopeFromMaxDeviation: Math.round(c.slopeFromMaxDeviation * ROUND_SCALE_3DP) / ROUND_SCALE_3DP,
-        slopeFromMinDeviation: Math.round(c.slopeFromMinDeviation * ROUND_SCALE_3DP) / ROUND_SCALE_3DP,
-        allDeviations: c.allDeviations,
+        currentDeviation: Math.round(deviationResult.currentDeviation * ROUND_SCALE_2DP) / ROUND_SCALE_2DP,
+        maxDeviation: Math.round(deviationResult.maxDeviation * ROUND_SCALE_2DP) / ROUND_SCALE_2DP,
+        minDeviation: Math.round(deviationResult.minDeviation * ROUND_SCALE_2DP) / ROUND_SCALE_2DP,
+        slopeFromMaxDeviation: Math.round(deviationResult.slopeFromMaxDeviation * ROUND_SCALE_3DP) / ROUND_SCALE_3DP,
+        slopeFromMinDeviation: Math.round(deviationResult.slopeFromMinDeviation * ROUND_SCALE_3DP) / ROUND_SCALE_3DP,
+        allDeviations: deviationResult.allDeviations,
         lastCarbTime,
         bwFound: totals.bwFound,
     };

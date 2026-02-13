@@ -69,8 +69,8 @@ export function bucketGlucoseWithInterpolation(
     let bgTime: Date | undefined;
     let lastBgTime: Date | undefined;
 
-    for (let i = 1; i < glucose_data.length; ++i) {
-        const resolvedTime = resolveGlucoseTime(glucose_data[i]);
+    for (let glucoseIdx = 1; glucoseIdx < glucose_data.length; ++glucoseIdx) {
+        const resolvedTime = resolveGlucoseTime(glucose_data[glucoseIdx]);
         if (resolvedTime) {
             bgTime = resolvedTime;
         } else {
@@ -78,7 +78,7 @@ export function bucketGlucoseWithInterpolation(
         }
 
         // Skip entries with invalid glucose
-        if (!glucose_data[i].glucose || (glucose_data[i].glucose ?? 0) < MIN_VALID_GLUCOSE_MGDL) {
+        if (!glucose_data[glucoseIdx].glucose || (glucose_data[glucoseIdx].glucose ?? 0) < MIN_VALID_GLUCOSE_MGDL) {
             continue;
         }
 
@@ -120,7 +120,7 @@ export function bucketGlucoseWithInterpolation(
                 bucketIndex++;
                 bucketed_data[bucketIndex] = {} as BucketedGlucose;
                 bucketed_data[bucketIndex].date = previousBgTime.getTime();
-                const gapDelta = (glucose_data[i].glucose ?? 0) - lastBg;
+                const gapDelta = (glucose_data[glucoseIdx].glucose ?? 0) - lastBg;
                 const previousBg = lastBg + (PRED_INTERVAL_MINUTES / remaining * gapDelta);
                 bucketed_data[bucketIndex].glucose = Math.round(previousBg);
 
@@ -132,16 +132,16 @@ export function bucketGlucoseWithInterpolation(
         // --- Case 2: Medium gap (> 2 min) → new bucket ---
         else if (Math.abs(elapsed_minutes) > BUCKETING_MERGE_THRESHOLD_MIN) {
             bucketIndex++;
-            bucketed_data[bucketIndex] = glucose_data[i];
+            bucketed_data[bucketIndex] = glucose_data[glucoseIdx];
             bucketed_data[bucketIndex].date = (bgTime as Date).getTime();
         }
         // --- Case 3: Small gap (≤ 2 min) → merge into current bucket ---
         else {
             bucketed_data[bucketIndex].glucose =
-                ((bucketed_data[bucketIndex].glucose ?? 0) + (glucose_data[i].glucose ?? 0)) / 2;
+                ((bucketed_data[bucketIndex].glucose ?? 0) + (glucose_data[glucoseIdx].glucose ?? 0)) / 2;
         }
 
-        lastValidIndex = i;
+        lastValidIndex = glucoseIdx;
     }
 
     return bucketed_data;
