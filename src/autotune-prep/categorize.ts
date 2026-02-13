@@ -123,6 +123,89 @@ interface CategorizeResult {
   basalGlucoseData: CategorizeGlucoseDatum[];
 }
 
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+/** Remove treatments older than the oldest bucketed glucose value. Mutates treatments array. */
+function trimOldTreatments(
+    treatments: CarbTreatment[],
+    bucketedData: CategorizeGlucoseEntry[],
+): void {
+    for (let i = treatments.length - 1; i > 0; --i) {
+        const treatment = treatments[i];
+        if (treatment) {
+            const treatmentTime = new Date(treatment.timestamp).getTime();
+            const lastBucket = bucketedData[bucketedData.length - 1];
+            if (lastBucket) {
+                const bgTime = new Date(lastBucket.date as number).getTime();
+                if (treatmentTime < bgTime) {
+                    treatments.splice(i, 1);
+                }
+            }
+        }
+    }
+}
+
+/** Redistribute UAM data across basal/ISF categories based on count heuristics */
+function mergeUAMData(
+    categorize_uam_as_basal: boolean | undefined,
+    CSFGlucoseData: CategorizeGlucoseDatum[],
+    ISFGlucoseData: CategorizeGlucoseDatum[],
+    basalGlucoseData: CategorizeGlucoseDatum[],
+    UAMGlucoseData: CategorizeGlucoseDatum[],
+): {
+    CSFGlucoseData: CategorizeGlucoseDatum[];
+    ISFGlucoseData: CategorizeGlucoseDatum[];
+    basalGlucoseData: CategorizeGlucoseDatum[];
+} {
+    const CSFLength = CSFGlucoseData.length;
+    let ISFLength = ISFGlucoseData.length;
+    const UAMLength = UAMGlucoseData.length;
+    let basalLength = basalGlucoseData.length;
+
+    if (categorize_uam_as_basal) {
+        console.error("--categorize-uam-as-basal=true set: categorizing all UAM data as basal.");
+        basalGlucoseData = basalGlucoseData.concat(UAMGlucoseData);
+    } else if (CSFLength > 12) {
+        console.error("Found at least 1h of carb absorption: assuming all meals were announced, and categorizing UAM data as basal.");
+        basalGlucoseData = basalGlucoseData.concat(UAMGlucoseData);
+    } else {
+        if (2*basalLength < UAMLength) {
+            console.error("Warning: too many deviations categorized as UnAnnounced Meals");
+            console.error("Adding",UAMLength,"UAM deviations to",basalLength,"basal ones");
+            basalGlucoseData = basalGlucoseData.concat(UAMGlucoseData);
+            // if too much data is excluded as UAM, add in the UAM deviations to basal, but then discard the highest 50%
+            basalGlucoseData.sort((a, b) => parseFloat(a.deviation) - parseFloat(b.deviation));
+            basalGlucoseData = basalGlucoseData.slice(0,basalGlucoseData.length/2);
+            console.error("and selecting the lowest 50%, leaving", basalGlucoseData.length, "basal+UAM ones");
+        }
+
+        if (2*ISFLength < UAMLength && ISFLength < 10) {
+            console.error("Adding",UAMLength,"UAM deviations to",ISFLength,"ISF ones");
+            ISFGlucoseData = ISFGlucoseData.concat(UAMGlucoseData);
+            // if too much data is excluded as UAM, add in the UAM deviations to ISF, but then discard the highest 50%
+            ISFGlucoseData.sort((a, b) => parseFloat(a.deviation) - parseFloat(b.deviation));
+            ISFGlucoseData = ISFGlucoseData.slice(0,ISFGlucoseData.length/2);
+            console.error("and selecting the lowest 50%, leaving", ISFGlucoseData.length, "ISF+UAM ones");
+        }
+    }
+    basalLength = basalGlucoseData.length;
+    ISFLength = ISFGlucoseData.length;
+    if ( 4*basalLength + ISFLength < CSFLength && ISFLength < 10 ) {
+        console.error("Warning: too many deviations categorized as meals");
+        console.error("Adding",CSFLength,"CSF deviations to",ISFLength,"ISF ones");
+        ISFGlucoseData = ISFGlucoseData.concat(CSFGlucoseData);
+        CSFGlucoseData = [];
+    }
+
+    return { CSFGlucoseData, ISFGlucoseData, basalGlucoseData };
+}
+
+// ---------------------------------------------------------------------------
+// Main function
+// ---------------------------------------------------------------------------
+
 // main function categorizeBGDatums. ;) categorize to ISF, CSF, or basals.
 
 function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
@@ -208,21 +291,7 @@ function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
         }
     }
     // go through the treatments and remove any that are older than the oldest glucose value
-    for (i=treatments.length-1; i>0; --i) {
-        treatment = treatments[i];
-        if (treatment) {
-            treatmentDate = new Date(treatment.timestamp);
-            treatmentTime = treatmentDate.getTime();
-            glucoseDatum = bucketedData[bucketedData.length-1];
-            if (glucoseDatum) {
-                BGDate = new Date(glucoseDatum.date as number);
-                BGTime = BGDate.getTime();
-                if ( treatmentTime < BGTime ) {
-                    treatments.splice(i,1);
-                }
-            }
-        }
-    }
+    trimOldTreatments(treatments, bucketedData);
     let calculatingCR = false;
     let absorbing = 0;
     let uam = 0; // unannounced meal
@@ -473,55 +542,26 @@ function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
         crEntry.CRInsulin = (insulinDosed as unknown as { insulin?: number }).insulin;
     });
 
-    const CSFLength = CSFGlucoseData.length;
-    let ISFLength = ISFGlucoseData.length;
-    const UAMLength = UAMGlucoseData.length;
-    let basalLength = basalGlucoseData.length;
-
-    if (opts.categorize_uam_as_basal) {
-        console.error("--categorize-uam-as-basal=true set: categorizing all UAM data as basal.");
-        basalGlucoseData = basalGlucoseData.concat(UAMGlucoseData);
-    } else if (CSFLength > 12) {
-        console.error("Found at least 1h of carb absorption: assuming all meals were announced, and categorizing UAM data as basal.");
-        basalGlucoseData = basalGlucoseData.concat(UAMGlucoseData);
-    } else {
-        if (2*basalLength < UAMLength) {
-            console.error("Warning: too many deviations categorized as UnAnnounced Meals");
-            console.error("Adding",UAMLength,"UAM deviations to",basalLength,"basal ones");
-            basalGlucoseData = basalGlucoseData.concat(UAMGlucoseData);
-            // if too much data is excluded as UAM, add in the UAM deviations to basal, but then discard the highest 50%
-            basalGlucoseData.sort((a, b) => parseFloat(a.deviation) - parseFloat(b.deviation));
-            const newBasalGlucose = basalGlucoseData.slice(0,basalGlucoseData.length/2);
-            basalGlucoseData = newBasalGlucose;
-            console.error("and selecting the lowest 50%, leaving", basalGlucoseData.length, "basal+UAM ones");
-        }
-
-        if (2*ISFLength < UAMLength && ISFLength < 10) {
-            console.error("Adding",UAMLength,"UAM deviations to",ISFLength,"ISF ones");
-            ISFGlucoseData = ISFGlucoseData.concat(UAMGlucoseData);
-            // if too much data is excluded as UAM, add in the UAM deviations to ISF, but then discard the highest 50%
-            ISFGlucoseData.sort((a, b) => parseFloat(a.deviation) - parseFloat(b.deviation));
-            const newISFGlucose = ISFGlucoseData.slice(0,ISFGlucoseData.length/2);
-            ISFGlucoseData = newISFGlucose;
-            console.error("and selecting the lowest 50%, leaving", ISFGlucoseData.length, "ISF+UAM ones");
-        }
-    }
-    basalLength = basalGlucoseData.length;
-    ISFLength = ISFGlucoseData.length;
-    if ( 4*basalLength + ISFLength < CSFLength && ISFLength < 10 ) {
-        console.error("Warning: too many deviations categorized as meals");
-        console.error("Adding",CSFLength,"CSF deviations to",ISFLength,"ISF ones");
-        ISFGlucoseData = ISFGlucoseData.concat(CSFGlucoseData);
-        CSFGlucoseData = [];
-    }
-
+    const merged = mergeUAMData(
+        opts.categorize_uam_as_basal,
+        CSFGlucoseData,
+        ISFGlucoseData,
+        basalGlucoseData,
+        UAMGlucoseData,
+    );
 
     return {
         CRData: CRData,
-        CSFGlucoseData: CSFGlucoseData,
-        ISFGlucoseData: ISFGlucoseData,
-        basalGlucoseData: basalGlucoseData
+        CSFGlucoseData: merged.CSFGlucoseData,
+        ISFGlucoseData: merged.ISFGlucoseData,
+        basalGlucoseData: merged.basalGlucoseData
     };
 }
 
+// ---------------------------------------------------------------------------
+// Exports
+// ---------------------------------------------------------------------------
+
 export default categorizeBGDatums;
+export { categorizeBGDatums, trimOldTreatments, mergeUAMData };
+export type { CategorizeOpts, CategorizeResult, CategorizeGlucoseDatum, CRDatum };
