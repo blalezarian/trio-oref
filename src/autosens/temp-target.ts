@@ -19,14 +19,14 @@ export function tempTargetRunning(
     // This produces an unstable sort. Fixing it could change autosens ratio calculations — defer to a future phase.
     try {
         temptargets_data.sort((a, b) => {
-            return (new Date(a.created_at) < new Date(b.created_at)) as unknown as number;
+            return Number(new Date(a.created_at) < new Date(b.created_at));
         });
     } catch (_e) {
         // Sort may fail if temptargets_data is malformed
     }
 
-    for (let i = 0; i < temptargets_data.length; i++) {
-        const target = temptargets_data[i];
+    for (let targetIdx = 0; targetIdx < temptargets_data.length; targetIdx++) {
+        const target = temptargets_data[targetIdx];
         const start = new Date(target.created_at);
         const expires = new Date(start.getTime() + target.duration * MS_PER_MINUTE);
 

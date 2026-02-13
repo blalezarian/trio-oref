@@ -65,13 +65,13 @@ export function determineSiteChangeTime(
     }
 
     // Scan pump history for last Rewind event (skip index 0)
-    for (let h = 1; h < history.length; ++h) {
-        if (!history[h]._type || history[h]._type !== 'Rewind') {
+    for (let historyIdx = 1; historyIdx < history.length; ++historyIdx) {
+        if (!history[historyIdx]._type || history[historyIdx]._type !== 'Rewind') {
             continue;
         }
-        if (history[h].timestamp) {
-            lastSiteChange = new Date(history[h].timestamp as string);
-            console.error("Setting lastSiteChange to", lastSiteChange, "using timestamp", history[h].timestamp);
+        if (history[historyIdx].timestamp) {
+            lastSiteChange = new Date(history[historyIdx].timestamp as string);
+            console.error(`Setting lastSiteChange to ${lastSiteChange} using timestamp ${history[historyIdx].timestamp}`);
             break;
         }
     }
@@ -152,19 +152,19 @@ export function prepareAutosensData(inputs: AutosensInputs): PreparedAutosensDat
     let bgTime: Date | undefined;
     let lastbgTime: Date | undefined;
 
-    for (let i = 1; i < glucose_data.length; ++i) {
+    for (let glucoseIdx = 1; glucoseIdx < glucose_data.length; ++glucoseIdx) {
         // --- Resolve current entry time ---
-        const resolvedBgTime = resolveGlucoseTime(glucose_data[i]);
+        const resolvedBgTime = resolveGlucoseTime(glucose_data[glucoseIdx]);
         if (resolvedBgTime) {
             bgTime = resolvedBgTime;
-        } else if (glucose_data[i].xDrip_started_at) {
+        } else if (glucose_data[glucoseIdx].xDrip_started_at) {
             continue;
         } else {
             console.error("Could not determine BG time");
         }
 
         // --- Resolve previous entry time (3-source fallback) ---
-        const resolvedLastTime = resolveLastBgTime(glucose_data[i - 1], bucketed_data[0]);
+        const resolvedLastTime = resolveLastBgTime(glucose_data[glucoseIdx - 1], bucketed_data[0]);
         if (resolvedLastTime === 'skip') {
             continue;
         }
@@ -175,8 +175,8 @@ export function prepareAutosensData(inputs: AutosensInputs): PreparedAutosensDat
         }
 
         // Skip invalid glucose values (as number preserves undefined→NaN passthrough)
-        if ((glucose_data[i].glucose as number) < MIN_VALID_GLUCOSE_MGDL
-            || (glucose_data[i - 1].glucose as number) < MIN_VALID_GLUCOSE_MGDL) {
+        if ((glucose_data[glucoseIdx].glucose as number) < MIN_VALID_GLUCOSE_MGDL
+            || (glucose_data[glucoseIdx - 1].glucose as number) < MIN_VALID_GLUCOSE_MGDL) {
             continue;
         }
 
@@ -193,11 +193,11 @@ export function prepareAutosensData(inputs: AutosensInputs): PreparedAutosensDat
 
         if (Math.abs(elapsed_minutes) > BUCKETING_MERGE_THRESHOLD_MIN) {
             bucketIndex++;
-            bucketed_data[bucketIndex] = glucose_data[i];
+            bucketed_data[bucketIndex] = glucose_data[glucoseIdx];
             bucketed_data[bucketIndex].date = bgTime ? bgTime.getTime() : NaN;
         } else {
             bucketed_data[bucketIndex].glucose =
-                ((bucketed_data[bucketIndex].glucose as number) + (glucose_data[i].glucose as number)) / 2;
+                ((bucketed_data[bucketIndex].glucose as number) + (glucose_data[glucoseIdx].glucose as number)) / 2;
         }
     }
 
@@ -213,8 +213,8 @@ export function prepareAutosensData(inputs: AutosensInputs): PreparedAutosensDat
     let BGDate: Date;
     let BGTime: number;
 
-    for (let i = meals.length - 1; i > 0; --i) {
-        treatment = meals[i];
+    for (let mealIdx = meals.length - 1; mealIdx > 0; --mealIdx) {
+        treatment = meals[mealIdx];
         if (!treatment) {
             continue;
         }
@@ -231,7 +231,7 @@ export function prepareAutosensData(inputs: AutosensInputs): PreparedAutosensDat
         BGTime = BGDate.getTime();
 
         if (treatmentTime < BGTime) {
-            meals.splice(i, 1);
+            meals.splice(mealIdx, 1);
         }
     }
 

@@ -27,6 +27,16 @@ const TEMP_TARGET_DEVIATION_DIVISOR = 20;
 const TRAILING_BUCKETS = 3;
 /** Minimum COB threshold for "depleted" checks */
 const COB_DEPLETED_THRESHOLD = 0.5;
+/** Initial meal-start counter sentinel (well above all thresholds) */
+const MEAL_START_COUNTER_INITIAL = 999;
+/** IOB must exceed this multiple of current basal to trigger UAM detection */
+const UAM_IOB_BASAL_MULTIPLIER = 2;
+/** Minutes window at the top of each hour for hourly markers */
+const HOURLY_MARKER_MINUTES = 5;
+/** Neutral deviation inserted every N hours during long exclusion periods */
+const NEUTRAL_DEVIATION_INTERVAL_HOURS = 2;
+/** Minimum carbs in a treatment to count as a meal */
+const MIN_MEAL_CARBS = 1;
 
 // ---------------------------------------------------------------------------
 // Types
@@ -75,13 +85,13 @@ export function analyzeDeviations(
     let uam = 0;
     let mealCOB = 0;
     let mealCarbs = 0;
-    let mealStartCounter = 999;
-    let type = "";
+    let mealStartCounter = MEAL_START_COUNTER_INITIAL;
+    let deviationType: '' | 'csf' | 'uam' | 'non-meal' = '';
 
     const isfProfileData = profile.isfProfile as NonNullable<typeof profile.isfProfile>;
 
-    for (let i = TRAILING_BUCKETS; i < bucketed_data.length; ++i) {
-        bgTime = new Date(bucketed_data[i].date as number);
+    for (let bucketIdx = TRAILING_BUCKETS; bucketIdx < bucketed_data.length; ++bucketIdx) {
+        bgTime = new Date(bucketed_data[bucketIdx].date as number);
         const sens = isfLookup(isfProfileData, bgTime);
 
         // -----------------------------------------------------------------
@@ -91,10 +101,10 @@ export function analyzeDeviations(
         let avgDelta: number;
         let delta: number;
 
-        if (bucketed_data[i].glucose !== undefined) {
-            bg = bucketed_data[i].glucose as number;
-            last_bg = bucketed_data[i - 1].glucose as number;
-            old_bg = bucketed_data[i - TRAILING_BUCKETS].glucose as number;
+        if (bucketed_data[bucketIdx].glucose !== undefined) {
+            bg = bucketed_data[bucketIdx].glucose as number;
+            last_bg = bucketed_data[bucketIdx - 1].glucose as number;
+            old_bg = bucketed_data[bucketIdx - TRAILING_BUCKETS].glucose as number;
 
             if (isNaN(bg) || !bg || bg < AUTOSENS_MIN_VALID_BG
                 || isNaN(old_bg) || !old_bg || old_bg < AUTOSENS_MIN_VALID_BG
@@ -115,14 +125,14 @@ export function analyzeDeviations(
         // -----------------------------------------------------------------
         avgDelta = parseFloat(avgDelta.toFixed(2));
         iob_inputs.clock = bgTime;
-        iob_inputs.profile.current_basal = getCurrentBasalRate(basalprofile, bgTime)!;
+        iob_inputs.profile.current_basal = getCurrentBasalRate(basalprofile, bgTime) as number;
         iob_inputs.profile.temptargetSet = false;
         const iob = get_iob(iob_inputs as IobInputs, true, treatments)[0];
 
         const bgImpact = calculateBGImpact(iob.activity, sens);
         let deviation = NaN;
         if (isNaN(delta)) {
-            console.error("Bad delta: ", delta, bg, last_bg, old_bg);
+            console.error(`Bad delta: ${delta} ${bg} ${last_bg} ${old_bg}`);
         } else {
             deviation = calculateDeviation(delta, bgImpact, bg, MIN_BG_TARGET);
         }
@@ -130,7 +140,7 @@ export function analyzeDeviations(
         // -----------------------------------------------------------------
         // Phase 3: Track meal COB from treatment history
         // -----------------------------------------------------------------
-        glucoseDatum = bucketed_data[i];
+        glucoseDatum = bucketed_data[bucketIdx];
         BGDate = new Date(glucoseDatum.date as number);
         BGTime = BGDate.getTime();
 
@@ -139,7 +149,7 @@ export function analyzeDeviations(
             treatmentDate = new Date(treatment.timestamp);
             treatmentTime = treatmentDate.getTime();
             if (treatmentTime < BGTime) {
-                if ((treatment.carbs ?? 0) >= 1) {
+                if ((treatment.carbs ?? 0) >= MIN_MEAL_CARBS) {
                     mealCOB += treatment.carbs ?? 0;
                     mealCarbs += treatment.carbs ?? 0;
                     displayCOB = Math.round(mealCOB);
@@ -158,7 +168,7 @@ export function analyzeDeviations(
             if (absorbed) {
                 mealCOB = Math.max(0, mealCOB - absorbed);
             } else {
-                console.error(absorbed, carbImpact, profile.carb_ratio, sens, deviation, profile.min_5m_carbimpact);
+                console.error(`${absorbed} ${carbImpact} ${profile.carb_ratio} ${sens} ${deviation} ${profile.min_5m_carbimpact}`);
             }
         }
 
@@ -180,42 +190,42 @@ export function analyzeDeviations(
             }
 
             // Mark meal absorption start (first time entering csf)
-            if (type !== "csf") {
+            if (deviationType !== "csf") {
                 process.stderr.write("(");
                 mealStartCounter = 0;
             }
             mealStartCounter++;
-            type = "csf";
+            deviationType = "csf";
             glucoseDatum.mealCarbs = mealCarbs;
         } else {
             // --- Non-meal path ---
-            if (type === "csf") {
+            if (deviationType === "csf") {
                 process.stderr.write(")");
             }
 
             const currentBasal = iob_inputs.profile.current_basal;
 
             // UAM (unannounced meal) detection
-            if ((!retrospective && iob.iob > 2 * currentBasal) || uam || mealStartCounter < MEAL_EXCLUSION_COUNTER) {
+            if ((!retrospective && iob.iob > UAM_IOB_BASAL_MULTIPLIER * currentBasal) || uam || mealStartCounter < MEAL_EXCLUSION_COUNTER) {
                 mealStartCounter++;
                 uam = deviation > 0 ? 1 : 0;
 
-                if (type !== "uam") {
+                if (deviationType !== "uam") {
                     process.stderr.write("u(");
                 }
-                type = "uam";
+                deviationType = "uam";
             } else {
-                if (type === "uam") {
+                if (deviationType === "uam") {
                     process.stderr.write(")");
                 }
-                type = "non-meal";
+                deviationType = "non-meal";
             }
         }
 
         // -----------------------------------------------------------------
         // Phase 6: Record non-meal deviations for autosens calculation
         // -----------------------------------------------------------------
-        if (type === "non-meal") {
+        if (deviationType === "non-meal") {
             if (deviation > 0) {
                 process.stderr.write("+");
             } else if (deviation === 0) {
@@ -237,7 +247,7 @@ export function analyzeDeviations(
         if (profile.high_temptarget_raises_sensitivity === true || profile.exercise_mode === true) {
             const tempTarget = tempTargetRunning(temptargets, bgTime as Date);
             if ((tempTarget ?? 0) > EXERCISE_NORMAL_TARGET) {
-                const tempDeviation = -(tempTarget! - EXERCISE_NORMAL_TARGET) / TEMP_TARGET_DEVIATION_DIVISOR;
+                const tempDeviation = -((tempTarget as number) - EXERCISE_NORMAL_TARGET) / TEMP_TARGET_DEVIATION_DIVISOR;
                 process.stderr.write("-");
                 deviations.push(tempDeviation);
             }
@@ -248,10 +258,10 @@ export function analyzeDeviations(
         // -----------------------------------------------------------------
         const minutes = (bgTime as Date).getMinutes();
         const hours = (bgTime as Date).getHours();
-        if (minutes >= 0 && minutes < 5) {
+        if (minutes >= 0 && minutes < HOURLY_MARKER_MINUTES) {
             process.stderr.write(`${hours}h`);
             // Add one neutral deviation every 2h to help decay over long exclusion periods
-            if (hours % 2 === 0) {
+            if (hours % NEUTRAL_DEVIATION_INTERVAL_HOURS === 0) {
                 deviations.push(0);
                 process.stderr.write("=");
             }

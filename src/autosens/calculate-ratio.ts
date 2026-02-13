@@ -1,4 +1,3 @@
-
 import { percentile } from '../utils/percentile';
 import { MEDIAN_PERCENTILE } from '../shared/constants';
 
@@ -49,7 +48,7 @@ export function padDeviations(
 ): void {
     if (deviations.length < targetLength) {
         const pad = Math.round((1 - deviations.length / targetLength) * maxPadding);
-        console.error("Adding", pad, "more zero deviations");
+        console.error(`Adding ${pad} more zero deviations`);
         deviations.push(...Array(pad).fill(0));
     }
 }
