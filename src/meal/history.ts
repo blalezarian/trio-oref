@@ -17,7 +17,6 @@ function arrayHasElementWithSameTimestampAndProperty(array: CarbTreatment[],t: s
             const tDate = new Date(t);
             const tMin = new Date(tDate.getTime() - TIMESTAMP_MATCH_TOLERANCE_MS);
             const tMax = new Date(tDate.getTime() + TIMESTAMP_MATCH_TOLERANCE_MS);
-            //console.error(tDate, tMin, tMax);
             if (eDate > tMin && eDate < tMax) return true;
         }
     }
@@ -52,7 +51,6 @@ function findMealInputs (inputs: MealHistoryInputs): CarbTreatment[] {
     for (let i=0; i < pumpHistory.length; i++) {
         current = pumpHistory[i];
         if (current._type === "Bolus" && current.timestamp) {
-            //console.log(pumpHistory[i]);
             temp = {
                 timestamp: current.timestamp,
                 bolus: current.amount,
@@ -123,7 +121,6 @@ function findMealInputs (inputs: MealHistoryInputs): CarbTreatment[] {
 
     for(let i=0; i < bolusWizardInputs.length; i++) {
       current = bolusWizardInputs[i];
-      //console.log(bolusWizardInputs[i]);
       temp = {
           timestamp: current.timestamp!,
           carbs: current.carb_input,
@@ -135,7 +132,6 @@ function findMealInputs (inputs: MealHistoryInputs): CarbTreatment[] {
       if (!arrayHasElementWithSameTimestampAndProperty(mealInputs,current.timestamp!,"carbs")) {
           if (arrayHasElementWithSameTimestampAndProperty(mealInputs,current.timestamp!,"bolus")) {
               mealInputs.push(temp);
-              //bwCarbs += temp.carbs;
           } else {
               console.error("Skipping bolus wizard entry", i, "in the pump history with",current.carb_input,"g carbs and no insulin.");
               if (current.carb_input === 0) {
@@ -149,7 +145,6 @@ function findMealInputs (inputs: MealHistoryInputs): CarbTreatment[] {
           duplicates += 1;
       }
     }
-    //if (duplicates > 0) console.error("Removed duplicate bolus/carb entries:" + duplicates);
 
     return mealInputs;
 }

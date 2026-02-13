@@ -31,13 +31,11 @@ const getLastGlucose = (data: GlucoseEntry[]): GlucoseStatus => {
 
     const now = data[0];
     let now_date = getDateFromEntry(now);
-    let change;
     const last_deltas: number[] = [];
     const short_deltas: number[] = [];
     const long_deltas: number[] = [];
     let last_cal = 0;
 
-    //console.error(now.glucose);
     for (let i=1; i < data.length; i++) {
         // if we come across a cal record, don't process any older SGVs
         if (data[i] !== undefined && data[i].type === "cal") {
@@ -53,26 +51,20 @@ const getLastGlucose = (data: GlucoseEntry[]): GlucoseStatus => {
             if (then_date !== undefined && now_date !== undefined) {
                 minutesago = Math.round( (now_date - then_date) / MS_PER_MINUTE );
                 // multiply by 5 to get the same units as delta, i.e. mg/dL/5m
-                change = now.glucose! - then.glucose!;
+                const change = now.glucose! - then.glucose!;
                 avgdelta = change/minutesago * PRED_INTERVAL_MINUTES;
             } else { console.error("Error: date field not found: cannot calculate avgdelta"); }
-            //if (i < 5) {
-                //console.error(then.glucose, minutesago, avgdelta);
-            //}
             // use the average of all data points in the last 2.5m for all further "now" calculations
             if (NOW_AVERAGING_MIN_MINUTES < minutesago! && minutesago! <= NOW_AVERAGING_MAX_MINUTES) {
                 now.glucose = ( now.glucose! + then.glucose! ) / 2;
                 now_date = ( now_date + then_date ) / 2;
-                //console.error(then.glucose, now.glucose);
             // short_deltas are calculated from everything ~5-15 minutes ago
             } else if (NOW_AVERAGING_MAX_MINUTES < minutesago! && minutesago! <= SHORT_DELTA_MAX_MINUTES) {
-                //console.error(minutesago, avgdelta);
                 short_deltas.push(avgdelta);
                 // last_deltas are calculated from everything ~5 minutes ago
                 if (NOW_AVERAGING_MAX_MINUTES < minutesago! && minutesago! < LAST_DELTA_MAX_MINUTES) {
                     last_deltas.push(avgdelta);
                 }
-                //console.error(then.glucose, minutesago, avgdelta, last_deltas, short_deltas);
             // long_deltas are calculated from everything ~20-40 minutes ago
             } else if (SHORT_DELTA_MAX_MINUTES < minutesago! && minutesago! < LONG_DELTA_MAX_MINUTES) {
                 long_deltas.push(avgdelta);

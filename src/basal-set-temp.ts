@@ -62,8 +62,6 @@ tempBasalFunctions.getMaxSafeBasal = (profile: TempBasalProfile): number => {
 };
 
 tempBasalFunctions.setTempBasal = (rate: number, duration: number, profile: TempBasalProfile, rT: TempBasalResult, currenttemp?: CurrentTemp): TempBasalResult => {
-    //var maxSafeBasal = Math.min(profile.max_basal, 3 * profile.max_daily_basal, 4 * profile.current_basal);
-
     const maxSafeBasal = tempBasalFunctions.getMaxSafeBasal(profile);
 
     if (rate < 0) {

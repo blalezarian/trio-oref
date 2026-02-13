@@ -66,7 +66,6 @@ function recentCarbs(opts: RecentCarbsOpts, time: Date): RecentCarbsResult | Rec
     let lastCarbTime = 0;
     if (!treatments) return {};
 
-    //console.error(glucose_data);
     const iob_inputs = {
         profile: profile_data
     ,   history: opts.pumphistory
@@ -83,7 +82,6 @@ function recentCarbs(opts: RecentCarbsOpts, time: Date): RecentCarbsResult | Rec
     treatments.sort((a: CarbTreatment, b: CarbTreatment) => {
         const aDate = new Date(tz(a.timestamp).toDate());
         const bDate = new Date(tz(b.timestamp).toDate());
-        //console.error(aDate);
         return bDate.getTime() - aDate.getTime();
     });
 
@@ -117,7 +115,6 @@ function recentCarbs(opts: RecentCarbsOpts, time: Date): RecentCarbsResult | Rec
                 } else {
                     console.error("Treatment carbs unclassified:",treatment);
                 }
-                //console.error(treatment.carbs, maxCarbs, treatmentDate);
                 carbs += treatment.carbs!;
                 COB_inputs.mealTime = treatmentTime;
                 lastCarbTime = Math.max(lastCarbTime,treatmentTime);
@@ -142,8 +139,6 @@ function recentCarbs(opts: RecentCarbsOpts, time: Date): RecentCarbsResult | Rec
                     nsCarbsToRemove = 0;
                     bwCarbsToRemove = 0;
                 }
-                //console.error(carbs, carbsToRemove);
-                //console.error("COB:",mealCOB);
             }
         }
     });
@@ -158,7 +153,6 @@ function recentCarbs(opts: RecentCarbsOpts, time: Date): RecentCarbsResult | Rec
     // set mealTime to 6h ago for Deviation calculations
     COB_inputs.mealTime = time.getTime() - maxMealAbsorptionTime * MS_PER_HOUR;
     const c = calcMealCOB(COB_inputs);
-    //console.error(c.currentDeviation, c.slopeFromMaxDeviation);
 
     // set a hard upper limit on COB to mitigate impact of erroneous or malicious carb entry
     if (typeof(profile_data.maxCOB) === 'number' && ! isNaN(profile_data.maxCOB)) {
