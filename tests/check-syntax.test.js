@@ -6,7 +6,8 @@
 // program pass a syntax check as Python 3 and this is something that should
 // be done anyways.
 
-var dirsToCheck = [ "bin", "src", "www" ];
+// "src" excluded: TypeScript files are already validated by `pnpm typecheck`
+var dirsToCheck = [ "bin", "www" ];
 
 var fs = require("fs");
 var path = require("path");
