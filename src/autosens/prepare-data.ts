@@ -20,7 +20,7 @@ import {
 export interface AutosensInputs {
     glucose_data: GlucoseEntry[];
     iob_inputs: {
-        profile: IobProfile & Record<string, unknown>;
+        profile: IobProfile;
         history: PumpHistoryEvent[];
         clock: string | Date;
     };
@@ -38,7 +38,7 @@ export interface PreparedAutosensData {
     lastSiteChange: Date;
     iob_inputs: AutosensInputs['iob_inputs'];
     basalprofile: HistoryBasalProfileEntry[];
-    profile: IobProfile & Record<string, unknown>;
+    profile: IobProfile;
 }
 
 // ---------------------------------------------------------------------------
@@ -96,7 +96,7 @@ export function prepareAutosensData(inputs: AutosensInputs): PreparedAutosensDat
         glucose_data,
         inputs.retrospective,
         inputs.iob_inputs.history,
-        inputs.iob_inputs.profile.rewind_resets_autosens as boolean | undefined
+        inputs.iob_inputs.profile.rewind_resets_autosens
     );
 
     // get treatments from pumphistory once, not every time we get_iob()

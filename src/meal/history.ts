@@ -6,7 +6,6 @@ const TIMESTAMP_MATCH_TOLERANCE_MS = 2000;
 interface MealHistoryInputs {
   history: PumpHistoryEvent[];
   carbs: PumpHistoryEvent[];
-  profile: Record<string, unknown>;
 }
 
 function arrayHasElementWithSameTimestampAndProperty(array: CarbTreatment[],t: string,propname: keyof CarbTreatment): boolean {
@@ -28,7 +27,6 @@ function arrayHasElementWithSameTimestampAndProperty(array: CarbTreatment[],t: s
 function findMealInputs (inputs: MealHistoryInputs): CarbTreatment[] {
     const pumpHistory = inputs.history;
     const carbHistory = inputs.carbs;
-    const profile_data = inputs.profile;
     const mealInputs: CarbTreatment[] = [];
     const bolusWizardInputs: PumpHistoryEvent[] = [];
     let duplicates = 0;

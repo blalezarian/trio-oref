@@ -40,9 +40,9 @@ export interface DeviationAnalysisResult {
 export function analyzeDeviations(
     bucketed_data: (GlucoseEntry & { mealCarbs?: number })[],
     meals: CarbTreatment[],
-    iob_inputs: { profile: IobProfile & Record<string, unknown>; history: unknown[]; clock: string | Date },
+    iob_inputs: { profile: IobProfile; history: unknown[]; clock: string | Date },
     basalprofile: HistoryBasalProfileEntry[],
-    profile: IobProfile & Record<string, unknown>,
+    profile: IobProfile,
     treatments: IobTreatment[],
     temptargets: TempTarget[] | undefined,
     retrospective: boolean | undefined,
@@ -76,7 +76,7 @@ export function analyzeDeviations(
     for (let i=3; i < bucketed_data.length; ++i) {
         bgTime = new Date(bucketed_data[i].date!);
 
-        const sens = isf.isfLookup(profile.isfProfile as Parameters<typeof isf.isfLookup>[0],bgTime);
+        const sens = isf.isfLookup(profile.isfProfile!,bgTime);
 
         //console.error(bgTime , bucketed_data[i].glucose);
         let bg: number;
@@ -143,8 +143,8 @@ export function analyzeDeviations(
         // calculate carb absorption for that 5m interval using the deviation.
         if ( mealCOB > 0 ) {
             //var profile = profileData;
-            const carbImpact = Math.max(deviation, profile.min_5m_carbimpact as number);
-            const absorbed = carbImpact * (profile.carb_ratio as number) / sens;
+            const carbImpact = Math.max(deviation, profile.min_5m_carbimpact!);
+            const absorbed = carbImpact * profile.carb_ratio! / sens;
             if (absorbed) {
                 mealCOB = Math.max(0, mealCOB-absorbed);
             } else {
@@ -190,7 +190,7 @@ export function analyzeDeviations(
             //console.error(CSFGlucoseData[CSFGlucoseData.length-1].mealAbsorption,"carb absorption");
           }
 
-          const currentBasal = iob_inputs.profile.current_basal as number;
+          const currentBasal = iob_inputs.profile.current_basal;
           // always exclude the first 45m after each carb entry using mealStartCounter
           //if (iob.iob > currentBasal || uam ) {
           if ((!retrospective && iob.iob > 2 * currentBasal) || uam || mealStartCounter < MEAL_EXCLUSION_COUNTER ) {
