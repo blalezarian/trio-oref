@@ -132,7 +132,6 @@ function defaults ( ): ProfileDefaults {
     , autosens_max: DEFAULT_AUTOSENS_MAX
     , autosens_min: DEFAULT_AUTOSENS_MIN
     , rewind_resets_autosens: true // reset autosensitivity to neutral for awhile after each pump rewind
-    // , autosens_adjust_targets: false // when autosens detects sensitivity/resistance, also adjust BG target accordingly
     , high_temptarget_raises_sensitivity: false // raise sensitivity for temptargets >= 101.  synonym for exercise_mode
     , low_temptarget_lowers_sensitivity: false // lower sensitivity for temptargets <= 99.
     , sensitivity_raises_target: false // raise BG target when autosens detects sensitivity
@@ -183,8 +182,6 @@ function defaults ( ): ProfileDefaults {
     // send the glucose data to the pump emulating an enlite sensor. This allows to setup high / low warnings when offline and see trend.
     // To enable this feature, enable the sensor, set a sensor with id 0000000, go to start sensor and press find lost sensor.
     , enableEnliteBgproxy: false
-    // TODO: make maxRaw a preference here usable by oref0-raw in myopenaps-cgm-loop
-    //, maxRaw: 200 // highest raw/noisy CGM value considered safe to use for looping
     , calc_glucose_noise: false
     , target_bg: false // set to an integer value in mg/dL to override pump min_bg
     , smb_delivery_ratio: DEFAULT_SMB_DELIVERY_RATIO //Default value: 0.5 Used if flexible delivery ratio is not used. This is another key OpenAPS safety cap, and specifies what share of the total insulin required can be delivered as SMB. This is to prevent people from getting into dangerous territory by setting SMB requests from the caregivers phone at the same time. Increase this experimental value slowly and with caution.

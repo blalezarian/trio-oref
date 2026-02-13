@@ -87,7 +87,6 @@ export function configureSensitivityAndTargets(
 
 
 // Calculate sensitivityRatio based on temp targets, if applicable, or using the value calculated by autosens
-//    var sensitivityRatio;
     const high_temptarget_raises_sensitivity = profile.exercise_mode || profile.high_temptarget_raises_sensitivity;
     const normalTarget = EXERCISE_NORMAL_TARGET; // evaluate high/low temptarget against 100, not scheduled target (which might change)
     let halfBasalTarget = EXERCISE_HALF_BASAL_TARGET;  // when temptarget is 160 mg/dL, run 50% basal (120 = 75%; 140 = 60%)

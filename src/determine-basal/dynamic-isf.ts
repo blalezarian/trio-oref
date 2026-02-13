@@ -130,11 +130,8 @@ export function calculateDynamicISF(
         weightLog = ", Weighted TDD: " + round(tdd,2) + " U";
     }
 
-    // Modified Chris Wilson's' formula with added adjustmentFactor for tuning and use of the autosens.ratio:
-    // var newRatio = profile.sens * adjustmentFactor * tdd * BG / 277700;
-    //
-    // New logarithmic formula : var newRatio = profile.sens * adjustmentFactor * tdd * ln(( BG/insulinFactor) + 1 )) / 1800
-    //
+    // Modified Chris Wilson's formula with added adjustmentFactor for tuning and use of the autosens.ratio.
+    // Uses logarithmic formula: newRatio = profile.sens * adjustmentFactor * tdd * ln((BG/insulinFactor) + 1) / 1800
 
     let sigmoidLog = ""
     let newRatio: number = undefined!;

@@ -562,10 +562,8 @@ function tuneAllTheThings (inputs: AutotuneInputs): AutotunePreviousProfile | un
     newCR = Math.round( newCR * 1000 ) / 1000;
     console.error("oldCR:",carbRatio,"fullNewCR:",fullNewCR,"newCR:",newCR);
     // this is where CR is set based on the outputs
-    //var ISFFromCRAndCSF = ISF;
     if (newCR) {
         carbRatio = newCR;
-        //ISFFromCRAndCSF = Math.round( carbRatio * CSF * 1000)/1000;
     }
 
 

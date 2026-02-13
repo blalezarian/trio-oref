@@ -177,7 +177,6 @@ export function determine_basal(
     } else {
         lastTempAge = 0;
     }
-    //console.error("currenttemp:",currenttemp,"lastTemp:",JSON.stringify(iob_data.lastTemp),"lastTempAge:",lastTempAge,"m");
     const tempModulus = (lastTempAge + currenttemp.duration) % TEMP_BASAL_DURATION_MINUTES;
     console.error("currenttemp:" + currenttemp.rate + " lastTempAge:" + lastTempAge + "m, tempModulus:" + tempModulus + "m");
     result.temp = 'absolute';
@@ -187,11 +186,9 @@ export function determine_basal(
         return tempBasalFunctions.setTempBasal(0, 0, profile, result, currenttemp);
     }
     if ( currenttemp && iob_data.lastTemp && currenttemp.duration > 0 ) {
-        //console.error(lastTempAge, round(iob_data.lastTemp.duration,1), round(lastTempAge - iob_data.lastTemp.duration,1));
         const lastTempEnded = lastTempAge - iob_data.lastTemp.duration;
         if ( lastTempEnded > TEMP_END_GAP_MINUTES && lastTempAge > TEMP_AGE_STALE_MINUTES ) {
             result.reason = "Warning: currenttemp running but lastTemp from pumphistory ended " + lastTempEnded + "m ago; canceling temp"; // reason.conclusion started
-            //console.error(currenttemp, round(iob_data.lastTemp,1), round(lastTempAge,1));
             return tempBasalFunctions.setTempBasal(0, 0, profile, result, currenttemp);
         }
     }
@@ -229,8 +226,6 @@ export function determine_basal(
     const expectedDelta = calculate_expected_delta(target_bg, eventualBG, bgImpact);
 
 
-
-    //console.error(reservoir_data);
 
 // Initialize result (requestedTemp) object. Has to be done after eventualBG is calculated.
     result = {
@@ -274,7 +269,6 @@ export function determine_basal(
 
     const enableUAM = (profile.enableUAM);
 
-    //console.error(meal_data);
     const carbAbsorption = calculateCarbAbsorption(
         minDelta, bgImpact, adjustedSens, carbRatio, sensitivity,
         sensitivityRatio, meal_data, profile, systemTime

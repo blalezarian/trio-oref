@@ -69,7 +69,6 @@ export function validateCGMData(
     } else {
         tick = round(glucose_status.delta,0);
     }
-    //var minDelta = Math.min(glucose_status.delta, glucose_status.short_avgdelta, glucose_status.long_avgdelta);
     const minDelta = Math.min(glucose_status.delta, glucose_status.short_avgdelta);
     const minAvgDelta = Math.min(glucose_status.short_avgdelta, glucose_status.long_avgdelta);
     const maxDelta = Math.max(glucose_status.delta, glucose_status.short_avgdelta, glucose_status.long_avgdelta);
@@ -111,7 +110,6 @@ export function validateCGMData(
             result.rate = basal;
             return { earlyReturn: result };
             // don't use setTempBasal(), as it has logic that allows <120% high temps to continue running
-            //return tempBasalFunctions.setTempBasal(basal, TEMP_BASAL_DURATION_MINUTES, profile, result, currenttemp);
         } else if ( currenttemp.rate === 0 && currenttemp.duration > TEMP_BASAL_DURATION_MINUTES ) { //shorten long zero temps to 30m
             result.reason += ". Shortening " + currenttemp.duration + "m long zero temp to 30m. ";
             result.deliverAt = deliverAt as unknown as string;
@@ -120,7 +118,6 @@ export function validateCGMData(
             result.rate = 0;
             return { earlyReturn: result };
             // don't use setTempBasal(), as it has logic that allows long zero temps to continue running
-            //return tempBasalFunctions.setTempBasal(0, TEMP_BASAL_DURATION_MINUTES, profile, result, currenttemp);
         } else { //do nothing.
             result.reason += ". Temp " + currenttemp.rate + " <= current basal " + basal + "U/hr; doing nothing. ";
             return { earlyReturn: result };

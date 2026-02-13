@@ -28,7 +28,6 @@ function carbRatioLookup (inputs: CarbsInputs, profile: Record<string, unknown>,
     if (carbratio_data !== undefined && carbratio_data.schedule !== undefined) {
         let carbRatio: CarbRatioScheduleEntry;
         if ((carbratio_data.units === "grams") || (carbratio_data.units === "exchanges")) {
-            //carbratio_data.schedule.sort(function (a, b) { return a.offset > b.offset });
             carbRatio = carbratio_data.schedule[carbratio_data.schedule.length - 1];
 
             for (let i = 0; i < carbratio_data.schedule.length - 1; i++) {
@@ -51,8 +50,6 @@ function carbRatioLookup (inputs: CarbsInputs, profile: Record<string, unknown>,
             console.error(`Error: Unsupported carb_ratio units ${carbratio_data.units}`);
             return;
         }
-    //return carbRatio.ratio;
-    //profile.carbratio = carbRatio.ratio;
     } else { return; }
 }
 

@@ -114,14 +114,12 @@ export function calculateDosingDecision(inputs: DosingDecisionInputs): Determine
 
     else {
         for (let i=0; i<IOBpredBGs.length; i++) {
-            //console.error(IOBpredBGs[i], min_bg);
             if ( IOBpredBGs[i] < min_bg ) {
                 minutesAboveMinBG = PRED_INTERVAL_MINUTES*i;
                 break;
             }
         }
         for (let i=0; i<IOBpredBGs.length; i++) {
-            //console.error(IOBpredBGs[i], threshold);
             if ( IOBpredBGs[i] < threshold ) {
                 minutesAboveThreshold = PRED_INTERVAL_MINUTES*i;
                 break;
@@ -135,7 +133,6 @@ export function calculateDosingDecision(inputs: DosingDecisionInputs): Determine
         result.minGuardBG = minGuardBG;
         result.insulinForManualBolus = round((result.eventualBG! - result.target_bg!) / adjustedSens, 2);
 
-        //result.reason += "minGuardBG "+minGuardBG+"<"+threshold+": SMB disabled; ";
         enableSMB = false;
     }
 // Disable SMB for sudden rises (often caused by calibrations or activation/deactivation of Dexcom's noise-filtering algorithm)
@@ -200,7 +197,6 @@ export function calculateDosingDecision(inputs: DosingDecisionInputs): Determine
     }
 
     // if not in LGS mode, cancel temps before the top of the hour to reduce beeping/vibration
-    // console.error(profile.skip_neutral_temps, (result.deliverAt as unknown as Date).getMinutes());
     if ( profile.skip_neutral_temps && (result.deliverAt as unknown as Date).getMinutes() >= TOP_OF_HOUR_WINDOW_MINUTES ) {
         if (!enableSMB) {
             result.reason += "; Canceling temp at " + (MINUTES_PER_HOUR - (result.deliverAt as unknown as Date).getMinutes()) + "min before turn of the hour to avoid beeping of MDT. SMB are disabled anyways.";
@@ -246,7 +242,6 @@ export function calculateDosingDecision(inputs: DosingDecisionInputs): Determine
         if (minDelta < 0 && minDelta > expectedDelta) {
             // if we're barely falling, newinsulinReq should be barely negative
             const newinsulinReq = round(( insulinReq * (minDelta / expectedDelta) ), 2);
-            //console.error("Increasing insulinReq from " + insulinReq + " to " + newinsulinReq);
             insulinReq = newinsulinReq;
         }
         // rate required to deliver insulinReq less insulin over 30m:
@@ -283,7 +278,6 @@ export function calculateDosingDecision(inputs: DosingDecisionInputs): Determine
                     durationReq = round(durationReq/TEMP_BASAL_DURATION_MINUTES)*TEMP_BASAL_DURATION_MINUTES;
                     durationReq = Math.min(MAX_TEMP_BASAL_DURATION_MINUTES,Math.max(0,durationReq));
                 }
-                //console.error(durationReq);
                 if (durationReq > 0) {
                     result.reason += ", setting " + durationReq + "m zero temp. ";
                     return tempBasalFunctions.setTempBasal(rate, durationReq, profile, result, currenttemp);
@@ -378,7 +372,6 @@ export function calculateDosingDecision(inputs: DosingDecisionInputs): Determine
 
     else { // otherwise, calculate 30m high-temp required to get projected BG down to target
         // insulinReq is the additional insulin required to get minPredBG down to target_bg
-        //console.error(minPredBG,eventualBG);
         insulinReq = round( (Math.min(minPredBG,eventualBG) - target_bg) / adjustedSens, 2);
         insulinForManualBolus = round((eventualBG - target_bg) / adjustedSens, 2);
         // if that would put us over max_iob, then reduce accordingly
@@ -398,12 +391,9 @@ export function calculateDosingDecision(inputs: DosingDecisionInputs): Determine
         rate = round_basal(rate, profile);
         insulinReq = round(insulinReq,3);
         result.insulinReq = insulinReq;
-        //console.error(iob_data.lastBolusTime);
         // minutes since last bolus
         const lastBolusAge = round(( new Date(systemTime).getTime() - iob_data.lastBolusTime! ) / MS_PER_MINUTE,1);
 
-        //console.error(lastBolusAge);
-        //console.error(profile.temptargetSet, target_bg, result.COB);
         // only allow microboluses with COB or low temp targets, or within DIA hours of a bolus
         if (microBolusAllowed && enableSMB && bg > threshold) {
             // never bolus more than maxSMBBasalMinutes worth of basal
@@ -457,7 +447,6 @@ export function calculateDosingDecision(inputs: DosingDecisionInputs): Determine
             }
             // bolus 1/2 the insulinReq, up to maxBolus, rounding down to nearest bolus increment
             const bolusIncrement = profile.bolus_increment!;
-            //if (profile.bolus_increment) { bolusIncrement=profile.bolus_increment };
             const roundSMBTo = 1 / bolusIncrement;
 
             const smb_ratio = Math.min(profile.smb_delivery_ratio!, 1);
@@ -507,7 +496,6 @@ export function calculateDosingDecision(inputs: DosingDecisionInputs): Determine
             }
             const nextBolusMins = round(SMBInterval-lastBolusAge,0);
             const nextBolusSeconds = round((SMBInterval - lastBolusAge) * SECONDS_PER_MINUTE, 0) % SECONDS_PER_MINUTE;
-            //console.error(naive_eventualBG, insulinReq, worstCaseInsulinReq, durationReq);
             console.error("naive_eventualBG " + naive_eventualBG + "," + durationReq + "m " + smbLowTempReq + "U/h temp needed; last bolus " + lastBolusAge +"m ago; maxBolus: " + maxBolus);
 
             if (lastBolusAge > SMBInterval) {
@@ -518,8 +506,6 @@ export function calculateDosingDecision(inputs: DosingDecisionInputs): Determine
             } else {
                 result.reason += "Waiting " + nextBolusMins + "m " + nextBolusSeconds + "s to microbolus again. ";
             }
-            //result.reason += ". ";
-
             // if no zero temp is required, don't return yet; allow later code to set a high temp
             if (durationReq > 0) {
                 result.rate = smbLowTempReq;

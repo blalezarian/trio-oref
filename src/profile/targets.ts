@@ -44,8 +44,6 @@ function lookup (inputs: TargetsInputs, profile: TargetsProfile): BGTarget {
     const temptargets_data = inputs.temptargets;
     const now = new Date();
 
-    //bgtargets_data.targets.sort(function (a, b) { return a.offset > b.offset });
-
     let bgTargets = bgtargets_data.targets[bgtargets_data.targets.length - 1];
 
     for (let i = 0; i < bgtargets_data.targets.length - 1; i++) {
@@ -69,23 +67,17 @@ function lookup (inputs: TargetsInputs, profile: TargetsProfile): BGTarget {
     } catch (e) {
         console.error("No temptargets found.");
     }
-    //console.error(temptargets_data);
-    //console.error(now);
     for (let i = 0; i < temptargets_data.length; i++) {
         const start = new Date(temptargets_data[i].created_at);
-        //console.error(start);
         const expires = new Date(start.getTime() + temptargets_data[i].duration * MS_PER_MINUTE);
-        //console.error(expires);
         if (now >= start && temptargets_data[i].duration === 0) {
             // cancel temp targets
-            //console.error(temptargets_data[i]);
             tempTargets = bgTargets;
             break;
         } else if (! temptargets_data[i].targetBottom || ! temptargets_data[i].targetTop) {
             console.error(`eventualBG target range invalid: ${temptargets_data[i].targetBottom}-${temptargets_data[i].targetTop}`);
             break;
         } else if (now >= start && now < expires ) {
-            //console.error(temptargets_data[i]);
             tempTargets.high = temptargets_data[i].targetTop!;
             tempTargets.low = temptargets_data[i].targetBottom!;
             tempTargets.temptargetSet = true;
@@ -93,7 +85,6 @@ function lookup (inputs: TargetsInputs, profile: TargetsProfile): BGTarget {
         }
     }
     bgTargets = tempTargets;
-    //console.error(bgTargets);
 
     return bgTargets;
 }

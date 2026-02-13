@@ -27,12 +27,10 @@ function insulinDosed(opts: DosedOpts): DosedResult | Record<string, never> {
     }
 
     treatments.forEach((treatment: DosedTreatment) => {
-        //console.error(treatment);
         if(treatment.insulin && treatment.date > start && treatment.date <= end) {
             insulinDosed += treatment.insulin;
         }
     });
-    //console.error(insulinDosed);
 
     return {
         insulin: Math.round( insulinDosed * 1000 ) / 1000

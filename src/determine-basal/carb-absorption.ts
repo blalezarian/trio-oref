@@ -71,13 +71,10 @@ export function calculateCarbAbsorption(
         // so <= 90g is assumed to take 3h, and 120g=4h
         remainingCATimeMin = Math.max(remainingCATimeMin, meal_data.mealCOB/assumedCarbAbsorptionRate);
         const lastCarbAge = round(( new Date(systemTime).getTime() - meal_data.lastCarbTime! ) / MS_PER_MINUTE);
-        //console.error(meal_data.lastCarbTime, lastCarbAge);
-
         const fractionCOBAbsorbed = ( meal_data.carbs - meal_data.mealCOB ) / meal_data.carbs;
         // if the lastCarbTime was 1h ago, increase remainingCATime by 1.5 hours
         remainingCATime = remainingCATimeMin + CARB_TIME_EXTENSION_FACTOR * lastCarbAge/MINUTES_PER_HOUR;
         remainingCATime = round(remainingCATime,1);
-        //console.error(fractionCOBAbsorbed, remainingCATimeAdjustment, remainingCATime)
         console.error("Last carbs " + lastCarbAge + " minutes ago; remainingCATime:" + remainingCATime + "hours; " + round(fractionCOBAbsorbed*100, 1) + "% carbs absorbed");
     }
 
@@ -98,16 +95,12 @@ export function calculateCarbAbsorption(
     // area of the /\ triangle is the same as a remainingCIpeak-height rectangle out to remainingCATime/2
     // remainingCIpeak (mg/dL/5m) = remainingCarbs (g) * CSF (mg/dL/g) * 5 (m/5m) * 1h/60m / (remainingCATime/2) (h)
     const remainingCIpeak = remainingCarbs * carbSensFactor * PRED_INTERVAL_MINUTES / MINUTES_PER_HOUR / (remainingCATime/LINEAR_DECAY_FACTOR);
-    //console.error(profile.min_5m_carbimpact,carbImpact,totalCI,totalCA,remainingCarbs,remainingCI,remainingCATime);
-
     // calculate peak deviation in last hour, and slope from that to current deviation
     const slopeFromMaxDeviation = round(meal_data.slopeFromMaxDeviation,2);
     // calculate lowest deviation in last hour, and slope from that to current deviation
     const slopeFromMinDeviation = round(meal_data.slopeFromMinDeviation,2);
     // assume deviations will drop back down at least at 1/3 the rate they ramped up
     const slopeFromDeviations = Math.min(slopeFromMaxDeviation,-slopeFromMinDeviation/SLOPE_DAMPENING_DIVISOR);
-    //console.error(slopeFromMaxDeviation);
-
     //5m data points = g * (1U/10g) * (40mg/dL/1U) / (mg/dL/5m)
     // duration (in 5m data points) = COB (g) * CSF (mg/dL/g) / carbImpact (mg/dL/5m)
     // limitLog carbImpactDuration to remainingCATime hours: the reset goes to remainingCI

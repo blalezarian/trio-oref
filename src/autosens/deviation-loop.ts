@@ -132,7 +132,6 @@ export function analyzeDeviations(
 
         // calculate carb absorption for that 5m interval using the deviation.
         if ( mealCOB > 0 ) {
-            //var profile = profileData;
             const carbImpact = Math.max(deviation, profile.min_5m_carbimpact!);
             const absorbed = carbImpact * profile.carb_ratio! / sens;
             if (absorbed) {

@@ -68,7 +68,6 @@ export function generateBGPredictions(
     let minIOBPredBG = PRED_BG_SENTINEL;
     let minCOBPredBG = PRED_BG_SENTINEL;
     let minUAMPredBG = PRED_BG_SENTINEL;
-    //minGuardBG = bg;
     let minCOBGuardBG = PRED_BG_SENTINEL;
     let minUAMGuardBG = PRED_BG_SENTINEL;
     let minIOBGuardBG = PRED_BG_SENTINEL;
@@ -89,7 +88,6 @@ export function generateBGPredictions(
     let UAMpredBG: number = undefined!;
     try {
         iobArray.forEach((iobTick: IOBData) => {
-            //console.error(iobTick);
             const predBGI = round(( -iobTick.activity * adjustedSens * PRED_INTERVAL_MINUTES ), 2);
             const predZTBGI = round(( -iobTick.iobWithZeroTemp!.activity * adjustedSens * PRED_INTERVAL_MINUTES ), 2);
             let ZTpredBG = naive_eventualBG;
@@ -100,9 +98,7 @@ export function generateBGPredictions(
             // Adding dynamic ISF in predictions for ZT and IOB. Modification from Tim Street's AAPS but with default as off:
             switch(true) {
                 case dynISFenabled && !enable_sigmoid:
-                    //IOBpredBG = IOBpredBGs[IOBpredBGs.length-1] + predBGI + predDev; // Adding dynamic ISF in predictions for UAM, ZT and IOB:
                     IOBpredBG = IOBpredBGs[IOBpredBGs.length-1] + (round(( -iobTick.activity * (DYNAMIC_ISF_LOG_DENOMINATOR / ( tdd * adjustmentFactor * (Math.log((Math.max( IOBpredBGs[IOBpredBGs.length-1],MIN_VALID_GLUCOSE_MGDL) / insulinFactor ) + 1 ) ) )) * PRED_INTERVAL_MINUTES ),2)) + predDev;
-                    //var ZTpredBG = ZTpredBGs[ZTpredBGs.length-1] + predZTBGI; // Adding dynamic ISF in predictions for UAM, ZT and IOB:
                     ZTpredBG = ZTpredBGs[ZTpredBGs.length-1] + (round(( -iobTick.iobWithZeroTemp!.activity * (DYNAMIC_ISF_LOG_DENOMINATOR / ( tdd * adjustmentFactor * (Math.log(( Math.max(ZTpredBGs[ZTpredBGs.length-1],MIN_VALID_GLUCOSE_MGDL) / insulinFactor ) + 1 ) ) )) * PRED_INTERVAL_MINUTES ), 2));
                     console.log("Dynamic ISF (Logarithmic Formula) )adjusted predictions for IOB and ZT: IOBpredBG: " + round(IOBpredBG,2) + " , ZTpredBG: " + round(ZTpredBG,2));
                     break;
@@ -123,7 +119,6 @@ export function generateBGPredictions(
             remainingCItotal += predCI+remainingCI;
             remainingCIs.push(round(remainingCI,0));
             predCIs.push(round(predCI,0));
-            //process.stderr.write(round(predCI,1)+"+"+round(remainingCI,1)+" ");
             COBpredBG = COBpredBGs[COBpredBGs.length-1] + predBGI + Math.min(0,predDev) + predCI + remainingCI;
             // for UAMpredBGs, predicted carb impact drops at slopeFromDeviations
             // calculate predicted CI from UAM based on slopeFromDeviations
@@ -131,25 +126,21 @@ export function generateBGPredictions(
             // if slopeFromDeviations is too flat, predicted deviation impact drops linearly from
             // current deviation down to zero over 3h (data points every 5m)
             const predUCImax = Math.max(0, uamCarbImpact * ( 1 - UAMpredBGs.length/Math.max(UAM_DECAY_HOURS*MINUTES_PER_HOUR/PRED_INTERVAL_MINUTES,1) ) );
-            //console.error(predUCIslope, predUCImax);
             // predicted CI from UAM is the lesser of CI based on deviationSlope or DIA
             const predUCI = Math.min(predUCIslope, predUCImax);
             if(predUCI>0) {
-                //console.error(UAMpredBGs.length,slopeFromDeviations, predUCI);
                 UAMduration=round((UAMpredBGs.length+1)*PRED_INTERVAL_MINUTES/MINUTES_PER_HOUR,1);
             }
 
             // Adding dynamic ISF in predictions for UAM. Modification from Tim Street's AAPS but with default as off:
             switch(true) {
                 case dynISFenabled && !enable_sigmoid:
-                    //UAMpredBG = UAMpredBGs[UAMpredBGs.length-1] + predBGI + Math.min(0, predDev) + predUCI; // Adding dynamic ISF in predictions for UAM:
                     UAMpredBG = UAMpredBGs[UAMpredBGs.length-1] + (round(( -iobTick.activity * (DYNAMIC_ISF_LOG_DENOMINATOR / ( tdd * adjustmentFactor * (Math.log(( Math.max(UAMpredBGs[UAMpredBGs.length-1],MIN_VALID_GLUCOSE_MGDL) / insulinFactor ) + 1 ) ) )) * PRED_INTERVAL_MINUTES ),2)) + Math.min(0, predDev) + predUCI;
                     console.log("Dynamic ISF (Logarithmic Formula) adjusted prediction for UAM: UAMpredBG: " + round(UAMpredBG,2));
                     break;
                 default:
                     UAMpredBG = UAMpredBGs[UAMpredBGs.length-1] + predBGI + Math.min(0, predDev) + predUCI;
             }
-            //console.error(predBGI, predCI, predUCI);
             // truncate all BG predictions at 4 hours
             if ( IOBpredBGs.length < PRED_BG_MAX_LENGTH ) { IOBpredBGs.push(IOBpredBG); }
             if ( COBpredBGs.length < PRED_BG_MAX_LENGTH ) { COBpredBGs.push(COBpredBG); }
@@ -166,8 +157,6 @@ export function generateBGPredictions(
             // add 30m to allow for insulin delivery (SMBs or temps)
             const insulinPeakTime = INSULIN_PEAK_WAIT_MINUTES;
             const insulinPeak5m = insulinPeakTime/PRED_INTERVAL_MINUTES;
-            //console.error(insulinPeakTime, insulinPeak5m, profile.insulinPeakTime, profile.curve);
-
             // wait 90m before setting minIOBPredBG
             if ( IOBpredBGs.length > insulinPeak5m && (IOBpredBG < minIOBPredBG) ) { minIOBPredBG = round(IOBpredBG); }
             if ( IOBpredBG > maxIOBPredBG ) { maxIOBPredBG = IOBpredBG; }
@@ -177,7 +166,6 @@ export function generateBGPredictions(
             if ( enableUAM && UAMpredBGs.length > MIN_PRED_TRIM_POINTS && (UAMpredBG < minUAMPredBG) ) { minUAMPredBG = round(UAMpredBG); }
         });
         // set eventualBG to include effect of carbs
-        //console.error("PredBGs:",JSON.stringify(predBGs));
     } catch (e) {
         console.error("Problem with iobArray.  Optional feature Advanced Meal Assist disabled");
     }
@@ -278,8 +266,6 @@ export function generateBGPredictions(
         minGuardBG = minIOBGuardBG;
     }
     minGuardBG = round(minGuardBG);
-    //console.error(minCOBGuardBG, minUAMGuardBG, minIOBGuardBG, minGuardBG);
-
     let minZTUAMPredBG = minUAMPredBG;
     // if minZTGuardBG is below threshold, bring down any super-high minUAMPredBG by averaging
     // this helps prevent UAM from giving too much insulin in case absorption falls off suddenly
@@ -298,7 +284,6 @@ export function generateBGPredictions(
         minZTUAMPredBG = (minUAMPredBG + minZTGuardBG) / 2;
     }
     minZTUAMPredBG = round(minZTUAMPredBG);
-    //console.error("minUAMPredBG:",minUAMPredBG,"minZTGuardBG:",minZTGuardBG,"minZTUAMPredBG:",minZTUAMPredBG);
     // if any carbs have been entered recently
     if (meal_data.carbs) {
 
