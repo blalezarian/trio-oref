@@ -23,6 +23,10 @@ import type { DynamicISFResult } from './types';
 
 import { round } from './helpers';
 
+// ---------------------------------------------------------------------------
+// Main function
+// ---------------------------------------------------------------------------
+
 /** Calculates dynamic ISF ratio and related TDD-based adjustments for insulin sensitivity. */
 export function calculateDynamicISF(
     glucose_status: GlucoseStatus,
@@ -39,7 +43,6 @@ export function calculateDynamicISF(
     middleWare: ((arg: DetermineBasalResult) => DetermineBasalResult) | undefined
 ): DynamicISFResult {
     let logOutPut = "";
-    let tddReason = "";
 
     // In case the autosens.min/max limits are reversed:
     const minLimitChris = Math.min(profile.autosens_min, profile.autosens_max);
@@ -67,14 +70,7 @@ export function calculateDynamicISF(
     }
 
     // respect autosens_max/min for tdd24h_14d_Ratio, used to adjust basal similarly as autosens
-    if (tdd24h_14d_Ratio > 1) {
-        tdd24h_14d_Ratio = Math.min(tdd24h_14d_Ratio, profile.autosens_max);
-        tdd24h_14d_Ratio = round(tdd24h_14d_Ratio,2);
-    }
-    else if (tdd24h_14d_Ratio < 1) {
-        tdd24h_14d_Ratio = Math.max(tdd24h_14d_Ratio, profile.autosens_min);
-        tdd24h_14d_Ratio = round(tdd24h_14d_Ratio,2);
-    }
+    tdd24h_14d_Ratio = clampTDDRatio(tdd24h_14d_Ratio, profile.autosens_min, profile.autosens_max);
 
     basal_ratio_log = `, Basal ratio: ${tdd24h_14d_Ratio}`;
 
@@ -97,29 +93,7 @@ export function calculateDynamicISF(
     let weightLog = "";
 
     // Insulin curve
-
-    const curve = preferences.curve;
-    const ipt = profile.insulinPeakTime;
-    const ucpk = preferences.useCustomPeakTime;
-    let insulinFactor = INSULIN_FACTOR_CEILING - RAPID_ACTING_ACTIVITY_OFFSET; // default
-    let insulinPA = RAPID_ACTING_ACTIVITY_OFFSET; // default (Novorapid/Novolog)
-
-    switch (curve) {
-        case "rapid-acting":
-            insulinPA = RAPID_ACTING_ACTIVITY_OFFSET;
-            break;
-        case "ultra-rapid":
-            insulinPA = ULTRA_RAPID_ACTIVITY_OFFSET;
-            break;
-    }
-
-    if (ucpk) {
-        insulinFactor = INSULIN_FACTOR_CEILING - ipt;
-        console.log(`Custom insulinpeakTime set to :${ipt}, insulinFactor: ${insulinFactor}`);
-    } else {
-        insulinFactor = INSULIN_FACTOR_CEILING - insulinPA;
-        console.log(`insulinFactor set to : ${insulinFactor}`);
-    }
+    const insulinFactor = configureInsulinCurve(preferences.curve, profile.insulinPeakTime, preferences.useCustomPeakTime);
 
     // Use weighted TDD average
     const tdd_before: number = tdd;
@@ -139,29 +113,12 @@ export function calculateDynamicISF(
     if (dynISFenabled) {
         // Logarithmic
         if (!enable_sigmoid) {
-            newRatio = sensitivity * adjustmentFactor * tdd * Math.log(BG/insulinFactor+1) / DYNAMIC_ISF_LOG_DENOMINATOR;
+            newRatio = calculateLogarithmicRatio(sensitivity, adjustmentFactor, tdd, BG, insulinFactor);
             formula = ", Logarithmic formula";
         }
         // Sigmoid
         else {
-            const as_min = minLimitChris;
-            const autosens_interval = maxLimitChris - as_min;
-            //Blood glucose deviation from set target (the lower BG target) converted to mmol/l to fit current formula.
-            const bg_dev = (BG - profileTarget) * MGDL_TO_MMOL;
-            // Account for TDD of insulin. Compare last 2 hours with total data (up to 14 days)
-            const tdd_factor = tdd24h_14d_Ratio; // weighted average TDD / total data average TDD
-            let max_minus_one = maxLimitChris - 1;
-            // Avoid division by 0
-            if (maxLimitChris == 1) {
-                max_minus_one = maxLimitChris + 0.01 - 1;
-            }
-            //Makes sigmoid factor(y) = 1 when BG deviation(x) = 0.
-            const fix_offset = (Math.log10(1/max_minus_one-as_min/max_minus_one) / Math.log10(Math.E));
-            //Exponent used in sigmoid formula
-            const exponent = bg_dev * adjustmentFactorSigmoid * tdd_factor + fix_offset;
-            // The sigmoid function
-            const sigmoid_factor = autosens_interval / (1 + Math.exp(-exponent)) + as_min;
-            newRatio = sigmoid_factor;
+            newRatio = calculateSigmoidRatio(BG, profileTarget, tdd24h_14d_Ratio, adjustmentFactorSigmoid, minLimitChris, maxLimitChris);
             formula = ", Sigmoid function";
         }
     }
@@ -173,16 +130,11 @@ export function calculateDynamicISF(
 
         dynamicISFLog = ", Dynamic ISF: On";
 
-        // Respect autosens.max and autosens.min limitLogs
-        if ((newRatio as number) > maxLimitChris) {
-            log = `, Dynamic ISF limited by autosens_max setting: ${maxLimitChris} (${round(newRatio as number, 2)}), `;
-            limitLog = `, Autosens/Dynamic Limit: ${maxLimitChris} (${round(newRatio as number, 2)})`;
-            newRatio = maxLimitChris;
-        } else if ((newRatio as number) < minLimitChris) {
-            log = `, Dynamic ISF limited by autosens_min setting: ${minLimitChris} (${round(newRatio as number, 2)}). `;
-            limitLog = `, Autosens/Dynamic Limit: ${minLimitChris} (${round(newRatio as number, 2)})`;
-            newRatio = minLimitChris;
-        }
+        // Respect autosens.max and autosens.min limits
+        const limits = enforceAutosensLimits(newRatio as number, minLimitChris, maxLimitChris);
+        newRatio = limits.clampedRatio;
+        log = limits.log;
+        limitLog = limits.limitLog;
 
         const isf = sensitivity / (newRatio as number);
 
@@ -201,15 +153,156 @@ export function calculateDynamicISF(
 
     console.log(logOutPut);
 
+    const tddReason = buildTDDReasonString(
+        dynISFenabled,
+        profile.tddAdjBasal,
+        dynamicISFLog,
+        formula,
+        limitLog,
+        afLog,
+        basal_ratio_log,
+        profile.smb_delivery_ratio,
+        middleWare,
+    );
+
+    return { dynISFenabled, tdd, tddReason, newRatio: newRatio as number, insulinFactor, adjustmentFactor, enable_sigmoid, tdd24h_14d_Ratio };
+}
+
+// ---------------------------------------------------------------------------
+// Extracted pure helpers
+// ---------------------------------------------------------------------------
+
+/** Clamps the TDD 24h/14d ratio within autosens min/max bounds. Values equal to 1 pass through unchanged. */
+export function clampTDDRatio(
+    ratio: number,
+    minLimit: number,
+    maxLimit: number,
+): number {
+    if (ratio > 1) {
+        return round(Math.min(ratio, maxLimit), 2);
+    } else if (ratio < 1) {
+        return round(Math.max(ratio, minLimit), 2);
+    }
+    return ratio;
+}
+
+/** Determines insulinFactor based on insulin curve type and optional custom peak time. */
+export function configureInsulinCurve(
+    curve: string,
+    insulinPeakTime: number,
+    useCustomPeak: boolean,
+): number {
+    let insulinPA = RAPID_ACTING_ACTIVITY_OFFSET;
+
+    switch (curve) {
+        case "rapid-acting":
+            insulinPA = RAPID_ACTING_ACTIVITY_OFFSET;
+            break;
+        case "ultra-rapid":
+            insulinPA = ULTRA_RAPID_ACTIVITY_OFFSET;
+            break;
+    }
+
+    if (useCustomPeak) {
+        const insulinFactor = INSULIN_FACTOR_CEILING - insulinPeakTime;
+        console.log(`Custom insulinpeakTime set to :${insulinPeakTime}, insulinFactor: ${insulinFactor}`);
+        return insulinFactor;
+    } else {
+        const insulinFactor = INSULIN_FACTOR_CEILING - insulinPA;
+        console.log(`insulinFactor set to : ${insulinFactor}`);
+        return insulinFactor;
+    }
+}
+
+/** Computes dynamic ISF ratio using the logarithmic (Chris Wilson) formula. */
+export function calculateLogarithmicRatio(
+    sensitivity: number,
+    adjustmentFactor: number,
+    tdd: number,
+    BG: number,
+    insulinFactor: number,
+): number {
+    return sensitivity * adjustmentFactor * tdd * Math.log(BG/insulinFactor+1) / DYNAMIC_ISF_LOG_DENOMINATOR;
+}
+
+/** Computes dynamic ISF ratio using the sigmoid function. */
+export function calculateSigmoidRatio(
+    BG: number,
+    profileTarget: number,
+    tdd24h_14d_Ratio: number,
+    adjustmentFactorSigmoid: number,
+    minLimit: number,
+    maxLimit: number,
+): number {
+    const autosens_interval = maxLimit - minLimit;
+    //Blood glucose deviation from set target (the lower BG target) converted to mmol/l to fit current formula.
+    const bg_dev = (BG - profileTarget) * MGDL_TO_MMOL;
+    // Account for TDD of insulin. Compare last 2 hours with total data (up to 14 days)
+    const tdd_factor = tdd24h_14d_Ratio; // weighted average TDD / total data average TDD
+    let max_minus_one = maxLimit - 1;
+    // Avoid division by 0
+    if (maxLimit == 1) {
+        max_minus_one = maxLimit + 0.01 - 1;
+    }
+    //Makes sigmoid factor(y) = 1 when BG deviation(x) = 0.
+    const fix_offset = (Math.log10(1/max_minus_one-minLimit/max_minus_one) / Math.log10(Math.E));
+    //Exponent used in sigmoid formula
+    const exponent = bg_dev * adjustmentFactorSigmoid * tdd_factor + fix_offset;
+    // The sigmoid function
+    const sigmoid_factor = autosens_interval / (1 + Math.exp(-exponent)) + minLimit;
+    return sigmoid_factor;
+}
+
+/** Clamps newRatio to autosens min/max limits. Returns clamped ratio and log strings. */
+export function enforceAutosensLimits(
+    newRatio: number,
+    minLimit: number,
+    maxLimit: number,
+): {
+    clampedRatio: number;
+    log: string;
+    limitLog: string;
+} {
+    let log = "";
+    let limitLog = "";
+    let clampedRatio = newRatio;
+
+    if (newRatio > maxLimit) {
+        log = `, Dynamic ISF limited by autosens_max setting: ${maxLimit} (${round(newRatio, 2)}), `;
+        limitLog = `, Autosens/Dynamic Limit: ${maxLimit} (${round(newRatio, 2)})`;
+        clampedRatio = maxLimit;
+    } else if (newRatio < minLimit) {
+        log = `, Dynamic ISF limited by autosens_min setting: ${minLimit} (${round(newRatio, 2)}). `;
+        limitLog = `, Autosens/Dynamic Limit: ${minLimit} (${round(newRatio, 2)})`;
+        clampedRatio = minLimit;
+    }
+
+    return { clampedRatio, log, limitLog };
+}
+
+/** Builds the TDD reason string for display in the enacted result. */
+export function buildTDDReasonString(
+    dynISFenabled: boolean,
+    tddAdjBasal: boolean | undefined,
+    dynamicISFLog: string,
+    formula: string,
+    limitLog: string,
+    afLog: string,
+    basal_ratio_log: string,
+    smb_delivery_ratio: number | undefined,
+    middleWare: ((arg: DetermineBasalResult) => DetermineBasalResult) | undefined,
+): string {
+    let tddReason = "";
+
     if (!dynISFenabled) {
         tddReason += "";
-    } else if (dynISFenabled && profile.tddAdjBasal) {
+    } else if (dynISFenabled && tddAdjBasal) {
         tddReason += dynamicISFLog + formula + limitLog + afLog + basal_ratio_log;
     }
-    else if (dynISFenabled && !profile.tddAdjBasal) { tddReason += dynamicISFLog + formula + limitLog + afLog; }
+    else if (dynISFenabled && !tddAdjBasal) { tddReason += dynamicISFLog + formula + limitLog + afLog; }
 
-    if (DEFAULT_SMB_DELIVERY_RATIO !== profile.smb_delivery_ratio) {
-        tddReason += `, SMB Ratio: ${Math.min(profile.smb_delivery_ratio as number, 1)}`;
+    if (DEFAULT_SMB_DELIVERY_RATIO !== smb_delivery_ratio) {
+        tddReason += `, SMB Ratio: ${Math.min(smb_delivery_ratio as number, 1)}`;
     }
 
     // Not confident but something like this in iAPS v3.0.3
@@ -217,5 +310,5 @@ export function calculateDynamicISF(
         tddReason += `, Middleware: ${middleWare}`;
     }
 
-    return { dynISFenabled, tdd, tddReason, newRatio: newRatio as number, insulinFactor, adjustmentFactor, enable_sigmoid, tdd24h_14d_Ratio };
+    return tddReason;
 }
