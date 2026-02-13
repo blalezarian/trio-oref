@@ -5,6 +5,8 @@ import { MS_PER_MINUTE } from '../constants';
 export function tempTargetRunning(temptargets_data: TempTarget[] | undefined, time: Date): number | undefined {
     // sort tempTargets by date so we can process most recent first
     try {
+        // BUG: boolean-to-number cast returns only 0/1, but sort comparators need negative/zero/positive.
+        // This produces an unstable sort. Fixing it could change autosens ratio calculations — defer to a future phase.
         temptargets_data!.sort((a: TempTarget, b: TempTarget) => { return (new Date(a.created_at) < new Date(b.created_at)) as unknown as number });
     } catch (e) {
         //console.error("Could not sort temptargets_data.  Optional feature temporary targets disabled.");
