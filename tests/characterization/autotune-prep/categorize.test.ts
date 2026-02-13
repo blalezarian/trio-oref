@@ -167,7 +167,7 @@ function normalizeOutput(result: any) {
 
 describe('autotune-prep/categorize (categorizeBGDatums) characterization tests', () => {
   beforeEach(() => {
-    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'log').mockImplementation(() => {});
   });
 
   // =========================================================================

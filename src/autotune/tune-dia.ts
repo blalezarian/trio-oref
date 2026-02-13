@@ -42,8 +42,8 @@ export function tuneDIA(
         }
     }
 
-    console.error(`Best insulinEndTime for meanDeviations: ${diaDeviations[meanBest].dia} hours`);
-    console.error(`Best insulinEndTime for RMSDeviations: ${diaDeviations[RMSBest].dia} hours`);
+    console.log(`Best insulinEndTime for meanDeviations: ${diaDeviations[meanBest].dia} hours`);
+    console.log(`Best insulinEndTime for RMSDeviations: ${diaDeviations[RMSBest].dia} hours`);
 
     // Adjust DIA if both mean and RMS agree that a shorter or longer DIA is better,
     // and the adjacent candidate's improvement exceeds the threshold
@@ -64,14 +64,14 @@ export function tuneDIA(
     }
 
     if (newDIA > MAX_DIA_HOURS) {
-        console.error("insulinEndTime maximum is 12h: not raising further");
+        console.log("insulinEndTime maximum is 12h: not raising further");
         newDIA = MAX_DIA_HOURS;
     }
 
     if (newDIA !== currentDIA) {
-        console.error(`Adjusting insulinEndTime from ${currentDIA} to ${newDIA} hours`);
+        console.log(`Adjusting insulinEndTime from ${currentDIA} to ${newDIA} hours`);
     } else {
-        console.error(`Leaving insulinEndTime unchanged at ${currentDIA} hours`);
+        console.log(`Leaving insulinEndTime unchanged at ${currentDIA} hours`);
     }
 
     return newDIA;

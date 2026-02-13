@@ -21,10 +21,10 @@ export function iobCalcExponential(treatment: Treatment, minsAgo: number, dia: n
     if ( profile.curve === "rapid-acting" ) {
         if (profile.useCustomPeakTime === true && profile.insulinPeakTime !== undefined) {
             if ( profile.insulinPeakTime > RAPID_ACTING_MAX_PEAK ) {
-                console.error(`Setting maximum Insulin Peak Time of ${RAPID_ACTING_MAX_PEAK}m for ${profile.curve} insulin`);
+                console.log(`Setting maximum Insulin Peak Time of ${RAPID_ACTING_MAX_PEAK}m for ${profile.curve} insulin`);
                 peak = RAPID_ACTING_MAX_PEAK;
             } else if ( profile.insulinPeakTime < RAPID_ACTING_MIN_PEAK ) {
-                console.error(`Setting minimum Insulin Peak Time of ${RAPID_ACTING_MIN_PEAK}m for ${profile.curve} insulin`);
+                console.log(`Setting minimum Insulin Peak Time of ${RAPID_ACTING_MIN_PEAK}m for ${profile.curve} insulin`);
                 peak = RAPID_ACTING_MIN_PEAK;
             } else {
                 peak = profile.insulinPeakTime;
@@ -35,10 +35,10 @@ export function iobCalcExponential(treatment: Treatment, minsAgo: number, dia: n
     } else if ( profile.curve === "ultra-rapid" ) {
         if (profile.useCustomPeakTime === true && profile.insulinPeakTime !== undefined) {
             if ( profile.insulinPeakTime > ULTRA_RAPID_MAX_PEAK ) {
-                console.error(`Setting maximum Insulin Peak Time of ${ULTRA_RAPID_MAX_PEAK}m for ${profile.curve} insulin`);
+                console.log(`Setting maximum Insulin Peak Time of ${ULTRA_RAPID_MAX_PEAK}m for ${profile.curve} insulin`);
                 peak = ULTRA_RAPID_MAX_PEAK;
             } else if ( profile.insulinPeakTime < ULTRA_RAPID_MIN_PEAK ) {
-                console.error(`Setting minimum Insulin Peak Time of ${ULTRA_RAPID_MIN_PEAK}m for ${profile.curve} insulin`);
+                console.log(`Setting minimum Insulin Peak Time of ${ULTRA_RAPID_MIN_PEAK}m for ${profile.curve} insulin`);
                 peak = ULTRA_RAPID_MIN_PEAK;
             } else {
                 peak = profile.insulinPeakTime;
@@ -47,7 +47,7 @@ export function iobCalcExponential(treatment: Treatment, minsAgo: number, dia: n
             peak = ULTRA_RAPID_PEAK;
         }
     } else {
-        console.error(`Curve of ${profile.curve} is not supported.`);
+        console.log(`Curve of ${profile.curve} is not supported.`);
     }
     const end = dia * MINUTES_PER_HOUR;  // end of insulin activity, in minutes
 

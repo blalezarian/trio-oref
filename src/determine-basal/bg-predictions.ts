@@ -171,7 +171,7 @@ export function generateBGPredictions(
         });
         // set eventualBG to include effect of carbs
     } catch (e) {
-        console.error("Problem with iobArray.  Optional feature Advanced Meal Assist disabled");
+        console.log("Problem with iobArray.  Optional feature Advanced Meal Assist disabled");
     }
 
     const clipResult = clipAndTrimPredictions({
@@ -267,8 +267,8 @@ export function clipAndTrimPredictions(inputs: ClipAndTrimInputs): ClipAndTrimRe
     let lastUAMpredBG: number | undefined;
 
     if (mealCOB) {
-        console.error(`predCIs (mg/dL/5m):${predCIs.join(" ")}`);
-        console.error(`remainingCIs:      ${remainingCIs.join(" ")}`);
+        console.log(`predCIs (mg/dL/5m):${predCIs.join(" ")}`);
+        console.log(`remainingCIs:      ${remainingCIs.join(" ")}`);
     }
 
     const predBGs: PredBGs = {} as PredBGs;
@@ -289,7 +289,7 @@ export function clipAndTrimPredictions(inputs: ClipAndTrimInputs): ClipAndTrimRe
         predBGs.COB = COBpredBGs;
         lastCOBpredBG = round(COBpredBGs[COBpredBGs.length - 1]);
         eventualBG = Math.max(eventualBG, round(COBpredBGs[COBpredBGs.length-1]));
-        console.error(`COBpredBG: ${round(COBpredBGs[COBpredBGs.length - 1])}`);
+        console.log(`COBpredBG: ${round(COBpredBGs[COBpredBGs.length - 1])}`);
     }
 
     // UAM: clip to [39, 401], trim flat tail (only if carb impact present and UAM enabled)
@@ -362,7 +362,7 @@ export function calculateMinAndGuardBGs(inputs: MinGuardBGInputs): MinGuardBGRes
         UAMduration,
     } = inputs;
 
-    console.error(`UAM Impact:${uamCarbImpact}mg/dL per 5m; UAM Duration:${UAMduration}hours`);
+    console.log(`UAM Impact:${uamCarbImpact}mg/dL per 5m; UAM Duration:${UAMduration}hours`);
 
     minIOBPredBG = Math.max(MIN_VALID_GLUCOSE_MGDL,minIOBPredBG);
     minCOBPredBG = Math.max(MIN_VALID_GLUCOSE_MGDL,minCOBPredBG);
@@ -387,14 +387,14 @@ export function calculateMinAndGuardBGs(inputs: MinGuardBGInputs): MinGuardBGRes
 
 // Print summary variables based on predBGs etc.
 
-    process.stderr.write(`minPredBG: ${minPredBG} minIOBPredBG: ${minIOBPredBG} minZTGuardBG: ${minZTGuardBG}`);
+    let predSummary = `minPredBG: ${minPredBG} minIOBPredBG: ${minIOBPredBG} minZTGuardBG: ${minZTGuardBG}`;
     if (minCOBPredBG < PRED_BG_SENTINEL) {
-        process.stderr.write(` minCOBPredBG: ${minCOBPredBG}`);
+        predSummary += ` minCOBPredBG: ${minCOBPredBG}`;
     }
     if (minUAMPredBG < PRED_BG_SENTINEL) {
-        process.stderr.write(` minUAMPredBG: ${minUAMPredBG}`);
+        predSummary += ` minUAMPredBG: ${minUAMPredBG}`;
     }
-    console.error(` avgPredBG:${avgPredBG} COB/Carbs:${mealCOB}/${carbs}`);
+    console.log(`${predSummary} avgPredBG:${avgPredBG} COB/Carbs:${mealCOB}/${carbs}`);
     // But if the COB line falls off a cliff, don't trust UAM too much:
     // use maxCOBPredBG if it's been set and lower than minPredBG
     if ( maxCOBPredBG > bg ) {

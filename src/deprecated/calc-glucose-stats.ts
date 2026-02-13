@@ -38,11 +38,11 @@ calcStatsExports.updateGlucoseStats = (options: UpdateGlucoseStatsOptions): Gluc
     let ns_noise_val = stats.calcNSNoise(noise_val, hist);
 
     if ('noise' in options.glucose_hist[0]) {
-      console.error("Glucose noise CGM reported level: ", options.glucose_hist[0].noise);
+      console.log("Glucose noise CGM reported level: ", options.glucose_hist[0].noise);
       ns_noise_val = Math.max(ns_noise_val, options.glucose_hist[0].noise!);
     }
 
-    console.error("Glucose noise calculated: ", noise_val, " setting noise level to ", ns_noise_val);
+    console.log("Glucose noise calculated: ", noise_val, " setting noise level to ", ns_noise_val);
 
     options.glucose_hist[0].noise = ns_noise_val;
   }

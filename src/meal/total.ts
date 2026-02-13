@@ -116,7 +116,7 @@ function recentCarbs(opts: RecentCarbsOpts, time: Date): RecentCarbsResult | Rec
         if (typeof myMealCOB === 'number' && !isNaN(myMealCOB)) {
             mealCOB = Math.max(mealCOB, myMealCOB);
         } else {
-            console.error(`Bad myMealCOB: ${myMealCOB} mealCOB: ${mealCOB} carbs: ${carbs} myCarbsAbsorbed: ${myCarbsAbsorbed}`);
+            console.log(`Bad myMealCOB: ${myMealCOB} mealCOB: ${mealCOB} carbs: ${carbs} myCarbsAbsorbed: ${myCarbsAbsorbed}`);
         }
 
         // Track removal candidates for fully-absorbed earlier meals
@@ -141,9 +141,9 @@ function recentCarbs(opts: RecentCarbsOpts, time: Date): RecentCarbsResult | Rec
     // Apply maxCOB safety cap
     if (typeof profileData.maxCOB === 'number' && !isNaN(profileData.maxCOB)) {
         mealCOB = Math.min(profileData.maxCOB, mealCOB);
-        console.error(`mealCOB: ${round(mealCOB, 1)} with maxCOB ${profileData.maxCOB}g and maxMealAbsorptionTime ${maxMealAbsorptionTime}hrs.`);
+        console.log(`mealCOB: ${round(mealCOB, 1)} with maxCOB ${profileData.maxCOB}g and maxMealAbsorptionTime ${maxMealAbsorptionTime}hrs.`);
     } else {
-        console.error(`Bad profile.maxCOB: ${profileData.maxCOB}`);
+        console.log(`Bad profile.maxCOB: ${profileData.maxCOB}`);
     }
 
     // Zombie-carb safety: zero COB when deviations are null/undefined
@@ -182,7 +182,7 @@ function resolveMaxAbsorptionTime(profile: IobProfile): number {
     if (typeof profile.maxMealAbsorptionTime === 'number' && !isNaN(profile.maxMealAbsorptionTime)) {
         return profile.maxMealAbsorptionTime;
     }
-    console.error(`Bad profile.maxMealAbsorptionTime: ${profile.maxMealAbsorptionTime}`);
+    console.log(`Bad profile.maxMealAbsorptionTime: ${profile.maxMealAbsorptionTime}`);
     return DEFAULT_MAX_MEAL_ABSORPTION_HOURS;
 }
 
@@ -199,7 +199,7 @@ function accumulateCarbsByType(
     } else if ((treatment.journalCarbs ?? 0) >= 1) {
         totals.journalCarbs += treatment.journalCarbs ?? 0;
     } else {
-        console.error(`Treatment carbs unclassified: ${JSON.stringify(treatment)}`);
+        console.log(`Treatment carbs unclassified: ${JSON.stringify(treatment)}`);
     }
 }
 
@@ -235,13 +235,13 @@ function applyZombieCarbSafety(
     maxDeviation: number,
 ): number {
     if (currentDeviation === undefined || currentDeviation === null) {
-        console.error("");
-        console.error("Warning: setting mealCOB to 0 because currentDeviation is null/undefined");
+        console.log("");
+        console.log("Warning: setting mealCOB to 0 because currentDeviation is null/undefined");
         mealCOB = 0;
     }
     if (maxDeviation === undefined || maxDeviation === null) {
-        console.error("");
-        console.error("Warning: setting mealCOB to 0 because maxDeviation is 0 or undefined");
+        console.log("");
+        console.log("Warning: setting mealCOB to 0 because maxDeviation is 0 or undefined");
         mealCOB = 0;
     }
     return mealCOB;

@@ -88,15 +88,15 @@ export function calculateHighInsulinReq(ctx: DosingContext): PhaseOutcome {
     const insulinForManualBolus = round((eventualBG - target_bg) / adjustedSens, 2);
     // if that would put us over max_iob, then reduce accordingly
     if (ctx.insulinReq > max_iob - iob_data.iob) {
-        console.error(`SMB limited by maxIOB: ${max_iob - iob_data.iob} (. insulinReq: ${ctx.insulinReq} U)`);
+        console.log(`SMB limited by maxIOB: ${max_iob - iob_data.iob} (. insulinReq: ${ctx.insulinReq} U)`);
         result.reason += `max_iob ${max_iob}, `;
         ctx.insulinReq = max_iob - iob_data.iob;
-    } else { console.error(`SMB not limited by maxIOB ( insulinReq: ${ctx.insulinReq} U).`); }
+    } else { console.log(`SMB not limited by maxIOB ( insulinReq: ${ctx.insulinReq} U).`); }
 
     if (insulinForManualBolus > max_iob - iob_data.iob) {
-        console.error(`Ev. Bolus limited by maxIOB: ${max_iob - iob_data.iob} (. insulinForManualBolus: ${insulinForManualBolus} U)`);
+        console.log(`Ev. Bolus limited by maxIOB: ${max_iob - iob_data.iob} (. insulinForManualBolus: ${insulinForManualBolus} U)`);
         result.reason += `max_iob ${max_iob}, `;
-    } else { console.error(`Ev. Bolus would not be limited by maxIOB ( insulinForManualBolus: ${insulinForManualBolus} U).`); }
+    } else { console.log(`Ev. Bolus would not be limited by maxIOB ( insulinForManualBolus: ${insulinForManualBolus} U).`); }
 
     // rate required to deliver insulinReq more insulin over 30m:
     ctx.rate = basal + (LOW_TEMP_CORRECTION_FACTOR * ctx.insulinReq);
@@ -149,11 +149,11 @@ export function handleSMB(ctx: DosingContext): PhaseOutcome {
         }
 
         if (trio_custom_variables.useOverride && advancedSettings && smbMinutes !== smbMinutesSetting) {
-            console.error(`SMB Max Minutes - setting overriden from ${smbMinutesSetting} to ${smbMinutes}`);
+            console.log(`SMB Max Minutes - setting overriden from ${smbMinutesSetting} to ${smbMinutes}`);
             smbMinutesSetting = smbMinutes;
         }
         if (trio_custom_variables.useOverride && advancedSettings && uamMinutes !== uamMinutesSetting) {
-            console.error(`UAM Max Minutes - setting overriden from ${uamMinutesSetting} to ${uamMinutes}`);
+            console.log(`UAM Max Minutes - setting overriden from ${uamMinutesSetting} to ${uamMinutes}`);
             uamMinutesSetting = uamMinutes;
         }
 
@@ -175,7 +175,7 @@ export function handleSMB(ctx: DosingContext): PhaseOutcome {
         const smb_ratio = Math.min(profile.smb_delivery_ratio as number, 1);
 
         if (smb_ratio != DEFAULT_SMB_DELIVERY_RATIO) {
-            console.error(`SMB Delivery Ratio changed from default 0.5 to ${round(smb_ratio, 2)}`);
+            console.log(`SMB Delivery Ratio changed from default 0.5 to ${round(smb_ratio, 2)}`);
         }
         let microBolus = Math.min(ctx.insulinReq * smb_ratio, maxBolus);
 
@@ -209,7 +209,7 @@ export function handleSMB(ctx: DosingContext): PhaseOutcome {
         }
         const nextBolusMins = round(SMBInterval - lastBolusAge, 0);
         const nextBolusSeconds = round((SMBInterval - lastBolusAge) * SECONDS_PER_MINUTE, 0) % SECONDS_PER_MINUTE;
-        console.error(`naive_eventualBG ${naive_eventualBG},${durationReq}m ${smbLowTempReq}U/h temp needed; last bolus ${lastBolusAge}m ago; maxBolus: ${maxBolus}`);
+        console.log(`naive_eventualBG ${naive_eventualBG},${durationReq}m ${smbLowTempReq}U/h temp needed; last bolus ${lastBolusAge}m ago; maxBolus: ${maxBolus}`);
 
         if (lastBolusAge > SMBInterval) {
             if (microBolus > 0) {

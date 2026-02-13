@@ -42,11 +42,11 @@ interface NoisePoint {
   readDate: number;
 }
 
-const log = console.error;
+const log = console.log;
 
 /* eslint-disable-next-line no-unused-vars */
-const error = console.error;
-const debug = console.error;
+const error = console.log;
+const debug = console.log;
 
 interface GlucoseStats {
   calcSensorNoise(

@@ -23,8 +23,6 @@ import type {
 beforeEach(() => {
     vi.restoreAllMocks();
     vi.spyOn(console, 'log').mockImplementation(() => {});
-    vi.spyOn(console, 'error').mockImplementation(() => {});
-    vi.spyOn(process.stderr, 'write').mockImplementation(() => true);
 });
 
 // ---------------------------------------------------------------------------
@@ -414,10 +412,10 @@ describe('calculateMinAndGuardBGs', () => {
     it('logs UAM impact and min prediction summary', () => {
         const inputs = makeMinGuardInputs({ uamCarbImpact: 5, UAMduration: 1.5 });
         calculateMinAndGuardBGs(inputs);
-        expect(console.error).toHaveBeenCalledWith(
+        expect(console.log).toHaveBeenCalledWith(
             expect.stringContaining('UAM Impact:5mg/dL per 5m; UAM Duration:1.5hours'),
         );
-        expect(process.stderr.write).toHaveBeenCalledWith(
+        expect(console.log).toHaveBeenCalledWith(
             expect.stringContaining('minPredBG:'),
         );
     });

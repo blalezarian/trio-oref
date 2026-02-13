@@ -9,7 +9,7 @@ function safeRequire (path: string) {
   try {
     resolved = require(path);
   } catch (e) {
-    console.error("Could not require: " + path, e);
+    console.log("Could not require: " + path, e);
   }
 
   return resolved;
@@ -21,9 +21,8 @@ function safeLoadFile(path: string) {
 
   try {
     resolved = JSON.parse(fs.readFileSync(path, 'utf8'));
-    //console.log('content = ' , resolved);
   } catch (e) {
-    console.error("Could not require: " + path, e);
+    console.log("Could not require: " + path, e);
   }
   return resolved;
 }

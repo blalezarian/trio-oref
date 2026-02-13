@@ -123,7 +123,7 @@ function normalizeOutput(result: any) {
 
 describe('autotune-prep/index (generate) characterization tests', () => {
   beforeEach(() => {
-    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'log').mockImplementation(() => {});
   });
 
   // =========================================================================
@@ -312,7 +312,7 @@ describe('autotune-prep/index (generate) characterization tests', () => {
       const result = generate(inputs);
       expect(normalizeOutput(result)).toMatchSnapshot();
       // Should have logged the bilinear warning
-      expect(console.error).toHaveBeenCalledWith(
+      expect(console.log).toHaveBeenCalledWith(
         '--tune-insulin-curve is set but only valid for exponential curves',
       );
     });

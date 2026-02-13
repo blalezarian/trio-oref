@@ -281,7 +281,7 @@ function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
             delta = (BG - (bucketedData[i+1].glucose as number));
             avgDelta = (BG - (bucketedData[i+AVG_DELTA_LOOKBACK].glucose as number))/AVG_DELTA_LOOKBACK;
         } else {
-            console.error("Could not find glucose data");
+            console.log("Could not find glucose data");
         }
 
         avgDelta = parseFloat((avgDelta as number).toFixed(2));
@@ -362,7 +362,7 @@ function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
                 CRInitialIOB = iob.iob;
                 CRInitialBG = glucoseDatum.glucose as number;
                 CRInitialCarbTime = new Date(glucoseDatum.date as number);
-                console.error(`CRInitialIOB: ${CRInitialIOB} CRInitialBG: ${CRInitialBG} CRInitialCarbTime: ${CRInitialCarbTime}`);
+                console.log(`CRInitialIOB: ${CRInitialIOB} CRInitialBG: ${CRInitialBG} CRInitialCarbTime: ${CRInitialCarbTime}`);
             }
             // keep calculatingCR as long as we have COB or enough IOB
             if ( mealCOB > 0 && i>1 ) {
@@ -374,7 +374,7 @@ function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
                 const CREndIOB = iob.iob;
                 const CREndBG = glucoseDatum.glucose as number;
                 const CREndTime: Date = new Date(glucoseDatum.date as number);
-                console.error(`CREndIOB: ${CREndIOB} CREndBG: ${CREndBG} CREndTime: ${CREndTime}`);
+                console.log(`CREndIOB: ${CREndIOB} CREndBG: ${CREndBG} CREndTime: ${CREndTime}`);
                 const crDatum: CRDatum = {
                     CRInitialIOB: CRInitialIOB as number
                 ,   CRInitialBG: CRInitialBG as number
@@ -387,7 +387,7 @@ function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
 
                 const CRElapsedMinutes = Math.round((CREndTime.getTime() - (CRInitialCarbTime as Date).getTime()) / MS_PER_MINUTE);
                 if ( CRElapsedMinutes < MIN_CR_ELAPSED_MINUTES || ( i===1 && mealCOB > 0 ) ) {
-                    console.error(`Ignoring ${CRElapsedMinutes}m CR period.`);
+                    console.log(`Ignoring ${CRElapsedMinutes}m CR period.`);
                 } else {
                     CRData.push(crDatum);
                 }
@@ -416,7 +416,7 @@ function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
             // check previous "type" value, and if it wasn't csf, set a mealAbsorption start flag
             if ( type !== "csf" ) {
                 glucoseDatum.mealAbsorption = "start";
-                console.error(`${glucoseDatum.mealAbsorption} carb absorption`);
+                console.log(`${glucoseDatum.mealAbsorption} carb absorption`);
             }
             type="csf";
             glucoseDatum.mealCarbs = mealCarbs;
@@ -425,7 +425,7 @@ function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
           // check previous "type" value, and if it was csf, set a mealAbsorption end flag
           if ( type === "csf" ) {
             CSFGlucoseData[CSFGlucoseData.length-1].mealAbsorption = "end";
-            console.error(`${CSFGlucoseData[CSFGlucoseData.length-1].mealAbsorption} carb absorption`);
+            console.log(`${CSFGlucoseData[CSFGlucoseData.length-1].mealAbsorption} carb absorption`);
           }
 
           if ((iob.iob > UAM_IOB_RATIO * currentBasal || deviation > UAM_DEVIATION_THRESHOLD || uam) ) {
@@ -436,13 +436,13 @@ function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
             }
             if ( type !== "uam" ) {
                 glucoseDatum.uamAbsorption = "start";
-                console.error(`${glucoseDatum.uamAbsorption} uannnounced meal absorption`);
+                console.log(`${glucoseDatum.uamAbsorption} uannnounced meal absorption`);
             }
             type="uam";
             UAMGlucoseData.push(glucoseDatum as unknown as CategorizeGlucoseDatum);
           } else {
             if ( type === "uam" ) {
-                console.error("end unannounced meal absorption");
+                console.log("end unannounced meal absorption");
             }
 
 
@@ -467,7 +467,7 @@ function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
         }
         // debug line to print out all the things
         const BGTimeStr = BGDate.toString().split(" ")[4];
-        console.error(`${absorbing} mealCOB: ${mealCOB.toFixed(1)} mealCarbs: ${mealCarbs} BGI: ${bgImpact.toFixed(1)} IOB: ${iob.iob.toFixed(1)} at ${BGTimeStr} dev: ${dev5mStr} avgDev: ${deviation.toFixed(2)} avgDelta: ${avgDelta.toFixed(2)} ${type} ${BG} ${myCarbs}`);
+        console.log(`${absorbing} mealCOB: ${mealCOB.toFixed(1)} mealCarbs: ${mealCarbs} BGI: ${bgImpact.toFixed(1)} IOB: ${iob.iob.toFixed(1)} at ${BGTimeStr} dev: ${dev5mStr} avgDev: ${deviation.toFixed(2)} avgDelta: ${avgDelta.toFixed(2)} ${type} ${BG} ${myCarbs}`);
     }
 
     IOBInputs = {
@@ -544,36 +544,36 @@ function mergeUAMData(
     let basalLength = basalGlucoseData.length;
 
     if (categorize_uam_as_basal) {
-        console.error("--categorize-uam-as-basal=true set: categorizing all UAM data as basal.");
+        console.log("--categorize-uam-as-basal=true set: categorizing all UAM data as basal.");
         basalGlucoseData = basalGlucoseData.concat(UAMGlucoseData);
     } else if (CSFLength > MIN_CSF_FOR_CONFIRMED_MEALS) {
-        console.error("Found at least 1h of carb absorption: assuming all meals were announced, and categorizing UAM data as basal.");
+        console.log("Found at least 1h of carb absorption: assuming all meals were announced, and categorizing UAM data as basal.");
         basalGlucoseData = basalGlucoseData.concat(UAMGlucoseData);
     } else {
         if (2*basalLength < UAMLength) {
-            console.error("Warning: too many deviations categorized as UnAnnounced Meals");
-            console.error(`Adding ${UAMLength} UAM deviations to ${basalLength} basal ones`);
+            console.log("Warning: too many deviations categorized as UnAnnounced Meals");
+            console.log(`Adding ${UAMLength} UAM deviations to ${basalLength} basal ones`);
             basalGlucoseData = basalGlucoseData.concat(UAMGlucoseData);
             // if too much data is excluded as UAM, add in the UAM deviations to basal, but then discard the highest 50%
             basalGlucoseData.sort((a, b) => parseFloat(a.deviation) - parseFloat(b.deviation));
             basalGlucoseData = basalGlucoseData.slice(0,basalGlucoseData.length/2);
-            console.error(`and selecting the lowest 50%, leaving ${basalGlucoseData.length} basal+UAM ones`);
+            console.log(`and selecting the lowest 50%, leaving ${basalGlucoseData.length} basal+UAM ones`);
         }
 
         if (2*ISFLength < UAMLength && ISFLength < MIN_ISF_DATA_POINTS) {
-            console.error(`Adding ${UAMLength} UAM deviations to ${ISFLength} ISF ones`);
+            console.log(`Adding ${UAMLength} UAM deviations to ${ISFLength} ISF ones`);
             ISFGlucoseData = ISFGlucoseData.concat(UAMGlucoseData);
             // if too much data is excluded as UAM, add in the UAM deviations to ISF, but then discard the highest 50%
             ISFGlucoseData.sort((a, b) => parseFloat(a.deviation) - parseFloat(b.deviation));
             ISFGlucoseData = ISFGlucoseData.slice(0,ISFGlucoseData.length/2);
-            console.error(`and selecting the lowest 50%, leaving ${ISFGlucoseData.length} ISF+UAM ones`);
+            console.log(`and selecting the lowest 50%, leaving ${ISFGlucoseData.length} ISF+UAM ones`);
         }
     }
     basalLength = basalGlucoseData.length;
     ISFLength = ISFGlucoseData.length;
     if ( BASAL_BGI_RATIO*basalLength + ISFLength < CSFLength && ISFLength < MIN_ISF_DATA_POINTS ) {
-        console.error("Warning: too many deviations categorized as meals");
-        console.error(`Adding ${CSFLength} CSF deviations to ${ISFLength} ISF ones`);
+        console.log("Warning: too many deviations categorized as meals");
+        console.log(`Adding ${CSFLength} CSF deviations to ${ISFLength} ISF ones`);
         ISFGlucoseData = ISFGlucoseData.concat(CSFGlucoseData);
         CSFGlucoseData = [];
     }

@@ -15,7 +15,7 @@ function makeDiaDeviations(overrides: Partial<AutotuneDiaDeviation>[] = []): Aut
 
 describe('tuneDIA', () => {
     beforeEach(() => {
-        vi.spyOn(console, 'error').mockImplementation(() => {});
+        vi.spyOn(console, 'log').mockImplementation(() => {});
     });
 
     it('returns currentDIA when diaDeviations is undefined', () => {
@@ -81,7 +81,7 @@ describe('tuneDIA', () => {
             { meanDeviation: 4, RMSDeviation: 4 },
         ]);
         tuneDIA(devs, 5);
-        expect(console.error).toHaveBeenCalledWith(
+        expect(console.log).toHaveBeenCalledWith(
             "Adjusting insulinEndTime from 5 to 4 hours",
         );
     });
@@ -89,7 +89,7 @@ describe('tuneDIA', () => {
     it('logs unchanged when DIA stays the same', () => {
         const devs = makeDiaDeviations();
         tuneDIA(devs, 5);
-        expect(console.error).toHaveBeenCalledWith(
+        expect(console.log).toHaveBeenCalledWith(
             "Leaving insulinEndTime unchanged at 5 hours",
         );
     });

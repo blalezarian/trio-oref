@@ -34,8 +34,8 @@ export function detectSensitivity(inputs: AutosensInputs): AutosensResult {
 
     // when we have less than 8h worth of deviation data, add up to 90m of zero deviations
     // this dampens any large sensitivity changes detected based on too little data, without ignoring them completely
-    console.error("");
-    console.error(`Using most recent ${deviations.length} deviations since ${lastSiteChange}`);
+    console.log("");
+    console.log(`Using most recent ${deviations.length} deviations since ${lastSiteChange}`);
     padDeviations(deviations, DEFAULT_AUTOSENS_LOOKBACK, MAX_ZERO_DEVIATION_PAD);
     const { pSensitive, pResistant } = analyzePercentiles(deviations, avgDeltas, bgis);
     return calculateAutosensRatio(

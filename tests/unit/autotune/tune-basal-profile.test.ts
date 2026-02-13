@@ -55,7 +55,7 @@ function makeGlucoseDatum(overrides: Partial<AutotuneGlucoseDatum> = {}): Autotu
 
 describe('convertToHourlyProfile', () => {
     beforeEach(() => {
-        vi.spyOn(console, 'error').mockImplementation(() => {});
+        vi.spyOn(console, 'log').mockImplementation(() => {});
     });
 
     it('expands a single-entry basal profile to 24 hours', () => {
@@ -91,7 +91,7 @@ describe('convertToHourlyProfile', () => {
         const profile = [makeBasalEntry({ rate: 0, minutes: 0 })];
         const result = convertToHourlyProfile(profile, 'basal');
         expect(result).toBeUndefined();
-        expect(console.error).toHaveBeenCalledWith(
+        expect(console.log).toHaveBeenCalledWith(
             `ERROR: bad basalProfile`,
             expect.objectContaining({ rate: 0 }),
         );
@@ -104,7 +104,7 @@ describe('convertToHourlyProfile', () => {
         ];
         const result = convertToHourlyProfile(profile, 'pump');
         expect(result).toBeUndefined();
-        expect(console.error).toHaveBeenCalledWith(
+        expect(console.log).toHaveBeenCalledWith(
             'ERROR: bad pumpBasalProfile',
             expect.objectContaining({ rate: 0 }),
         );
@@ -141,7 +141,7 @@ describe('convertToHourlyProfile', () => {
 
 describe('parseHourFromDatum', () => {
     beforeEach(() => {
-        vi.spyOn(console, 'error').mockImplementation(() => {});
+        vi.spyOn(console, 'log').mockImplementation(() => {});
     });
 
     it('parses hour from date (numeric timestamp)', () => {
@@ -236,7 +236,7 @@ describe('sumDeviationsByHour', () => {
 
 describe('adjustBasalsByDeviations', () => {
     beforeEach(() => {
-        vi.spyOn(console, 'error').mockImplementation(() => {});
+        vi.spyOn(console, 'log').mockImplementation(() => {});
     });
 
     it('does not modify profile when all deviations are zero', () => {
@@ -293,7 +293,7 @@ describe('adjustBasalsByDeviations', () => {
 
 describe('capBasalRates', () => {
     beforeEach(() => {
-        vi.spyOn(console, 'error').mockImplementation(() => {});
+        vi.spyOn(console, 'log').mockImplementation(() => {});
     });
 
     it('caps rate at autotuneMax * pump rate', () => {
@@ -303,7 +303,7 @@ describe('capBasalRates', () => {
         capBasalRates(profile, pumpProfile, bounds);
         // 2.0 > 1.0 * 1.5 = 1.5, so capped at 1.5
         expect(profile[0].rate).toBe(1.5);
-        expect(console.error).toHaveBeenCalledWith(
+        expect(console.log).toHaveBeenCalledWith(
             'Limiting hour 0 basal to 1.50 (which is 1.5 * pump basal of 1)',
         );
     });
@@ -341,7 +341,7 @@ describe('capBasalRates', () => {
 
 describe('smoothUntunedHours', () => {
     beforeEach(() => {
-        vi.spyOn(console, 'error').mockImplementation(() => {});
+        vi.spyOn(console, 'log').mockImplementation(() => {});
     });
 
     it('marks unchanged hours as untuned and blends rates', () => {
@@ -385,7 +385,7 @@ describe('smoothUntunedHours', () => {
 
 describe('tuneBasalProfile', () => {
     beforeEach(() => {
-        vi.spyOn(console, 'error').mockImplementation(() => {});
+        vi.spyOn(console, 'log').mockImplementation(() => {});
     });
 
     it('returns undefined for bad basal profile (rate 0)', () => {

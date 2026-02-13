@@ -161,8 +161,6 @@ describe('initializeTelemetry', () => {
     beforeEach(() => {
         vi.restoreAllMocks();
         vi.spyOn(console, 'log').mockImplementation(() => {});
-        vi.spyOn(console, 'error').mockImplementation(() => {});
-        vi.spyOn(process.stderr, 'write').mockImplementation(() => true);
     });
 
     it('sets result.COB, IOB, BGI, deviation, ISF, CR, target_bg, current_target', () => {
@@ -256,8 +254,6 @@ describe('calculateCarbsContext', () => {
     beforeEach(() => {
         vi.restoreAllMocks();
         vi.spyOn(console, 'log').mockImplementation(() => {});
-        vi.spyOn(console, 'error').mockImplementation(() => {});
-        vi.spyOn(process.stderr, 'write').mockImplementation(() => true);
     });
 
     it('sets minutesAboveMinBG and minutesAboveThreshold to 240 when predictions stay above min_bg/threshold', () => {
@@ -369,8 +365,6 @@ describe('calculateCarbsRequired', () => {
     beforeEach(() => {
         vi.restoreAllMocks();
         vi.spyOn(console, 'log').mockImplementation(() => {});
-        vi.spyOn(console, 'error').mockImplementation(() => {});
-        vi.spyOn(process.stderr, 'write').mockImplementation(() => true);
     });
 
     it('sets carbsReq on context and result when above threshold', () => {

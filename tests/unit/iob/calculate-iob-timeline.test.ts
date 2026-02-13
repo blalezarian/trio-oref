@@ -388,7 +388,7 @@ describe('generate (calculate-iob-timeline)', () => {
 
     describe('clock timezone validation', () => {
         it('does not log a warning for zoned clock (Z suffix)', () => {
-            const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+            const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
             const inputs = makeInputs({ clock: '2025-01-15T12:00:00.000Z' });
 
             generate(inputs, true);
@@ -398,7 +398,7 @@ describe('generate (calculate-iob-timeline)', () => {
         });
 
         it('does not log a warning for clock with offset timezone', () => {
-            const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+            const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
             const inputs = makeInputs({ clock: '2025-01-15T12:00:00.000-05:00' });
 
             generate(inputs, true);
@@ -408,7 +408,7 @@ describe('generate (calculate-iob-timeline)', () => {
         });
 
         it('logs a warning for unzoned clock', () => {
-            const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+            const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
             const inputs = makeInputs({ clock: '2025-01-15T12:00:00.000' });
 
             generate(inputs, true);
@@ -535,14 +535,14 @@ describe('isZonedClock', () => {
 
 describe('warnIfUnzonedClock', () => {
     it('returns true and does not log for zoned clock', () => {
-        const spy = vi.spyOn(console, 'error').mockImplementation(() => {});
+        const spy = vi.spyOn(console, 'log').mockImplementation(() => {});
         expect(warnIfUnzonedClock('2025-01-15T12:00:00.000Z')).toBe(true);
         expect(spy).not.toHaveBeenCalled();
         spy.mockRestore();
     });
 
     it('returns false and logs warning for unzoned clock', () => {
-        const spy = vi.spyOn(console, 'error').mockImplementation(() => {});
+        const spy = vi.spyOn(console, 'log').mockImplementation(() => {});
         expect(warnIfUnzonedClock('2025-01-15T12:00:00.000')).toBe(false);
         expect(spy).toHaveBeenCalledWith(expect.stringContaining('unzoned'));
         spy.mockRestore();

@@ -123,7 +123,7 @@ function setTempBasal(
 /** Append a message to the result reason string and log it */
 function appendReason(requestedTempBasalResult: TempBasalResult, message: string): void {
     requestedTempBasalResult.reason = (requestedTempBasalResult.reason ? requestedTempBasalResult.reason + '. ' : '') + message;
-    console.error(message);
+    console.log(message);
 }
 
 /** Resolve a safety multiplier, falling back to the default if null or NaN */

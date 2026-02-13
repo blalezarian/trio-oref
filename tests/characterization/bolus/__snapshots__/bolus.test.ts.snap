@@ -147,7 +147,7 @@ Success:  100%",
 ]
 `;
 
-exports[`bolus characterization tests > edge cases > bolus with undefined event triggers console.error guard 1`] = `
+exports[`bolus characterization tests > edge cases > bolus with undefined event triggers console.log guard 1`] = `
 [
   {
     "bg": "150",

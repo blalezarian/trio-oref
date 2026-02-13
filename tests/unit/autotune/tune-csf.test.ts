@@ -92,7 +92,7 @@ describe('accumulateMealDeviations', () => {
 
 describe('tuneCSF', () => {
     beforeEach(() => {
-        vi.spyOn(console, 'error').mockImplementation(() => {});
+        vi.spyOn(console, 'log').mockImplementation(() => {});
     });
 
     it('returns currentCSF unchanged when no glucose data', () => {
@@ -121,7 +121,7 @@ describe('tuneCSF', () => {
         // Would produce very high CSF, but capped at pumpCSF * autotuneMax = 5 * 1.2 = 6
         const result = tuneCSF(data, 5, 8, 5, DEFAULT_BOUNDS);
         expect(result).toBeLessThanOrEqual(6);
-        expect(console.error).toHaveBeenCalledWith(
+        expect(console.log).toHaveBeenCalledWith(
             'Limiting CSF to 6.00 (which is 1.2 * pump CSF of 5)',
         );
     });
@@ -147,7 +147,7 @@ describe('tuneCSF', () => {
 
     it('logs totalMealCarbs, totalDeviations, oldCSF, fullNewCSF, newCSF', () => {
         tuneCSF([], 10, undefined, undefined, DEFAULT_BOUNDS);
-        expect(console.error).toHaveBeenCalledWith(
+        expect(console.log).toHaveBeenCalledWith(
             'totalMealCarbs: 0 totalDeviations: 0 oldCSF 10 fullNewCSF: 10 newCSF: 10',
         );
     });

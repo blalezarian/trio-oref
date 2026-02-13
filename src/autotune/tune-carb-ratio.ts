@@ -27,10 +27,10 @@ export function tuneCarbRatio(
     // Safety cap fullNewCR before blending
     if (pumpCarbRatio !== undefined) {
         if (fullNewCR > maxCR) {
-            console.error(`Limiting fullNewCR from ${fullNewCR} to ${maxCR.toFixed(2)} (which is ${bounds.autotuneMax} * pump CR of ${pumpCarbRatio})`);
+            console.log(`Limiting fullNewCR from ${fullNewCR} to ${maxCR.toFixed(2)} (which is ${bounds.autotuneMax} * pump CR of ${pumpCarbRatio})`);
             fullNewCR = maxCR;
         } else if (fullNewCR < minCR) {
-            console.error(`Limiting fullNewCR from ${fullNewCR} to ${minCR.toFixed(2)} (which is ${bounds.autotuneMin} * pump CR of ${pumpCarbRatio})`);
+            console.log(`Limiting fullNewCR from ${fullNewCR} to ${minCR.toFixed(2)} (which is ${bounds.autotuneMin} * pump CR of ${pumpCarbRatio})`);
             fullNewCR = minCR;
         }
     }
@@ -42,16 +42,16 @@ export function tuneCarbRatio(
     // Safety cap blended newCR
     if (pumpCarbRatio !== undefined) {
         if (newCR > maxCR) {
-            console.error(`Limiting CR to ${maxCR.toFixed(2)} (which is ${bounds.autotuneMax} * pump CR of ${pumpCarbRatio})`);
+            console.log(`Limiting CR to ${maxCR.toFixed(2)} (which is ${bounds.autotuneMax} * pump CR of ${pumpCarbRatio})`);
             newCR = maxCR;
         } else if (newCR < minCR) {
-            console.error(`Limiting CR to ${minCR.toFixed(2)} (which is ${bounds.autotuneMin} * pump CR of ${pumpCarbRatio})`);
+            console.log(`Limiting CR to ${minCR.toFixed(2)} (which is ${bounds.autotuneMin} * pump CR of ${pumpCarbRatio})`);
             newCR = minCR;
         }
     }
 
     newCR = Math.round(newCR * 1000) / 1000;
-    console.error(`oldCR: ${currentCarbRatio} fullNewCR: ${fullNewCR} newCR: ${newCR}`);
+    console.log(`oldCR: ${currentCarbRatio} fullNewCR: ${fullNewCR} newCR: ${newCR}`);
 
     return newCR;
 }

@@ -114,14 +114,14 @@ describe('resolveMaxAbsorptionTime', () => {
     });
 
     it('returns default (6) when profile value is NaN', () => {
-        const spy = vi.spyOn(console, 'error').mockImplementation(() => {});
+        const spy = vi.spyOn(console, 'log').mockImplementation(() => {});
         const profile = makeProfile({ maxMealAbsorptionTime: NaN });
         expect(resolveMaxAbsorptionTime(profile)).toBe(6);
         spy.mockRestore();
     });
 
     it('returns default (6) when profile value is undefined', () => {
-        const spy = vi.spyOn(console, 'error').mockImplementation(() => {});
+        const spy = vi.spyOn(console, 'log').mockImplementation(() => {});
         const profile = makeProfile({ maxMealAbsorptionTime: undefined as unknown as number });
         expect(resolveMaxAbsorptionTime(profile)).toBe(6);
         spy.mockRestore();
@@ -154,7 +154,7 @@ describe('accumulateCarbsByType', () => {
     });
 
     it('logs error for unclassified carbs', () => {
-        const spy = vi.spyOn(console, 'error').mockImplementation(() => {});
+        const spy = vi.spyOn(console, 'log').mockImplementation(() => {});
         const totals = { nsCarbs: 0, bwCarbs: 0, journalCarbs: 0, bwFound: false };
         accumulateCarbsByType({ timestamp: '', carbs: 10 }, totals);
         expect(spy).toHaveBeenCalledWith(expect.stringContaining('Treatment carbs unclassified:'));
@@ -230,7 +230,7 @@ describe('resetRemovalTotals', () => {
 
 describe('applyZombieCarbSafety', () => {
     beforeEach(() => {
-        vi.spyOn(console, 'error').mockImplementation(() => {});
+        vi.spyOn(console, 'log').mockImplementation(() => {});
     });
 
     it('returns mealCOB unchanged when deviations are valid numbers', () => {
@@ -255,12 +255,12 @@ describe('applyZombieCarbSafety', () => {
 
     it('logs warning for null currentDeviation', () => {
         applyZombieCarbSafety(30, null as unknown as number, 10.0);
-        expect(console.error).toHaveBeenCalledWith('Warning: setting mealCOB to 0 because currentDeviation is null/undefined');
+        expect(console.log).toHaveBeenCalledWith('Warning: setting mealCOB to 0 because currentDeviation is null/undefined');
     });
 
     it('logs warning for null maxDeviation', () => {
         applyZombieCarbSafety(30, 5.0, null as unknown as number);
-        expect(console.error).toHaveBeenCalledWith('Warning: setting mealCOB to 0 because maxDeviation is 0 or undefined');
+        expect(console.log).toHaveBeenCalledWith('Warning: setting mealCOB to 0 because maxDeviation is 0 or undefined');
     });
 });
 

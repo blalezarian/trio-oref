@@ -29,8 +29,6 @@ import type { DosingDecisionInputs } from '../../../../src/determine-basal/types
 beforeEach(() => {
     vi.restoreAllMocks();
     vi.spyOn(console, 'log').mockImplementation(() => {});
-    vi.spyOn(console, 'error').mockImplementation(() => {});
-    vi.spyOn(process.stderr, 'write').mockImplementation(() => true);
 });
 
 // ---------------------------------------------------------------------------
@@ -269,7 +267,7 @@ describe('determineSMBMaxBolus', () => {
         // maxBolus = round(1.0 * 30 / 60, 1) = 0.5
         const result = determineSMBMaxBolus(1.0, 2.0, 0, 0, 1.0, undefined, undefined);
         expect(result).toBe(0.5);
-        expect(console.error).toHaveBeenCalledWith(expect.stringContaining('smbMinutesSetting undefined'));
+        expect(console.log).toHaveBeenCalledWith(expect.stringContaining('smbMinutesSetting undefined'));
     });
 
     it('uses UAM minutes when IOB > mealInsulinReq', () => {
@@ -278,7 +276,7 @@ describe('determineSMBMaxBolus', () => {
         // maxBolus = round(1.0 * 45 / 60, 1) = 0.8
         const result = determineSMBMaxBolus(1.0, 5.0, 20, 2.0, 1.0, 30, 45);
         expect(result).toBe(0.8);
-        expect(console.error).toHaveBeenCalledWith(expect.stringContaining('maxUAMSMBBasalMinutes: 45'));
+        expect(console.log).toHaveBeenCalledWith(expect.stringContaining('maxUAMSMBBasalMinutes: 45'));
     });
 
     it('falls back to 30m when UAM minutes is 0 (falsy) and IOB > mealInsulinReq', () => {
@@ -286,7 +284,7 @@ describe('determineSMBMaxBolus', () => {
         // maxBolus = round(1.0 * 30 / 60, 1) = 0.5
         const result = determineSMBMaxBolus(1.0, 5.0, 20, 2.0, 1.0, 30, 0);
         expect(result).toBe(0.5);
-        expect(console.error).toHaveBeenCalledWith(expect.stringContaining('maxUAMSMBBasalMinutes undefined'));
+        expect(console.log).toHaveBeenCalledWith(expect.stringContaining('maxUAMSMBBasalMinutes undefined'));
     });
 
     it('uses SMB minutes when IOB <= mealInsulinReq', () => {
@@ -295,19 +293,19 @@ describe('determineSMBMaxBolus', () => {
         // maxBolus = round(1.0 * 60 / 60, 1) = 1.0
         const result = determineSMBMaxBolus(2.0, 1.0, 50, 5.0, 1.0, 60, 30);
         expect(result).toBe(1.0);
-        expect(console.error).toHaveBeenCalledWith(expect.stringContaining('.maxSMBBasalMinutes: 60'));
+        expect(console.log).toHaveBeenCalledWith(expect.stringContaining('.maxSMBBasalMinutes: 60'));
     });
 
     it('logs limitation message when insulinReq > maxBolus (SMB branch)', () => {
         // insulinReq=2.0 > maxBolus (0.5)
         determineSMBMaxBolus(2.0, 1.0, 50, 5.0, 1.0, 30, 30);
-        expect(console.error).toHaveBeenCalledWith(expect.stringContaining('SMB limited by maxSMBBasalMinutes'));
+        expect(console.log).toHaveBeenCalledWith(expect.stringContaining('SMB limited by maxSMBBasalMinutes'));
     });
 
     it('logs not-limited message when insulinReq <= maxBolus (SMB branch)', () => {
         // insulinReq=0.1 <= maxBolus (0.5)
         determineSMBMaxBolus(0.1, 1.0, 50, 5.0, 1.0, 30, 30);
-        expect(console.error).toHaveBeenCalledWith(expect.stringContaining('SMB is not limited by maxSMBBasalMinutes'));
+        expect(console.log).toHaveBeenCalledWith(expect.stringContaining('SMB is not limited by maxSMBBasalMinutes'));
     });
 
     it('scales with effectiveBasal', () => {

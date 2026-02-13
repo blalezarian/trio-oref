@@ -132,12 +132,12 @@ function findMealInputs(inputs: MealHistoryInputs): CarbTreatment[] {
 
         // Only add if there's a matching Bolus entry; otherwise log and skip
         if (!hasDuplicateEntry(mealInputs, timestamp, 'bolus')) {
-            console.error(`Skipping bolus wizard entry ${wizardIdx} in the pump history with ${entry.carb_input} g carbs and no insulin.`);
+            console.log(`Skipping bolus wizard entry ${wizardIdx} in the pump history with ${entry.carb_input} g carbs and no insulin.`);
             if (entry.carb_input === 0) {
-                console.error("This is caused by a BolusWizard without carbs. If you specified insulin, it will be noted as a seperate Bolus");
+                console.log("This is caused by a BolusWizard without carbs. If you specified insulin, it will be noted as a seperate Bolus");
             }
             if (entry.timestamp) {
-                console.error(`Timestamp of bolus wizard: ${entry.timestamp}`);
+                console.log(`Timestamp of bolus wizard: ${entry.timestamp}`);
             }
             continue;
         }

@@ -75,7 +75,7 @@ export function iobTotal(opts: IobTotalOpts, time: Date): IobTotalResult | Recor
     }
 
     if (!(curve in curveDefaults)) {
-        console.error(`Unsupported curve function: "${curve}". Supported curves: "bilinear", "rapid-acting" (Novolog, Novorapid, Humalog, Apidra) and "ultra-rapid" (Fiasp). Defaulting to "rapid-acting".`);
+        console.log(`Unsupported curve function: "${curve}". Supported curves: "bilinear", "rapid-acting" (Novolog, Novorapid, Humalog, Apidra) and "ultra-rapid" (Fiasp). Defaulting to "rapid-acting".`);
         curve = 'rapid-acting';
     }
 

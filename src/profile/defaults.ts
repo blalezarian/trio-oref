@@ -136,7 +136,7 @@ function displayedDefaults(): Partial<ProfileDefaults> {
     profile.maxCOB = allDefaults.maxCOB;
     profile.maxMealAbsorptionTime = allDefaults.maxMealAbsorptionTime;
 
-    console.error(profile);
+    console.log(profile);
     return profile as Partial<ProfileDefaults>;
 }
 

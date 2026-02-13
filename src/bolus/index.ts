@@ -242,7 +242,7 @@ export function processBolusGroup(
 
     for (const event of events) {
         if (!event) {
-            console.error(`XXX ${JSON.stringify(event)} ${JSON.stringify(events)}`);
+            console.log(`XXX ${JSON.stringify(event)} ${JSON.stringify(events)}`);
             break;
         }
 

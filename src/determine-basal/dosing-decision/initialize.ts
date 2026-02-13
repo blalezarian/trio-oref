@@ -117,9 +117,9 @@ export function calculateCarbsRequired(ctx: DosingContext): PhaseOutcome {
     } = ctx.inputs;
     const { result } = ctx;
 
-    console.error(`BG projected to remain above ${convert_bg(min_bg, profile)} for ${ctx.minutesAboveMinBG}minutes`);
+    console.log(`BG projected to remain above ${convert_bg(min_bg, profile)} for ${ctx.minutesAboveMinBG}minutes`);
     if (ctx.minutesAboveThreshold < PRED_HORIZON_MAX_MINUTES || ctx.minutesAboveMinBG < MINUTES_ABOVE_MIN_BG_THRESHOLD) {
-        console.error(`BG projected to remain above ${convert_bg(threshold, profile)} for ${ctx.minutesAboveThreshold}minutes`);
+        console.log(`BG projected to remain above ${convert_bg(threshold, profile)} for ${ctx.minutesAboveThreshold}minutes`);
     }
 
     const { zeroTempEffect, carbsReq } = calculateZeroTempEffectAndCarbsReq(
@@ -128,10 +128,10 @@ export function calculateCarbsRequired(ctx: DosingContext): PhaseOutcome {
         meal_data.mealCOB, meal_data.carbs,
     );
     ctx.carbsReq = carbsReq;
-    console.error(`naive_eventualBG: ${naive_eventualBG} bgUndershoot: ${ctx.bgUndershoot} zeroTempDuration: ${ctx.minutesAboveThreshold} zeroTempEffect: ${zeroTempEffect} carbsReq: ${ctx.carbsReq}`);
+    console.log(`naive_eventualBG: ${naive_eventualBG} bgUndershoot: ${ctx.bgUndershoot} zeroTempDuration: ${ctx.minutesAboveThreshold} zeroTempEffect: ${zeroTempEffect} carbsReq: ${ctx.carbsReq}`);
 
     if (meal_data.reason == "Could not parse clock data") {
-        console.error("carbsReq unknown: Could not parse clock data");
+        console.log("carbsReq unknown: Could not parse clock data");
         return { done: false };
     }
 

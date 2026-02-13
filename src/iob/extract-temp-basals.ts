@@ -51,7 +51,7 @@ export function extractTempBasalsAndBoluses(
         if (current._type === "Bolus") {
             const started_at = new Date(current.timestamp as string);
             if (started_at > now) {
-                process.stderr.write(` ${current.amount}U @ ${started_at}`);
+                console.log(` ${current.amount}U @ ${started_at}`);
             } else {
                 tempBoluses.push({
                     date: started_at.getTime(),
@@ -128,7 +128,7 @@ export function extractTempBasalsAndBoluses(
                 }
 
                 if (duration === undefined) {
-                    console.error(`No duration found for ${rate} U/hr basal ${timestamp}`, pumpHistory[histIdx - 1], current, pumpHistory[histIdx + 1]);
+                    console.log(`No duration found for ${rate} U/hr basal ${timestamp}`, pumpHistory[histIdx - 1], current, pumpHistory[histIdx + 1]);
                 }
             }
             const started_at = new Date(timestamp as string);

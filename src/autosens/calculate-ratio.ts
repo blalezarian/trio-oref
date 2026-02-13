@@ -48,18 +48,18 @@ export function calculateAutosensRatio(
         0,
     );
     const rmsDev = Math.sqrt(squareDeviations / deviations.length);
-    console.error(`RMS deviation: ${rmsDev.toFixed(2)}`);
+    console.log(`RMS deviation: ${rmsDev.toFixed(2)}`);
 
     let basalOff = 0;
 
     if (pSensitive < 0) {
         basalOff = pSensitive * DEVIATIONS_PER_HOUR / profile.sens;
-        process.stderr.write("Insulin sensitivity detected: ");
+        console.log("Insulin sensitivity detected: ");
     } else if (pResistant > 0) {
         basalOff = pResistant * DEVIATIONS_PER_HOUR / profile.sens;
-        process.stderr.write("Insulin resistance detected: ");
+        console.log("Insulin resistance detected: ");
     } else {
-        console.error("Sensitivity normal.");
+        console.log("Sensitivity normal.");
     }
 
     let ratio = 1 + (basalOff / profile.max_daily_basal);
@@ -69,12 +69,12 @@ export function calculateAutosensRatio(
     ratio = Math.min(ratio, profile.autosens_max);
 
     if (ratio !== rawRatio) {
-        console.error(`Ratio limited from ${rawRatio} to ${ratio}`);
+        console.log(`Ratio limited from ${rawRatio} to ${ratio}`);
     }
 
     ratio = Math.round(ratio * 100) / 100;
     const newisf = Math.round(profile.sens / ratio);
-    console.error(`ISF adjusted from ${profile.sens} to ${newisf}`);
+    console.log(`ISF adjusted from ${profile.sens} to ${newisf}`);
 
     return { ratio, newisf };
 }
@@ -95,7 +95,7 @@ export function padDeviations(
 ): void {
     if (deviations.length < targetLength) {
         const pad = Math.round((1 - deviations.length / targetLength) * maxPadding);
-        console.error(`Adding ${pad} more zero deviations`);
+        console.log(`Adding ${pad} more zero deviations`);
         deviations.push(...Array(pad).fill(0));
     }
 }
@@ -115,12 +115,12 @@ export function analyzePercentiles(
         if (percentile(deviations, threshold + PERCENTILE_SCAN_STEP) >= 0
             && percentile(deviations, threshold) < 0) {
             const lessThanZero = Math.round(PERCENT_MULTIPLIER * threshold);
-            console.error(`${lessThanZero}% of non-meal deviations negative (>50% = sensitivity)`);
+            console.log(`${lessThanZero}% of non-meal deviations negative (>50% = sensitivity)`);
         }
         if (percentile(deviations, threshold + PERCENTILE_SCAN_STEP) > 0
             && percentile(deviations, threshold) <= 0) {
             const greaterThanZero = PERCENT_MULTIPLIER - Math.round(PERCENT_MULTIPLIER * threshold);
-            console.error(`${greaterThanZero}% of non-meal deviations positive (>50% = resistance)`);
+            console.log(`${greaterThanZero}% of non-meal deviations positive (>50% = resistance)`);
         }
     }
 

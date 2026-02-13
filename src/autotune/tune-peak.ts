@@ -39,8 +39,8 @@ export function tunePeakTime(
         }
     }
 
-    console.error(`Best insulinPeakTime for meanDeviations: ${peakDeviations[meanBest].peak} minutes`);
-    console.error(`Best insulinPeakTime for RMSDeviations: ${peakDeviations[RMSBest].peak} minutes`);
+    console.log(`Best insulinPeakTime for meanDeviations: ${peakDeviations[meanBest].peak} minutes`);
+    console.log(`Best insulinPeakTime for RMSDeviations: ${peakDeviations[RMSBest].peak} minutes`);
 
     // Adjust peak if both mean and RMS agree that a shorter or longer peak is better,
     // and the adjacent candidate's improvement exceeds the threshold
@@ -61,9 +61,9 @@ export function tunePeakTime(
     }
 
     if (newPeak !== currentPeak) {
-        console.error(`Adjusting insulinPeakTime from ${currentPeak} to ${newPeak} minutes`);
+        console.log(`Adjusting insulinPeakTime from ${currentPeak} to ${newPeak} minutes`);
     } else {
-        console.error(`Leaving insulinPeakTime unchanged at ${currentPeak}`);
+        console.log(`Leaving insulinPeakTime unchanged at ${currentPeak}`);
     }
 
     return newPeak;

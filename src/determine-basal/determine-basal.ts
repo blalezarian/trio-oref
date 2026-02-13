@@ -190,7 +190,7 @@ export function determine_basal(
 
     // If SMB is always off, don't bother checking if we should enable SMBs
     if (smbIsOff) {
-        console.error("SMBs are always off.");
+        console.log("SMBs are always off.");
         enableSMB = false;
     } else {
         enableSMB = enable_smb(

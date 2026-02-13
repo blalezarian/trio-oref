@@ -27,22 +27,22 @@ export function enable_smb(
 
     if (trio_custom_variables.smbIsScheduledOff
         && isTimeInSMBDisabledWindow(time.getHours(), trio_custom_variables.start, trio_custom_variables.end)) {
-        console.error("SMB disabled: current time is in SMB disabled scheduled");
+        console.log("SMB disabled: current time is in SMB disabled scheduled");
         return false;
     }
 
     if (!microBolusAllowed) {
-        console.error("SMB disabled (!microBolusAllowed)");
+        console.log("SMB disabled (!microBolusAllowed)");
         return false;
     }
 
     if (!profile.allowSMB_with_high_temptarget && profile.temptargetSet && target_bg > EXERCISE_NORMAL_TARGET) {
-        console.error(`SMB disabled due to high temptarget of ${target_bg}`);
+        console.log(`SMB disabled due to high temptarget of ${target_bg}`);
         return false;
     }
 
     if (meal_data.bwFound === true && profile.A52_risk_enable === false) {
-        console.error("SMB disabled due to Bolus Wizard activity in the last 6 hours.");
+        console.log("SMB disabled due to Bolus Wizard activity in the last 6 hours.");
         return false;
     }
 
@@ -69,14 +69,14 @@ export function enable_smb(
     }
 
     if (profile.enableSMB_high_bg === true && high_bg !== null && bg >= high_bg) {
-        console.error("Checking BG to see if High for SMB enablement.");
-        console.error(`Current BG ${bg} | High BG ${high_bg}`);
+        console.log("Checking BG to see if High for SMB enablement.");
+        console.log(`Current BG ${bg} | High BG ${high_bg}`);
         logBWWarningIfFound(meal_data, 'High BG detected. Enabling SMB.',
             'Warning: High BG SMB enabled within 6h of using Bolus Wizard: be sure to easy bolus 30s before using Bolus Wizard');
         return true;
     }
 
-    console.error("SMB disabled (no enableSMB preferences active or no condition satisfied)");
+    console.log("SMB disabled (no enableSMB preferences active or no condition satisfied)");
     return false;
 }
 
@@ -110,17 +110,17 @@ export function logBWWarningIfFound(
     warningOverride?: string,
 ): void {
     if (meal_data.bwFound) {
-        console.error(warningOverride ?? 'Warning: SMB enabled within 6h of using Bolus Wizard: be sure to easy bolus 30s before using Bolus Wizard');
+        console.log(warningOverride ?? 'Warning: SMB enabled within 6h of using Bolus Wizard: be sure to easy bolus 30s before using Bolus Wizard');
     } else {
-        console.error(reason);
+        console.log(reason);
     }
 }
 
 /** Log BW warning (checking bwCarbs) or the given reason. */
 export function logBWWarningIfCarbs(meal_data: MealData, reason: string): void {
     if (meal_data.bwCarbs) {
-        console.error('Warning: SMB enabled with Bolus Wizard carbs: be sure to easy bolus 30s before using Bolus Wizard');
+        console.log('Warning: SMB enabled with Bolus Wizard carbs: be sure to easy bolus 30s before using Bolus Wizard');
     } else {
-        console.error(reason);
+        console.log(reason);
     }
 }

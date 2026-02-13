@@ -25,7 +25,7 @@ function carbRatioLookup(inputs: CarbsInputs, now: Date = new Date()): number | 
         return;
     }
     if (carbratioData.units !== "grams" && carbratioData.units !== "exchanges") {
-        console.error(`Error: Unsupported carb_ratio units ${carbratioData.units}`);
+        console.log(`Error: Unsupported carb_ratio units ${carbratioData.units}`);
         return;
     }
 
@@ -41,7 +41,7 @@ function carbRatioLookup(inputs: CarbsInputs, now: Date = new Date()): number | 
 
     // disallow impossibly high/low carbRatios due to bad decoding
     if (carbRatio.ratio < MIN_CARB_RATIO || carbRatio.ratio > MAX_CARB_RATIO) {
-        console.error(`Error: carbRatio of ${carbRatio.ratio} out of bounds.`);
+        console.log(`Error: carbRatio of ${carbRatio.ratio} out of bounds.`);
         return;
     }
 

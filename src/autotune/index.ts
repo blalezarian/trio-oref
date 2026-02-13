@@ -100,7 +100,7 @@ export function autotuneProfile(
         bounds,
         pumpProfile.autotune_isf_adjustmentFraction,
     );
-    console.error(
+    console.log(
         `p50deviation: ${isfResult.p50deviation} p50BGI ${isfResult.p50BGI} p50ratios: ${isfResult.p50ratios} Old ISF: ${ISF} fullNewISF: ${isfResult.fullNewISF} adjustedISF: ${isfResult.adjustedISF} newISF: ${isfResult.newISF} newDIA: ${newDIA} newPeak: ${newPeak}`,
     );
     if (isfResult.newISF) { ISF = isfResult.newISF; }

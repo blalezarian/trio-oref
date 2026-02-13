@@ -89,7 +89,7 @@ describe('findRelatedEvents', () => {
 
 describe('finalizeBolusGroup', () => {
     beforeEach(() => {
-        vi.spyOn(console, 'error').mockImplementation(() => {});
+        vi.spyOn(console, 'log').mockImplementation(() => {});
     });
 
     it('sets eventType to <none> when no carbs and no insulin', () => {
@@ -180,7 +180,7 @@ describe('finalizeBolusGroup', () => {
 
 describe('processBolusGroup', () => {
     beforeEach(() => {
-        vi.spyOn(console, 'error').mockImplementation(() => {});
+        vi.spyOn(console, 'log').mockImplementation(() => {});
     });
 
     it('processes a BolusWizard event', () => {
@@ -284,7 +284,7 @@ describe('processBolusGroup', () => {
 
 describe('reduceBoluses', () => {
     beforeEach(() => {
-        vi.spyOn(console, 'error').mockImplementation(() => {});
+        vi.spyOn(console, 'log').mockImplementation(() => {});
     });
 
     it('returns empty array for empty input', () => {

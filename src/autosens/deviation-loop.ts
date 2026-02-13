@@ -87,6 +87,7 @@ export function analyzeDeviations(
     let mealCarbs = 0;
     let mealStartCounter = MEAL_START_COUNTER_INITIAL;
     let deviationType: '' | 'csf' | 'uam' | 'non-meal' = '';
+    let logLine = '';
 
     const isfProfileData = profile.isfProfile as NonNullable<typeof profile.isfProfile>;
 
@@ -109,14 +110,14 @@ export function analyzeDeviations(
             if (isNaN(bg) || !bg || bg < AUTOSENS_MIN_VALID_BG
                 || isNaN(old_bg) || !old_bg || old_bg < AUTOSENS_MIN_VALID_BG
                 || isNaN(last_bg) || !last_bg || last_bg < AUTOSENS_MIN_VALID_BG) {
-                process.stderr.write("!");
+                logLine += "!";
                 continue;
             }
 
             avgDelta = (bg - old_bg) / TRAILING_BUCKETS;
             delta = bg - last_bg;
         } else {
-            console.error("Could not find glucose data");
+            console.log("Could not find glucose data");
             continue;
         }
 
@@ -132,7 +133,7 @@ export function analyzeDeviations(
         const bgImpact = calculateBGImpact(iob.activity, sens);
         let deviation = NaN;
         if (isNaN(delta)) {
-            console.error(`Bad delta: ${delta} ${bg} ${last_bg} ${old_bg}`);
+            console.log(`Bad delta: ${delta} ${bg} ${last_bg} ${old_bg}`);
         } else {
             deviation = calculateDeviation(delta, bgImpact, bg, MIN_BG_TARGET);
         }
@@ -153,7 +154,7 @@ export function analyzeDeviations(
                     mealCOB += treatment.carbs ?? 0;
                     mealCarbs += treatment.carbs ?? 0;
                     displayCOB = Math.round(mealCOB);
-                    process.stderr.write(`${displayCOB}g`);
+                    logLine += `${displayCOB}g`;
                 }
                 meals.pop();
             }
@@ -168,7 +169,7 @@ export function analyzeDeviations(
             if (absorbed) {
                 mealCOB = Math.max(0, mealCOB - absorbed);
             } else {
-                console.error(`${absorbed} ${carbImpact} ${profile.carb_ratio} ${sens} ${deviation} ${profile.min_5m_carbimpact}`);
+                console.log(`${absorbed} ${carbImpact} ${profile.carb_ratio} ${sens} ${deviation} ${profile.min_5m_carbimpact}`);
             }
         }
 
@@ -182,7 +183,7 @@ export function analyzeDeviations(
             // Stop excluding after >5h absorption with COB depleted
             if (mealStartCounter > MEAL_ABSORPTION_LONG_COUNTER && mealCOB < COB_DEPLETED_THRESHOLD) {
                 displayCOB = Math.round(mealCOB);
-                process.stderr.write(`${displayCOB}g`);
+                logLine += `${displayCOB}g`;
                 absorbing = 0;
             }
             if (!absorbing && mealCOB < COB_DEPLETED_THRESHOLD) {
@@ -191,7 +192,7 @@ export function analyzeDeviations(
 
             // Mark meal absorption start (first time entering csf)
             if (deviationType !== "csf") {
-                process.stderr.write("(");
+                logLine += "(";
                 mealStartCounter = 0;
             }
             mealStartCounter++;
@@ -200,7 +201,7 @@ export function analyzeDeviations(
         } else {
             // --- Non-meal path ---
             if (deviationType === "csf") {
-                process.stderr.write(")");
+                logLine += ")";
             }
 
             const currentBasal = iob_inputs.profile.current_basal;
@@ -211,12 +212,12 @@ export function analyzeDeviations(
                 uam = deviation > 0 ? 1 : 0;
 
                 if (deviationType !== "uam") {
-                    process.stderr.write("u(");
+                    logLine += "u(";
                 }
                 deviationType = "uam";
             } else {
                 if (deviationType === "uam") {
-                    process.stderr.write(")");
+                    logLine += ")";
                 }
                 deviationType = "non-meal";
             }
@@ -227,18 +228,18 @@ export function analyzeDeviations(
         // -----------------------------------------------------------------
         if (deviationType === "non-meal") {
             if (deviation > 0) {
-                process.stderr.write("+");
+                logLine += "+";
             } else if (deviation === 0) {
-                process.stderr.write("=");
+                logLine += "=";
             } else {
-                process.stderr.write("-");
+                logLine += "-";
             }
             avgDeltas.push(avgDelta);
             bgis.push(bgImpact);
             deviations.push(deviation);
 
         } else {
-            process.stderr.write("x");
+            logLine += "x";
         }
 
         // -----------------------------------------------------------------
@@ -248,7 +249,7 @@ export function analyzeDeviations(
             const tempTarget = tempTargetRunning(temptargets, bgTime as Date);
             if ((tempTarget ?? 0) > EXERCISE_NORMAL_TARGET) {
                 const tempDeviation = -((tempTarget as number) - EXERCISE_NORMAL_TARGET) / TEMP_TARGET_DEVIATION_DIVISOR;
-                process.stderr.write("-");
+                logLine += "-";
                 deviations.push(tempDeviation);
             }
         }
@@ -259,11 +260,11 @@ export function analyzeDeviations(
         const minutes = (bgTime as Date).getMinutes();
         const hours = (bgTime as Date).getHours();
         if (minutes >= 0 && minutes < HOURLY_MARKER_MINUTES) {
-            process.stderr.write(`${hours}h`);
+            logLine += `${hours}h`;
             // Add one neutral deviation every 2h to help decay over long exclusion periods
             if (hours % NEUTRAL_DEVIATION_INTERVAL_HOURS === 0) {
                 deviations.push(0);
-                process.stderr.write("=");
+                logLine += "=";
             }
         }
 
@@ -273,7 +274,7 @@ export function analyzeDeviations(
         }
     }
 
-    process.stderr.write(" ");
+    console.log(logLine);
 
     return { deviations, avgDeltas, bgis };
 }

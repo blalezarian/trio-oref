@@ -71,7 +71,7 @@ export function determineSiteChangeTime(
         }
         if (history[historyIdx].timestamp) {
             lastSiteChange = new Date(history[historyIdx].timestamp as string);
-            console.error(`Setting lastSiteChange to ${lastSiteChange} using timestamp ${history[historyIdx].timestamp}`);
+            console.log(`Setting lastSiteChange to ${lastSiteChange} using timestamp ${history[historyIdx].timestamp}`);
             break;
         }
     }
@@ -160,7 +160,7 @@ export function prepareAutosensData(inputs: AutosensInputs): PreparedAutosensDat
         } else if (glucose_data[glucoseIdx].xDrip_started_at) {
             continue;
         } else {
-            console.error("Could not determine BG time");
+            console.log("Could not determine BG time");
         }
 
         // --- Resolve previous entry time (3-source fallback) ---
@@ -171,7 +171,7 @@ export function prepareAutosensData(inputs: AutosensInputs): PreparedAutosensDat
         if (resolvedLastTime) {
             lastbgTime = resolvedLastTime;
         } else {
-            console.error("Could not determine last BG time");
+            console.log("Could not determine last BG time");
         }
 
         // Skip invalid glucose values (as number preserves undefined→NaN passthrough)

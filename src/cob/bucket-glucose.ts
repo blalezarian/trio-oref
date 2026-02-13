@@ -49,7 +49,7 @@ export function bucketGlucoseWithInterpolation(
         if (resolvedTime) {
             bgTime = resolvedTime;
         } else {
-            console.error("Could not determine BG time");
+            console.log("Could not determine BG time");
         }
 
         // Skip entries with invalid glucose
@@ -79,7 +79,7 @@ export function bucketGlucoseWithInterpolation(
         if (resolvedLastTime) {
             lastBgTime = resolvedLastTime;
         } else {
-            console.error("Could not determine last BG time");
+            console.log("Could not determine last BG time");
         }
 
         const elapsed_minutes = (Number(bgTime) - Number(lastBgTime)) / MS_PER_MINUTE;

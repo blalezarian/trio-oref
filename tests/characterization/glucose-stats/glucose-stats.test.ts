@@ -46,7 +46,7 @@ function makeLastCal() {
 
 describe('glucose-stats characterization tests', () => {
   beforeEach(() => {
-    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'log').mockImplementation(() => {});
   });
 
   // ─── calcSensorNoise ──────────────────────────────────────────────────

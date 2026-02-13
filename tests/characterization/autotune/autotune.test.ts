@@ -182,7 +182,7 @@ function normalizeOutput(result: any) {
 
 describe('autotune/index (tuneAllTheThings) characterization tests', () => {
   beforeEach(() => {
-    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'log').mockImplementation(() => {});
   });
 
   // =========================================================================

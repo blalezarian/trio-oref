@@ -6,8 +6,7 @@ import {
 } from '../../../src/autosens/calculate-ratio';
 
 beforeEach(() => {
-    vi.spyOn(console, 'error').mockImplementation(() => {});
-    vi.spyOn(process.stderr, 'write').mockImplementation(() => true);
+    vi.spyOn(console, 'log').mockImplementation(() => {});
 });
 
 // ---------------------------------------------------------------------------

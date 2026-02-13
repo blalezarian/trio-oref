@@ -94,7 +94,7 @@ describe('isCurrentTempAcceptable', () => {
 
 describe('appendReason', () => {
     beforeEach(() => {
-        vi.spyOn(console, 'error').mockImplementation(() => {});
+        vi.spyOn(console, 'log').mockImplementation(() => {});
     });
 
     it('appends message to empty reason', () => {
@@ -109,10 +109,10 @@ describe('appendReason', () => {
         expect(requestedTempBasalResult.reason).toBe('first. second');
     });
 
-    it('logs message to console.error', () => {
+    it('logs message to console.log', () => {
         const requestedTempBasalResult = makeResult();
         appendReason(requestedTempBasalResult, 'logged message');
-        expect(console.error).toHaveBeenCalledWith('logged message');
+        expect(console.log).toHaveBeenCalledWith('logged message');
     });
 });
 
@@ -206,7 +206,7 @@ describe('getMaxSafeBasal', () => {
 describe('setTempBasal', () => {
 
     beforeEach(() => {
-        vi.spyOn(console, 'error').mockImplementation(() => {});
+        vi.spyOn(console, 'log').mockImplementation(() => {});
     });
 
     it('clamps a negative rate to 0', () => {

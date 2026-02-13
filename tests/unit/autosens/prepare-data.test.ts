@@ -14,7 +14,7 @@ const NOW = new Date(FIXED_TIME).getTime();
 
 describe('determineSiteChangeTime', () => {
     beforeEach(() => {
-        vi.spyOn(console, 'error').mockImplementation(() => {});
+        vi.spyOn(console, 'log').mockImplementation(() => {});
     });
 
     const glucose = [{ date: NOW }] as GlucoseEntry[];

@@ -18,7 +18,7 @@ function makeCRDatum(overrides: Partial<AutotuneCRDatum> = {}): AutotuneCRDatum 
 
 describe('calculateTotalCarbRatio', () => {
     beforeEach(() => {
-        vi.spyOn(console, 'error').mockImplementation(() => {});
+        vi.spyOn(console, 'log').mockImplementation(() => {});
     });
 
     it('computes totalCR from a single CR datum', () => {
@@ -71,7 +71,7 @@ describe('calculateTotalCarbRatio', () => {
 
     it('logs CRTotalCarbs, CRTotalInsulin, and totalCR', () => {
         calculateTotalCarbRatio([makeCRDatum()], 100);
-        expect(console.error).toHaveBeenCalledWith(
+        expect(console.log).toHaveBeenCalledWith(
             "CRTotalCarbs: 45 CRTotalInsulin: 3.9 totalCR: 11.538",
         );
     });

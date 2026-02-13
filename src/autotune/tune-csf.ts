@@ -32,10 +32,10 @@ export function tuneCSF(
         const maxCSF = pumpCSF * bounds.autotuneMax;
         const minCSF = pumpCSF * bounds.autotuneMin;
         if (newCSF > maxCSF) {
-            console.error(`Limiting CSF to ${maxCSF.toFixed(2)} (which is ${bounds.autotuneMax} * pump CSF of ${pumpCSF})`);
+            console.log(`Limiting CSF to ${maxCSF.toFixed(2)} (which is ${bounds.autotuneMax} * pump CSF of ${pumpCSF})`);
             newCSF = maxCSF;
         } else if (newCSF < minCSF) {
-            console.error(`Limiting CSF to ${minCSF.toFixed(2)} (which is ${bounds.autotuneMin} * pump CSF of ${pumpCSF})`);
+            console.log(`Limiting CSF to ${minCSF.toFixed(2)} (which is ${bounds.autotuneMin} * pump CSF of ${pumpCSF})`);
             newCSF = minCSF;
         }
     }
@@ -43,7 +43,7 @@ export function tuneCSF(
     const oldCSF = Math.round(currentCSF * 1000) / 1000;
     newCSF = Math.round(newCSF * 1000) / 1000;
     const totalDeviations = Math.round(rawTotalDeviations * 1000) / 1000;
-    console.error(`totalMealCarbs: ${totalMealCarbs} totalDeviations: ${totalDeviations} oldCSF ${oldCSF} fullNewCSF: ${fullNewCSF} newCSF: ${newCSF}`);
+    console.log(`totalMealCarbs: ${totalMealCarbs} totalDeviations: ${totalDeviations} oldCSF ${oldCSF} fullNewCSF: ${fullNewCSF} newCSF: ${newCSF}`);
 
     return newCSF;
 }

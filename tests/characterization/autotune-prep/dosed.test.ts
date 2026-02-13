@@ -22,7 +22,7 @@ function makeOpts(overrides: Record<string, unknown> = {}) {
 
 describe('autotune-prep/dosed characterization tests', () => {
   beforeEach(() => {
-    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'log').mockImplementation(() => {});
   });
 
   describe('no treatments', () => {

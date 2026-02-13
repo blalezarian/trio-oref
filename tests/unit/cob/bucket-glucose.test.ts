@@ -60,7 +60,7 @@ describe('bucketGlucoseWithInterpolation', () => {
     const carbImpactTime = new Date(NOW);
 
     beforeEach(() => {
-        vi.spyOn(console, 'error').mockImplementation(() => {});
+        vi.spyOn(console, 'log').mockImplementation(() => {});
     });
 
     it('returns at least the first entry for minimal input', () => {
@@ -184,8 +184,7 @@ describe('interpolateMissingPoints', () => {
 
 describe('resolveGlucoseDeltas', () => {
     beforeEach(() => {
-        vi.spyOn(console, 'error').mockImplementation(() => {});
-        vi.spyOn(process.stderr, 'write').mockImplementation(() => true);
+        vi.spyOn(console, 'log').mockImplementation(() => {});
     });
 
     it('returns bg, delta, and avgDelta for valid glucose entries', () => {
@@ -213,7 +212,7 @@ describe('resolveGlucoseDeltas', () => {
             { glucose: 130 },
         ] as BucketedGlucose[];
         expect(resolveGlucoseDeltas(bucketed_data, 0)).toBe('skip');
-        expect(process.stderr.write).toHaveBeenCalledWith('!');
+        expect(console.log).toHaveBeenCalledWith('!');
     });
 
     it('returns skip when trailing glucose is below MIN_VALID_GLUCOSE_MGDL', () => {
@@ -239,6 +238,6 @@ describe('resolveGlucoseDeltas', () => {
             expect(Number.isNaN(result.delta)).toBe(true);
             expect(Number.isNaN(result.avgDelta)).toBe(true);
         }
-        expect(console.error).toHaveBeenCalledWith('Could not find glucose data');
+        expect(console.log).toHaveBeenCalledWith('Could not find glucose data');
     });
 });

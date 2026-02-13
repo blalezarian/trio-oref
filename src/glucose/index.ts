@@ -49,7 +49,7 @@ function getLastGlucose(data: GlucoseEntry[]): GlucoseStatus {
 
         const entryDate = getDateFromEntry(entry);
         if (!entryDate || !nowDate) {
-            console.error("Error: date field not found: cannot calculate avgdelta");
+            console.log("Error: date field not found: cannot calculate avgdelta");
             continue;
         }
 

@@ -707,7 +707,7 @@ describe('determine-basal/autosens (detectSensitivity) characterization tests', 
 
     it('absorbed is falsy (zero) when ci and deviation are both zero', () => {
       // When deviation is 0 and min_5m_carbimpact is 0, ci = max(0, 0) = 0
-      // absorbed = 0 * carb_ratio / sens = 0, which is falsy -> hits line 229 console.error
+      // absorbed = 0 * carb_ratio / sens = 0, which is falsy -> hits console log
       const glucose = makeUniformGlucoseData(120, 40, 0);
       const carbTime = new Date(NOW - 60 * 60_000).toISOString();
       const inputs = makeInputs(glucose, {

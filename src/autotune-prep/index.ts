@@ -125,7 +125,7 @@ function generate(inputs: AutotunePrepInputs): AutotunePrepResult {
 
   if (inputs.tune_insulin_curve) {
     if (opts.profile.curve === 'bilinear') {
-      console.error('--tune-insulin-curve is set but only valid for exponential curves');
+      console.log('--tune-insulin-curve is set but only valid for exponential curves');
     } else {
       let minDeviations = DEVIATION_SENTINEL;
       let newDIA = 0;
@@ -134,8 +134,8 @@ function generate(inputs: AutotunePrepInputs): AutotunePrepResult {
       const currentDIA = opts.profile.dia;
       const currentPeak = opts.profile.insulinPeakTime;
 
-      const consoleError = console.error;
-      console.error = function() {};
+      const consoleLog = console.log;
+      console.log = function() {};
 
       const startDIA=currentDIA - DIA_SEARCH_RANGE;
       const endDIA=currentDIA + DIA_SEARCH_RANGE;
@@ -169,7 +169,7 @@ function generate(inputs: AutotunePrepInputs): AutotunePrepResult {
             } else if (basalGlucose[glucoseIdx].dateString) {
               BGTime = new Date(basalGlucose[glucoseIdx].dateString);
             } else {
-              consoleError("Could not determine last BG time");
+              consoleLog("Could not determine last BG time");
             }
 
             const entryHour = (BGTime as Date).getHours();
@@ -184,7 +184,7 @@ function generate(inputs: AutotunePrepInputs): AutotunePrepResult {
         meanDeviation = Math.round(Math.abs(deviations/basalGlucose.length)*ROUND_SCALE_3DP)/ROUND_SCALE_3DP;
         SMRDeviation = Math.round(Math.pow(sqrtDeviations/basalGlucose.length,2)*ROUND_SCALE_3DP)/ROUND_SCALE_3DP;
         RMSDeviation = Math.round(Math.pow(deviationsSq/basalGlucose.length,0.5)*ROUND_SCALE_3DP)/ROUND_SCALE_3DP;
-        consoleError(`insulinEndTime ${dia} meanDeviation: ${meanDeviation} SMRDeviation: ${SMRDeviation} RMSDeviation: ${RMSDeviation} (mg/dL)`);
+        consoleLog(`insulinEndTime ${dia} meanDeviation: ${meanDeviation} SMRDeviation: ${SMRDeviation} RMSDeviation: ${RMSDeviation} (mg/dL)`);
         diaDeviations.push({
             dia: dia,
             meanDeviation: meanDeviation,
@@ -234,7 +234,7 @@ function generate(inputs: AutotunePrepInputs): AutotunePrepResult {
             } else if (basalGlucose[glucoseIdx].dateString) {
               BGTime = new Date(basalGlucose[glucoseIdx].dateString);
             } else {
-              consoleError("Could not determine last BG time");
+              consoleLog("Could not determine last BG time");
             }
 
             const entryHour = (BGTime as Date).getHours();
@@ -245,12 +245,12 @@ function generate(inputs: AutotunePrepInputs): AutotunePrepResult {
             }
           }
         }
-        console.error(deviationsSq);
+        console.log(deviationsSq);
 
         meanDeviation = Math.round(deviations/basalGlucose.length*ROUND_SCALE_3DP)/ROUND_SCALE_3DP;
         SMRDeviation = Math.round(Math.pow(sqrtDeviations/basalGlucose.length,2)*ROUND_SCALE_3DP)/ROUND_SCALE_3DP;
         RMSDeviation = Math.round(Math.pow(deviationsSq/basalGlucose.length,0.5)*ROUND_SCALE_3DP)/ROUND_SCALE_3DP;
-        consoleError(`insulinPeakTime ${peak} meanDeviation: ${meanDeviation} SMRDeviation: ${SMRDeviation} RMSDeviation: ${RMSDeviation} (mg/dL)`);
+        consoleLog(`insulinPeakTime ${peak} meanDeviation: ${meanDeviation} SMRDeviation: ${SMRDeviation} RMSDeviation: ${RMSDeviation} (mg/dL)`);
         peakDeviations.push({
             peak: peak,
             meanDeviation: meanDeviation,
@@ -268,7 +268,7 @@ function generate(inputs: AutotunePrepInputs): AutotunePrepResult {
 
       autotunePrepOutput.peakDeviations = peakDeviations;
 
-      console.error = consoleError;
+      console.log = consoleLog;
     }
   }
 

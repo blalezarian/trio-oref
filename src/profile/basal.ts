@@ -21,7 +21,7 @@ function getCurrentBasalRate(schedules: BasalScheduleEntry[], now: Date = new Da
     const sorted = sortByScheduleIndex(schedules);
     const lastRate = sorted[sorted.length - 1].rate;
     if (lastRate === 0) {
-        console.error(`ERROR: bad basal schedule ${JSON.stringify(schedules)}`);
+        console.log(`ERROR: bad basal schedule ${JSON.stringify(schedules)}`);
         return;
     }
     const basalRate = findActiveRate(sorted, toMinuteOfDay(now));

@@ -34,7 +34,7 @@ export function enforceSMBSafetyGuards(ctx: DosingContext): PhaseOutcome {
     const { result } = ctx;
 
     if (ctx.enableSMB && minGuardBG < threshold) {
-        console.error(`minGuardBG ${convert_bg(minGuardBG, profile)} projected below ${convert_bg(threshold, profile)} - disabling SMB`);
+        console.log(`minGuardBG ${convert_bg(minGuardBG, profile)} projected below ${convert_bg(threshold, profile)} - disabling SMB`);
         result.manualBolusErrorString = BOLUS_ERR_GUARD_BELOW_THRESHOLD;
         result.minGuardBG = minGuardBG;
         result.insulinForManualBolus = round(((result.eventualBG as number) - (result.target_bg as number)) / adjustedSens, 2);
@@ -48,7 +48,7 @@ export function enforceSMBSafetyGuards(ctx: DosingContext): PhaseOutcome {
         ? Math.min(profile.maxDelta_bg_threshold, MAX_DELTA_BG_THRESHOLD_CAP)
         : DEFAULT_MAX_DELTA_BG_THRESHOLD;
     if (maxDelta > maxDelta_bg_threshold * bg) {
-        console.error(`maxDelta ${convert_bg(maxDelta, profile)} > ${100 * maxDelta_bg_threshold}% of BG ${convert_bg(bg, profile)} - disabling SMB`);
+        console.log(`maxDelta ${convert_bg(maxDelta, profile)} > ${100 * maxDelta_bg_threshold}% of BG ${convert_bg(bg, profile)} - disabling SMB`);
         result.reason += `maxDelta ${convert_bg(maxDelta, profile)} > ${100 * maxDelta_bg_threshold}% of BG ${convert_bg(bg, profile)} - SMB disabled!, `;
         ctx.enableSMB = false;
     }
@@ -135,7 +135,7 @@ export function checkTopOfHourCancel(ctx: DosingContext): PhaseOutcome {
             result.reason += `; Canceling temp at ${MINUTES_PER_HOUR - (result.deliverAt as unknown as Date).getMinutes()}min before turn of the hour to avoid beeping of MDT. SMB are disabled anyways.`;
             return { done: true, result: tempBasalFunctions.setTempBasal(0, 0, profile, result, currenttemp) };
         } else {
-            console.error(`${MINUTES_PER_HOUR - (result.deliverAt as unknown as Date).getMinutes()}min before turn of the hour, but SMB's are enabled - not skipping neutral temps.`);
+            console.log(`${MINUTES_PER_HOUR - (result.deliverAt as unknown as Date).getMinutes()}min before turn of the hour, but SMB's are enabled - not skipping neutral temps.`);
         }
     }
 

@@ -15,7 +15,7 @@ function makePeakDeviations(overrides: Partial<AutotunePeakDeviation>[] = []): A
 
 describe('tunePeakTime', () => {
     beforeEach(() => {
-        vi.spyOn(console, 'error').mockImplementation(() => {});
+        vi.spyOn(console, 'log').mockImplementation(() => {});
     });
 
     it('returns currentPeak when peakDeviations is undefined', () => {
@@ -75,7 +75,7 @@ describe('tunePeakTime', () => {
             { meanDeviation: 4, RMSDeviation: 4 },
         ]);
         tunePeakTime(devs, 65);
-        expect(console.error).toHaveBeenCalledWith(
+        expect(console.log).toHaveBeenCalledWith(
             "Adjusting insulinPeakTime from 65 to 60 minutes",
         );
     });
@@ -83,7 +83,7 @@ describe('tunePeakTime', () => {
     it('logs unchanged when peak stays the same (no unit suffix)', () => {
         const devs = makePeakDeviations();
         tunePeakTime(devs, 65);
-        expect(console.error).toHaveBeenCalledWith(
+        expect(console.log).toHaveBeenCalledWith(
             "Leaving insulinPeakTime unchanged at 65",
         );
     });

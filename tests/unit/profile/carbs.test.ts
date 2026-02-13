@@ -15,7 +15,7 @@ describe('carbRatioLookup', () => {
     });
 
     it('logs error and returns undefined for unsupported units', () => {
-        const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+        const errorSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
         const inputs: CarbsInputs = {
             carbratio: {
                 units: 'invalid' as 'grams',
@@ -49,7 +49,7 @@ describe('carbRatioLookup', () => {
     });
 
     it('returns undefined for ratio below MIN_CARB_RATIO', () => {
-        const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+        const errorSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
         const inputs: CarbsInputs = {
             carbratio: {
                 units: 'grams',
@@ -62,7 +62,7 @@ describe('carbRatioLookup', () => {
     });
 
     it('returns undefined for ratio above MAX_CARB_RATIO', () => {
-        const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+        const errorSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
         const inputs: CarbsInputs = {
             carbratio: {
                 units: 'grams',

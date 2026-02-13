@@ -85,18 +85,18 @@ export function configureSensitivityAndTargets(
     // Raise target for noisy / raw CGM data.
     const noisyTargets = adjustTargetsForNoisyCGM(min_bg as number, target_bg as number, max_bg as number, glucose_status.noise as number, profile);
     if (noisyTargets.adjusted) {
-        process.stderr.write(`Raising target_bg for noisy / raw CGM data, from ${convert_bg(targetAdjustment.new_target_bg as number, profile)} to ${convert_bg(noisyTargets.target_bg, profile)}; `);
+        console.log(`Raising target_bg for noisy / raw CGM data, from ${convert_bg(targetAdjustment.new_target_bg as number, profile)} to ${convert_bg(noisyTargets.target_bg, profile)}; `);
         min_bg = noisyTargets.min_bg;
         target_bg = noisyTargets.target_bg;
         max_bg = noisyTargets.max_bg;
     }
 
     const thresholdFinal = calculateLowGlucoseThreshold(min_bg as number, profile.threshold_setting as number);
-    console.error(`Threshold set to ${convert_bg(thresholdFinal, profile)}`);
+    console.log(`Threshold set to ${convert_bg(thresholdFinal, profile)}`);
 
     // Adjust ISF based on sensitivityRatio
     const { adjustedSens, isfreason } = adjustISFBySensitivity(sensitivity, sensitivityRatio as number, profile, autosens_data);
-    console.error(`CR:${carbRatio}`);
+    console.log(`CR:${carbRatio}`);
 
     return { max_iob, target_bg: target_bg as number, min_bg: min_bg as number, max_bg: max_bg as number, high_bg: high_bg as number, sensitivityRatio: sensitivityRatio as number, basal, threshold: thresholdFinal, adjustedSens, isfreason, targetLog };
 }
@@ -148,7 +148,7 @@ function resolveSensitivityRatio(
     if ( high_temptarget_raises_sensitivity && profile.temptargetSet && target_bg > normalTarget ||
         profile.low_temptarget_lowers_sensitivity && profile.temptargetSet && target_bg < normalTarget ) {
         sensitivityRatio = calculateTempTargetSensitivityRatio(target_bg, normalTarget, halfBasalTarget, profile.autosens_max);
-        process.stderr.write(`Sensitivity ratio set to ${sensitivityRatio} based on temp target of ${target_bg}; `);
+        console.log(`Sensitivity ratio set to ${sensitivityRatio} based on temp target of ${target_bg}; `);
         return maybeBoostDynamicRatio(sensitivityRatio, target_bg, bg, normalTarget, dynISFenabled, newRatio, profile, autosens_data);
     }
 
@@ -161,7 +161,7 @@ function resolveSensitivityRatio(
             target_bg = overrideTarget;
             console.log(`Current Override Profile Target: ${convert_bg(overrideTarget, profile)} ${profile.out_units}`);
         }
-        process.stderr.write(`Autosens ratio: ${sensitivityRatio}; `);
+        console.log(`Autosens ratio: ${sensitivityRatio}; `);
     }
 
     return maybeBoostDynamicRatio(sensitivityRatio, target_bg, bg, normalTarget, dynISFenabled, newRatio, profile, autosens_data);
@@ -251,9 +251,9 @@ export function adjustBasalBySensitivity(
         basal = profile.current_basal * overrideFactor * sensitivityRatio;
         basal = round_basal(basal, profile);
         if (basal !== profile_current_basal) {
-            process.stderr.write(`Adjusting basal from ${profile_current_basal} to ${basal}; `);
+            console.log(`Adjusting basal from ${profile_current_basal} to ${basal}; `);
         } else {
-            process.stderr.write(`Basal unchanged: ${basal}; `);
+            console.log(`Basal unchanged: ${basal}; `);
         }
     }
     return basal;
@@ -274,10 +274,10 @@ export function adjustBasalByTDD(
     basal = profile.current_basal * tdd24h_14d_Ratio * overrideFactor;
     basal = round_basal(basal, profile);
     if (average_total_data > 0) {
-        process.stderr.write(`TDD-adjustment of basals activated, using tdd24h_14d_Ratio ${round(tdd24h_14d_Ratio, 2)}, TDD 24h = ${round(tdd_before, 2)}U, Weighted average TDD = ${round(weightedAverage, 2)}U, (Weight percentage = ${weightPercentage}), Total data of TDDs (up to 14 days) average = ${round(average_total_data, 2)}U. `);
+        console.log(`TDD-adjustment of basals activated, using tdd24h_14d_Ratio ${round(tdd24h_14d_Ratio, 2)}, TDD 24h = ${round(tdd_before, 2)}U, Weighted average TDD = ${round(weightedAverage, 2)}U, (Weight percentage = ${weightPercentage}), Total data of TDDs (up to 14 days) average = ${round(average_total_data, 2)}U. `);
         if (basal !== profile_current_basal * overrideFactor) {
-            process.stderr.write(`Adjusting basal from ${profile_current_basal * overrideFactor} U/h to ${basal} U/h; `);
-        } else { process.stderr.write(`Basal unchanged: ${basal} U/h; `); }
+            console.log(`Adjusting basal from ${profile_current_basal * overrideFactor} U/h to ${basal} U/h; `);
+        } else { console.log(`Basal unchanged: ${basal} U/h; `); }
     }
     return basal;
 }
@@ -307,9 +307,9 @@ export function adjustTargetByAutosens(
             // don't allow target_bg below 80
             new_target_bg = Math.max(MIN_BG_TARGET, new_target_bg);
             if (target_bg === new_target_bg) {
-                process.stderr.write(`target_bg unchanged: ${convert_bg(new_target_bg as number, profile)}; `);
+                console.log(`target_bg unchanged: ${convert_bg(new_target_bg as number, profile)}; `);
             } else {
-                process.stderr.write(`target_bg from ${convert_bg(new_target_bg as number, profile)} to ${convert_bg(new_target_bg as number, profile)}; `);
+                console.log(`target_bg from ${convert_bg(new_target_bg as number, profile)} to ${convert_bg(new_target_bg as number, profile)}; `);
             }
             target_bg = new_target_bg;
         }
@@ -371,9 +371,9 @@ export function adjustISFBySensitivity(
         adjustedSens = sensitivity / sensitivityRatio;
         adjustedSens = round(adjustedSens, 1);
         if (adjustedSens !== sensitivity) {
-            process.stderr.write(`ISF from ${convert_bg(sensitivity, profile)} to ${convert_bg(adjustedSens, profile)}`);
+            console.log(`ISF from ${convert_bg(sensitivity, profile)} to ${convert_bg(adjustedSens, profile)}`);
         } else {
-            process.stderr.write(`ISF unchanged: ${convert_bg(adjustedSens, profile)}`);
+            console.log(`ISF unchanged: ${convert_bg(adjustedSens, profile)}`);
         }
         isfreason += `Autosens ratio: ${round(sensitivityRatio, 2)}, ISF: ${convert_bg(sensitivity, profile)}\u2192${convert_bg(adjustedSens, profile)}`;
 

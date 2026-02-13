@@ -65,7 +65,7 @@ describe('collectISFStatistics', () => {
 
 describe('tuneISF', () => {
     beforeEach(() => {
-        vi.spyOn(console, 'error').mockImplementation(() => {});
+        vi.spyOn(console, 'log').mockImplementation(() => {});
     });
 
     it('leaves ISF unchanged when fewer than 10 data points', () => {
@@ -74,7 +74,7 @@ describe('tuneISF', () => {
         );
         const result = tuneISF(data, 40, 40, DEFAULT_BOUNDS, undefined);
         expect(result.fullNewISF).toBe(40);
-        expect(console.error).toHaveBeenCalledWith(
+        expect(console.log).toHaveBeenCalledWith(
             'Only found 5 ISF data points, leaving ISF unchanged at 40',
         );
     });
@@ -113,7 +113,7 @@ describe('tuneISF', () => {
         );
         const result = tuneISF(data, 40, 40, DEFAULT_BOUNDS, 0.5);
         // adjustedISF = 30 < minISF(33.333) → capped
-        expect(console.error).toHaveBeenCalledWith(
+        expect(console.log).toHaveBeenCalledWith(
             expect.stringContaining('Limiting adjusted ISF of'),
         );
     });

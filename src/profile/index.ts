@@ -33,7 +33,7 @@ function generate(inputs: ProfileInputs, opts?: ProfileOpts): ProfileDefaults | 
 
   // --- DIA validation ---
   if (inputs.settings.insulin_action_curve <= 1) {
-    console.error(`DIA of ${profile.dia} is not supported`);
+    console.log(`DIA of ${profile.dia} is not supported`);
     return -1;
   }
   profile.dia = inputs.settings.insulin_action_curve;
@@ -55,15 +55,15 @@ function generate(inputs: ProfileInputs, opts?: ProfileOpts): ProfileDefaults | 
   profile.max_basal = getMaxBasalRate(inputs);
 
   if (profile.current_basal === 0) {
-    console.error(`current_basal of ${profile.current_basal} is not supported`);
+    console.log(`current_basal of ${profile.current_basal} is not supported`);
     return -1;
   }
   if (profile.max_daily_basal === 0) {
-    console.error(`max_daily_basal of ${profile.max_daily_basal} is not supported`);
+    console.log(`max_daily_basal of ${profile.max_daily_basal} is not supported`);
     return -1;
   }
   if ((profile.max_basal as number) < MIN_SUPPORTED_MAX_BASAL) {
-    console.error(`max_basal of ${profile.max_basal} is not supported`);
+    console.log(`max_basal of ${profile.max_basal} is not supported`);
     return -1;
   }
 
@@ -88,7 +88,7 @@ function generate(inputs: ProfileInputs, opts?: ProfileOpts): ProfileDefaults | 
   profile.sens = isfLookup(inputs.isf);
   profile.isfProfile = inputs.isf;
   if ((profile.sens as number) < MIN_SUPPORTED_ISF) {
-    console.error(`ISF of ${profile.sens} is not supported`);
+    console.log(`ISF of ${profile.sens} is not supported`);
     return -1;
   }
 
@@ -97,7 +97,7 @@ function generate(inputs: ProfileInputs, opts?: ProfileOpts): ProfileDefaults | 
     profile.carb_ratio = carbRatioLookup(inputs);
     profile.carb_ratios = inputs.carbratio;
   } else {
-    console.error("Profile wasn't given carb ratio data, cannot calculate carb_ratio");
+    console.log("Profile wasn't given carb ratio data, cannot calculate carb_ratio");
   }
   return profile;
 }

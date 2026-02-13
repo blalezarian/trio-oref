@@ -89,7 +89,7 @@ export function isZonedClock(clock: string): boolean {
 
 export function warnIfUnzonedClock(clock: string): boolean {
     const ok = isZonedClock(clock);
-    if (!ok) { console.error(`Warning: clock input ${clock} is unzoned; please pass clock-zoned.json instead`); }
+    if (!ok) { console.log(`Warning: clock input ${clock} is unzoned; please pass clock-zoned.json instead`); }
     return ok;
 }
 

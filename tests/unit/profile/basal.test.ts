@@ -135,7 +135,7 @@ describe('getCurrentBasalRate', () => {
     });
 
     it('returns undefined and logs error when last entry rate is 0', () => {
-        const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+        const errorSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
         const badSchedules: BasalScheduleEntry[] = [
             { i: 0, minutes: 0, rate: 0.5 },
             { i: 1, minutes: 360, rate: 0 },

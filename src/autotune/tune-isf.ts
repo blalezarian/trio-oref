@@ -51,7 +51,7 @@ export function tuneISF(
 
     let fullNewISF = currentISF;
     if (isfGlucose.length < MIN_ISF_DATA_POINTS) {
-        console.error(`Only found ${isfGlucose.length} ISF data points, leaving ISF unchanged at ${currentISF}`);
+        console.log(`Only found ${isfGlucose.length} ISF data points, leaving ISF unchanged at ${currentISF}`);
     } else {
         fullNewISF = currentISF * p50ratios;
     }
@@ -86,10 +86,10 @@ export function tuneISF(
 
     // Cap adjustedISF before applying adjustment fraction blend
     if (adjustedISF > maxISF) {
-        console.error(`Limiting adjusted ISF of ${adjustedISF.toFixed(2)} to ${maxISF.toFixed(2)} (which is pump ISF of ${pumpISF} / ${bounds.autotuneMin})`);
+        console.log(`Limiting adjusted ISF of ${adjustedISF.toFixed(2)} to ${maxISF.toFixed(2)} (which is pump ISF of ${pumpISF} / ${bounds.autotuneMin})`);
         adjustedISF = maxISF;
     } else if (adjustedISF < minISF) {
-        console.error(`Limiting adjusted ISF of ${adjustedISF.toFixed(2)} to ${minISF.toFixed(2)} (which is pump ISF of ${pumpISF} / ${bounds.autotuneMax})`);
+        console.log(`Limiting adjusted ISF of ${adjustedISF.toFixed(2)} to ${minISF.toFixed(2)} (which is pump ISF of ${pumpISF} / ${bounds.autotuneMax})`);
         adjustedISF = minISF;
     }
 
@@ -98,10 +98,10 @@ export function tuneISF(
         + AUTOTUNE_ADJUSTMENT_FRACTION * adjustedISF;
 
     if (newISF > maxISF) {
-        console.error(`Limiting ISF of ${newISF.toFixed(2)} to ${maxISF.toFixed(2)} (which is pump ISF of ${pumpISF} / ${bounds.autotuneMin})`);
+        console.log(`Limiting ISF of ${newISF.toFixed(2)} to ${maxISF.toFixed(2)} (which is pump ISF of ${pumpISF} / ${bounds.autotuneMin})`);
         newISF = maxISF;
     } else if (newISF < minISF) {
-        console.error(`Limiting ISF of ${newISF.toFixed(2)} to ${minISF.toFixed(2)} (which is pump ISF of ${pumpISF} / ${bounds.autotuneMax})`);
+        console.log(`Limiting ISF of ${newISF.toFixed(2)} to ${minISF.toFixed(2)} (which is pump ISF of ${pumpISF} / ${bounds.autotuneMax})`);
         newISF = minISF;
     }
 

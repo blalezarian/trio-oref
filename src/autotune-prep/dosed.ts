@@ -36,7 +36,7 @@ function insulinDosed(opts: DosedOpts): DosedResult | Record<string, never> {
     const treatments = opts.treatments;
 
     if (!treatments) {
-        console.error("No treatments to process.");
+        console.log("No treatments to process.");
         return {};
     }
 

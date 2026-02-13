@@ -56,24 +56,24 @@ describe('isTimeInSMBDisabledWindow', () => {
 
 describe('logBWWarningIfFound', () => {
     beforeEach(() => {
-        vi.spyOn(console, 'error').mockImplementation(() => {});
+        vi.spyOn(console, 'log').mockImplementation(() => {});
     });
 
     it('logs the reason when bwFound is falsy', () => {
         logBWWarningIfFound({ bwFound: false } as MealData, 'SMB enabled');
-        expect(console.error).toHaveBeenCalledWith('SMB enabled');
+        expect(console.log).toHaveBeenCalledWith('SMB enabled');
     });
 
     it('logs default BW warning when bwFound is true', () => {
         logBWWarningIfFound({ bwFound: true } as MealData, 'SMB enabled');
-        expect(console.error).toHaveBeenCalledWith(
+        expect(console.log).toHaveBeenCalledWith(
             'Warning: SMB enabled within 6h of using Bolus Wizard: be sure to easy bolus 30s before using Bolus Wizard',
         );
     });
 
     it('logs warningOverride when bwFound is true and override provided', () => {
         logBWWarningIfFound({ bwFound: true } as MealData, 'SMB enabled', 'Custom BW warning');
-        expect(console.error).toHaveBeenCalledWith('Custom BW warning');
+        expect(console.log).toHaveBeenCalledWith('Custom BW warning');
     });
 });
 
@@ -83,17 +83,17 @@ describe('logBWWarningIfFound', () => {
 
 describe('logBWWarningIfCarbs', () => {
     beforeEach(() => {
-        vi.spyOn(console, 'error').mockImplementation(() => {});
+        vi.spyOn(console, 'log').mockImplementation(() => {});
     });
 
     it('logs the reason when bwCarbs is falsy', () => {
         logBWWarningIfCarbs({ bwCarbs: 0 } as MealData, 'SMB enabled for COB');
-        expect(console.error).toHaveBeenCalledWith('SMB enabled for COB');
+        expect(console.log).toHaveBeenCalledWith('SMB enabled for COB');
     });
 
     it('logs BW carbs warning when bwCarbs is truthy', () => {
         logBWWarningIfCarbs({ bwCarbs: 30 } as MealData, 'SMB enabled for COB');
-        expect(console.error).toHaveBeenCalledWith(
+        expect(console.log).toHaveBeenCalledWith(
             'Warning: SMB enabled with Bolus Wizard carbs: be sure to easy bolus 30s before using Bolus Wizard',
         );
     });

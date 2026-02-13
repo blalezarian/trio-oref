@@ -70,29 +70,29 @@ export function determineSMBMaxBolus(
     let maxBolus = 0;
     if (smbMinutesSetting === undefined) {
         maxBolus = round(effectiveBasal * DEFAULT_MAX_SMB_BASAL_MINUTES / MINUTES_PER_HOUR, 1);
-        console.error("smbMinutesSetting undefined: defaulting to 30m");
+        console.log("smbMinutesSetting undefined: defaulting to 30m");
 
         if (insulinReq > maxBolus) {
-            console.error(`SMB limited by maxBolus: ${maxBolus} ( ${insulinReq} U)`);
+            console.log(`SMB limited by maxBolus: ${maxBolus} ( ${insulinReq} U)`);
         }
     } else if (iob > mealInsulinReq && iob > 0) {
-        console.error(`IOB${iob}> COB${mealCOB}; mealInsulinReq =${mealInsulinReq}`);
+        console.log(`IOB${iob}> COB${mealCOB}; mealInsulinReq =${mealInsulinReq}`);
         if (uamMinutesSetting) {
-            console.error(`maxUAMSMBBasalMinutes: ${uamMinutesSetting}, profile.current_basal: ${effectiveBasal}`);
+            console.log(`maxUAMSMBBasalMinutes: ${uamMinutesSetting}, profile.current_basal: ${effectiveBasal}`);
             maxBolus = round(effectiveBasal * uamMinutesSetting / MINUTES_PER_HOUR, 1);
         } else {
-            console.error("maxUAMSMBBasalMinutes undefined: defaulting to 30m");
+            console.log("maxUAMSMBBasalMinutes undefined: defaulting to 30m");
             maxBolus = round(effectiveBasal * DEFAULT_MAX_SMB_BASAL_MINUTES / MINUTES_PER_HOUR, 1);
         }
         if (insulinReq > maxBolus) {
-            console.error(`SMB limited by maxUAMSMBBasalMinutes [ ${uamMinutesSetting}m ]: ${maxBolus}U ( ${insulinReq}U )`);
-        } else { console.error(`SMB is not limited by maxUAMSMBBasalMinutes. ( insulinReq: ${insulinReq}U )`); }
+            console.log(`SMB limited by maxUAMSMBBasalMinutes [ ${uamMinutesSetting}m ]: ${maxBolus}U ( ${insulinReq}U )`);
+        } else { console.log(`SMB is not limited by maxUAMSMBBasalMinutes. ( insulinReq: ${insulinReq}U )`); }
     } else {
-        console.error(`.maxSMBBasalMinutes: ${smbMinutesSetting}, profile.current_basal: ${effectiveBasal}`);
+        console.log(`.maxSMBBasalMinutes: ${smbMinutesSetting}, profile.current_basal: ${effectiveBasal}`);
         maxBolus = round(effectiveBasal * smbMinutesSetting / MINUTES_PER_HOUR, 1);
         if (insulinReq > maxBolus) {
-            console.error(`SMB limited by maxSMBBasalMinutes: ${smbMinutesSetting}m ]: ${maxBolus}U ( insulinReq: ${insulinReq}U )`);
-        } else { console.error(`SMB is not limited by maxSMBBasalMinutes. ( insulinReq: ${insulinReq}U )`); }
+            console.log(`SMB limited by maxSMBBasalMinutes: ${smbMinutesSetting}m ]: ${maxBolus}U ( insulinReq: ${insulinReq}U )`);
+        } else { console.log(`SMB is not limited by maxSMBBasalMinutes. ( insulinReq: ${insulinReq}U )`); }
     }
     return maxBolus;
 }

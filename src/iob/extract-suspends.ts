@@ -89,13 +89,13 @@ export function extractSuspendResumeData(
     // These checks indicate something isn't quite aligned.
     // Perhaps more resumes that suspends or vice versa...
     if (!suspendedPrior && !currentlySuspended && (pumpResumes.length !== pumpSuspends.length)) {
-        console.error(`Mismatched number of resumes(${pumpResumes.length}) and suspends(${pumpSuspends.length})!`);
+        console.log(`Mismatched number of resumes(${pumpResumes.length}) and suspends(${pumpSuspends.length})!`);
     } else if (suspendedPrior && !currentlySuspended && ((pumpResumes.length-1) !== pumpSuspends.length)) {
-        console.error(`Mismatched number of resumes(${pumpResumes.length}) and suspends(${pumpSuspends.length}) assuming suspended prior to history block!`);
+        console.log(`Mismatched number of resumes(${pumpResumes.length}) and suspends(${pumpSuspends.length}) assuming suspended prior to history block!`);
     } else if (!suspendedPrior && currentlySuspended && (pumpResumes.length !== (pumpSuspends.length-1))) {
-        console.error(`Mismatched number of resumes(${pumpResumes.length}) and suspends(${pumpSuspends.length}) assuming suspended past end of history block!`);
+        console.log(`Mismatched number of resumes(${pumpResumes.length}) and suspends(${pumpSuspends.length}) assuming suspended past end of history block!`);
     } else if (suspendedPrior && currentlySuspended && (pumpResumes.length !== pumpSuspends.length)) {
-        console.error(`Mismatched number of resumes(${pumpResumes.length}) and suspends(${pumpSuspends.length}) assuming suspended prior to and past end of history block!`);
+        console.log(`Mismatched number of resumes(${pumpResumes.length}) and suspends(${pumpSuspends.length}) assuming suspended prior to and past end of history block!`);
     }
 
     if (suspendIdx < (pumpSuspends.length-1)) {

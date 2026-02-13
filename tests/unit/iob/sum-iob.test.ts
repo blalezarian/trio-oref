@@ -470,7 +470,7 @@ describe('iobTotal', () => {
 
     describe('unsupported curve name', () => {
         it('defaults to rapid-acting and logs error', () => {
-            const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+            const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
 
             const profile = makeProfile({ dia: 6, curve: 'unknown-curve' as InsulinCurve });
             const treatment = makeTreatment({
@@ -498,7 +498,7 @@ describe('iobTotal', () => {
         });
 
         it('enforces 5h minimum DIA after defaulting to rapid-acting', () => {
-            const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+            const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
 
             const profile = makeProfile({ dia: 4, curve: 'made-up' as InsulinCurve });
             const treatment = makeTreatment({

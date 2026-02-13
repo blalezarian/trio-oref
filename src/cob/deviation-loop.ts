@@ -141,7 +141,7 @@ export function resolveGlucoseDeltas(
     bucketIdx: number,
 ): GlucoseDeltas | 'skip' {
     if (bucketed_data[bucketIdx].glucose === undefined) {
-        console.error("Could not find glucose data");
+        console.log("Could not find glucose data");
         return { bg: undefined as unknown as number, delta: NaN, avgDelta: NaN };
     }
 
@@ -149,7 +149,7 @@ export function resolveGlucoseDeltas(
     const trailingBg = bucketed_data[bucketIdx + TRAILING_BUCKETS_REQUIRED].glucose ?? 0;
 
     if (bg < MIN_VALID_GLUCOSE_MGDL || trailingBg < MIN_VALID_GLUCOSE_MGDL) {
-        process.stderr.write("!");
+        console.log("!");
         return 'skip';
     }
 

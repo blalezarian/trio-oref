@@ -25,7 +25,7 @@ function makeGlucoseHist(
 
 describe('calc-glucose-stats characterization tests', () => {
   beforeEach(() => {
-    vi.spyOn(console, 'error').mockImplementation(() => {});
+    vi.spyOn(console, 'log').mockImplementation(() => {});
   });
 
   describe('empty glucose history', () => {

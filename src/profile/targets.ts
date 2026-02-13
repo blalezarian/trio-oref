@@ -119,7 +119,7 @@ function applyTempTargetOverride(
         }
 
         if (!tt.targetBottom || !tt.targetTop) {
-            console.error(`eventualBG target range invalid: ${tt.targetBottom}-${tt.targetTop}`);
+            console.log(`eventualBG target range invalid: ${tt.targetBottom}-${tt.targetTop}`);
             return target;
         }
 

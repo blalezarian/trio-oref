@@ -14,7 +14,7 @@ const DEFAULT_BOUNDS: AutotuneBounds = { autotuneMax: 1.2, autotuneMin: 0.7 };
 
 describe('tuneCarbRatio', () => {
     beforeEach(() => {
-        vi.spyOn(console, 'error').mockImplementation(() => {});
+        vi.spyOn(console, 'log').mockImplementation(() => {});
     });
 
     it('returns currentCarbRatio unchanged when totalCR is 0 (no meals)', () => {
@@ -37,7 +37,7 @@ describe('tuneCarbRatio', () => {
         // newCR = 0.8*10 + 0.2*12 = 10.4
         const result = tuneCarbRatio(20, 10, 10, DEFAULT_BOUNDS);
         expect(result).toBe(10.4);
-        expect(console.error).toHaveBeenCalledWith(
+        expect(console.log).toHaveBeenCalledWith(
             'Limiting fullNewCR from 20 to 12.00 (which is 1.2 * pump CR of 10)',
         );
     });
@@ -48,7 +48,7 @@ describe('tuneCarbRatio', () => {
         // newCR = 0.8*10 + 0.2*7 = 9.4
         const result = tuneCarbRatio(5, 10, 10, DEFAULT_BOUNDS);
         expect(result).toBe(9.4);
-        expect(console.error).toHaveBeenCalledWith(
+        expect(console.log).toHaveBeenCalledWith(
             'Limiting fullNewCR from 5 to 7.00 (which is 0.7 * pump CR of 10)',
         );
     });
@@ -59,7 +59,7 @@ describe('tuneCarbRatio', () => {
         // newCR = 0.8*14 + 0.2*12 = 13.6 > 12 → capped to 12
         const result = tuneCarbRatio(12, 14, 10, DEFAULT_BOUNDS);
         expect(result).toBe(12);
-        expect(console.error).toHaveBeenCalledWith(
+        expect(console.log).toHaveBeenCalledWith(
             'Limiting CR to 12.00 (which is 1.2 * pump CR of 10)',
         );
     });
@@ -91,7 +91,7 @@ describe('tuneCarbRatio', () => {
 
     it('logs oldCR, fullNewCR, and newCR', () => {
         tuneCarbRatio(0, 12, 12, DEFAULT_BOUNDS);
-        expect(console.error).toHaveBeenCalledWith(
+        expect(console.log).toHaveBeenCalledWith(
             'oldCR: 12 fullNewCR: 12 newCR: 12',
         );
     });

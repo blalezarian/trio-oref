@@ -32,8 +32,6 @@ const noisyProfile = {
 beforeEach(() => {
     vi.restoreAllMocks();
     vi.spyOn(console, 'log').mockImplementation(() => {});
-    vi.spyOn(console, 'error').mockImplementation(() => {});
-    vi.spyOn(process.stderr, 'write').mockImplementation(() => true);
 });
 
 // ---------------------------------------------------------------------------
@@ -97,7 +95,7 @@ describe('adjustBasalBySensitivity', () => {
     it('logs adjustment when basal changes', () => {
         // 1.0 * 1.0 * 1.2 = 1.2, profile_current_basal=1.0 -> different -> logs "Adjusting"
         adjustBasalBySensitivity(1.0, 1.2, 1.0, false, minProfile, 1.0);
-        expect(process.stderr.write).toHaveBeenCalledWith(
+        expect(console.log).toHaveBeenCalledWith(
             expect.stringContaining('Adjusting basal from'),
         );
     });
@@ -105,7 +103,7 @@ describe('adjustBasalBySensitivity', () => {
     it('logs unchanged when basal stays the same', () => {
         // 1.0 * 1.0 * 1.0 = 1.0, profile_current_basal=1.0 -> same -> logs "unchanged"
         adjustBasalBySensitivity(1.0, 1.0, 1.0, false, minProfile, 1.0);
-        expect(process.stderr.write).toHaveBeenCalledWith(
+        expect(console.log).toHaveBeenCalledWith(
             expect.stringContaining('Basal unchanged'),
         );
     });
@@ -128,14 +126,14 @@ describe('adjustBasalByTDD', () => {
 
     it('logs TDD adjustment details when average_total_data > 0', () => {
         adjustBasalByTDD(1.0, 1.1, 1.0, minProfile, 1.0, 50, 40, 45, 0.5);
-        expect(process.stderr.write).toHaveBeenCalledWith(
+        expect(console.log).toHaveBeenCalledWith(
             expect.stringContaining('TDD-adjustment of basals activated'),
         );
     });
 
     it('does not log when average_total_data is 0', () => {
         adjustBasalByTDD(1.0, 1.1, 1.0, minProfile, 1.0, 50, 40, 0, 0.5);
-        expect(process.stderr.write).not.toHaveBeenCalledWith(
+        expect(console.log).not.toHaveBeenCalledWith(
             expect.stringContaining('TDD-adjustment'),
         );
     });
@@ -291,14 +289,14 @@ describe('adjustISFBySensitivity', () => {
 
     it('logs ISF change when adjustedSens differs', () => {
         adjustISFBySensitivity(50, 1.2, minProfile, { ratio: 1.2 } as AutosensData);
-        expect(process.stderr.write).toHaveBeenCalledWith(
+        expect(console.log).toHaveBeenCalledWith(
             expect.stringContaining('ISF from'),
         );
     });
 
     it('logs ISF unchanged when ratio is 1', () => {
         adjustISFBySensitivity(50, 1.0, minProfile, { ratio: 1.0 } as AutosensData);
-        expect(process.stderr.write).toHaveBeenCalledWith(
+        expect(console.log).toHaveBeenCalledWith(
             expect.stringContaining('ISF unchanged'),
         );
     });

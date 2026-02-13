@@ -22,8 +22,8 @@ let readFileSyncSpy: ReturnType<typeof vi.spyOn>;
 beforeEach(() => {
   // Default: iob.json does not exist
   existsSyncSpy = vi.spyOn(fs, 'existsSync').mockReturnValue(false);
-  // Suppress console.error from the "XXX" guard in bolus()
-  vi.spyOn(console, 'error').mockImplementation(() => {});
+  // Suppress console.log from the "XXX" guard in bolus()
+  vi.spyOn(console, 'log').mockImplementation(() => {});
 });
 
 afterEach(() => {
@@ -325,8 +325,8 @@ describe('bolus characterization tests', () => {
   });
 
   describe('edge cases', () => {
-    it('bolus with undefined event triggers console.error guard', () => {
-      // The bolus() function has a guard: if (!ev) { console.error(...); return; }
+    it('bolus with undefined event triggers console.log guard', () => {
+      // The bolus() function has a guard: if (!ev) { console.log(...); return; }
       // This triggers when the recursive call gets an empty object with wizard+bolus set
       // We verify the function handles it without throwing
       const result = reduce([

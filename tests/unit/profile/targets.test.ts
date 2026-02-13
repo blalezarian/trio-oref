@@ -245,7 +245,7 @@ describe('applyTempTargetOverride', () => {
 
     it('logs error and returns base target when targetBottom/targetTop missing', () => {
         const target = { low: 100, high: 100 };
-        const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+        const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
         const tempTargets: TempTarget[] = [{
             created_at: oneHourAgo,
             duration: 120,

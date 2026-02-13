@@ -111,8 +111,8 @@ function classifyCGMErrorReason(
     }
     if (bg > BG_UNCHANGED_FLOOR && glucose_status.delta == 0 && glucose_status.short_avgdelta > -DELTA_UNCHANGED_THRESHOLD && glucose_status.short_avgdelta < DELTA_UNCHANGED_THRESHOLD && glucose_status.long_avgdelta > -DELTA_UNCHANGED_THRESHOLD && glucose_status.long_avgdelta < DELTA_UNCHANGED_THRESHOLD) {
         if (glucose_status.device == "fakecgm") {
-            console.error(`CGM data is unchanged (${convert_bg(bg, profile)}+${convert_bg(glucose_status.delta, profile)}) for 5m w/ ${convert_bg(glucose_status.short_avgdelta, profile)} mg/dL ~15m change & ${convert_bg(glucose_status.long_avgdelta, profile)} mg/dL ~45m change`);
-            console.error(`Simulator mode detected (${glucose_status.device}): continuing anyway`);
+            console.log(`CGM data is unchanged (${convert_bg(bg, profile)}+${convert_bg(glucose_status.delta, profile)}) for 5m w/ ${convert_bg(glucose_status.short_avgdelta, profile)} mg/dL ~15m change & ${convert_bg(glucose_status.long_avgdelta, profile)} mg/dL ~45m change`);
+            console.log(`Simulator mode detected (${glucose_status.device}): continuing anyway`);
         }
     }
 
