@@ -1,4 +1,3 @@
-
 import type { PumpHistoryEvent } from '../types/index';
 import type {
     IobInputs,
@@ -17,6 +16,16 @@ import { extractSuspendResumeData } from './extract-suspends';
 import { extractTempBasalsAndBoluses } from './extract-temp-basals';
 import { convertNetBasalsToTreatments } from './convert-net-basals';
 
+// ---------------------------------------------------------------------------
+// Main function
+// ---------------------------------------------------------------------------
+
+/**
+ * Process pump history into a sorted array of IOB treatment records.
+ * Handles merging of 1h and 24h history, splitting temps at basal profile
+ * boundaries, accounting for pump suspends, and converting net basal rates
+ * into micro-bolus treatment events.
+ */
 export function calcTempTreatments (
     inputs: IobInputs,
     zeroTempDuration?: number,
@@ -40,12 +49,12 @@ export function calcTempTreatments (
 
     let tempHistory = [...rawTempHistory].sort((a, b) => a.date - b.date);
 
-    for (let i=0; i+1 < tempHistory.length; i++) {
-        if (tempHistory[i].date + (tempHistory[i].duration as number)*MS_PER_MINUTE > tempHistory[i+1].date) {
-            tempHistory[i].duration = (tempHistory[i+1].date - tempHistory[i].date)/MS_PER_MINUTE;
+    for (let overlapIdx = 0; overlapIdx + 1 < tempHistory.length; overlapIdx++) {
+        if (tempHistory[overlapIdx].date + (tempHistory[overlapIdx].duration as number)*MS_PER_MINUTE > tempHistory[overlapIdx+1].date) {
+            tempHistory[overlapIdx].duration = (tempHistory[overlapIdx+1].date - tempHistory[overlapIdx].date)/MS_PER_MINUTE;
             // Delete AndroidAPS "Cancel TBR records" in which duration is not populated
-            if (tempHistory[i+1].duration === null) {
-                tempHistory.splice(i+1, 1);
+            if (tempHistory[overlapIdx+1].duration === null) {
+                tempHistory.splice(overlapIdx+1, 1);
             }
         }
     }
@@ -56,7 +65,7 @@ export function calcTempTreatments (
     const splitterEvents: SplitterEvent[] = [];
 
     for (const basalEntry of (profileData.basalprofile ?? [])) {
-        splitterEvents.push({ type: 'recurring' as const, minutes: basalEntry.minutes });
+        splitterEvents.push({ type: 'recurring', minutes: basalEntry.minutes });
     }
 
     // iterate through the events and split at basal break points if needed
@@ -160,7 +169,8 @@ export function calcTempTreatments (
     // Convert net basals to treatment boluses
     const netBasalBoluses = convertNetBasalsToTreatments(splitHistory, profileData, autosens_data);
 
-    let all_data: TempEvent[] = [...tempBoluses, ...netBasalBoluses, ...tempHistory];
+    const all_data: TempEvent[] = [...tempBoluses, ...netBasalBoluses, ...tempHistory];
+    // mutates input, matching original behavior
     all_data.sort((a, b) => a.date - b.date);
     return all_data;
 }

@@ -1,4 +1,3 @@
-
 import { getCurrentBasalRate } from '../profile/basal';
 import type {
     IobProfile,
@@ -10,24 +9,41 @@ import {
     EXERCISE_HALF_BASAL_TARGET,
 } from '../shared/constants';
 
+// ---------------------------------------------------------------------------
+// Constants
+// ---------------------------------------------------------------------------
+
+/** Size of each micro-bolus used to represent net basal insulin (U) */
+const NET_BASAL_BOLUS_SIZE = 0.05;
+/** Threshold above normalTarget to activate exercise sensitivity (mg/dL) */
+const EXERCISE_ACTIVATION_OFFSET = 5;
+
+// ---------------------------------------------------------------------------
+// Main function
+// ---------------------------------------------------------------------------
+
+/**
+ * Convert net basal rates (temp rate minus profile rate) into a series of
+ * micro-bolus treatment events. Each net basal segment is split into evenly
+ * spaced 0.05U micro-boluses to approximate continuous delivery.
+ */
 export function convertNetBasalsToTreatments(
     splitHistory: TempEvent[],
     profileData: IobProfile,
     autosens_data?: { ratio: number },
 ): TempEvent[] {
     const tempBoluses: TempEvent[] = [];
-    let tempBolusSize;
     let target_bg: number | undefined;
 
-    for (let i=0; i < splitHistory.length; i++) {
+    for (let splitIdx = 0; splitIdx < splitHistory.length; splitIdx++) {
 
-        const currentItem = splitHistory[i];
+        const currentItem = splitHistory[splitIdx];
 
         if ((currentItem.duration as number) > 0) {
 
             let currentRate: number = profileData.current_basal;
             if (profileData.basalprofile && profileData.basalprofile.length > 0) {
-                currentRate = getCurrentBasalRate(profileData.basalprofile,new Date(currentItem.timestamp as string)) as number;
+                currentRate = getCurrentBasalRate(profileData.basalprofile, new Date(currentItem.timestamp as string)) as number;
             }
 
             if (profileData.min_bg !== undefined && profileData.max_bg !== undefined) {
@@ -41,7 +57,7 @@ export function convertNetBasalsToTreatments(
             } else {
                 halfBasalTarget = EXERCISE_HALF_BASAL_TARGET; // when temptarget is 160 mg/dL, run 50% basal (120 = 75%; 140 = 60%)
             }
-            if ( profileData.exercise_mode && profileData.temptargetSet && (target_bg as number) >= normalTarget + 5 ) {
+            if ( profileData.exercise_mode && profileData.temptargetSet && (target_bg as number) >= normalTarget + EXERCISE_ACTIVATION_OFFSET ) {
                 // w/ target 100, temp target 110 = .89, 120 = 0.8, 140 = 0.67, 160 = .57, and 200 = .44
                 // e.g.: Sensitivity ratio set to 0.8 based on temp target of 120; Adjusting basal from 1.65 to 1.35; ISF from 58.9 to 73.6
                 const c = halfBasalTarget - normalTarget;
@@ -54,13 +70,12 @@ export function convertNetBasalsToTreatments(
             }
 
             const netBasalRate = (currentItem.rate as number) - currentRate;
-            if (netBasalRate < 0) { tempBolusSize = -0.05; }
-            else { tempBolusSize = 0.05; }
+            const tempBolusSize = netBasalRate < 0 ? -NET_BASAL_BOLUS_SIZE : NET_BASAL_BOLUS_SIZE;
             const netBasalAmount = Math.round(netBasalRate*(currentItem.duration as number)*10/6)/100
             const tempBolusCount = Math.round(netBasalAmount / tempBolusSize);
             const tempBolusSpacing = (currentItem.duration as number) / tempBolusCount;
-            for (let j=0; j < tempBolusCount; j++) {
-                const bolusDate = currentItem.date + j * tempBolusSpacing*MS_PER_MINUTE;
+            for (let bolusIdx = 0; bolusIdx < tempBolusCount; bolusIdx++) {
+                const bolusDate = currentItem.date + bolusIdx * tempBolusSpacing*MS_PER_MINUTE;
                 const tempBolus: TempEvent = {
                     date: bolusDate,
                     insulin: tempBolusSize,

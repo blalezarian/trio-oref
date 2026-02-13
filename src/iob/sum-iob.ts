@@ -9,6 +9,10 @@ import {
     MS_PER_HOUR,
 } from '../shared/constants';
 
+// ---------------------------------------------------------------------------
+// Constants
+// ---------------------------------------------------------------------------
+
 /** Bolus threshold below which insulin is considered basal (U) */
 const BOLUS_DETECTION_THRESHOLD = 0.1;
 /** Rounding scale for 3 decimal places */
@@ -16,13 +20,23 @@ const ROUND_SCALE_3DP = 1000;
 /** Rounding scale for 4 decimal places */
 const ROUND_SCALE_4DP = 10000;
 
+// ---------------------------------------------------------------------------
+// Main function
+// ---------------------------------------------------------------------------
+
+/**
+ * Sum up the IOB, activity, basal IOB, and bolus IOB across all active
+ * treatments at a given point in time. Applies minimum DIA floors and
+ * selects the appropriate insulin curve. Returns an empty object when
+ * treatments is null.
+ */
 export function iobTotal(opts: IobTotalOpts, time: Date): IobTotalResult | Record<string, never> {
 
     const now = time.getTime();
     const iobCalc = opts.calculate;
     const treatments = opts.treatments;
-    const profile_data = opts.profile;
-    let dia = profile_data.dia;
+    const profileData = opts.profile;
+    let dia = profileData.dia;
     let peak = 0;
     let iob = 0;
     let basaliob = 0;
@@ -56,8 +70,8 @@ export function iobTotal(opts: IobTotalOpts, time: Date): IobTotalResult | Recor
 
     let curve: InsulinCurve = 'bilinear';
 
-    if (profile_data.curve !== undefined) {
-        curve = profile_data.curve.toLowerCase() as InsulinCurve;
+    if (profileData.curve !== undefined) {
+        curve = profileData.curve.toLowerCase() as InsulinCurve;
     }
 
     if (!(curve in curveDefaults)) {
@@ -79,7 +93,7 @@ export function iobTotal(opts: IobTotalOpts, time: Date): IobTotalResult | Recor
             const dia_ago = now - dia*MS_PER_HOUR;
             if( treatment.date > dia_ago ) {
                 // tIOB = total IOB
-                const tIOB = iobCalc(treatment, time, curve, dia, peak, profile_data);
+                const tIOB = iobCalc(treatment, time, curve, dia, peak, profileData);
                 if (tIOB && tIOB.iobContrib) { iob += tIOB.iobContrib; }
                 if (tIOB && tIOB.activityContrib) { activity += tIOB.activityContrib; }
                 // basals look like either of these:

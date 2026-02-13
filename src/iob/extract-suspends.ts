@@ -1,4 +1,3 @@
-
 import type { PumpHistoryEvent } from '../types/index';
 import type {
     SuspendEvent,
@@ -6,18 +5,27 @@ import type {
 } from './types';
 import { MS_PER_MINUTE } from '../shared/constants';
 
+// ---------------------------------------------------------------------------
+// Main function
+// ---------------------------------------------------------------------------
+
+/**
+ * Extract pump suspend/resume events from pump history, pair them to compute
+ * suspend durations, and determine whether the pump was suspended prior to
+ * the history window or is currently suspended.
+ */
 export function extractSuspendResumeData(
     pumpHistory: PumpHistoryEvent[],
 ): SuspendResumeData {
-    let pumpSuspends: SuspendEvent[] = [];
-    let pumpResumes: SuspendEvent[] = [];
+    const pumpSuspends: SuspendEvent[] = [];
+    const pumpResumes: SuspendEvent[] = [];
     let suspendedPrior = false;
     let firstResumeTime: string | undefined;
     let lastSuspendTime: string | undefined;
     let currentlySuspended: number | false = false;
 
-    for (let i=0; i < pumpHistory.length; i++) {
-        const current: PumpHistoryEvent = pumpHistory[i];
+    for (let eventIdx = 0; eventIdx < pumpHistory.length; eventIdx++) {
+        const current: PumpHistoryEvent = pumpHistory[eventIdx];
 
         if (current._type === "PumpSuspend") {
             const started_at = new Date(current.timestamp as string);
@@ -51,13 +59,13 @@ export function extractSuspendResumeData(
 
     }
 
-    let resumeIndex=0;  // matching pumpResumes entry;
+    let resumeIndex = 0;  // matching pumpResumes entry;
 
-    let i: number;
+    let suspendIdx: number;
     // Match the resumes with the suspends to get durations
-    for (i=0; i < pumpSuspends.length; i++) {
+    for (suspendIdx = 0; suspendIdx < pumpSuspends.length; suspendIdx++) {
         for (; resumeIndex < pumpResumes.length; resumeIndex++) {
-            if (pumpResumes[resumeIndex].date > pumpSuspends[i].date) {
+            if (pumpResumes[resumeIndex].date > pumpSuspends[suspendIdx].date) {
                 break;
             }
         }
@@ -69,12 +77,12 @@ export function extractSuspendResumeData(
             // through the last record beginning at the last suspend
             // since we don't have a matching resume.
             currentlySuspended = 1;
-            lastSuspendTime = pumpSuspends[i].timestamp as string;
+            lastSuspendTime = pumpSuspends[suspendIdx].timestamp as string;
 
             break;
         }
 
-        pumpSuspends[i].duration = (pumpResumes[resumeIndex].date - pumpSuspends[i].date)/MS_PER_MINUTE;
+        pumpSuspends[suspendIdx].duration = (pumpResumes[resumeIndex].date - pumpSuspends[suspendIdx].date)/MS_PER_MINUTE;
 
     }
 
@@ -90,10 +98,10 @@ export function extractSuspendResumeData(
         console.error(`Mismatched number of resumes(${pumpResumes.length}) and suspends(${pumpSuspends.length}) assuming suspended prior to and past end of history block!`);
     }
 
-    if (i < (pumpSuspends.length-1)) {
+    if (suspendIdx < (pumpSuspends.length-1)) {
         // truncate any extra suspends. if we had any extras
         // the error checks above would have issued a error log message
-        pumpSuspends.splice(i+1, pumpSuspends.length-i-1);
+        pumpSuspends.splice(suspendIdx+1, pumpSuspends.length-suspendIdx-1);
     }
 
     return {

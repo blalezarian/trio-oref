@@ -1,4 +1,3 @@
-
 import type { PumpHistoryEvent } from '../types/index';
 import type {
     TempEvent,
@@ -9,6 +8,22 @@ import {
     MINUTES_PER_HOUR,
 } from '../shared/constants';
 
+// ---------------------------------------------------------------------------
+// Constants
+// ---------------------------------------------------------------------------
+
+/** Offset from "now" for the cancel temp basal event (minutes) */
+const CANCEL_TEMP_OFFSET_MINUTES = 1;
+
+// ---------------------------------------------------------------------------
+// Main function
+// ---------------------------------------------------------------------------
+
+/**
+ * Parse raw pump history events into two sorted arrays: temp basal history
+ * and bolus treatments. Also appends a cancel temp basal event (rate=0) just
+ * after "now" for each processed history entry.
+ */
 export function extractTempBasalsAndBoluses(
     pumpHistory: PumpHistoryEvent[],
     now: Date,
@@ -18,11 +33,10 @@ export function extractTempBasalsAndBoluses(
     const tempBoluses: TempEvent[] = [];
     let lastRecordTime = now;
 
-    for (let i=0; i < pumpHistory.length; i++) {
-        let current: PumpHistoryEvent = pumpHistory[i];
+    for (let histIdx = 0; histIdx < pumpHistory.length; histIdx++) {
+        let current: PumpHistoryEvent = pumpHistory[histIdx];
         if (current.bolus && current.bolus._type === "Bolus") {
-            const temp: TempEvent = current as unknown as TempEvent;
-            current = (temp as unknown as PumpHistoryEvent).bolus as PumpHistoryEvent;
+            current = current.bolus as PumpHistoryEvent;
         }
         if (current.created_at) {
             current.timestamp = current.created_at;
@@ -103,18 +117,18 @@ export function extractTempBasalsAndBoluses(
             const rate = current.rate;
             const timestamp = current.timestamp;
             let duration: number | undefined;
-            if (i>0 && pumpHistory[i-1].timestamp === timestamp && pumpHistory[i-1]._type === "TempBasalDuration") {
-                duration = pumpHistory[i-1]['duration (min)'] as number;
+            if (histIdx > 0 && pumpHistory[histIdx-1].timestamp === timestamp && pumpHistory[histIdx-1]._type === "TempBasalDuration") {
+                duration = pumpHistory[histIdx-1]['duration (min)'] as number;
             } else {
-                for (let iter=0; iter < pumpHistory.length; iter++) {
-                    if (pumpHistory[iter].timestamp === timestamp && pumpHistory[iter]._type === "TempBasalDuration") {
-                            duration = pumpHistory[iter]['duration (min)'] as number;
+                for (let searchIdx = 0; searchIdx < pumpHistory.length; searchIdx++) {
+                    if (pumpHistory[searchIdx].timestamp === timestamp && pumpHistory[searchIdx]._type === "TempBasalDuration") {
+                            duration = pumpHistory[searchIdx]['duration (min)'] as number;
                             break;
                     }
                 }
 
                 if (duration === undefined) {
-                    console.error(`No duration found for ${rate} U/hr basal ${timestamp}`, pumpHistory[i - 1], current, pumpHistory[i + 1]);
+                    console.error(`No duration found for ${rate} U/hr basal ${timestamp}`, pumpHistory[histIdx - 1], current, pumpHistory[histIdx + 1]);
                 }
             }
             const started_at = new Date(timestamp as string);
@@ -127,7 +141,7 @@ export function extractTempBasalsAndBoluses(
             });
         }
         // Add a temp basal cancel event to ignore future temps and reduce predBG oscillation
-        const cancelStarted = new Date(now.getTime() + MS_PER_MINUTE);
+        const cancelStarted = new Date(now.getTime() + CANCEL_TEMP_OFFSET_MINUTES * MS_PER_MINUTE);
         tempHistory.push({
             date: cancelStarted.getTime(),
             rate: 0,

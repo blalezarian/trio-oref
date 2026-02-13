@@ -1,9 +1,12 @@
-
 import type {
     TempEvent,
     SuspendEvent,
 } from './types';
 import { MS_PER_MINUTE } from '../shared/constants';
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
 
 /** Deep-clone a TempEvent, preserving Date fields, works in Swift with JavaScriptCore */
 function cloneTempEvent(event: TempEvent): TempEvent {
@@ -14,9 +17,16 @@ function cloneTempEvent(event: TempEvent): TempEvent {
     };
 }
 
-// Split currentEvent around any conflicting suspends
-// by removing the time period from the event that
-// overlaps with any suspend.
+// ---------------------------------------------------------------------------
+// Main function
+// ---------------------------------------------------------------------------
+
+/**
+ * Split a temp event around any conflicting pump suspends by removing the
+ * time periods that overlap with suspend intervals. Handles three cases:
+ * suspended prior to history window, currently suspended, and mid-event
+ * suspends that bisect the temp into pre- and post-suspend segments.
+ */
 export function splitAroundSuspends (
     currentEvent: TempEvent,
     pumpSuspends: SuspendEvent[],
@@ -59,16 +69,16 @@ export function splitAroundSuspends (
         return events;
     }
 
-    for (let i=0; i < pumpSuspends.length; i++) {
-        const suspend = pumpSuspends[i];
+    for (let suspendIdx = 0; suspendIdx < pumpSuspends.length; suspendIdx++) {
+        const suspend = pumpSuspends[suspendIdx];
 
-        for (let eventIndex=0; eventIndex < events.length; eventIndex++) {
+        for (let eventIdx = 0; eventIdx < events.length; eventIdx++) {
 
-            if ((events[eventIndex].date <= suspend.date) && (events[eventIndex].date+(events[eventIndex].duration as number)*MS_PER_MINUTE) > suspend.date) {
+            if ((events[eventIdx].date <= suspend.date) && (events[eventIdx].date+(events[eventIdx].duration as number)*MS_PER_MINUTE) > suspend.date) {
                 // event started before the suspend, but finished after the suspend started
 
-                if ((events[eventIndex].date+(events[eventIndex].duration as number)*MS_PER_MINUTE) > (suspend.date+(suspend.duration as number)*MS_PER_MINUTE)) {
-                    const event2 = cloneTempEvent(events[eventIndex]);
+                if ((events[eventIdx].date+(events[eventIdx].duration as number)*MS_PER_MINUTE) > (suspend.date+(suspend.duration as number)*MS_PER_MINUTE)) {
+                    const event2 = cloneTempEvent(events[eventIdx]);
 
                     const event2StartMs = (suspend.started_at as Date).getTime() + (suspend.duration as number)*MS_PER_MINUTE;
                     const event2StartDate = new Date(event2StartMs);
@@ -77,24 +87,24 @@ export function splitAroundSuspends (
                     event2.started_at = new Date(event2.timestamp);
                     event2.date = suspend.date+(suspend.duration as number)*MS_PER_MINUTE;
 
-                    event2.duration = ((events[eventIndex].date+(events[eventIndex].duration as number)*MS_PER_MINUTE) - (suspend.date+(suspend.duration as number)*MS_PER_MINUTE))/MS_PER_MINUTE;
+                    event2.duration = ((events[eventIdx].date+(events[eventIdx].duration as number)*MS_PER_MINUTE) - (suspend.date+(suspend.duration as number)*MS_PER_MINUTE))/MS_PER_MINUTE;
 
                     events.push(event2);
                 }
 
-                events[eventIndex].duration = (suspend.date-events[eventIndex].date)/MS_PER_MINUTE;
+                events[eventIdx].duration = (suspend.date-events[eventIdx].date)/MS_PER_MINUTE;
 
-            } else if ((suspend.date <= events[eventIndex].date) && (suspend.date+(suspend.duration as number)*MS_PER_MINUTE > events[eventIndex].date)) {
+            } else if ((suspend.date <= events[eventIdx].date) && (suspend.date+(suspend.duration as number)*MS_PER_MINUTE > events[eventIdx].date)) {
                 // suspend started before the event, but finished after the event started
 
-                events[eventIndex].duration = ((events[eventIndex].date+(events[eventIndex].duration as number)*MS_PER_MINUTE) - (suspend.date+(suspend.duration as number)*MS_PER_MINUTE))/MS_PER_MINUTE;
+                events[eventIdx].duration = ((events[eventIdx].date+(events[eventIdx].duration as number)*MS_PER_MINUTE) - (suspend.date+(suspend.duration as number)*MS_PER_MINUTE))/MS_PER_MINUTE;
 
                 const eventStartMs = (suspend.started_at as Date).getTime() + (suspend.duration as number)*MS_PER_MINUTE;
                 const eventStartDate = new Date(eventStartMs);
 
-                events[eventIndex].timestamp = eventStartDate.toISOString();
-                events[eventIndex].started_at = new Date(events[eventIndex].timestamp as string);
-                events[eventIndex].date = suspend.date + (suspend.duration as number)*MS_PER_MINUTE;
+                events[eventIdx].timestamp = eventStartDate.toISOString();
+                events[eventIdx].started_at = new Date(events[eventIdx].timestamp as string);
+                events[eventIdx].date = suspend.date + (suspend.duration as number)*MS_PER_MINUTE;
             }
         }
     }

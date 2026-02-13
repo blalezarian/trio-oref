@@ -11,11 +11,25 @@ import type {
 } from './types';
 import { PRED_INTERVAL_MINUTES, MS_PER_MINUTE } from '../shared/constants';
 
+// ---------------------------------------------------------------------------
+// Constants
+// ---------------------------------------------------------------------------
+
 /** Lookahead minutes for zero-temp IOB projection */
 const ZERO_TEMP_LOOKAHEAD_MINUTES = 240;
 /** IOB prediction horizon: 4 hours at 5-minute intervals */
 const IOB_PREDICTION_HORIZON_MINUTES = 4 * 60;
 
+// ---------------------------------------------------------------------------
+// Main function
+// ---------------------------------------------------------------------------
+
+/**
+ * Generate an array of IOB predictions at 5-minute intervals from the clock
+ * time, spanning 4 hours (48 entries). Each entry includes the main IOB and
+ * a parallel "zero temp" IOB projection. The first entry is annotated with
+ * the most recent bolus time and last temp basal.
+ */
 export function generate (
     inputs: IobInputs,
     currentIOBOnly?: boolean,
@@ -52,9 +66,9 @@ export function generate (
     const clock = new Date(inputs.clock);
 
     const { lastBolusTime, lastTemp } = findLastBolusAndTemp(treatments);
-    const iStop = currentIOBOnly ? 1 : IOB_PREDICTION_HORIZON_MINUTES;
-    for (let i=0; i<iStop; i+=PRED_INTERVAL_MINUTES){
-        const t = new Date(clock.getTime() + i*MS_PER_MINUTE);
+    const predStop = currentIOBOnly ? 1 : IOB_PREDICTION_HORIZON_MINUTES;
+    for (let minuteOffset = 0; minuteOffset < predStop; minuteOffset += PRED_INTERVAL_MINUTES){
+        const t = new Date(clock.getTime() + minuteOffset * MS_PER_MINUTE);
         const iob = iobTotal(opts as Parameters<typeof iobTotal>[0], t) as IobIndexEntry;
         const iobWithZeroTemp = iobTotal(optsWithZeroTemp as Parameters<typeof iobTotal>[0], t) as IobIndexEntry;
         iobArray.push(iob);

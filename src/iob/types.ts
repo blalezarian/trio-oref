@@ -183,6 +183,7 @@ export interface IobTotalOpts {
 
 /** Result of iob/total.ts iobTotal() */
 export interface IobTotalResult {
+    // Index signature needed for pass-through to normalize() in characterization tests
     [key: string]: unknown;
     iob: number;
     activity: number;

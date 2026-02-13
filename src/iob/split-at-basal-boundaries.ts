@@ -1,4 +1,3 @@
-
 import type {
     TempEvent,
     SplitterEvent,
@@ -9,6 +8,10 @@ import {
     MINUTES_PER_DAY,
 } from '../shared/constants';
 
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
 /** Deep-clone a TempEvent, preserving Date fields */
 function cloneTempEvent(event: TempEvent): TempEvent {
     return {
@@ -18,6 +21,15 @@ function cloneTempEvent(event: TempEvent): TempEvent {
     };
 }
 
+// ---------------------------------------------------------------------------
+// Main functions
+// ---------------------------------------------------------------------------
+
+/**
+ * Split a single temp event at one basal profile boundary (splitter). If the
+ * event straddles the boundary or exceeds the maximum temp basal duration
+ * (30 min), it is split into two events. Otherwise the original is returned.
+ */
 export function splitTimespanWithOneSplitter(
     event: TempEvent,
     splitter: SplitterEvent,
@@ -57,13 +69,18 @@ export function splitTimespanWithOneSplitter(
             event2.started_at = new Date(event2.timestamp);
             event2.date = event2.started_at.getTime();
 
-            resultArray = [event1,event2];
+            resultArray = [event1, event2];
         }
     }
 
     return resultArray;
 }
 
+/**
+ * Iteratively split a temp event at all basal profile boundaries. Repeats
+ * until no further splits are possible, handling events that span multiple
+ * basal schedule segments.
+ */
 export function splitTimespan(
     event: TempEvent,
     splitterEvents: SplitterEvent[],
