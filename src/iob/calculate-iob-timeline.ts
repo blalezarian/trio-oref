@@ -1,8 +1,8 @@
 
 import tz from 'moment-timezone';
-import { calcTempTreatments } from './history';
-import { iobCalc } from './calculate';
-import { iobTotal } from './total';
+import { calcTempTreatments } from './extract-treatments';
+import { iobCalc } from './calculate-single-iob';
+import { iobTotal } from './sum-iob';
 import { findLastBolusAndTemp } from './find-last-bolus-and-temp';
 
 import type {

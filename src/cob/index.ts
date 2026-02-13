@@ -1,4 +1,4 @@
-import find_insulin from '../iob/history';
+import find_insulin from '../iob/extract-treatments';
 import { normalizeGlucoseData } from '../utils/glucose-math';
 import { bucketGlucoseWithInterpolation } from './bucket-glucose';
 import { analyzeAbsorption } from './deviation-loop';

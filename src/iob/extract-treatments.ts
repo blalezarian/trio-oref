@@ -15,9 +15,9 @@ import {
 } from '../constants';
 import { splitTimespan } from './split-at-basal-boundaries';
 import { splitAroundSuspends } from './split-around-suspends';
-import { extractSuspendResumeData } from './suspend-resume';
-import { extractTempBasalsAndBoluses } from './temp-basals';
-import { convertNetBasalsToTreatments } from './net-basals';
+import { extractSuspendResumeData } from './extract-suspends';
+import { extractTempBasalsAndBoluses } from './extract-temp-basals';
+import { convertNetBasalsToTreatments } from './convert-net-basals';
 
 export function calcTempTreatments (
     inputs: IobInputs,

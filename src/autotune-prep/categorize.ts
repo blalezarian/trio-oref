@@ -2,7 +2,7 @@ import tz from 'moment-timezone';
 import basal from '../profile/basal';
 import getIOB from '../iob/index';
 import ISF from '../profile/isf';
-import find_insulin from '../iob/history';
+import find_insulin from '../iob/extract-treatments';
 import dosed from './dosed';
 import type { PumpHistoryEvent, CarbTreatment, InsulinCurve, MealAbsorptionPhase } from '../types/index';
 import {

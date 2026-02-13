@@ -1,4 +1,4 @@
-import find_insulin from '../iob/history';
+import find_insulin from '../iob/extract-treatments';
 import find_meals from '../meal/history';
 import tz from 'moment-timezone';
 import { normalizeGlucoseData } from '../utils/glucose-math';
