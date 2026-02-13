@@ -40,6 +40,19 @@ export interface IobProfile {
     suspend_zeros_iob?: boolean;
     useCustomPeakTime?: boolean;
     insulinPeakTime?: number;
+
+    // --- Fields used by autosens, cob, and meal modules ---
+    sens?: number;
+    carb_ratio?: number;
+    min_5m_carbimpact?: number;
+    maxMealAbsorptionTime?: number;
+    maxCOB?: number;
+    autosens_min?: number;
+    autosens_max?: number;
+    rewind_resets_autosens?: boolean;
+    isfProfile?: { sensitivities: Array<{ offset: number; sensitivity: number }> };
+    target_bg?: number;
+    high_temptarget_raises_sensitivity?: boolean;
 }
 
 /** Narrower profile used by iob/calculate.ts and iob/total.ts */
