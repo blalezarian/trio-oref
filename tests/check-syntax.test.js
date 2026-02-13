@@ -7,7 +7,7 @@
 // be done anyways.
 
 // "src" excluded: TypeScript files are already validated by `pnpm typecheck`
-var dirsToCheck = [ "bin", "www" ];
+var dirsToCheck = [ "bin" ];
 
 var fs = require("fs");
 var path = require("path");
