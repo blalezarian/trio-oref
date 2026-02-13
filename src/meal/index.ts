@@ -1,34 +1,47 @@
 
-import tz from 'moment-timezone';
-import find_meals from './history';
-import sum from './total';
+import { findMealInputs } from './history';
+import { recentCarbs } from './total';
 import type { PumpHistoryEvent, GlucoseEntry } from '../types/index';
 import type { IobProfile, HistoryBasalProfileEntry } from '../iob/types';
 
+// ---------------------------------------------------------------------------
+// Types
+// ---------------------------------------------------------------------------
+
 interface MealGenerateInputs {
-  history: PumpHistoryEvent[];
-  carbs: PumpHistoryEvent[];
-  profile: IobProfile;
-  clock: string;
-  glucose?: GlucoseEntry[];
-  basalprofile: HistoryBasalProfileEntry[];
+    history: PumpHistoryEvent[];
+    carbs: PumpHistoryEvent[];
+    profile: IobProfile;
+    clock: string;
+    glucose?: GlucoseEntry[];
+    basalprofile: HistoryBasalProfileEntry[];
 }
 
-function generate (inputs: MealGenerateInputs): ReturnType<typeof sum> {
+// ---------------------------------------------------------------------------
+// Main function
+// ---------------------------------------------------------------------------
 
-  const treatments = find_meals(inputs);
+/** Generate meal data by extracting treatments from history and computing carb totals */
+function generate(inputs: MealGenerateInputs): ReturnType<typeof recentCarbs> {
+    const treatments = findMealInputs(inputs);
 
-  const opts = {
-    treatments: treatments
-  , profile: inputs.profile
-  , pumphistory: inputs.history
-  , glucose: inputs.glucose
-  , basalprofile: inputs.basalprofile
-  };
+    const opts = {
+        treatments,
+        profile: inputs.profile,
+        pumphistory: inputs.history,
+        glucose: inputs.glucose,
+        basalprofile: inputs.basalprofile,
+    };
 
-  const clock = new Date(tz(inputs.clock).toDate());
+    const clock = new Date(inputs.clock);
 
-  return /* meal_data */ sum(opts, clock);
+    return recentCarbs(opts, clock);
 }
+
+// ---------------------------------------------------------------------------
+// Exports
+// ---------------------------------------------------------------------------
 
 export default generate;
+export { generate };
+export type { MealGenerateInputs };
