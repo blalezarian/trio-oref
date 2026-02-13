@@ -14,9 +14,7 @@
 // Define various functions used later on, in the main function determine_basal() below
 
 import {
-    MS_PER_MINUTE,
     PRED_INTERVAL_MINUTES,
-    TEMP_BASAL_DURATION_MINUTES,
 } from '../shared/constants';
 
 import type {
@@ -34,13 +32,11 @@ import type {
 } from '../types/index';
 
 import {
-    TEMP_AGE_STALE_MINUTES,
-    TEMP_END_GAP_MINUTES,
     OVERRIDE_TARGET_SENTINEL,
     DEFAULT_TRIO_CUSTOM_VARIABLES,
 } from './constants';
 
-import { round, convert_bg, calculate_expected_delta } from './helpers';
+import { round, convert_bg, calculate_expected_delta, validateIOBAndTemps, calculateDeviation } from './helpers';
 import { enable_smb } from './smb-eligibility';
 import { calculateDynamicISF } from './dynamic-isf';
 import { validateCGMData } from './cgm-validation';
@@ -150,72 +146,17 @@ export function determine_basal(
         result.reason = cgmValidation.reason;
     }
 
-    if (iob_data === undefined) {
-        result.error ='Error: iob_data undefined. ';
-        return result;
-    }
-
-    const iobArray = iob_data as unknown as IOBData[];
-
-    if (typeof((iob_data as unknown as IOBData[]).length) && (iob_data as unknown as IOBData[]).length > 1) {
-        iob_data = iobArray[0];
-    }
-
-    if (iob_data.activity === undefined || iob_data.iob === undefined) {
-        result.error ='Error: iob_data missing some property. ';
-        return result;
-    }
-
-// Compare currenttemp to iob_data.lastTemp and cancel temp if they don't match, as a safety check
-// This should occur after checking that we're not in one of the CGM-data-related error conditions handled above,
-// and before returning (doing nothing) below if eventualBG is undefined.
-    let lastTempAge;
-    if (iob_data.lastTemp !== undefined) {
-        lastTempAge = round(( new Date(systemTime).getTime() - iob_data.lastTemp.date ) / MS_PER_MINUTE); // in minutes
-    } else {
-        lastTempAge = 0;
-    }
-    const tempModulus = (lastTempAge + currenttemp.duration) % TEMP_BASAL_DURATION_MINUTES;
-    console.error(`currenttemp:${currenttemp.rate} lastTempAge:${lastTempAge}m, tempModulus:${tempModulus}m`);
-    result.temp = 'absolute';
-    result.deliverAt = deliverAt as unknown as string;
-    if ( microBolusAllowed && currenttemp && iob_data.lastTemp && currenttemp.rate !== iob_data.lastTemp.rate && lastTempAge > TEMP_AGE_STALE_MINUTES && currenttemp.duration ) {
-        result.reason = `Warning: currenttemp rate ${currenttemp.rate} != lastTemp rate ${iob_data.lastTemp.rate} from pumphistory; canceling temp`; // reason.conclusion started
-        return tempBasalFunctions.setTempBasal(0, 0, profile, result, currenttemp);
-    }
-    if ( currenttemp && iob_data.lastTemp && currenttemp.duration > 0 ) {
-        const lastTempEnded = lastTempAge - iob_data.lastTemp.duration;
-        if ( lastTempEnded > TEMP_END_GAP_MINUTES && lastTempAge > TEMP_AGE_STALE_MINUTES ) {
-            result.reason = `Warning: currenttemp running but lastTemp from pumphistory ended ${lastTempEnded}m ago; canceling temp`; // reason.conclusion started
-            return tempBasalFunctions.setTempBasal(0, 0, profile, result, currenttemp);
-        }
-    }
-
-// Calculate BGI, deviation, and eventualBG.
-// This has to happen after we obtain iob_data
+    const iobValidation = validateIOBAndTemps(iob_data, currenttemp, profile, systemTime, microBolusAllowed, tempBasalFunctions, result, deliverAt);
+    if ('earlyReturn' in iobValidation) return iobValidation.earlyReturn;
+    iob_data = iobValidation.iob_data;
+    const iobArray = iobValidation.iobArray;
 
     //calculate BG impact: the amount BG "should" be rising or falling based on insulin activity alone
     const bgImpact = round(( -iob_data.activity * adjustedSens * PRED_INTERVAL_MINUTES ), 2);
-    // project deviations for 30 minutes
-    let deviation = round( TEMP_BASAL_DURATION_MINUTES / PRED_INTERVAL_MINUTES * ( minDelta - bgImpact ) );
-    // don't overreact to a big negative delta: use minAvgDelta if deviation is negative
-    if (deviation < 0) {
-        deviation = round( (TEMP_BASAL_DURATION_MINUTES / PRED_INTERVAL_MINUTES) * ( minAvgDelta - bgImpact ) );
-        // and if deviation is still negative, use long_avgdelta
-        if (deviation < 0) {
-            deviation = round( (TEMP_BASAL_DURATION_MINUTES / PRED_INTERVAL_MINUTES) * ( glucose_status.long_avgdelta - bgImpact ) );
-        }
-    }
 
-    // calculate the naive (bolus calculator math) eventual BG based on net IOB and sensitivity
-    let naive_eventualBG = bg;
-    if (iob_data.iob > 0) {
-        naive_eventualBG = round( bg - (iob_data.iob * adjustedSens) );
-    } else { // if IOB is negative, be more conservative and use the lower of adjustedSens, profile.sens
-        naive_eventualBG = round( bg - (iob_data.iob * Math.min(adjustedSens, sensitivity) ) );
-    }
-    // and adjust it for the deviation above
-    let eventualBG = naive_eventualBG + deviation;
+    const deviationResult = calculateDeviation(bg, iob_data, adjustedSens, sensitivity, minDelta, minAvgDelta, glucose_status.long_avgdelta, bgImpact);
+    const { deviation, naive_eventualBG } = deviationResult;
+    let eventualBG = deviationResult.eventualBG;
 
     if (eventualBG === undefined || isNaN(eventualBG)) {
         result.error = `Error: could not calculate eventualBG. Sensitivity: ${adjustedSens} Deviation: ${deviation}`;
