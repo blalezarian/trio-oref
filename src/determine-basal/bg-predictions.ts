@@ -274,36 +274,18 @@ export function clipAndTrimPredictions(inputs: ClipAndTrimInputs): ClipAndTrimRe
     const predBGs: PredBGs = {} as PredBGs;
 
     // IOB: clip to [39, 401], trim flat tail
-    IOBpredBGs.forEach((p: number, iobIdx: number, theArray: number[]) => {
-        theArray[iobIdx] = round(Math.min(MAX_VALID_GLUCOSE_MGDL + 1, Math.max(MIN_VALID_GLUCOSE_MGDL, p)));
-    });
-    for (let iobTrimIdx = IOBpredBGs.length - 1; iobTrimIdx > MIN_PRED_TRIM_POINTS; iobTrimIdx--) {
-        if (IOBpredBGs[iobTrimIdx - 1] !== IOBpredBGs[iobTrimIdx]) { break; }
-        else { IOBpredBGs.pop(); }
-    }
+    clipAndTrimFlatTail(IOBpredBGs, MIN_VALID_GLUCOSE_MGDL, MAX_VALID_GLUCOSE_MGDL + 1, MIN_PRED_TRIM_POINTS);
     predBGs.IOB = IOBpredBGs;
     const lastIOBpredBG = round(IOBpredBGs[IOBpredBGs.length - 1]);
 
     // ZT: clip to [39, 401], trim rising-above-target tail
-    ZTpredBGs.forEach((p: number, ztIdx: number, theArray: number[]) => {
-        theArray[ztIdx] = round(Math.min(MAX_VALID_GLUCOSE_MGDL + 1, Math.max(MIN_VALID_GLUCOSE_MGDL, p)));
-    });
-    for (let ztTrimIdx = ZTpredBGs.length - 1; ztTrimIdx > MIN_ZT_TRIM_POINTS; ztTrimIdx--) {
-        // stop displaying ZTpredBGs once they're rising and above target
-        if (ZTpredBGs[ztTrimIdx - 1] >= ZTpredBGs[ztTrimIdx] || ZTpredBGs[ztTrimIdx] <= target_bg) { break; }
-        else { ZTpredBGs.pop(); }
-    }
+    clipArray(ZTpredBGs, MIN_VALID_GLUCOSE_MGDL, MAX_VALID_GLUCOSE_MGDL + 1);
+    trimRisingAboveTarget(ZTpredBGs, target_bg, MIN_ZT_TRIM_POINTS);
     predBGs.ZT = ZTpredBGs;
 
     // COB: clip to [39, 1500], trim flat tail (only if mealCOB and carb impact present)
     if (mealCOB > 0 && ( carbImpact > 0 || remainingCIpeak > 0 )) {
-        COBpredBGs.forEach((p: number, cobIdx: number, theArray: number[]) => {
-            theArray[cobIdx] = round(Math.min(COB_PRED_BG_CAP, Math.max(MIN_VALID_GLUCOSE_MGDL, p)));
-        });
-        for (let cobTrimIdx = COBpredBGs.length - 1; cobTrimIdx > MIN_PRED_TRIM_POINTS; cobTrimIdx--) {
-            if (COBpredBGs[cobTrimIdx - 1] !== COBpredBGs[cobTrimIdx]) { break; }
-            else { COBpredBGs.pop(); }
-        }
+        clipAndTrimFlatTail(COBpredBGs, MIN_VALID_GLUCOSE_MGDL, COB_PRED_BG_CAP, MIN_PRED_TRIM_POINTS);
         predBGs.COB = COBpredBGs;
         lastCOBpredBG = round(COBpredBGs[COBpredBGs.length - 1]);
         eventualBG = Math.max(eventualBG, round(COBpredBGs[COBpredBGs.length-1]));
@@ -311,26 +293,45 @@ export function clipAndTrimPredictions(inputs: ClipAndTrimInputs): ClipAndTrimRe
     }
 
     // UAM: clip to [39, 401], trim flat tail (only if carb impact present and UAM enabled)
-    if (carbImpact > 0 || remainingCIpeak > 0) {
-        if (enableUAM) {
-            UAMpredBGs.forEach((p: number, uamIdx: number, theArray: number[]) => {
-                theArray[uamIdx] = round(Math.min(MAX_VALID_GLUCOSE_MGDL + 1, Math.max(MIN_VALID_GLUCOSE_MGDL, p)));
-            });
-            for (let uamTrimIdx = UAMpredBGs.length - 1; uamTrimIdx > MIN_PRED_TRIM_POINTS; uamTrimIdx--) {
-                if (UAMpredBGs[uamTrimIdx - 1] !== UAMpredBGs[uamTrimIdx]) { break; }
-                else { UAMpredBGs.pop(); }
-            }
-            predBGs.UAM = UAMpredBGs;
-            lastUAMpredBG = round(UAMpredBGs[UAMpredBGs.length - 1]);
-            if (UAMpredBGs[UAMpredBGs.length-1]) {
-                eventualBG = Math.max(eventualBG, round(UAMpredBGs[UAMpredBGs.length-1]) );
-            }
+    if ((carbImpact > 0 || remainingCIpeak > 0) && enableUAM) {
+        clipAndTrimFlatTail(UAMpredBGs, MIN_VALID_GLUCOSE_MGDL, MAX_VALID_GLUCOSE_MGDL + 1, MIN_PRED_TRIM_POINTS);
+        predBGs.UAM = UAMpredBGs;
+        lastUAMpredBG = round(UAMpredBGs[UAMpredBGs.length - 1]);
+        if (UAMpredBGs[UAMpredBGs.length-1]) {
+            eventualBG = Math.max(eventualBG, round(UAMpredBGs[UAMpredBGs.length-1]) );
         }
-
-        // set eventualBG based on COB or UAM predBGs
     }
 
     return { predBGs, lastIOBpredBG, lastCOBpredBG, lastUAMpredBG, eventualBG };
+}
+
+// ---------------------------------------------------------------------------
+// clipAndTrimPredictions helpers
+// ---------------------------------------------------------------------------
+
+/** Clips all values in arr in-place to [min, max], rounding each. */
+function clipArray(arr: number[], min: number, max: number): void {
+    for (let i = 0; i < arr.length; i++) {
+        arr[i] = round(Math.min(max, Math.max(min, arr[i])));
+    }
+}
+
+/** Clips values to [min, max] and trims flat (unchanged) tail values from the end. */
+function clipAndTrimFlatTail(arr: number[], min: number, max: number, minPoints: number): void {
+    clipArray(arr, min, max);
+    for (let i = arr.length - 1; i > minPoints; i--) {
+        if (arr[i - 1] !== arr[i]) break;
+        arr.pop();
+    }
+}
+
+/** Trims tail values from ZT predictions that are rising and above target. */
+function trimRisingAboveTarget(arr: number[], target_bg: number, minPoints: number): void {
+    for (let i = arr.length - 1; i > minPoints; i--) {
+        // stop displaying ZTpredBGs once they're rising and above target
+        if (arr[i - 1] >= arr[i] || arr[i] <= target_bg) break;
+        arr.pop();
+    }
 }
 
 /** Selects min predicted BG, guard BG, and average predicted BG from all prediction scenarios. */
