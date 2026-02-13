@@ -195,14 +195,3 @@ export interface IobTotalResult {
     bolusinsulin: number;
     time: Date;
 }
-
-// ---------------------------------------------------------------------------
-// Backward-compatible aliases
-// ---------------------------------------------------------------------------
-
-/** @deprecated Use IobProfile — kept for downstream consumers (autosens, cob) */
-export type HistoryProfile = IobProfile;
-/** @deprecated Use IobInputs — kept for downstream consumers */
-export type HistoryInputs = IobInputs;
-/** @deprecated Use IobTreatment — kept for downstream consumers */
-export type HistoryTreatment = IobTreatment;

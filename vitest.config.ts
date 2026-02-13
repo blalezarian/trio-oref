@@ -22,7 +22,6 @@ export default defineConfig({
         'src/shared/**/*.ts',
         'src/autotune-prep/**/*.ts',
         'src/autotune/**/*.ts',
-        'src/deprecated/**/*.ts',
       ],
       reporter: ['text', 'text-summary', 'html', 'json'],
       reportsDirectory: 'coverage',
