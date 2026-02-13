@@ -1,6 +1,5 @@
 import {
     EXERCISE_NORMAL_TARGET,
-    EXERCISE_HALF_BASAL_TARGET,
     MIN_BG_TARGET,
     MAX_BG_TARGET,
 } from '../shared/constants';
@@ -56,72 +55,18 @@ export function configureSensitivityAndTargets(
     basal: number,
     cgmReason: string | undefined
 ): { earlyReturn: DetermineBasalResult } | SensitivityAndTargetsResult {
-// Get configured target, and return if unable to do so.
-// This should occur after checking that we're not in one of the CGM-data-related error conditions handled above,
-// and before using target_bg to adjust sensitivityRatio below.
+    // Resolve profile targets — early return if profileTarget is undefined
+    const targetsResult = resolveProfileTargets(profileTarget, profile, cgmReason);
+    if ('earlyReturn' in targetsResult) return targetsResult;
+    let { target_bg, min_bg, max_bg } = targetsResult;
+    const { high_bg } = targetsResult;
+
     const max_iob = profile.max_iob; // maximum amount of non-bolus IOB OpenAPS will ever deliver
 
-    // if min and max are set, then set target to their average
-    let target_bg: number | undefined;
-    let min_bg: number | undefined;
-    let max_bg: number | undefined;
-    let new_target_bg: number | undefined;
-    let high_bg: number | undefined;
-
-    if (profileTarget !== undefined) {
-            min_bg = profileTarget;
-    }
-    if (profile.max_bg !== undefined) {
-            max_bg = profileTarget;
-    }
-    if (profile.enableSMB_high_bg_target !== undefined) {
-        high_bg = profile.enableSMB_high_bg_target;
-    }
-    if (profileTarget !== undefined) {
-        target_bg = profileTarget;
-
-    } else {
-        const result = {} as DetermineBasalResult;
-        if (cgmReason) {
-            result.reason = cgmReason;
-        }
-        result.error ='Error: could not determine target_bg. ';
-        return { earlyReturn: result };
-    }
-
-// Calculate sensitivityRatio based on temp targets, if applicable, or using the value calculated by autosens
-    const high_temptarget_raises_sensitivity = profile.exercise_mode || profile.high_temptarget_raises_sensitivity;
-    const normalTarget = EXERCISE_NORMAL_TARGET; // evaluate high/low temptarget against 100, not scheduled target (which might change)
-    let halfBasalTarget = EXERCISE_HALF_BASAL_TARGET;  // when temptarget is 160 mg/dL, run 50% basal (120 = 75%; 140 = 60%)
-    // 80 mg/dL with low_temptarget_lowers_sensitivity would give 1.5x basal, but is limitLoged to autosens_max (1.2x by default)
-    halfBasalTarget = profile.half_basal_exercise_target as number;
-
-    let sensitivityRatio: number | undefined;
-    if ( high_temptarget_raises_sensitivity && profile.temptargetSet && target_bg > normalTarget ||
-        profile.low_temptarget_lowers_sensitivity && profile.temptargetSet && target_bg < normalTarget ) {
-        sensitivityRatio = calculateTempTargetSensitivityRatio(target_bg, normalTarget, halfBasalTarget, profile.autosens_max);
-        process.stderr.write(`Sensitivity ratio set to ${sensitivityRatio} based on temp target of ${target_bg}; `);
-    }
-    else if (autosens_data !== undefined && autosens_data) {
-        sensitivityRatio = autosens_data.ratio;
-
-        // Override Profile.Target
-    if (overrideTarget !== 0 && overrideTarget !== OVERRIDE_TARGET_SENTINEL && overrideTarget !== profile.min_bg && !profile.temptargetSet) {
-        target_bg = overrideTarget;
-        console.log(`Current Override Profile Target: ${convert_bg(overrideTarget, profile)} ${profile.out_units}`);
-    }
-        process.stderr.write(`Autosens ratio: ${sensitivityRatio}; `);
-    }
-
-    // Increase the dynamic ratio when using a low temp target
-    if (profile.temptargetSet && (target_bg as number) < normalTarget && dynISFenabled && bg >= (target_bg as number)) {
-        if ((sensitivityRatio as number) < newRatio) {
-            autosens_data.ratio = newRatio * (normalTarget/(target_bg as number));
-            autosens_data.ratio = Math.min(autosens_data.ratio, profile.autosens_max);
-            sensitivityRatio = round(autosens_data.ratio, 2);
-            console.log(`Dynamic ratio increased from ${round(newRatio, 2)} to ${round(autosens_data.ratio, 2)} due to a low temp target (${target_bg}).`);
-        }
-    }
+    // Calculate sensitivityRatio and apply override target
+    const sensResult = resolveSensitivityRatio(target_bg, overrideTarget, bg, dynISFenabled, newRatio, profile, autosens_data);
+    target_bg = sensResult.target_bg;
+    const sensitivityRatio = sensResult.sensitivityRatio;
 
     basal = adjustBasalBySensitivity(basal, sensitivityRatio, overrideFactor, dynISFenabled, profile, profile_current_basal);
 
@@ -129,21 +74,13 @@ export function configureSensitivityAndTargets(
         basal = adjustBasalByTDD(basal, tdd24h_14d_Ratio, overrideFactor, profile, profile_current_basal, tdd_before, weightedAverage, average_total_data, weightPercentage);
     }
 
-// Conversely, adjust BG target based on autosens ratio if no temp target is running
+    // Adjust BG target based on autosens ratio if no temp target is running
     const targetAdjustment = adjustTargetByAutosens(target_bg as number, min_bg as number, max_bg as number, profile, autosens_data);
     target_bg = targetAdjustment.target_bg;
     min_bg = targetAdjustment.min_bg;
     max_bg = targetAdjustment.max_bg;
 
-    // Display if differing in enacted box
-    let targetLog: number | string = convert_bg(target_bg as number, profile);
-    if  (target_bg != profileTarget) {
-        if (overrideTarget !== 0 && overrideTarget !== OVERRIDE_TARGET_SENTINEL && overrideTarget !== target_bg) {
-            targetLog = `${convert_bg(profileTarget, profile)}\u2192${convert_bg(overrideTarget, profile)}\u2192${convert_bg(target_bg as number, profile)}`;
-        } else {
-            targetLog = `${convert_bg(profileTarget, profile)}\u2192${convert_bg(target_bg as number, profile)}`;
-        }
-    }
+    const targetLog = formatTargetLog(target_bg as number, profileTarget, overrideTarget, profile);
 
     // Raise target for noisy / raw CGM data.
     const noisyTargets = adjustTargetsForNoisyCGM(min_bg as number, target_bg as number, max_bg as number, glucose_status.noise as number, profile);
@@ -157,11 +94,117 @@ export function configureSensitivityAndTargets(
     const thresholdFinal = calculateLowGlucoseThreshold(min_bg as number, profile.threshold_setting as number);
     console.error(`Threshold set to ${convert_bg(thresholdFinal, profile)}`);
 
-// Adjust ISF based on sensitivityRatio
+    // Adjust ISF based on sensitivityRatio
     const { adjustedSens, isfreason } = adjustISFBySensitivity(sensitivity, sensitivityRatio as number, profile, autosens_data);
     console.error(`CR:${carbRatio}`);
 
     return { max_iob, target_bg: target_bg as number, min_bg: min_bg as number, max_bg: max_bg as number, high_bg: high_bg as number, sensitivityRatio: sensitivityRatio as number, basal, threshold: thresholdFinal, adjustedSens, isfreason, targetLog };
+}
+
+// ---------------------------------------------------------------------------
+// configureSensitivityAndTargets helpers
+// ---------------------------------------------------------------------------
+
+/** Resolves target_bg, min_bg, max_bg, high_bg from profile. Returns earlyReturn if profileTarget is undefined. */
+function resolveProfileTargets(
+    profileTarget: number | undefined,
+    profile: Profile,
+    cgmReason: string | undefined,
+): { earlyReturn: DetermineBasalResult } | { target_bg: number; min_bg: number; max_bg: number | undefined; high_bg: number | undefined } {
+    if (profileTarget === undefined) {
+        const result = {} as DetermineBasalResult;
+        if (cgmReason) {
+            result.reason = cgmReason;
+        }
+        result.error ='Error: could not determine target_bg. ';
+        return { earlyReturn: result };
+    }
+
+    return {
+        target_bg: profileTarget,
+        min_bg: profileTarget,
+        max_bg: profile.max_bg !== undefined ? profileTarget : undefined,
+        high_bg: profile.enableSMB_high_bg_target,
+    };
+}
+
+/** Calculates sensitivity ratio from temp targets or autosens, applies override target, and boosts dynamic ratio for low targets. */
+function resolveSensitivityRatio(
+    target_bg: number,
+    overrideTarget: number,
+    bg: number,
+    dynISFenabled: boolean,
+    newRatio: number,
+    profile: Profile,
+    autosens_data: AutosensData,
+): { sensitivityRatio: number | undefined; target_bg: number } {
+    const high_temptarget_raises_sensitivity = profile.exercise_mode || profile.high_temptarget_raises_sensitivity;
+    const normalTarget = EXERCISE_NORMAL_TARGET;
+    const halfBasalTarget = profile.half_basal_exercise_target as number;
+
+    let sensitivityRatio: number | undefined;
+
+    // Temp target sensitivity adjustment
+    if ( high_temptarget_raises_sensitivity && profile.temptargetSet && target_bg > normalTarget ||
+        profile.low_temptarget_lowers_sensitivity && profile.temptargetSet && target_bg < normalTarget ) {
+        sensitivityRatio = calculateTempTargetSensitivityRatio(target_bg, normalTarget, halfBasalTarget, profile.autosens_max);
+        process.stderr.write(`Sensitivity ratio set to ${sensitivityRatio} based on temp target of ${target_bg}; `);
+        return maybeBoostDynamicRatio(sensitivityRatio, target_bg, bg, normalTarget, dynISFenabled, newRatio, profile, autosens_data);
+    }
+
+    // Autosens ratio
+    if (autosens_data !== undefined && autosens_data) {
+        sensitivityRatio = autosens_data.ratio;
+
+        // Override Profile.Target
+        if (overrideTarget !== 0 && overrideTarget !== OVERRIDE_TARGET_SENTINEL && overrideTarget !== profile.min_bg && !profile.temptargetSet) {
+            target_bg = overrideTarget;
+            console.log(`Current Override Profile Target: ${convert_bg(overrideTarget, profile)} ${profile.out_units}`);
+        }
+        process.stderr.write(`Autosens ratio: ${sensitivityRatio}; `);
+    }
+
+    return maybeBoostDynamicRatio(sensitivityRatio, target_bg, bg, normalTarget, dynISFenabled, newRatio, profile, autosens_data);
+}
+
+/** Increases the dynamic ratio when using a low temp target. */
+function maybeBoostDynamicRatio(
+    sensitivityRatio: number | undefined,
+    target_bg: number,
+    bg: number,
+    normalTarget: number,
+    dynISFenabled: boolean,
+    newRatio: number,
+    profile: Profile,
+    autosens_data: AutosensData,
+): { sensitivityRatio: number | undefined; target_bg: number } {
+    if (!profile.temptargetSet || target_bg >= normalTarget || !dynISFenabled || bg < target_bg) {
+        return { sensitivityRatio, target_bg };
+    }
+    if ((sensitivityRatio as number) >= newRatio) {
+        return { sensitivityRatio, target_bg };
+    }
+    autosens_data.ratio = newRatio * (normalTarget / target_bg);
+    autosens_data.ratio = Math.min(autosens_data.ratio, profile.autosens_max);
+    sensitivityRatio = round(autosens_data.ratio, 2);
+    console.log(`Dynamic ratio increased from ${round(newRatio, 2)} to ${round(autosens_data.ratio, 2)} due to a low temp target (${target_bg}).`);
+    return { sensitivityRatio, target_bg };
+}
+
+/** Formats the target log string showing target transitions. */
+function formatTargetLog(
+    target_bg: number,
+    profileTarget: number,
+    overrideTarget: number,
+    profile: Profile,
+): number | string {
+    if (target_bg == profileTarget) {
+        return convert_bg(target_bg, profile);
+    }
+    if (overrideTarget !== 0 && overrideTarget !== OVERRIDE_TARGET_SENTINEL && overrideTarget !== target_bg) {
+        return `${convert_bg(profileTarget, profile)}\u2192${convert_bg(overrideTarget, profile)}\u2192${convert_bg(target_bg, profile)}`;
+    }
+    return `${convert_bg(profileTarget, profile)}\u2192${convert_bg(target_bg, profile)}`;
 }
 
 // ---------------------------------------------------------------------------
