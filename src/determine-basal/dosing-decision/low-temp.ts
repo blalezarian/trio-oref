@@ -1,13 +1,11 @@
 import {
     MINUTES_PER_HOUR,
     TEMP_BASAL_DURATION_MINUTES,
-    MAX_TEMP_BASAL_DURATION_MINUTES,
 } from '../../shared/constants';
 
 import { round_basal } from '../../utils/round-basal';
 
 import {
-    TEMP_ACTIVE_DURATION_MINUTES,
     TEMP_SHORT_DURATION_MINUTES,
     RATE_TOLERANCE_LOW,
     BASAL_SHORTFALL_FRACTION,
@@ -23,6 +21,7 @@ import {
 import { round, convert_bg } from '../helpers';
 
 import type { DosingContext, PhaseOutcome } from './types';
+import { keepOrSetBasalTemp, calculateZeroTempDuration } from './helpers';
 
 // ---------------------------------------------------------------------------
 // Phase 7: handleLowBG
@@ -62,13 +61,7 @@ export function handleLowBG(ctx: DosingContext): PhaseOutcome {
             } else {
                 result.reason += `, but Min. Delta ${minDelta.toFixed(2)} > Exp. Delta ${convert_bg(expectedDelta, profile)}`;
             }
-            if (currenttemp.duration > TEMP_ACTIVE_DURATION_MINUTES && (round_basal(basal, profile) === round_basal(currenttemp.rate, profile))) {
-                result.reason += `, temp ${currenttemp.rate} ~ req ${basal}U/hr. `;
-                return { done: true, result };
-            } else {
-                result.reason += `; setting current basal of ${basal} as temp. `;
-                return { done: true, result: tempBasalFunctions.setTempBasal(basal, TEMP_BASAL_DURATION_MINUTES, profile, result, currenttemp) };
-            }
+            return keepOrSetBasalTemp(ctx);
         }
 
         // calculate 30m low-temp required to get projected BG up to target
@@ -107,16 +100,7 @@ export function handleLowBG(ctx: DosingContext): PhaseOutcome {
         else {
             // calculate a long enough zero temp to eventually correct back up to target
             if (ctx.rate <= 0) {
-                const bgUndershoot = target_bg - naive_eventualBG;
-                const worstCaseInsulinReq = bgUndershoot / adjustedSens;
-                let durationReq = round(MINUTES_PER_HOUR * worstCaseInsulinReq / profile.current_basal * overrideFactor);
-                if (durationReq < 0) {
-                    durationReq = 0;
-                // don't set a temp longer than 120 minutes
-                } else {
-                    durationReq = round(durationReq / TEMP_BASAL_DURATION_MINUTES) * TEMP_BASAL_DURATION_MINUTES;
-                    durationReq = Math.min(MAX_TEMP_BASAL_DURATION_MINUTES, Math.max(0, durationReq));
-                }
+                const durationReq = calculateZeroTempDuration(target_bg - naive_eventualBG, adjustedSens, profile.current_basal, overrideFactor);
                 if (durationReq > 0) {
                     result.reason += `, setting ${durationReq}m zero temp. `;
                     return { done: true, result: tempBasalFunctions.setTempBasal(ctx.rate, durationReq, profile, result, currenttemp) };
@@ -142,12 +126,9 @@ export function handleFallingDelta(ctx: DosingContext): PhaseOutcome {
     const {
         profile,
         glucose_status,
-        currenttemp,
-        tempBasalFunctions,
         microBolusAllowed,
         eventualBG,
         min_bg,
-        basal,
         adjustedSens,
         expectedDelta,
         minDelta,
@@ -183,13 +164,7 @@ export function handleFallingDelta(ctx: DosingContext): PhaseOutcome {
             } else {
                 result.reason += `Eventual BG ${convert_bg(eventualBG, profile)} > ${convert_bg(min_bg, profile)} but Min. Delta ${minDelta.toFixed(2)} < Exp. Delta ${convert_bg(expectedDelta, profile)}`;
             }
-            if (currenttemp.duration > TEMP_ACTIVE_DURATION_MINUTES && (round_basal(basal, profile) === round_basal(currenttemp.rate, profile))) {
-                result.reason += `, temp ${currenttemp.rate} ~ req ${basal}U/hr. `;
-                return { done: true, result };
-            } else {
-                result.reason += `; setting current basal of ${basal} as temp. `;
-                return { done: true, result: tempBasalFunctions.setTempBasal(basal, TEMP_BASAL_DURATION_MINUTES, profile, result, currenttemp) };
-            }
+            return keepOrSetBasalTemp(ctx);
         }
     }
 
@@ -204,13 +179,10 @@ export function handleFallingDelta(ctx: DosingContext): PhaseOutcome {
 export function handleInRange(ctx: DosingContext): PhaseOutcome {
     const {
         profile,
-        currenttemp,
-        tempBasalFunctions,
         microBolusAllowed,
         eventualBG,
         min_bg,
         max_bg,
-        basal,
         adjustedSens,
         minPredBG,
     } = ctx.inputs;
@@ -229,13 +201,7 @@ export function handleInRange(ctx: DosingContext): PhaseOutcome {
         // if in SMB mode, don't cancel SMB zero temp
         if (!(microBolusAllowed && ctx.enableSMB)) {
             result.reason += `${convert_bg(eventualBG, profile)}-${convert_bg(minPredBG, profile)} in range: no temp required`;
-            if (currenttemp.duration > TEMP_ACTIVE_DURATION_MINUTES && (round_basal(basal, profile) === round_basal(currenttemp.rate, profile))) {
-                result.reason += `, temp ${currenttemp.rate} ~ req ${basal}U/hr. `;
-                return { done: true, result };
-            } else {
-                result.reason += `; setting current basal of ${basal} as temp. `;
-                return { done: true, result: tempBasalFunctions.setTempBasal(basal, TEMP_BASAL_DURATION_MINUTES, profile, result, currenttemp) };
-            }
+            return keepOrSetBasalTemp(ctx);
         }
     }
 

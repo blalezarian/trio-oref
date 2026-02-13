@@ -88,39 +88,13 @@ export function calculateCarbsContext(ctx: DosingContext): PhaseOutcome {
     }
     ctx.bgUndershoot = threshold - carbsReqBG;
 
-    // calculate how long until COB (or IOB) predBGs drop below min_bg
-    ctx.minutesAboveMinBG = PRED_HORIZON_MAX_MINUTES;
-    ctx.minutesAboveThreshold = PRED_HORIZON_MAX_MINUTES;
+    // Use COB predictions when carbs are active, otherwise fall back to IOB predictions
+    const predBGs = (meal_data.mealCOB > 0 && (carbImpact > 0 || remainingCIpeak > 0))
+        ? COBpredBGs
+        : IOBpredBGs;
 
-    if (meal_data.mealCOB > 0 && (carbImpact > 0 || remainingCIpeak > 0)) {
-        for (let i = 0; i < COBpredBGs.length; i++) {
-            if (COBpredBGs[i] < min_bg) {
-                ctx.minutesAboveMinBG = PRED_INTERVAL_MINUTES * i;
-                break;
-            }
-        }
-        for (let i = 0; i < COBpredBGs.length; i++) {
-            if (COBpredBGs[i] < threshold) {
-                ctx.minutesAboveThreshold = PRED_INTERVAL_MINUTES * i;
-                break;
-            }
-        }
-    }
-
-    else {
-        for (let i = 0; i < IOBpredBGs.length; i++) {
-            if (IOBpredBGs[i] < min_bg) {
-                ctx.minutesAboveMinBG = PRED_INTERVAL_MINUTES * i;
-                break;
-            }
-        }
-        for (let i = 0; i < IOBpredBGs.length; i++) {
-            if (IOBpredBGs[i] < threshold) {
-                ctx.minutesAboveThreshold = PRED_INTERVAL_MINUTES * i;
-                break;
-            }
-        }
-    }
+    ctx.minutesAboveMinBG = findMinutesAbove(predBGs, min_bg);
+    ctx.minutesAboveThreshold = findMinutesAbove(predBGs, threshold);
 
     return { done: false };
 }
@@ -168,4 +142,21 @@ export function calculateCarbsRequired(ctx: DosingContext): PhaseOutcome {
     }
 
     return { done: false };
+}
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+/** Returns minutes until predictions drop below the given level, or PRED_HORIZON_MAX_MINUTES if they never do. */
+export function findMinutesAbove(
+    predBGs: number[],
+    level: number,
+): number {
+    for (let i = 0; i < predBGs.length; i++) {
+        if (predBGs[i] < level) {
+            return PRED_INTERVAL_MINUTES * i;
+        }
+    }
+    return PRED_HORIZON_MAX_MINUTES;
 }

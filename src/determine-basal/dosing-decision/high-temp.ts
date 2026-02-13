@@ -10,7 +10,6 @@ import {
 import { round_basal } from '../../utils/round-basal';
 
 import {
-    TEMP_ACTIVE_DURATION_MINUTES,
     TEMP_SHORT_DURATION_MINUTES,
     INSULIN_OVERSHOOT_FACTOR,
     LOW_TEMP_CORRECTION_FACTOR,
@@ -23,6 +22,7 @@ import {
 import { round, convert_bg } from '../helpers';
 
 import type { DosingContext, PhaseOutcome } from './types';
+import { keepOrSetBasalTemp } from './helpers';
 
 // ---------------------------------------------------------------------------
 // Phase 10: checkIOBLimit
@@ -54,13 +54,7 @@ export function checkIOBLimit(ctx: DosingContext): PhaseOutcome {
     }
     if (iob_data.iob > max_iob) {
         result.reason += `IOB ${round(iob_data.iob, 2)} > max_iob ${max_iob}`;
-        if (currenttemp.duration > TEMP_ACTIVE_DURATION_MINUTES && (round_basal(basal, profile) === round_basal(currenttemp.rate, profile))) {
-            result.reason += `, temp ${currenttemp.rate} ~ req ${basal}U/hr. `;
-            return { done: true, result };
-        } else {
-            result.reason += `; setting current basal of ${basal} as temp. `;
-            return { done: true, result: tempBasalFunctions.setTempBasal(basal, TEMP_BASAL_DURATION_MINUTES, profile, result, currenttemp) };
-        }
+        return keepOrSetBasalTemp(ctx);
     }
 
     return { done: false };

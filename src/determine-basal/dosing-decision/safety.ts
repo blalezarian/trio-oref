@@ -1,7 +1,6 @@
 import {
     MINUTES_PER_HOUR,
     TEMP_BASAL_DURATION_MINUTES,
-    MAX_TEMP_BASAL_DURATION_MINUTES,
 } from '../../shared/constants';
 
 import {
@@ -16,6 +15,7 @@ import {
 import { round, convert_bg } from '../helpers';
 
 import type { DosingContext, PhaseOutcome } from './types';
+import { calculateZeroTempDuration } from './helpers';
 
 // ---------------------------------------------------------------------------
 // Phase 3: enforceSMBSafetyGuards
@@ -94,11 +94,8 @@ export function checkPredictiveLGS(ctx: DosingContext): PhaseOutcome {
         }
         result.insulinForManualBolus = round((eventualBG - target_bg) / adjustedSens, 2);
 
-        const worstCaseInsulinReq = bgUndershoot / adjustedSens;
-        let durationReq = round(MINUTES_PER_HOUR * worstCaseInsulinReq / profile.current_basal * overrideFactor);
-        durationReq = round(durationReq / TEMP_BASAL_DURATION_MINUTES) * TEMP_BASAL_DURATION_MINUTES;
         // always set a 30-120m zero temp (oref0-pump-loop will let any longer SMB zero temp run)
-        durationReq = Math.min(MAX_TEMP_BASAL_DURATION_MINUTES, Math.max(TEMP_BASAL_DURATION_MINUTES, durationReq));
+        const durationReq = calculateZeroTempDuration(bgUndershoot, adjustedSens, profile.current_basal, overrideFactor, TEMP_BASAL_DURATION_MINUTES);
         return { done: true, result: tempBasalFunctions.setTempBasal(0, durationReq, profile, result, currenttemp) };
     }
 
