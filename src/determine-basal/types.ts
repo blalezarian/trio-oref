@@ -208,3 +208,28 @@ export interface DosingDecisionInputs {
     targetLog: number | string;
     tddReason: string;
 }
+
+// --- Dosing Decision Pipeline ---
+
+export interface DosingContext {
+    /** Read-only copy of all inputs */
+    readonly inputs: DosingDecisionInputs;
+
+    // Convenience aliases from trio_custom_variables
+    readonly advancedSettings: boolean;
+    readonly smbMinutes: number;
+    readonly uamMinutes: number;
+
+    // Mutable state accumulated across phases
+    result: DetermineBasalResult;
+    enableSMB: boolean;
+    carbsReq: number;
+    insulinReq: number;
+    rate: number;
+}
+
+export type PhaseOutcome =
+    | { done: true; result: DetermineBasalResult }
+    | { done: false };
+
+export type DosingPhase = (ctx: DosingContext) => PhaseOutcome;
