@@ -178,9 +178,9 @@ export function findMinutesAbove(
     predBGs: number[],
     level: number,
 ): number {
-    for (let i = 0; i < predBGs.length; i++) {
-        if (predBGs[i] < level) {
-            return PRED_INTERVAL_MINUTES * i;
+    for (let predIdx = 0; predIdx < predBGs.length; predIdx++) {
+        if (predBGs[predIdx] < level) {
+            return PRED_INTERVAL_MINUTES * predIdx;
         }
     }
     return PRED_HORIZON_MAX_MINUTES;

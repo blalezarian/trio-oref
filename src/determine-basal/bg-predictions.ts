@@ -311,25 +311,25 @@ export function clipAndTrimPredictions(inputs: ClipAndTrimInputs): ClipAndTrimRe
 
 /** Clips all values in arr in-place to [min, max], rounding each. */
 function clipArray(arr: number[], min: number, max: number): void {
-    for (let i = 0; i < arr.length; i++) {
-        arr[i] = round(Math.min(max, Math.max(min, arr[i])));
+    for (let idx = 0; idx < arr.length; idx++) {
+        arr[idx] = round(Math.min(max, Math.max(min, arr[idx])));
     }
 }
 
 /** Clips values to [min, max] and trims flat (unchanged) tail values from the end. */
 function clipAndTrimFlatTail(arr: number[], min: number, max: number, minPoints: number): void {
     clipArray(arr, min, max);
-    for (let i = arr.length - 1; i > minPoints; i--) {
-        if (arr[i - 1] !== arr[i]) break;
+    for (let idx = arr.length - 1; idx > minPoints; idx--) {
+        if (arr[idx - 1] !== arr[idx]) break;
         arr.pop();
     }
 }
 
 /** Trims tail values from ZT predictions that are rising and above target. */
 function trimRisingAboveTarget(arr: number[], target_bg: number, minPoints: number): void {
-    for (let i = arr.length - 1; i > minPoints; i--) {
+    for (let idx = arr.length - 1; idx > minPoints; idx--) {
         // stop displaying ZTpredBGs once they're rising and above target
-        if (arr[i - 1] >= arr[i] || arr[i] <= target_bg) break;
+        if (arr[idx - 1] >= arr[idx] || arr[idx] <= target_bg) break;
         arr.pop();
     }
 }

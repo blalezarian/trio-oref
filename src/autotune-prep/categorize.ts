@@ -190,7 +190,6 @@ function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
     bucketedData[0] = JSON.parse(JSON.stringify(glucoseData[0]));
     let bucketIdx=0;
     let bucketStartIdx=0; // index of first value used by bucket
-    let i: number;
     // variables used across multiple for-loops (were function-scoped with var)
     let BGTime: number;
     let treatment: CarbTreatment;
@@ -199,21 +198,21 @@ function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
     let glucoseDatum: CategorizeGlucoseEntry;
     let BGDate: Date;
     //for loop to validate and bucket the data
-    for (i=1; i < glucoseData.length; ++i) {
-        BGTime = glucoseData[i].date as number;
+    for (let entryIdx=1; entryIdx < glucoseData.length; ++entryIdx) {
+        BGTime = glucoseData[entryIdx].date as number;
         const lastBGTime = glucoseData[bucketStartIdx].date as number;
         const elapsedMinutes = (BGTime - lastBGTime)/MS_PER_MINUTE;
 
         if(Math.abs(elapsedMinutes) >= BUCKETING_MERGE_THRESHOLD_MIN) {
             bucketIdx++; // move to next bucket
-            bucketStartIdx=i; // store index of first value used by bucket
-            bucketedData[bucketIdx]=JSON.parse(JSON.stringify(glucoseData[i]));
+            bucketStartIdx=entryIdx; // store index of first value used by bucket
+            bucketedData[bucketIdx]=JSON.parse(JSON.stringify(glucoseData[entryIdx]));
         } else {
             // average all readings within time deadband
-            const glucoseTotal = glucoseData.slice(bucketStartIdx, i+1).reduce((total: number, glucoseEntry: CategorizeGlucoseEntry) => {
+            const glucoseTotal = glucoseData.slice(bucketStartIdx, entryIdx+1).reduce((total: number, glucoseEntry: CategorizeGlucoseEntry) => {
                 return total + (glucoseEntry.glucose as number);
             }, 0);
-            bucketedData[bucketIdx].glucose = glucoseTotal / (i-bucketStartIdx+1);
+            bucketedData[bucketIdx].glucose = glucoseTotal / (entryIdx-bucketStartIdx+1);
         }
     }
     // go through the treatments and remove any that are older than the oldest glucose value
@@ -230,8 +229,8 @@ function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
     let CRInitialCarbTime: Date | undefined;
     // main for loop
     const fullHistory = IOBInputs.history;
-    for (i=bucketedData.length-BUCKETING_END_PADDING; i > 0; --i) {
-        glucoseDatum = bucketedData[i];
+    for (let entryIdx=bucketedData.length-BUCKETING_END_PADDING; entryIdx > 0; --entryIdx) {
+        glucoseDatum = bucketedData[entryIdx];
         BGDate = new Date(glucoseDatum.date as number);
         BGTime = BGDate.getTime();
         // As we're processing each data point, go through the treatment.carbs and see if any of them are older than
@@ -257,13 +256,13 @@ function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
         let avgDelta: number | undefined;
         // TODO: re-implement interpolation to avoid issues here with gaps
         // calculate avgDelta as last 4 datapoints to better catch more rises after COB hits zero
-        if (bucketedData[i].glucose !== undefined && bucketedData[i+AVG_DELTA_LOOKBACK].glucose !== undefined) {
-            BG = bucketedData[i].glucose as number;
-            if ( BG < AUTOSENS_MIN_VALID_BG || (bucketedData[i+AVG_DELTA_LOOKBACK].glucose as number) < AUTOSENS_MIN_VALID_BG) {
+        if (bucketedData[entryIdx].glucose !== undefined && bucketedData[entryIdx+AVG_DELTA_LOOKBACK].glucose !== undefined) {
+            BG = bucketedData[entryIdx].glucose as number;
+            if ( BG < AUTOSENS_MIN_VALID_BG || (bucketedData[entryIdx+AVG_DELTA_LOOKBACK].glucose as number) < AUTOSENS_MIN_VALID_BG) {
                 continue;
             }
-            delta = (BG - (bucketedData[i+1].glucose as number));
-            avgDelta = (BG - (bucketedData[i+AVG_DELTA_LOOKBACK].glucose as number))/AVG_DELTA_LOOKBACK;
+            delta = (BG - (bucketedData[entryIdx+1].glucose as number));
+            avgDelta = (BG - (bucketedData[entryIdx+AVG_DELTA_LOOKBACK].glucose as number))/AVG_DELTA_LOOKBACK;
         } else {
             console.log("Could not find glucose data");
         }
@@ -349,9 +348,9 @@ function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
                 console.log(`CRInitialIOB: ${CRInitialIOB} CRInitialBG: ${CRInitialBG} CRInitialCarbTime: ${CRInitialCarbTime}`);
             }
             // keep calculatingCR as long as we have COB or enough IOB
-            if ( mealCOB > 0 && i>1 ) {
+            if ( mealCOB > 0 && entryIdx>1 ) {
                 calculatingCR = true;
-            } else if ( iob.iob > currentBasal/2 && i>1 ) {
+            } else if ( iob.iob > currentBasal/2 && entryIdx>1 ) {
                 calculatingCR = true;
             // when COB=0 and IOB drops low enough, record end values and be done calculatingCR
             } else {
@@ -370,7 +369,7 @@ function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
                 };
 
                 const CRElapsedMinutes = Math.round((CREndTime.getTime() - (CRInitialCarbTime as Date).getTime()) / MS_PER_MINUTE);
-                if ( CRElapsedMinutes < MIN_CR_ELAPSED_MINUTES || ( i===1 && mealCOB > 0 ) ) {
+                if ( CRElapsedMinutes < MIN_CR_ELAPSED_MINUTES || ( entryIdx===1 && mealCOB > 0 ) ) {
                     console.log(`Ignoring ${CRElapsedMinutes}m CR period.`);
                 } else {
                     CRData.push(crDatum);
