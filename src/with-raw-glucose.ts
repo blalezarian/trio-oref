@@ -57,8 +57,10 @@ export default function withRawGlucose (entry: RawGlucoseEntry, cals: RawGlucose
   }
   const egv = entry.glucose || entry.sgv || 0;
 
-  entry.unfiltered = parseInt(entry.unfiltered as string) || 0;
-  entry.filtered = parseInt(entry.filtered as string) || 0;
+  const unfilteredVal = parseInt(entry.unfiltered as string) || 0;
+  const filteredVal = parseInt(entry.filtered as string) || 0;
+  entry.unfiltered = unfilteredVal;
+  entry.filtered = filteredVal;
 
   //TODO: add time check, but how recent should it be?
   //TODO: currently assuming the first is the best (and that there is probably just 1 cal)
@@ -66,10 +68,10 @@ export default function withRawGlucose (entry: RawGlucoseEntry, cals: RawGlucose
 
   if (cal && cal.valid) {
     if (cal.filtered === 0 || egv < RAW_BG_CALIBRATION_THRESHOLD) {
-      entry.raw = Math.round(cal.scale * ((entry.unfiltered as number) - cal.intercept) / cal.slope);
+      entry.raw = Math.round(cal.scale * (unfilteredVal - cal.intercept) / cal.slope);
     } else {
-      const ratio = cal.scale * ((entry.filtered as number) - cal.intercept) / cal.slope / egv;
-      entry.raw = Math.round(cal.scale * ((entry.unfiltered as number) - cal.intercept) / cal.slope / ratio);
+      const ratio = cal.scale * (filteredVal - cal.intercept) / cal.slope / egv;
+      entry.raw = Math.round(cal.scale * (unfilteredVal - cal.intercept) / cal.slope / ratio);
     }
 
     if ( egv < RAW_BG_CALIBRATION_THRESHOLD ) {
