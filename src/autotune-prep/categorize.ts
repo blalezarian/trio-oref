@@ -3,6 +3,7 @@ import getIOB from '../iob/index';
 import { isfLookup as ISFLookup } from '../profile/isf';
 import find_insulin from '../iob/extract-treatments';
 import dosed from './dosed';
+import type { DosedOpts } from './dosed';
 import type { PumpHistoryEvent, CarbTreatment, InsulinCurve, MealAbsorptionPhase } from '../types/index';
 import {
     MIN_VALID_GLUCOSE_MGDL,
@@ -101,18 +102,6 @@ interface CategorizeIOBInputs {
   profile: CategorizeProfile;
   history: PumpHistoryEvent[];
   clock?: string;
-}
-
-interface CategorizeDosedTreatment {
-  insulin?: number | null;
-  date: number;
-}
-
-interface CategorizeDosedOpts {
-  start: Date;
-  end: Date;
-  treatments: CategorizeDosedTreatment[] | undefined;
-  profile: Record<string, unknown>;
 }
 
 interface CategorizeGlucoseDatum {
@@ -476,14 +465,14 @@ function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
     };
     const dosedTreatments = find_insulin(IOBInputs as unknown as Parameters<typeof find_insulin>[0]);
     CRData.forEach((crEntry: CRDatum) => {
-        const dosedOpts: CategorizeDosedOpts = {
-            treatments: dosedTreatments as unknown as CategorizeDosedTreatment[]
-            , profile: opts.profile as unknown as Record<string, unknown>
+        const dosedOpts: DosedOpts = {
+            treatments: dosedTreatments
+            , profile: opts.profile as Record<string, unknown>
             , start: crEntry.CRInitialCarbTime
             , end: crEntry.CREndTime
         };
-        const insulinDosed = dosed(dosedOpts as unknown as Parameters<typeof dosed>[0]);
-        crEntry.CRInsulin = (insulinDosed as unknown as { insulin?: number }).insulin;
+        const insulinDosed = dosed(dosedOpts);
+        crEntry.CRInsulin = insulinDosed.insulin;
     });
 
     const merged = mergeUAMData(

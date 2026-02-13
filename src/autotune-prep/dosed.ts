@@ -30,7 +30,7 @@ const ROUND_SCALE_3DP = 1000;
 // ---------------------------------------------------------------------------
 
 /** Sum insulin dosed between start and end timestamps */
-function insulinDosed(opts: DosedOpts): DosedResult | Record<string, never> {
+function insulinDosed(opts: DosedOpts): { insulin?: number } {
     const start = opts.start.getTime();
     const end = opts.end.getTime();
     const treatments = opts.treatments;
