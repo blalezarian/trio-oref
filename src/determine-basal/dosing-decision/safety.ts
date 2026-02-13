@@ -80,14 +80,15 @@ export function checkPredictiveLGS(ctx: DosingContext): PhaseOutcome {
     const { result } = ctx;
 
     // don't low glucose suspend if IOB is already super negative and BG is rising faster than predicted
-    if (bg < threshold && iob_data.iob < -profile.current_basal * overrideFactor * IOB_NEG_CHECK_MINUTES / MINUTES_PER_HOUR && minDelta > 0 && minDelta > expectedDelta) {
+    if (isNegativeIOBRising(ctx)) {
         result.reason += `IOB ${iob_data.iob} < ${round(-profile.current_basal * overrideFactor * IOB_NEG_CHECK_MINUTES / MINUTES_PER_HOUR, 2)}`;
         result.reason += ` and minDelta ${convert_bg(minDelta, profile)} > expectedDelta ${convert_bg(expectedDelta, profile)}; `;
-    // predictive low glucose suspend mode: BG is / is projected to be < threshold
-    } else if (bg < threshold || minGuardBG < threshold) {
-        result.reason += `minGuardBG ${convert_bg(minGuardBG, profile)}<${convert_bg(threshold, profile)}`;
-        const bgUndershoot = target_bg - minGuardBG;
+        return { done: false };
+    }
 
+    // predictive low glucose suspend mode: BG is / is projected to be < threshold
+    if (bg < threshold || minGuardBG < threshold) {
+        result.reason += `minGuardBG ${convert_bg(minGuardBG, profile)}<${convert_bg(threshold, profile)}`;
         if (minGuardBG < threshold) {
             result.manualBolusErrorString = BOLUS_ERR_LGS_GUARD_BELOW_THRESHOLD;
             result.minGuardBG = minGuardBG;
@@ -95,11 +96,25 @@ export function checkPredictiveLGS(ctx: DosingContext): PhaseOutcome {
         result.insulinForManualBolus = round((eventualBG - target_bg) / adjustedSens, 2);
 
         // always set a 30-120m zero temp (oref0-pump-loop will let any longer SMB zero temp run)
+        const bgUndershoot = target_bg - minGuardBG;
         const durationReq = calculateZeroTempDuration(bgUndershoot, adjustedSens, profile.current_basal, overrideFactor, TEMP_BASAL_DURATION_MINUTES);
         return { done: true, result: tempBasalFunctions.setTempBasal(0, durationReq, profile, result, currenttemp) };
     }
 
     return { done: false };
+}
+
+// ---------------------------------------------------------------------------
+// checkPredictiveLGS helpers
+// ---------------------------------------------------------------------------
+
+/** Guard: BG below threshold, IOB super negative, and BG rising faster than predicted — skip LGS. */
+function isNegativeIOBRising(ctx: DosingContext): boolean {
+    const { iob_data, profile, bg, threshold, minDelta, expectedDelta, overrideFactor } = ctx.inputs;
+    return bg < threshold
+        && iob_data.iob < -profile.current_basal * overrideFactor * IOB_NEG_CHECK_MINUTES / MINUTES_PER_HOUR
+        && minDelta > 0
+        && minDelta > expectedDelta;
 }
 
 // ---------------------------------------------------------------------------
