@@ -165,14 +165,14 @@ function generate (inputs: AutotunePrepInputs): AutotunePrepResult {
             if (basalGlucose[i].date) {
               BGTime = new Date(basalGlucose[i].date);
             } else if (basalGlucose[i].displayTime) {
-              BGTime = new Date(basalGlucose[i].displayTime!.replace('T', ' '));
+              BGTime = new Date((basalGlucose[i].displayTime as string).replace('T', ' '));
             } else if (basalGlucose[i].dateString) {
               BGTime = new Date(basalGlucose[i].dateString);
             } else {
               consoleError("Could not determine last BG time");
             }
 
-            const myHour = BGTime!.getHours();
+            const myHour = (BGTime as Date).getHours();
             if (hour === myHour) {
               sqrtDeviations += Math.pow(parseFloat(String(Math.abs(Number(basalGlucose[i].deviation)))), 0.5);
               deviations += Math.abs(parseFloat(basalGlucose[i].deviation));
@@ -211,8 +211,8 @@ function generate (inputs: AutotunePrepInputs): AutotunePrepResult {
       }
       opts.profile.useCustomPeakTime = true;
 
-      const startPeak=opts.profile.insulinPeakTime! - PEAK_SEARCH_RANGE;
-      const endPeak=opts.profile.insulinPeakTime! + PEAK_SEARCH_RANGE;
+      const startPeak=(opts.profile.insulinPeakTime as number) - PEAK_SEARCH_RANGE;
+      const endPeak=(opts.profile.insulinPeakTime as number) + PEAK_SEARCH_RANGE;
       for (let peak=startPeak; peak <= endPeak; peak=(peak+PEAK_SEARCH_STEP)) {
         sqrtDeviations = 0;
         deviations = 0;
@@ -231,14 +231,14 @@ function generate (inputs: AutotunePrepInputs): AutotunePrepResult {
             if (basalGlucose[i].date) {
               BGTime = new Date(basalGlucose[i].date);
             } else if (basalGlucose[i].displayTime) {
-              BGTime = new Date(basalGlucose[i].displayTime!.replace('T', ' '));
+              BGTime = new Date((basalGlucose[i].displayTime as string).replace('T', ' '));
             } else if (basalGlucose[i].dateString) {
               BGTime = new Date(basalGlucose[i].dateString);
             } else {
               consoleError("Could not determine last BG time");
             }
 
-            const myHour = BGTime!.getHours();
+            const myHour = (BGTime as Date).getHours();
             if (hour === myHour) {
               sqrtDeviations += Math.pow(parseFloat(String(Math.abs(Number(basalGlucose[i].deviation)))), 0.5);
               deviations += Math.abs(parseFloat(basalGlucose[i].deviation));
@@ -277,3 +277,5 @@ function generate (inputs: AutotunePrepInputs): AutotunePrepResult {
 }
 
 export default generate;
+export { generate };
+export type { AutotunePrepInputs, AutotunePrepResult };
