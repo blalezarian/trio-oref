@@ -134,7 +134,7 @@ export function handleSMB(ctx: DosingContext): PhaseOutcome {
     const { advancedSettings, smbMinutes, uamMinutes } = trio_custom_variables;
 
     // minutes since last bolus
-    const lastBolusAge = round((new Date(systemTime).getTime() - (iob_data.lastBolusTime as number)) / MS_PER_MINUTE, 1);
+    const lastBolusAge = round((systemTime.getTime() - (iob_data.lastBolusTime as number)) / MS_PER_MINUTE, 1);
 
     // only allow microboluses with COB or low temp targets, or within DIA hours of a bolus
     if (microBolusAllowed && ctx.enableSMB && bg > threshold) {

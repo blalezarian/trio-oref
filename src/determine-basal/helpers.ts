@@ -85,7 +85,7 @@ export function validateIOBAndTemps(
 // and before returning (doing nothing) below if eventualBG is undefined.
     let lastTempAge;
     if (iob_data.lastTemp !== undefined) {
-        lastTempAge = round(( new Date(systemTime).getTime() - iob_data.lastTemp.date ) / MS_PER_MINUTE); // in minutes
+        lastTempAge = round(( systemTime.getTime() - iob_data.lastTemp.date ) / MS_PER_MINUTE); // in minutes
     } else {
         lastTempAge = 0;
     }

@@ -108,7 +108,7 @@ function adjustRemainingCarbTime(
     // 20 g/h means that anything <= 60g will get a remainingCATimeMin, 80g will get 4h, and 120g 6h
     // when actual absorption ramps up it will take over from remainingCATime
     remainingCATimeMin = Math.max(remainingCATimeMin, meal_data.mealCOB / DEFAULT_ASSUMED_CARB_ABSORPTION_RATE);
-    const lastCarbAge = round((new Date(systemTime).getTime() - (meal_data.lastCarbTime as number)) / MS_PER_MINUTE);
+    const lastCarbAge = round((systemTime.getTime() - (meal_data.lastCarbTime as number)) / MS_PER_MINUTE);
     const fractionCOBAbsorbed = (meal_data.carbs - meal_data.mealCOB) / meal_data.carbs;
     // if the lastCarbTime was 1h ago, increase remainingCATime by 1.5 hours
     const remainingCATime = round(remainingCATimeMin + CARB_TIME_EXTENSION_FACTOR * lastCarbAge / MINUTES_PER_HOUR, 1);
