@@ -1,7 +1,6 @@
 // Standalone CGM noise calculation utility — not part of the Trio Swift bundle.
 // Only used by bin/oref0-calculate-glucose-noise.js CLI tool.
 
-import moment from 'moment';
 import stats from './glucose-stats';
 
 interface GlucoseHistItem {
@@ -29,7 +28,9 @@ calcStatsExports.updateGlucoseStats = (options: UpdateGlucoseStatsOptions): Gluc
   const hist = [...options.glucose_hist]
     .sort((a, b) => a.dateString < b.dateString ? -1 : a.dateString > b.dateString ? 1 : 0)
     .map((value: GlucoseHistItem): GlucoseHistItemWithDate => {
-      return Object.assign(value, { readDateMills: moment(value.dateString).valueOf() });
+      return Object.assign(value, {
+        readDateMills: value.dateString ? new Date(value.dateString).getTime() : Date.now(),
+      });
     });
 
   if (hist && hist.length > 0) {

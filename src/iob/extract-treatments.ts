@@ -59,7 +59,7 @@ export function calcTempTreatments (
         }
     }
 
-    // Create an array of moments to split the temps by
+    // Create an array of timestamps to split the temps by
     // currently supports basal changes
 
     const splitterEvents: SplitterEvent[] = [];

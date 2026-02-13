@@ -2,7 +2,6 @@
 
 require('should');
 
-var moment = require('moment');
 var stats = require('../src/deprecated/calc-glucose-stats').default;
 
 describe('NOISE', function() {

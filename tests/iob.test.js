@@ -2,8 +2,12 @@
 
 require('should');
 
-var moment = require('moment');
 var iob = require('../src/iob').default;
+
+// Helper: subtract minutes from a Date and return ISO string
+function subtractMinutes(date, mins) {
+    return new Date(date.getTime() - mins * 60 * 1000);
+}
 
 describe('IOB', function() {
 
@@ -486,9 +490,9 @@ describe('IOB', function() {
 
     it('should calculate IOB with Temp Basals and a basal profile', function() {
 
-        var startingPoint = moment('2016-06-13 01:00:00.000');
-        var timestamp = startingPoint.format();
-        var timestampEarly = startingPoint.subtract(30, 'minutes').format();
+        var startingPoint = new Date('2016-06-13T01:00:00.000');
+        var timestamp = startingPoint.toISOString();
+        var timestampEarly = subtractMinutes(startingPoint, 30).toISOString();
 
         var basalprofile = [{
                 'i': 0,
@@ -535,7 +539,7 @@ describe('IOB', function() {
         };
 
         var hourLaterInputs = inputs;
-        hourLaterInputs.clock = moment('2016-06-13 01:30:00.000');
+        hourLaterInputs.clock = new Date('2016-06-13T01:30:00.000');
         var hourLater = iob(hourLaterInputs)[0];
         hourLater.iob.should.be.lessThan(0.5);
         hourLater.iob.should.be.greaterThan(0.4);
@@ -563,9 +567,9 @@ describe('IOB', function() {
             }
         ];
 
-        var startingPoint = moment('2016-06-13 00:15:00.000');
-        var timestamp = startingPoint.format();
-        var timestampEarly = startingPoint.subtract(30, 'minutes').format(),
+        var startingPoint = new Date('2016-06-13T00:15:00.000');
+        var timestamp = startingPoint.toISOString();
+        var timestampEarly = subtractMinutes(startingPoint, 30).toISOString(),
             inputs = {
                 clock: timestamp,
                 history: [{
@@ -599,7 +603,7 @@ describe('IOB', function() {
             };
 
         var hourLaterInputs = inputs;
-        hourLaterInputs.clock = moment('2016-06-13 00:45:00.000'); //new Date(now + (30 * 60 * 1000)).toISOString();
+        hourLaterInputs.clock = new Date('2016-06-13T00:45:00.000');
         var hourLater = iob(hourLaterInputs)[0];
 
         hourLater.iob.should.be.lessThan(0.8);
@@ -615,22 +619,25 @@ describe('IOB', function() {
             'minutes': 0
         }];
 
-        var startingPoint = moment('2016-06-13 00:30:00.000');
+        var startingPoint = new Date('2016-06-13T00:30:00.000');
         var timestamp = startingPoint;
-        var timestampEarly = startingPoint.clone().subtract(30, 'minutes');
+        var timestampEarly = subtractMinutes(startingPoint, 30);
+
+        var earlyUnix = Math.floor(timestampEarly.getTime() / 1000);
+        var earlyISO = timestampEarly.toISOString();
 
         var inputs = {
             clock: timestamp,
             history: [{
                 _type: 'TempBasalDuration',
                 'duration (min)': 30,
-                date: timestampEarly.unix(),
-                timestamp: timestampEarly.format()
+                date: earlyUnix,
+                timestamp: earlyISO
             }, {
                 _type: 'TempBasal',
                 rate: 2,
-                date: timestampEarly.unix(),
-                timestamp: timestampEarly.format()
+                date: earlyUnix,
+                timestamp: earlyISO
             }],
             profile: {
                 dia: 3,
@@ -643,21 +650,21 @@ describe('IOB', function() {
 
         var hourLater = iob(inputs)[0];
 
-        var timestampEarly2 = startingPoint.clone().subtract(29, 'minutes');
-        var timestampEarly3 = startingPoint.clone().subtract(28, 'minutes');
+        var timestampEarly2 = subtractMinutes(startingPoint, 29);
+        var timestampEarly3 = subtractMinutes(startingPoint, 28);
 
         var inputs = {
             clock: timestamp,
             history: [{
                 _type: 'TempBasalDuration',
                 'duration (min)': 30,
-                date: timestampEarly.unix(),
-                timestamp: timestampEarly.format()
+                date: earlyUnix,
+                timestamp: earlyISO
             }, {
                 _type: 'TempBasal',
                 rate: 2,
-                date: timestampEarly.unix(),
-                timestamp: timestampEarly.format()
+                date: earlyUnix,
+                timestamp: earlyISO
             }],
             profile: {
                 dia: 3,
@@ -669,41 +676,46 @@ describe('IOB', function() {
         };
 
         var hourLaterInputs = inputs;
-        hourLaterInputs.clock = moment('2016-06-13 00:30:00.000');
+        hourLaterInputs.clock = new Date('2016-06-13T00:30:00.000');
         var hourLater = iob(hourLaterInputs)[0];
+
+        var early2Unix = Math.floor(timestampEarly2.getTime() / 1000);
+        var early2ISO = timestampEarly2.toISOString();
+        var early3Unix = Math.floor(timestampEarly3.getTime() / 1000);
+        var early3ISO = timestampEarly3.toISOString();
 
         var inputs = {
             clock: timestamp,
             history: [{
                 _type: 'TempBasalDuration',
                 'duration (min)': 30,
-                date: timestampEarly.unix(),
-                timestamp: timestampEarly.format()
+                date: earlyUnix,
+                timestamp: earlyISO
             }, {
                 _type: 'TempBasal',
                 rate: 2,
-                date: timestampEarly.unix(),
-                timestamp: timestampEarly.format()
+                date: earlyUnix,
+                timestamp: earlyISO
             }, {
                 _type: 'TempBasalDuration',
                 'duration (min)': 30,
-                date: timestampEarly2.unix(),
-                timestamp: timestampEarly2.format()
+                date: early2Unix,
+                timestamp: early2ISO
             }, {
                 _type: 'TempBasal',
                 rate: 2,
-                date: timestampEarly2.unix(),
-                timestamp: timestampEarly2.format()
+                date: early2Unix,
+                timestamp: early2ISO
             }, {
                 _type: 'TempBasalDuration',
                 'duration (min)': 30,
-                date: timestampEarly3.unix(),
-                timestamp: timestampEarly3.format()
+                date: early3Unix,
+                timestamp: early3ISO
             }, {
                 _type: 'TempBasal',
                 rate: 2,
-                date: timestampEarly3.unix(),
-                timestamp: timestampEarly3.format()
+                date: early3Unix,
+                timestamp: early3ISO
             }],
             profile: {
                 dia: 3,
@@ -748,9 +760,9 @@ describe('IOB', function() {
             }
         ];
 
-        var startingPoint = moment('2016-06-13 23:45:00.000');
-        var timestamp = startingPoint.format();
-        var timestampEarly = startingPoint.subtract(30, 'minutes').format(),
+        var startingPoint = new Date('2016-06-13T23:45:00.000');
+        var timestamp = startingPoint.toISOString();
+        var timestampEarly = subtractMinutes(startingPoint, 30).toISOString(),
             inputs = {
                 clock: timestamp,
                 history: [{
@@ -774,7 +786,7 @@ describe('IOB', function() {
             };
 
         var hourLaterInputs = inputs;
-        hourLaterInputs.clock = moment('2016-06-14 00:45:00.000');
+        hourLaterInputs.clock = new Date('2016-06-14T00:45:00.000');
         var hourLater = iob(hourLaterInputs)[0];
 
         hourLater.iob.should.be.lessThan(1);
