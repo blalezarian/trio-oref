@@ -123,8 +123,8 @@ export function splitAroundSuspends (
         }
     }
 
-    if (currentlySuspended && ((currentEvent.date+currentEvent.duration!*MS_PER_MINUTE) > (lastSuspendTime as unknown as number))) {
-        if (currentEvent.date > (lastSuspendTime as unknown as number)) {
+    if (currentlySuspended && ((currentEvent.date+currentEvent.duration!*MS_PER_MINUTE) > lastSuspendDate)) {
+        if (currentEvent.date > lastSuspendDate) {
             currentEvent.duration = 0;
         } else {
             currentEvent.duration = (firstResumeDate - currentEvent.date)/MS_PER_MINUTE;

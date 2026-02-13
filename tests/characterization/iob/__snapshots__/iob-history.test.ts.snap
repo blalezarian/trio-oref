@@ -3474,16 +3474,11 @@ exports[`iob/history (calcTempTreatments) characterization tests > splitAroundSu
   {
     "created_at": "[NOW-30m]",
     "date": "[NOW-30m]",
-    "insulin": 0.05,
-  },
-  {
-    "created_at": "[NOW-30m]",
-    "date": "[NOW-30m]",
     "insulin": -0.05,
   },
   {
     "date": "[NOW-30m]",
-    "duration": 20,
+    "duration": 0,
     "rate": 2,
     "started_at": "[NOW-30m]",
     "timestamp": "2025-01-15T11:30:00.000Z",
@@ -3491,17 +3486,7 @@ exports[`iob/history (calcTempTreatments) characterization tests > splitAroundSu
   {
     "created_at": "[NOW-27m]",
     "date": "[NOW-27m]",
-    "insulin": 0.05,
-  },
-  {
-    "created_at": "[NOW-27m]",
-    "date": "[NOW-27m]",
     "insulin": -0.05,
-  },
-  {
-    "created_at": "[NOW-24m]",
-    "date": "[NOW-24m]",
-    "insulin": 0.05,
   },
   {
     "created_at": "[NOW-24m]",
@@ -3511,17 +3496,7 @@ exports[`iob/history (calcTempTreatments) characterization tests > splitAroundSu
   {
     "created_at": "[NOW-21m]",
     "date": "[NOW-21m]",
-    "insulin": 0.05,
-  },
-  {
-    "created_at": "[NOW-21m]",
-    "date": "[NOW-21m]",
     "insulin": -0.05,
-  },
-  {
-    "created_at": "[NOW-19m]",
-    "date": "[NOW-19m]",
-    "insulin": 0.05,
   },
   {
     "created_at": "[NOW-18m]",
@@ -3529,19 +3504,9 @@ exports[`iob/history (calcTempTreatments) characterization tests > splitAroundSu
     "insulin": -0.05,
   },
   {
-    "created_at": "[NOW-16m]",
-    "date": "[NOW-16m]",
-    "insulin": 0.05,
-  },
-  {
     "created_at": "[NOW-15m]",
     "date": "[NOW-15m]",
     "insulin": -0.05,
-  },
-  {
-    "created_at": "[NOW-13m]",
-    "date": "[NOW-13m]",
-    "insulin": 0.05,
   },
   {
     "created_at": "[NOW-12m]",
