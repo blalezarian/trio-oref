@@ -47,7 +47,7 @@ export interface PreparedAutosensData {
 
 /** Determine lookback window based on site change / rewind history */
 export function determineSiteChangeTime(
-    glucose_data: GlucoseEntry[],
+    glucoseData: GlucoseEntry[],
     retrospective: boolean | undefined,
     history: PumpHistoryEvent[],
     rewindResetsAutosens: boolean | undefined,
@@ -55,7 +55,7 @@ export function determineSiteChangeTime(
     // Default: 24h lookback from first glucose reading (retrospective) or now
     let lastSiteChange: Date;
     if (retrospective) {
-        lastSiteChange = new Date(new Date(Number(glucose_data[0].date)).getTime() - HOURS_PER_DAY * MS_PER_HOUR);
+        lastSiteChange = new Date(new Date(Number(glucoseData[0].date)).getTime() - HOURS_PER_DAY * MS_PER_HOUR);
     } else {
         lastSiteChange = new Date(Date.now() - HOURS_PER_DAY * MS_PER_HOUR);
     }
@@ -116,23 +116,23 @@ export function resolveLastBgTime(
 
 /** Prepare all data needed for autosens analysis */
 export function prepareAutosensData(inputs: AutosensInputs): PreparedAutosensData {
-    const glucose_data = normalizeGlucoseData(inputs.glucose_data);
-    const iob_inputs = inputs.iob_inputs;
+    const glucoseData = normalizeGlucoseData(inputs.glucose_data);
+    const iobInputs = inputs.iob_inputs;
     const basalprofile = inputs.basalprofile;
-    const profile = inputs.iob_inputs.profile;
+    const profile = iobInputs.profile;
 
     const lastSiteChange = determineSiteChangeTime(
-        glucose_data,
+        glucoseData,
         inputs.retrospective,
-        inputs.iob_inputs.history,
-        inputs.iob_inputs.profile.rewind_resets_autosens,
+        iobInputs.history,
+        iobInputs.profile.rewind_resets_autosens,
     );
 
     // Extract treatments from pump history once (not every get_iob call)
-    const treatments = find_insulin(inputs.iob_inputs as IobInputs);
+    const treatments = find_insulin(iobInputs as IobInputs);
 
     const mealInputs = {
-        history: inputs.iob_inputs.history,
+        history: iobInputs.history,
         profile,
         carbs: inputs.carbs,
         glucose: inputs.glucose_data,
@@ -143,28 +143,28 @@ export function prepareAutosensData(inputs: AutosensInputs): PreparedAutosensDat
     });
 
     // --- Bucket glucose data (oldest-first) ---
-    const bucketed_data: (GlucoseEntry & { mealCarbs?: number })[] = [];
-    glucose_data.reverse();
-    bucketed_data[0] = glucose_data[0];
+    const bucketedData: (GlucoseEntry & { mealCarbs?: number })[] = [];
+    glucoseData.reverse();
+    bucketedData[0] = glucoseData[0];
     let bucketIndex = 0;
 
     // bgTime and lastbgTime at function scope to preserve var-hoisted semantics
     let bgTime: Date | undefined;
     let lastbgTime: Date | undefined;
 
-    for (let glucoseIdx = 1; glucoseIdx < glucose_data.length; ++glucoseIdx) {
+    for (let glucoseIdx = 1; glucoseIdx < glucoseData.length; ++glucoseIdx) {
         // --- Resolve current entry time ---
-        const resolvedBgTime = resolveGlucoseTime(glucose_data[glucoseIdx]);
+        const resolvedBgTime = resolveGlucoseTime(glucoseData[glucoseIdx]);
         if (resolvedBgTime) {
             bgTime = resolvedBgTime;
-        } else if (glucose_data[glucoseIdx].xDrip_started_at) {
+        } else if (glucoseData[glucoseIdx].xDrip_started_at) {
             continue;
         } else {
             console.log("Could not determine BG time");
         }
 
         // --- Resolve previous entry time (3-source fallback) ---
-        const resolvedLastTime = resolveLastBgTime(glucose_data[glucoseIdx - 1], bucketed_data[0]);
+        const resolvedLastTime = resolveLastBgTime(glucoseData[glucoseIdx - 1], bucketedData[0]);
         if (resolvedLastTime === 'skip') {
             continue;
         }
@@ -175,8 +175,8 @@ export function prepareAutosensData(inputs: AutosensInputs): PreparedAutosensDat
         }
 
         // Skip invalid glucose values (as number preserves undefined→NaN passthrough)
-        if ((Number(glucose_data[glucoseIdx].glucose)) < MIN_VALID_GLUCOSE_MGDL
-            || Number(glucose_data[glucoseIdx - 1].glucose) < MIN_VALID_GLUCOSE_MGDL) {
+        if ((Number(glucoseData[glucoseIdx].glucose)) < MIN_VALID_GLUCOSE_MGDL
+            || Number(glucoseData[glucoseIdx - 1].glucose) < MIN_VALID_GLUCOSE_MGDL) {
             continue;
         }
 
@@ -189,20 +189,20 @@ export function prepareAutosensData(inputs: AutosensInputs): PreparedAutosensDat
         }
 
         // --- Bucket or merge based on elapsed time ---
-        const elapsed_minutes = ((bgTime ? bgTime.getTime() : NaN) - (lastbgTime ? lastbgTime.getTime() : NaN)) / MS_PER_MINUTE;
+        const elapsedMinutes = ((bgTime ? bgTime.getTime() : NaN) - (lastbgTime ? lastbgTime.getTime() : NaN)) / MS_PER_MINUTE;
 
-        if (Math.abs(elapsed_minutes) > BUCKETING_MERGE_THRESHOLD_MIN) {
+        if (Math.abs(elapsedMinutes) > BUCKETING_MERGE_THRESHOLD_MIN) {
             bucketIndex++;
-            bucketed_data[bucketIndex] = glucose_data[glucoseIdx];
-            bucketed_data[bucketIndex].date = bgTime ? bgTime.getTime() : NaN;
+            bucketedData[bucketIndex] = glucoseData[glucoseIdx];
+            bucketedData[bucketIndex].date = bgTime ? bgTime.getTime() : NaN;
         } else {
-            bucketed_data[bucketIndex].glucose =
-                (Number(bucketed_data[bucketIndex].glucose) + (Number(glucose_data[glucoseIdx].glucose))) / 2;
+            bucketedData[bucketIndex].glucose =
+                (Number(bucketedData[bucketIndex].glucose) + (Number(glucoseData[glucoseIdx].glucose))) / 2;
         }
     }
 
-    // Remove seed entry (bucketed_data[0] was the initial glucose reading)
-    bucketed_data.shift();
+    // Remove seed entry (bucketedData[0] was the initial glucose reading)
+    bucketedData.shift();
 
     // --- Remove meals older than oldest bucketed glucose ---
     // Variables at function scope to preserve var-hoisted semantics
@@ -221,7 +221,7 @@ export function prepareAutosensData(inputs: AutosensInputs): PreparedAutosensDat
 
         treatmentDate = new Date(treatment.timestamp);
         treatmentTime = treatmentDate.getTime();
-        glucoseDatum = bucketed_data[0];
+        glucoseDatum = bucketedData[0];
 
         if (!glucoseDatum || !glucoseDatum.date) {
             continue;
@@ -238,9 +238,9 @@ export function prepareAutosensData(inputs: AutosensInputs): PreparedAutosensDat
     return {
         treatments,
         meals,
-        bucketed_data,
+        bucketed_data: bucketedData,
         lastSiteChange,
-        iob_inputs,
+        iob_inputs: iobInputs,
         basalprofile,
         profile,
     };

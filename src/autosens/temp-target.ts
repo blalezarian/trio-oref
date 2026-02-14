@@ -7,10 +7,10 @@ import { MS_PER_MINUTE } from '../shared/constants';
  * Returns the average of targetTop/targetBottom if active, 0 if cancelled, or undefined if none.
  */
 export function tempTargetRunning(
-    temptargets_data: TempTarget[] | undefined,
+    temptargetsData: TempTarget[] | undefined,
     time: Date,
 ): number | undefined {
-    if (!temptargets_data) {
+    if (!temptargetsData) {
         return undefined;
     }
 
@@ -18,15 +18,15 @@ export function tempTargetRunning(
     // BUG: boolean-to-number cast returns only 0/1 — sort comparators need negative/zero/positive.
     // This produces an unstable sort. Fixing it could change autosens ratio calculations — defer to a future phase.
     try {
-        temptargets_data.sort((a, b) => {
+        temptargetsData.sort((a, b) => {
             return Number(new Date(a.created_at) < new Date(b.created_at));
         });
     } catch (_e) {
         // Sort may fail if temptargets_data is malformed
     }
 
-    for (let targetIdx = 0; targetIdx < temptargets_data.length; targetIdx++) {
-        const target = temptargets_data[targetIdx];
+    for (let targetIdx = 0; targetIdx < temptargetsData.length; targetIdx++) {
+        const target = temptargetsData[targetIdx];
         const start = new Date(target.created_at);
         const expires = new Date(start.getTime() + target.duration * MS_PER_MINUTE);
 

@@ -29,8 +29,8 @@ interface CarbAbsorptionInputs {
 /** Orchestrate COB detection: normalize glucose, bucket, and analyze absorption */
 export function detectCarbAbsorption(inputs: CarbAbsorptionInputs): CarbAbsorptionResult {
     const profile = inputs.iob_inputs.profile;
-    const glucose_data = normalizeGlucoseData(inputs.glucose_data as GlucoseEntry[]);
-    const iob_inputs = inputs.iob_inputs;
+    const glucoseData = normalizeGlucoseData(inputs.glucose_data as GlucoseEntry[]);
+    const iobInputs = inputs.iob_inputs;
     const basalprofile = inputs.basalprofile;
     const mealTime = new Date(inputs.mealTime as string | number);
     const carbImpactTime = new Date(inputs.carbImpactTime as string | number);
@@ -38,16 +38,16 @@ export function detectCarbAbsorption(inputs: CarbAbsorptionInputs): CarbAbsorpti
     // Extract treatments from pump history once (not every get_iob call)
     const treatments = find_insulin(inputs.iob_inputs as IobInputs);
 
-    const bucketed_data = bucketGlucoseWithInterpolation(
-        glucose_data,
+    const bucketedData = bucketGlucoseWithInterpolation(
+        glucoseData,
         mealTime,
         carbImpactTime,
         Number(profile.maxMealAbsorptionTime),
     );
 
     return analyzeAbsorption(
-        bucketed_data,
-        iob_inputs,
+        bucketedData,
+        iobInputs,
         basalprofile,
         profile,
         treatments,

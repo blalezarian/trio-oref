@@ -44,8 +44,8 @@ const CURRENT_DEVIATION_DIVISOR = 2;
 
 /** Analyze glucose deviations and track carb absorption */
 export function analyzeAbsorption(
-    bucketed_data: BucketedGlucose[],
-    iob_inputs: { profile: IobProfile; history: unknown[]; clock?: ISODateString },
+    bucketedData: BucketedGlucose[],
+    iobInputs: { profile: IobProfile; history: unknown[]; clock?: ISODateString },
     basalprofile: HistoryBasalProfileEntry[],
     profile: IobProfile,
     treatments: IobTreatment[],
@@ -62,20 +62,20 @@ export function analyzeAbsorption(
 
     const isfProfileData = profile.isfProfile as NonNullable<typeof profile.isfProfile>;
 
-    for (let bucketIdx = 0; bucketIdx < bucketed_data.length - TRAILING_BUCKETS_REQUIRED; ++bucketIdx) {
-        const entry = bucketed_data[bucketIdx];
+    for (let bucketIdx = 0; bucketIdx < bucketedData.length - TRAILING_BUCKETS_REQUIRED; ++bucketIdx) {
+        const entry = bucketedData[bucketIdx];
         const bgTime = entry.date != null
             ? new Date(entry.date)
             : (resolveGlucoseTime(entry) ?? new Date(NaN));
         const sens = isfLookup(isfProfileData, bgTime);
 
         // Resolve glucose and deltas
-        const glucoseDeltas = resolveGlucoseDeltas(bucketed_data, bucketIdx);
+        const glucoseDeltas = resolveGlucoseDeltas(bucketedData, bucketIdx);
         if (glucoseDeltas === 'skip') continue;
         const { bg, delta, avgDelta } = glucoseDeltas;
-        iob_inputs.clock = bgTime.toISOString();
-        iob_inputs.profile.current_basal = Number(getCurrentBasalRate(basalprofile, bgTime));
-        const iob = get_iob(iob_inputs as IobInputs, true, treatments)[0];
+        iobInputs.clock = bgTime.toISOString();
+        iobInputs.profile.current_basal = Number(getCurrentBasalRate(basalprofile, bgTime));
+        const iob = get_iob(iobInputs as IobInputs, true, treatments)[0];
 
         const bgImpact = calculateBGImpact(iob.activity, sens);
         const deviation = calculateDeviation(delta, bgImpact);
@@ -138,16 +138,16 @@ interface GlucoseDeltas {
  * result when glucose is undefined (preserving original behavior).
  */
 export function resolveGlucoseDeltas(
-    bucketed_data: BucketedGlucose[],
+    bucketedData: BucketedGlucose[],
     bucketIdx: number,
 ): GlucoseDeltas | 'skip' {
-    if (bucketed_data[bucketIdx].glucose === undefined) {
+    if (bucketedData[bucketIdx].glucose === undefined) {
         console.log("Could not find glucose data");
         return { bg: NaN, delta: NaN, avgDelta: NaN };
     }
 
-    const bg = Number(bucketed_data[bucketIdx].glucose);
-    const trailingBg = bucketed_data[bucketIdx + TRAILING_BUCKETS_REQUIRED].glucose ?? 0;
+    const bg = Number(bucketedData[bucketIdx].glucose);
+    const trailingBg = bucketedData[bucketIdx + TRAILING_BUCKETS_REQUIRED].glucose ?? 0;
 
     if (bg < MIN_VALID_GLUCOSE_MGDL || trailingBg < MIN_VALID_GLUCOSE_MGDL) {
         console.log("!");
@@ -155,7 +155,7 @@ export function resolveGlucoseDeltas(
     }
 
     const avgDelta = roundTo2dp((bg - trailingBg) / TRAILING_BUCKETS_REQUIRED);
-    const delta = bg - (bucketed_data[bucketIdx + 1].glucose ?? 0);
+    const delta = bg - (bucketedData[bucketIdx + 1].glucose ?? 0);
 
     return { bg, delta, avgDelta };
 }

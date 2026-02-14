@@ -26,26 +26,26 @@ const BUCKETING_GAP_THRESHOLD_MIN = 8;
 
 /** Bucket glucose data with 5-minute interpolation for gaps > 8 minutes */
 export function bucketGlucoseWithInterpolation(
-    glucose_data: GlucoseEntry[],
+    glucoseData: GlucoseEntry[],
     mealTime: Date,
     carbImpactTime: Date,
     maxMealAbsorptionTime: number,
 ): BucketedGlucose[] {
-    const bucketed_data: BucketedGlucose[] = [];
-    bucketed_data[0] = glucose_data[0];
+    const bucketedData: BucketedGlucose[] = [];
+    bucketedData[0] = glucoseData[0];
     let bucketIndex = 0;
     let foundPreMealBG = false;
     let lastValidIndex = 0;
 
-    if (!glucose_data[0].glucose || glucose_data[0].glucose < MIN_VALID_GLUCOSE_MGDL) {
+    if (!glucoseData[0].glucose || glucoseData[0].glucose < MIN_VALID_GLUCOSE_MGDL) {
         lastValidIndex = -1;
     }
 
     let bgTime: Date | undefined;
     let lastBgTime: Date | undefined;
 
-    for (let glucoseIdx = 1; glucoseIdx < glucose_data.length; ++glucoseIdx) {
-        const resolvedTime = resolveGlucoseTime(glucose_data[glucoseIdx]);
+    for (let glucoseIdx = 1; glucoseIdx < glucoseData.length; ++glucoseIdx) {
+        const resolvedTime = resolveGlucoseTime(glucoseData[glucoseIdx]);
         if (resolvedTime) {
             bgTime = resolvedTime;
         } else {
@@ -53,7 +53,7 @@ export function bucketGlucoseWithInterpolation(
         }
 
         // Skip entries with invalid glucose
-        if (!glucose_data[glucoseIdx].glucose || (glucose_data[glucoseIdx].glucose ?? 0) < MIN_VALID_GLUCOSE_MGDL) {
+        if (!glucoseData[glucoseIdx].glucose || (glucoseData[glucoseIdx].glucose ?? 0) < MIN_VALID_GLUCOSE_MGDL) {
             continue;
         }
 
@@ -75,42 +75,42 @@ export function bucketGlucoseWithInterpolation(
         }
 
         // Resolve time for the last bucketed/valid entry
-        const resolvedLastTime = resolveLastBucketTime(bucketed_data, lastValidIndex, glucose_data);
+        const resolvedLastTime = resolveLastBucketTime(bucketedData, lastValidIndex, glucoseData);
         if (resolvedLastTime) {
             lastBgTime = resolvedLastTime;
         } else {
             console.log("Could not determine last BG time");
         }
 
-        const elapsed_minutes = (Number(bgTime) - Number(lastBgTime)) / MS_PER_MINUTE;
+        const elapsedMinutes = (Number(bgTime) - Number(lastBgTime)) / MS_PER_MINUTE;
 
         // --- Case 1: Large gap (> 8 min) → interpolate missing data points ---
-        if (Math.abs(elapsed_minutes) > BUCKETING_GAP_THRESHOLD_MIN) {
+        if (Math.abs(elapsedMinutes) > BUCKETING_GAP_THRESHOLD_MIN) {
             const gapResult = interpolateMissingPoints(
-                bucketed_data, bucketIndex, lastBgTime ?? new Date(NaN),
-                glucose_data[lastValidIndex].glucose ?? 0,
-                glucose_data[glucoseIdx].glucose ?? 0,
-                elapsed_minutes,
+                bucketedData, bucketIndex, lastBgTime ?? new Date(NaN),
+                glucoseData[lastValidIndex].glucose ?? 0,
+                glucoseData[glucoseIdx].glucose ?? 0,
+                elapsedMinutes,
             );
             bucketIndex = gapResult.bucketIndex;
             lastBgTime = gapResult.lastBgTime;
         }
         // --- Case 2: Medium gap (> 2 min) → new bucket ---
-        else if (Math.abs(elapsed_minutes) > BUCKETING_MERGE_THRESHOLD_MIN) {
+        else if (Math.abs(elapsedMinutes) > BUCKETING_MERGE_THRESHOLD_MIN) {
             bucketIndex++;
-            bucketed_data[bucketIndex] = glucose_data[glucoseIdx];
-            bucketed_data[bucketIndex].date = Number(bgTime);
+            bucketedData[bucketIndex] = glucoseData[glucoseIdx];
+            bucketedData[bucketIndex].date = Number(bgTime);
         }
         // --- Case 3: Small gap (≤ 2 min) → merge into current bucket ---
         else {
-            bucketed_data[bucketIndex].glucose =
-                ((bucketed_data[bucketIndex].glucose ?? 0) + (glucose_data[glucoseIdx].glucose ?? 0)) / 2;
+            bucketedData[bucketIndex].glucose =
+                ((bucketedData[bucketIndex].glucose ?? 0) + (glucoseData[glucoseIdx].glucose ?? 0)) / 2;
         }
 
         lastValidIndex = glucoseIdx;
     }
 
-    return bucketed_data;
+    return bucketedData;
 }
 
 // ---------------------------------------------------------------------------
@@ -123,24 +123,24 @@ export function bucketGlucoseWithInterpolation(
  * the original glucose data at lastValidIndex.
  */
 function resolveLastBucketTime(
-    bucketed_data: BucketedGlucose[],
+    bucketedData: BucketedGlucose[],
     lastValidIndex: number,
-    glucose_data: GlucoseEntry[],
+    glucoseData: GlucoseEntry[],
 ): Date | undefined {
     // Buckets only carry display_time (not dateString), matching original behavior
-    const lastBucket = bucketed_data[bucketed_data.length - 1];
+    const lastBucket = bucketedData[bucketedData.length - 1];
     if (lastBucket.display_time) {
         return new Date(lastBucket.display_time.replace('T', ' '));
     }
     if (lastValidIndex >= 0) {
-        return resolveGlucoseTime(glucose_data[lastValidIndex]);
+        return resolveGlucoseTime(glucoseData[lastValidIndex]);
     }
     return undefined;
 }
 
 /** Fills in interpolated 5-minute BG data points across a gap in CGM readings. */
 export function interpolateMissingPoints(
-    bucketed_data: BucketedGlucose[],
+    bucketedData: BucketedGlucose[],
     startBucketIndex: number,
     lastBgTime: Date,
     lastValidBg: number,
@@ -156,11 +156,11 @@ export function interpolateMissingPoints(
     while (remaining > PRED_INTERVAL_MINUTES) {
         const previousBgTime = new Date(currentBgTime.getTime() - MS_PER_5_MIN);
         bucketIndex++;
-        bucketed_data[bucketIndex] = {} as BucketedGlucose;
-        bucketed_data[bucketIndex].date = previousBgTime.getTime();
+        bucketedData[bucketIndex] = {} as BucketedGlucose;
+        bucketedData[bucketIndex].date = previousBgTime.getTime();
         const gapDelta = targetBg - lastBg;
         const previousBg = lastBg + (PRED_INTERVAL_MINUTES / remaining * gapDelta);
-        bucketed_data[bucketIndex].glucose = Math.round(previousBg);
+        bucketedData[bucketIndex].glucose = Math.round(previousBg);
 
         remaining -= PRED_INTERVAL_MINUTES;
         lastBg = previousBg;

@@ -13,17 +13,17 @@ export function detectSensitivity(inputs: AutosensInputs): AutosensResult {
     const {
         treatments,
         meals,
-        bucketed_data,
+        bucketed_data: bucketedData,
         lastSiteChange,
-        iob_inputs,
+        iob_inputs: iobInputs,
         basalprofile,
         profile,
     } = prepareAutosensData(inputs);
 
     const { deviations, avgDeltas, bgis } = analyzeDeviations(
-        bucketed_data,
+        bucketedData,
         meals,
-        iob_inputs,
+        iobInputs,
         basalprofile,
         profile,
         treatments,

@@ -55,9 +55,9 @@ export interface DeviationAnalysisResult {
 
 /** Run the main autosens deviation analysis loop */
 export function analyzeDeviations(
-    bucketed_data: (GlucoseEntry & { mealCarbs?: number })[],
+    bucketedData: (GlucoseEntry & { mealCarbs?: number })[],
     meals: CarbTreatment[],
-    iob_inputs: { profile: IobProfile; history: unknown[]; clock: ISODateString },
+    iobInputs: { profile: IobProfile; history: unknown[]; clock: ISODateString },
     basalprofile: HistoryBasalProfileEntry[],
     profile: IobProfile,
     treatments: IobTreatment[],
@@ -77,8 +77,8 @@ export function analyzeDeviations(
     let BGDate: Date;
     let BGTime: number;
     let bgTime: Date | undefined;
-    let last_bg: number;
-    let old_bg: number;
+    let lastBG: number;
+    let oldBG: number;
     let displayCOB: number;
 
     // Meal absorption state machine
@@ -92,8 +92,8 @@ export function analyzeDeviations(
 
     const isfProfileData = profile.isfProfile as NonNullable<typeof profile.isfProfile>;
 
-    for (let bucketIdx = TRAILING_BUCKETS; bucketIdx < bucketed_data.length; ++bucketIdx) {
-        const entry = bucketed_data[bucketIdx];
+    for (let bucketIdx = TRAILING_BUCKETS; bucketIdx < bucketedData.length; ++bucketIdx) {
+        const entry = bucketedData[bucketIdx];
         bgTime = entry.date != null
             ? new Date(entry.date)
             : (resolveGlucoseTime(entry) ?? new Date(NaN));
@@ -106,20 +106,20 @@ export function analyzeDeviations(
         let avgDelta: number;
         let delta: number;
 
-        if (bucketed_data[bucketIdx].glucose !== undefined) {
-            bg = Number(bucketed_data[bucketIdx].glucose);
-            last_bg = Number(bucketed_data[bucketIdx - 1].glucose);
-            old_bg = Number(bucketed_data[bucketIdx - TRAILING_BUCKETS].glucose);
+        if (bucketedData[bucketIdx].glucose !== undefined) {
+            bg = Number(bucketedData[bucketIdx].glucose);
+            lastBG = Number(bucketedData[bucketIdx - 1].glucose);
+            oldBG = Number(bucketedData[bucketIdx - TRAILING_BUCKETS].glucose);
 
             if (isNaN(bg) || !bg || bg < AUTOSENS_MIN_VALID_BG
-                || isNaN(old_bg) || !old_bg || old_bg < AUTOSENS_MIN_VALID_BG
-                || isNaN(last_bg) || !last_bg || last_bg < AUTOSENS_MIN_VALID_BG) {
+                || isNaN(oldBG) || !oldBG || oldBG < AUTOSENS_MIN_VALID_BG
+                || isNaN(lastBG) || !lastBG || lastBG < AUTOSENS_MIN_VALID_BG) {
                 logLine += "!";
                 continue;
             }
 
-            avgDelta = (bg - old_bg) / TRAILING_BUCKETS;
-            delta = bg - last_bg;
+            avgDelta = (bg - oldBG) / TRAILING_BUCKETS;
+            delta = bg - lastBG;
         } else {
             console.log("Could not find glucose data");
             continue;
@@ -129,15 +129,15 @@ export function analyzeDeviations(
         // Phase 2: Calculate IOB and deviation
         // -----------------------------------------------------------------
         avgDelta = parseFloat(avgDelta.toFixed(2));
-        iob_inputs.clock = bgTime.toISOString();
-        iob_inputs.profile.current_basal = Number(getCurrentBasalRate(basalprofile, bgTime));
-        iob_inputs.profile.temptargetSet = false;
-        const iob = get_iob(iob_inputs as IobInputs, true, treatments)[0];
+        iobInputs.clock = bgTime.toISOString();
+        iobInputs.profile.current_basal = Number(getCurrentBasalRate(basalprofile, bgTime));
+        iobInputs.profile.temptargetSet = false;
+        const iob = get_iob(iobInputs as IobInputs, true, treatments)[0];
 
         const bgImpact = calculateBGImpact(iob.activity, sens);
         let deviation = NaN;
         if (isNaN(delta)) {
-            console.log(`Bad delta: ${delta} ${bg} ${last_bg} ${old_bg}`);
+            console.log(`Bad delta: ${delta} ${bg} ${lastBG} ${oldBG}`);
         } else {
             deviation = calculateDeviation(delta, bgImpact, bg, MIN_BG_TARGET);
         }
@@ -145,7 +145,7 @@ export function analyzeDeviations(
         // -----------------------------------------------------------------
         // Phase 3: Track meal COB from treatment history
         // -----------------------------------------------------------------
-        glucoseDatum = bucketed_data[bucketIdx];
+        glucoseDatum = bucketedData[bucketIdx];
         BGDate = new Date(Number(glucoseDatum.date));
         BGTime = BGDate.getTime();
 
@@ -208,7 +208,7 @@ export function analyzeDeviations(
                 logLine += ")";
             }
 
-            const currentBasal = iob_inputs.profile.current_basal;
+            const currentBasal = iobInputs.profile.current_basal;
 
             // UAM (unannounced meal) detection
             if ((!retrospective && iob.iob > UAM_IOB_BASAL_MULTIPLIER * currentBasal) || uam || mealStartCounter < MEAL_EXCLUSION_COUNTER) {
