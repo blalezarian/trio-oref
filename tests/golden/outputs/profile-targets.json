@@ -1,0 +1,44 @@
+{
+  "single target": {
+    "offset": 0,
+    "low": 110,
+    "high": 110,
+    "min_bg": 110,
+    "max_bg": 110
+  },
+  "single target with timestamp": {
+    "offset": 0,
+    "low": 110,
+    "high": 110,
+    "min_bg": 110,
+    "max_bg": 110
+  },
+  "multiple targets - night": {
+    "offset": 480,
+    "low": 110,
+    "high": 110,
+    "min_bg": 110,
+    "max_bg": 110
+  },
+  "active temp target": {
+    "offset": 0,
+    "low": 110,
+    "high": 110,
+    "min_bg": 110,
+    "max_bg": 110
+  },
+  "expired temp target": {
+    "offset": 0,
+    "low": 110,
+    "high": 110,
+    "min_bg": 110,
+    "max_bg": 110
+  },
+  "mmol/L conversion": {
+    "offset": 0,
+    "low": 99,
+    "high": 99,
+    "min_bg": 99,
+    "max_bg": 99
+  }
+}

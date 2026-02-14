@@ -1,0 +1,55 @@
+{
+  "empty inputs": [],
+  "single carb entry": [
+    {
+      "timestamp": "2025-01-15T11:30:00.000Z",
+      "carbs": 45,
+      "nsCarbs": 45
+    }
+  ],
+  "multiple carb entries": [
+    {
+      "timestamp": "2025-01-15T10:00:00.000Z",
+      "carbs": 30,
+      "nsCarbs": 30
+    },
+    {
+      "timestamp": "2025-01-15T11:30:00.000Z",
+      "carbs": 45,
+      "nsCarbs": 45
+    }
+  ],
+  "pump bolus": [
+    {
+      "timestamp": "2025-01-15T11:30:00.000Z",
+      "bolus": 4
+    }
+  ],
+  "Meal Bolus careportal": [
+    {
+      "carbs": 45,
+      "nsCarbs": 45,
+      "timestamp": "2025-01-15T11:30:00.000Z",
+      "bolus": 3
+    }
+  ],
+  "Correction Bolus": [],
+  "carbs and bolus from different sources": [
+    {
+      "timestamp": "2025-01-15T11:30:00.000Z",
+      "carbs": 45,
+      "nsCarbs": 45
+    },
+    {
+      "timestamp": "2025-01-15T11:30:00.000Z",
+      "bolus": 4
+    }
+  ],
+  "duplicate entries deduplicated": [
+    {
+      "timestamp": "2025-01-15T11:30:00.000Z",
+      "carbs": 45,
+      "nsCarbs": 45
+    }
+  ]
+}

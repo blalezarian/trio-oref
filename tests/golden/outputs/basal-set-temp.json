@@ -1,0 +1,47 @@
+{
+  "getMaxSafeBasal: standard profile": 3.5,
+  "getMaxSafeBasal: max_basal limiting": 2,
+  "getMaxSafeBasal: daily multiplier limiting": 1.9500000000000002,
+  "getMaxSafeBasal: current basal multiplier limiting": 1.8,
+  "getMaxSafeBasal: NaN daily multiplier defaults to 3": 3.5,
+  "getMaxSafeBasal: null daily multiplier defaults to 3": 3.5,
+  "getMaxSafeBasal: NaN current basal multiplier defaults to 4": 3.5,
+  "getMaxSafeBasal: null current basal multiplier defaults to 4": 3.5,
+  "getMaxSafeBasal: very high basal (5 U/hr)": 3.5,
+  "getMaxSafeBasal: very low basal (0.1 U/hr)": 0.4,
+  "setTempBasal: high temp no temp running": {
+    "duration": 30,
+    "rate": 2,
+    "reason": ""
+  },
+  "setTempBasal: zero temp": {
+    "duration": 30,
+    "rate": 0,
+    "reason": ""
+  },
+  "setTempBasal: negative rate clamped to zero": {
+    "duration": 30,
+    "rate": 0,
+    "reason": ""
+  },
+  "setTempBasal: high rate clamped to maxSafeBasal": {
+    "duration": 30,
+    "rate": 3.5,
+    "reason": ""
+  },
+  "setTempBasal: similar temp already running": {
+    "duration": 0,
+    "rate": 0,
+    "reason": " 25m left and 1.5 ~ req 1.5U/hr: no temp required"
+  },
+  "setTempBasal: neutral temp skip_neutral_temps=false": {
+    "duration": 30,
+    "rate": 0.9,
+    "reason": "Setting neutral temp basal of 0.9U/hr"
+  },
+  "setTempBasal: neutral temp skip_neutral_temps=true": {
+    "duration": 0,
+    "rate": 0,
+    "reason": "Suggested rate is same as profile rate, no temp basal is active, doing nothing"
+  }
+}

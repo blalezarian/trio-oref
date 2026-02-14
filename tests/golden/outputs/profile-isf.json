@@ -1,0 +1,8 @@
+{
+  "single sensitivity": 40,
+  "single sensitivity with timestamp": 40,
+  "multiple sensitivities - midnight": 40,
+  "multiple sensitivities - noon": 40,
+  "multiple sensitivities - late evening": 40,
+  "first offset not zero": 40
+}

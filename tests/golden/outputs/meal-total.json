@@ -1,0 +1,193 @@
+{
+  "empty treatments": {
+    "carbs": 0,
+    "nsCarbs": 0,
+    "bwCarbs": 0,
+    "journalCarbs": 0,
+    "mealCOB": 0,
+    "currentDeviation": 0,
+    "maxDeviation": 0,
+    "minDeviation": 0,
+    "slopeFromMaxDeviation": 0,
+    "slopeFromMinDeviation": 0,
+    "allDeviations": [
+      0,
+      0,
+      0
+    ],
+    "lastCarbTime": 0,
+    "bwFound": false
+  },
+  "null treatments": {},
+  "single nsCarb 45g at 30m": {
+    "carbs": 45,
+    "nsCarbs": 45,
+    "bwCarbs": 0,
+    "journalCarbs": 0,
+    "mealCOB": 39,
+    "currentDeviation": 0,
+    "maxDeviation": 0,
+    "minDeviation": 0,
+    "slopeFromMaxDeviation": 0,
+    "slopeFromMinDeviation": 0,
+    "allDeviations": [
+      0,
+      0,
+      0
+    ],
+    "lastCarbTime": 1736940600000,
+    "bwFound": false
+  },
+  "single bwCarb 30g at 30m": {
+    "carbs": 30,
+    "nsCarbs": 0,
+    "bwCarbs": 30,
+    "journalCarbs": 0,
+    "mealCOB": 24,
+    "currentDeviation": 0,
+    "maxDeviation": 0,
+    "minDeviation": 0,
+    "slopeFromMaxDeviation": 0,
+    "slopeFromMinDeviation": 0,
+    "allDeviations": [
+      0,
+      0,
+      0
+    ],
+    "lastCarbTime": 1736940600000,
+    "bwFound": true
+  },
+  "single journalCarb 20g at 45m": {
+    "carbs": 20,
+    "nsCarbs": 0,
+    "bwCarbs": 0,
+    "journalCarbs": 20,
+    "mealCOB": 14,
+    "currentDeviation": 0,
+    "maxDeviation": 0,
+    "minDeviation": 0,
+    "slopeFromMaxDeviation": 0,
+    "slopeFromMinDeviation": 0,
+    "allDeviations": [
+      0,
+      0,
+      0
+    ],
+    "lastCarbTime": 1736939700000,
+    "bwFound": false
+  },
+  "treatment outside window (7h ago)": {
+    "carbs": 0,
+    "nsCarbs": 0,
+    "bwCarbs": 0,
+    "journalCarbs": 0,
+    "mealCOB": 0,
+    "currentDeviation": 0,
+    "maxDeviation": 0,
+    "minDeviation": 0,
+    "slopeFromMaxDeviation": 0,
+    "slopeFromMinDeviation": 0,
+    "allDeviations": [
+      0,
+      0,
+      0
+    ],
+    "lastCarbTime": 0,
+    "bwFound": false
+  },
+  "multiple treatments": {
+    "carbs": 60,
+    "nsCarbs": 60,
+    "bwCarbs": 0,
+    "journalCarbs": 0,
+    "mealCOB": 54,
+    "currentDeviation": 0,
+    "maxDeviation": 0,
+    "minDeviation": 0,
+    "slopeFromMaxDeviation": 0,
+    "slopeFromMinDeviation": 0,
+    "allDeviations": [
+      0,
+      0,
+      0
+    ],
+    "lastCarbTime": 1736940600000,
+    "bwFound": false
+  },
+  "maxCOB enforcement": {
+    "carbs": 100,
+    "nsCarbs": 100,
+    "bwCarbs": 0,
+    "journalCarbs": 0,
+    "mealCOB": 5,
+    "currentDeviation": 0,
+    "maxDeviation": 0,
+    "minDeviation": 0,
+    "slopeFromMaxDeviation": 0,
+    "slopeFromMinDeviation": 0,
+    "allDeviations": [
+      0,
+      0,
+      0
+    ],
+    "lastCarbTime": 1736940600000,
+    "bwFound": false
+  },
+  "rising glucose": {
+    "carbs": 45,
+    "nsCarbs": 45,
+    "bwCarbs": 0,
+    "journalCarbs": 0,
+    "mealCOB": 39,
+    "currentDeviation": 5,
+    "maxDeviation": 5,
+    "minDeviation": 5,
+    "slopeFromMaxDeviation": 0,
+    "slopeFromMinDeviation": 0,
+    "allDeviations": [
+      5,
+      5,
+      5
+    ],
+    "lastCarbTime": 1736940600000,
+    "bwFound": false
+  },
+  "unclassified carbs": {
+    "carbs": 40,
+    "nsCarbs": 0,
+    "bwCarbs": 0,
+    "journalCarbs": 0,
+    "mealCOB": 34,
+    "currentDeviation": 0,
+    "maxDeviation": 0,
+    "minDeviation": 0,
+    "slopeFromMaxDeviation": 0,
+    "slopeFromMinDeviation": 0,
+    "allDeviations": [
+      0,
+      0,
+      0
+    ],
+    "lastCarbTime": 1736940600000,
+    "bwFound": false
+  },
+  "future treatment": {
+    "carbs": 0,
+    "nsCarbs": 0,
+    "bwCarbs": 0,
+    "journalCarbs": 0,
+    "mealCOB": 0,
+    "currentDeviation": 0,
+    "maxDeviation": 0,
+    "minDeviation": 0,
+    "slopeFromMaxDeviation": 0,
+    "slopeFromMinDeviation": 0,
+    "allDeviations": [
+      0,
+      0,
+      0
+    ],
+    "lastCarbTime": 0,
+    "bwFound": false
+  }
+}

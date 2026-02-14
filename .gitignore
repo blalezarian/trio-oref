@@ -21,5 +21,8 @@ coverage/
 # local dev notes
 .local/
 
+# temporary reference files
+tmp/
+
 # python bytecache
 *.pyc

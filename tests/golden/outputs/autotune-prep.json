@@ -1,0 +1,2147 @@
+{
+  "empty inputs": {
+    "_error": "\"undefined\" is not valid JSON"
+  },
+  "flat glucose no history": {
+    "CRData": [],
+    "CSFGlucoseData": [],
+    "ISFGlucoseData": [],
+    "basalGlucoseData": [
+      {
+        "glucose": 120,
+        "date": 1736929500000,
+        "dateString": "2025-01-15T08:25:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736929800000,
+        "dateString": "2025-01-15T08:30:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736930100000,
+        "dateString": "2025-01-15T08:35:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736930400000,
+        "dateString": "2025-01-15T08:40:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736930700000,
+        "dateString": "2025-01-15T08:45:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736931000000,
+        "dateString": "2025-01-15T08:50:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736931300000,
+        "dateString": "2025-01-15T08:55:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736931600000,
+        "dateString": "2025-01-15T09:00:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736931900000,
+        "dateString": "2025-01-15T09:05:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736932200000,
+        "dateString": "2025-01-15T09:10:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736932500000,
+        "dateString": "2025-01-15T09:15:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736932800000,
+        "dateString": "2025-01-15T09:20:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736933100000,
+        "dateString": "2025-01-15T09:25:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736933400000,
+        "dateString": "2025-01-15T09:30:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736933700000,
+        "dateString": "2025-01-15T09:35:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736934000000,
+        "dateString": "2025-01-15T09:40:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736934300000,
+        "dateString": "2025-01-15T09:45:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736934600000,
+        "dateString": "2025-01-15T09:50:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736934900000,
+        "dateString": "2025-01-15T09:55:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736935200000,
+        "dateString": "2025-01-15T10:00:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736935500000,
+        "dateString": "2025-01-15T10:05:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736935800000,
+        "dateString": "2025-01-15T10:10:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736936100000,
+        "dateString": "2025-01-15T10:15:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736936400000,
+        "dateString": "2025-01-15T10:20:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736936700000,
+        "dateString": "2025-01-15T10:25:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736937000000,
+        "dateString": "2025-01-15T10:30:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736937300000,
+        "dateString": "2025-01-15T10:35:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736937600000,
+        "dateString": "2025-01-15T10:40:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736937900000,
+        "dateString": "2025-01-15T10:45:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736938200000,
+        "dateString": "2025-01-15T10:50:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736938500000,
+        "dateString": "2025-01-15T10:55:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736938800000,
+        "dateString": "2025-01-15T11:00:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736939100000,
+        "dateString": "2025-01-15T11:05:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736939400000,
+        "dateString": "2025-01-15T11:10:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736939700000,
+        "dateString": "2025-01-15T11:15:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736940000000,
+        "dateString": "2025-01-15T11:20:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736940300000,
+        "dateString": "2025-01-15T11:25:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736940600000,
+        "dateString": "2025-01-15T11:30:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736940900000,
+        "dateString": "2025-01-15T11:35:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736941200000,
+        "dateString": "2025-01-15T11:40:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736941500000,
+        "dateString": "2025-01-15T11:45:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736941800000,
+        "dateString": "2025-01-15T11:50:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736942100000,
+        "dateString": "2025-01-15T11:55:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      }
+    ]
+  },
+  "rising glucose no history": {
+    "CRData": [],
+    "CSFGlucoseData": [],
+    "ISFGlucoseData": [],
+    "basalGlucoseData": [
+      {
+        "glucose": 104,
+        "date": 1736929500000,
+        "dateString": "2025-01-15T08:25:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00"
+      },
+      {
+        "glucose": 105,
+        "date": 1736929800000,
+        "dateString": "2025-01-15T08:30:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00"
+      },
+      {
+        "glucose": 106,
+        "date": 1736930100000,
+        "dateString": "2025-01-15T08:35:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00"
+      },
+      {
+        "glucose": 107,
+        "date": 1736930400000,
+        "dateString": "2025-01-15T08:40:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00"
+      },
+      {
+        "glucose": 108,
+        "date": 1736930700000,
+        "dateString": "2025-01-15T08:45:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00"
+      },
+      {
+        "glucose": 109,
+        "date": 1736931000000,
+        "dateString": "2025-01-15T08:50:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00"
+      },
+      {
+        "glucose": 110,
+        "date": 1736931300000,
+        "dateString": "2025-01-15T08:55:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00"
+      },
+      {
+        "glucose": 111,
+        "date": 1736931600000,
+        "dateString": "2025-01-15T09:00:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00"
+      },
+      {
+        "glucose": 112,
+        "date": 1736931900000,
+        "dateString": "2025-01-15T09:05:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00"
+      },
+      {
+        "glucose": 113,
+        "date": 1736932200000,
+        "dateString": "2025-01-15T09:10:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00"
+      },
+      {
+        "glucose": 114,
+        "date": 1736932500000,
+        "dateString": "2025-01-15T09:15:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00"
+      },
+      {
+        "glucose": 115,
+        "date": 1736932800000,
+        "dateString": "2025-01-15T09:20:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00"
+      },
+      {
+        "glucose": 116,
+        "date": 1736933100000,
+        "dateString": "2025-01-15T09:25:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00"
+      },
+      {
+        "glucose": 117,
+        "date": 1736933400000,
+        "dateString": "2025-01-15T09:30:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00"
+      },
+      {
+        "glucose": 118,
+        "date": 1736933700000,
+        "dateString": "2025-01-15T09:35:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00"
+      },
+      {
+        "glucose": 119,
+        "date": 1736934000000,
+        "dateString": "2025-01-15T09:40:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736934300000,
+        "dateString": "2025-01-15T09:45:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00"
+      },
+      {
+        "glucose": 121,
+        "date": 1736934600000,
+        "dateString": "2025-01-15T09:50:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00"
+      },
+      {
+        "glucose": 122,
+        "date": 1736934900000,
+        "dateString": "2025-01-15T09:55:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00"
+      },
+      {
+        "glucose": 123,
+        "date": 1736935200000,
+        "dateString": "2025-01-15T10:00:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00"
+      },
+      {
+        "glucose": 124,
+        "date": 1736935500000,
+        "dateString": "2025-01-15T10:05:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00"
+      },
+      {
+        "glucose": 125,
+        "date": 1736935800000,
+        "dateString": "2025-01-15T10:10:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00"
+      },
+      {
+        "glucose": 126,
+        "date": 1736936100000,
+        "dateString": "2025-01-15T10:15:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00"
+      },
+      {
+        "glucose": 127,
+        "date": 1736936400000,
+        "dateString": "2025-01-15T10:20:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00"
+      },
+      {
+        "glucose": 128,
+        "date": 1736936700000,
+        "dateString": "2025-01-15T10:25:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00"
+      },
+      {
+        "glucose": 129,
+        "date": 1736937000000,
+        "dateString": "2025-01-15T10:30:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00"
+      },
+      {
+        "glucose": 130,
+        "date": 1736937300000,
+        "dateString": "2025-01-15T10:35:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00"
+      },
+      {
+        "glucose": 131,
+        "date": 1736937600000,
+        "dateString": "2025-01-15T10:40:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00"
+      },
+      {
+        "glucose": 132,
+        "date": 1736937900000,
+        "dateString": "2025-01-15T10:45:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00"
+      },
+      {
+        "glucose": 133,
+        "date": 1736938200000,
+        "dateString": "2025-01-15T10:50:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00"
+      },
+      {
+        "glucose": 134,
+        "date": 1736938500000,
+        "dateString": "2025-01-15T10:55:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00"
+      },
+      {
+        "glucose": 135,
+        "date": 1736938800000,
+        "dateString": "2025-01-15T11:00:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00"
+      },
+      {
+        "glucose": 136,
+        "date": 1736939100000,
+        "dateString": "2025-01-15T11:05:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00"
+      },
+      {
+        "glucose": 137,
+        "date": 1736939400000,
+        "dateString": "2025-01-15T11:10:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00"
+      },
+      {
+        "glucose": 138,
+        "date": 1736939700000,
+        "dateString": "2025-01-15T11:15:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00"
+      },
+      {
+        "glucose": 139,
+        "date": 1736940000000,
+        "dateString": "2025-01-15T11:20:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00"
+      },
+      {
+        "glucose": 140,
+        "date": 1736940300000,
+        "dateString": "2025-01-15T11:25:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00"
+      },
+      {
+        "glucose": 141,
+        "date": 1736940600000,
+        "dateString": "2025-01-15T11:30:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00"
+      },
+      {
+        "glucose": 142,
+        "date": 1736940900000,
+        "dateString": "2025-01-15T11:35:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00"
+      },
+      {
+        "glucose": 143,
+        "date": 1736941200000,
+        "dateString": "2025-01-15T11:40:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00"
+      },
+      {
+        "glucose": 144,
+        "date": 1736941500000,
+        "dateString": "2025-01-15T11:45:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00"
+      },
+      {
+        "glucose": 145,
+        "date": 1736941800000,
+        "dateString": "2025-01-15T11:50:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00"
+      },
+      {
+        "glucose": 146,
+        "date": 1736942100000,
+        "dateString": "2025-01-15T11:55:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00"
+      }
+    ]
+  },
+  "falling glucose no history": {
+    "CRData": [],
+    "CSFGlucoseData": [],
+    "ISFGlucoseData": [],
+    "basalGlucoseData": [
+      {
+        "glucose": 196,
+        "date": 1736929500000,
+        "dateString": "2025-01-15T08:25:00.000Z",
+        "avgDelta": "-1.00",
+        "BGI": 0,
+        "deviation": "-1.00"
+      },
+      {
+        "glucose": 195,
+        "date": 1736929800000,
+        "dateString": "2025-01-15T08:30:00.000Z",
+        "avgDelta": "-1.00",
+        "BGI": 0,
+        "deviation": "-1.00"
+      },
+      {
+        "glucose": 194,
+        "date": 1736930100000,
+        "dateString": "2025-01-15T08:35:00.000Z",
+        "avgDelta": "-1.00",
+        "BGI": 0,
+        "deviation": "-1.00"
+      },
+      {
+        "glucose": 193,
+        "date": 1736930400000,
+        "dateString": "2025-01-15T08:40:00.000Z",
+        "avgDelta": "-1.00",
+        "BGI": 0,
+        "deviation": "-1.00"
+      },
+      {
+        "glucose": 192,
+        "date": 1736930700000,
+        "dateString": "2025-01-15T08:45:00.000Z",
+        "avgDelta": "-1.00",
+        "BGI": 0,
+        "deviation": "-1.00"
+      },
+      {
+        "glucose": 191,
+        "date": 1736931000000,
+        "dateString": "2025-01-15T08:50:00.000Z",
+        "avgDelta": "-1.00",
+        "BGI": 0,
+        "deviation": "-1.00"
+      },
+      {
+        "glucose": 190,
+        "date": 1736931300000,
+        "dateString": "2025-01-15T08:55:00.000Z",
+        "avgDelta": "-1.00",
+        "BGI": 0,
+        "deviation": "-1.00"
+      },
+      {
+        "glucose": 189,
+        "date": 1736931600000,
+        "dateString": "2025-01-15T09:00:00.000Z",
+        "avgDelta": "-1.00",
+        "BGI": 0,
+        "deviation": "-1.00"
+      },
+      {
+        "glucose": 188,
+        "date": 1736931900000,
+        "dateString": "2025-01-15T09:05:00.000Z",
+        "avgDelta": "-1.00",
+        "BGI": 0,
+        "deviation": "-1.00"
+      },
+      {
+        "glucose": 187,
+        "date": 1736932200000,
+        "dateString": "2025-01-15T09:10:00.000Z",
+        "avgDelta": "-1.00",
+        "BGI": 0,
+        "deviation": "-1.00"
+      },
+      {
+        "glucose": 186,
+        "date": 1736932500000,
+        "dateString": "2025-01-15T09:15:00.000Z",
+        "avgDelta": "-1.00",
+        "BGI": 0,
+        "deviation": "-1.00"
+      },
+      {
+        "glucose": 185,
+        "date": 1736932800000,
+        "dateString": "2025-01-15T09:20:00.000Z",
+        "avgDelta": "-1.00",
+        "BGI": 0,
+        "deviation": "-1.00"
+      },
+      {
+        "glucose": 184,
+        "date": 1736933100000,
+        "dateString": "2025-01-15T09:25:00.000Z",
+        "avgDelta": "-1.00",
+        "BGI": 0,
+        "deviation": "-1.00"
+      },
+      {
+        "glucose": 183,
+        "date": 1736933400000,
+        "dateString": "2025-01-15T09:30:00.000Z",
+        "avgDelta": "-1.00",
+        "BGI": 0,
+        "deviation": "-1.00"
+      },
+      {
+        "glucose": 182,
+        "date": 1736933700000,
+        "dateString": "2025-01-15T09:35:00.000Z",
+        "avgDelta": "-1.00",
+        "BGI": 0,
+        "deviation": "-1.00"
+      },
+      {
+        "glucose": 181,
+        "date": 1736934000000,
+        "dateString": "2025-01-15T09:40:00.000Z",
+        "avgDelta": "-1.00",
+        "BGI": 0,
+        "deviation": "-1.00"
+      },
+      {
+        "glucose": 180,
+        "date": 1736934300000,
+        "dateString": "2025-01-15T09:45:00.000Z",
+        "avgDelta": "-1.00",
+        "BGI": 0,
+        "deviation": "-1.00"
+      },
+      {
+        "glucose": 179,
+        "date": 1736934600000,
+        "dateString": "2025-01-15T09:50:00.000Z",
+        "avgDelta": "-1.00",
+        "BGI": 0,
+        "deviation": "-1.00"
+      },
+      {
+        "glucose": 178,
+        "date": 1736934900000,
+        "dateString": "2025-01-15T09:55:00.000Z",
+        "avgDelta": "-1.00",
+        "BGI": 0,
+        "deviation": "-1.00"
+      },
+      {
+        "glucose": 177,
+        "date": 1736935200000,
+        "dateString": "2025-01-15T10:00:00.000Z",
+        "avgDelta": "-1.00",
+        "BGI": 0,
+        "deviation": "-1.00"
+      },
+      {
+        "glucose": 176,
+        "date": 1736935500000,
+        "dateString": "2025-01-15T10:05:00.000Z",
+        "avgDelta": "-1.00",
+        "BGI": 0,
+        "deviation": "-1.00"
+      },
+      {
+        "glucose": 175,
+        "date": 1736935800000,
+        "dateString": "2025-01-15T10:10:00.000Z",
+        "avgDelta": "-1.00",
+        "BGI": 0,
+        "deviation": "-1.00"
+      },
+      {
+        "glucose": 174,
+        "date": 1736936100000,
+        "dateString": "2025-01-15T10:15:00.000Z",
+        "avgDelta": "-1.00",
+        "BGI": 0,
+        "deviation": "-1.00"
+      },
+      {
+        "glucose": 173,
+        "date": 1736936400000,
+        "dateString": "2025-01-15T10:20:00.000Z",
+        "avgDelta": "-1.00",
+        "BGI": 0,
+        "deviation": "-1.00"
+      },
+      {
+        "glucose": 172,
+        "date": 1736936700000,
+        "dateString": "2025-01-15T10:25:00.000Z",
+        "avgDelta": "-1.00",
+        "BGI": 0,
+        "deviation": "-1.00"
+      },
+      {
+        "glucose": 171,
+        "date": 1736937000000,
+        "dateString": "2025-01-15T10:30:00.000Z",
+        "avgDelta": "-1.00",
+        "BGI": 0,
+        "deviation": "-1.00"
+      },
+      {
+        "glucose": 170,
+        "date": 1736937300000,
+        "dateString": "2025-01-15T10:35:00.000Z",
+        "avgDelta": "-1.00",
+        "BGI": 0,
+        "deviation": "-1.00"
+      },
+      {
+        "glucose": 169,
+        "date": 1736937600000,
+        "dateString": "2025-01-15T10:40:00.000Z",
+        "avgDelta": "-1.00",
+        "BGI": 0,
+        "deviation": "-1.00"
+      },
+      {
+        "glucose": 168,
+        "date": 1736937900000,
+        "dateString": "2025-01-15T10:45:00.000Z",
+        "avgDelta": "-1.00",
+        "BGI": 0,
+        "deviation": "-1.00"
+      },
+      {
+        "glucose": 167,
+        "date": 1736938200000,
+        "dateString": "2025-01-15T10:50:00.000Z",
+        "avgDelta": "-1.00",
+        "BGI": 0,
+        "deviation": "-1.00"
+      },
+      {
+        "glucose": 166,
+        "date": 1736938500000,
+        "dateString": "2025-01-15T10:55:00.000Z",
+        "avgDelta": "-1.00",
+        "BGI": 0,
+        "deviation": "-1.00"
+      },
+      {
+        "glucose": 165,
+        "date": 1736938800000,
+        "dateString": "2025-01-15T11:00:00.000Z",
+        "avgDelta": "-1.00",
+        "BGI": 0,
+        "deviation": "-1.00"
+      },
+      {
+        "glucose": 164,
+        "date": 1736939100000,
+        "dateString": "2025-01-15T11:05:00.000Z",
+        "avgDelta": "-1.00",
+        "BGI": 0,
+        "deviation": "-1.00"
+      },
+      {
+        "glucose": 163,
+        "date": 1736939400000,
+        "dateString": "2025-01-15T11:10:00.000Z",
+        "avgDelta": "-1.00",
+        "BGI": 0,
+        "deviation": "-1.00"
+      },
+      {
+        "glucose": 162,
+        "date": 1736939700000,
+        "dateString": "2025-01-15T11:15:00.000Z",
+        "avgDelta": "-1.00",
+        "BGI": 0,
+        "deviation": "-1.00"
+      },
+      {
+        "glucose": 161,
+        "date": 1736940000000,
+        "dateString": "2025-01-15T11:20:00.000Z",
+        "avgDelta": "-1.00",
+        "BGI": 0,
+        "deviation": "-1.00"
+      },
+      {
+        "glucose": 160,
+        "date": 1736940300000,
+        "dateString": "2025-01-15T11:25:00.000Z",
+        "avgDelta": "-1.00",
+        "BGI": 0,
+        "deviation": "-1.00"
+      },
+      {
+        "glucose": 159,
+        "date": 1736940600000,
+        "dateString": "2025-01-15T11:30:00.000Z",
+        "avgDelta": "-1.00",
+        "BGI": 0,
+        "deviation": "-1.00"
+      },
+      {
+        "glucose": 158,
+        "date": 1736940900000,
+        "dateString": "2025-01-15T11:35:00.000Z",
+        "avgDelta": "-1.00",
+        "BGI": 0,
+        "deviation": "-1.00"
+      },
+      {
+        "glucose": 157,
+        "date": 1736941200000,
+        "dateString": "2025-01-15T11:40:00.000Z",
+        "avgDelta": "-1.00",
+        "BGI": 0,
+        "deviation": "-1.00"
+      },
+      {
+        "glucose": 156,
+        "date": 1736941500000,
+        "dateString": "2025-01-15T11:45:00.000Z",
+        "avgDelta": "-1.00",
+        "BGI": 0,
+        "deviation": "-1.00"
+      },
+      {
+        "glucose": 155,
+        "date": 1736941800000,
+        "dateString": "2025-01-15T11:50:00.000Z",
+        "avgDelta": "-1.00",
+        "BGI": 0,
+        "deviation": "-1.00"
+      },
+      {
+        "glucose": 154,
+        "date": 1736942100000,
+        "dateString": "2025-01-15T11:55:00.000Z",
+        "avgDelta": "-1.00",
+        "BGI": 0,
+        "deviation": "-1.00"
+      }
+    ]
+  },
+  "with bolus history": {
+    "CRData": [],
+    "CSFGlucoseData": [],
+    "ISFGlucoseData": [],
+    "basalGlucoseData": [
+      {
+        "glucose": 120,
+        "date": 1736929500000,
+        "dateString": "2025-01-15T08:25:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736929800000,
+        "dateString": "2025-01-15T08:30:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736930100000,
+        "dateString": "2025-01-15T08:35:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736930400000,
+        "dateString": "2025-01-15T08:40:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736930700000,
+        "dateString": "2025-01-15T08:45:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736931000000,
+        "dateString": "2025-01-15T08:50:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736931300000,
+        "dateString": "2025-01-15T08:55:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736931600000,
+        "dateString": "2025-01-15T09:00:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736931900000,
+        "dateString": "2025-01-15T09:05:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736932200000,
+        "dateString": "2025-01-15T09:10:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736932500000,
+        "dateString": "2025-01-15T09:15:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736932800000,
+        "dateString": "2025-01-15T09:20:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736933100000,
+        "dateString": "2025-01-15T09:25:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736933400000,
+        "dateString": "2025-01-15T09:30:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736933700000,
+        "dateString": "2025-01-15T09:35:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736934000000,
+        "dateString": "2025-01-15T09:40:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736934300000,
+        "dateString": "2025-01-15T09:45:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736934600000,
+        "dateString": "2025-01-15T09:50:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736934900000,
+        "dateString": "2025-01-15T09:55:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736935200000,
+        "dateString": "2025-01-15T10:00:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736935500000,
+        "dateString": "2025-01-15T10:05:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736935800000,
+        "dateString": "2025-01-15T10:10:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736936100000,
+        "dateString": "2025-01-15T10:15:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736936400000,
+        "dateString": "2025-01-15T10:20:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736936700000,
+        "dateString": "2025-01-15T10:25:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736937000000,
+        "dateString": "2025-01-15T10:30:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736937300000,
+        "dateString": "2025-01-15T10:35:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736937600000,
+        "dateString": "2025-01-15T10:40:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736937900000,
+        "dateString": "2025-01-15T10:45:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736938200000,
+        "dateString": "2025-01-15T10:50:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736938500000,
+        "dateString": "2025-01-15T10:55:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736938800000,
+        "dateString": "2025-01-15T11:00:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736939100000,
+        "dateString": "2025-01-15T11:05:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736939400000,
+        "dateString": "2025-01-15T11:10:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736939700000,
+        "dateString": "2025-01-15T11:15:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736940000000,
+        "dateString": "2025-01-15T11:20:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736940300000,
+        "dateString": "2025-01-15T11:25:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736940600000,
+        "dateString": "2025-01-15T11:30:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736940900000,
+        "dateString": "2025-01-15T11:35:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736941200000,
+        "dateString": "2025-01-15T11:40:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736941500000,
+        "dateString": "2025-01-15T11:45:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736941800000,
+        "dateString": "2025-01-15T11:50:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736942100000,
+        "dateString": "2025-01-15T11:55:00.000Z",
+        "avgDelta": "0.00",
+        "BGI": 0,
+        "deviation": "0.00"
+      }
+    ]
+  },
+  "with carbs": {
+    "CRData": [
+      {
+        "CRInitialIOB": 0,
+        "CRInitialBG": 144,
+        "CRInitialCarbTime": "2025-01-15T10:05:00.000Z",
+        "CREndIOB": 0,
+        "CREndBG": 166,
+        "CREndTime": "2025-01-15T11:55:00.000Z",
+        "CRCarbs": 45,
+        "CRInsulin": 0
+      }
+    ],
+    "CSFGlucoseData": [
+      {
+        "glucose": 144,
+        "date": 1736935500000,
+        "dateString": "2025-01-15T10:05:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00",
+        "mealAbsorption": "start",
+        "mealCarbs": 45
+      },
+      {
+        "glucose": 145,
+        "date": 1736935800000,
+        "dateString": "2025-01-15T10:10:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00",
+        "mealCarbs": 45
+      },
+      {
+        "glucose": 146,
+        "date": 1736936100000,
+        "dateString": "2025-01-15T10:15:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00",
+        "mealCarbs": 45
+      },
+      {
+        "glucose": 147,
+        "date": 1736936400000,
+        "dateString": "2025-01-15T10:20:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00",
+        "mealCarbs": 45
+      },
+      {
+        "glucose": 148,
+        "date": 1736936700000,
+        "dateString": "2025-01-15T10:25:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00",
+        "mealCarbs": 45
+      },
+      {
+        "glucose": 149,
+        "date": 1736937000000,
+        "dateString": "2025-01-15T10:30:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00",
+        "mealCarbs": 45
+      },
+      {
+        "glucose": 150,
+        "date": 1736937300000,
+        "dateString": "2025-01-15T10:35:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00",
+        "mealCarbs": 45
+      },
+      {
+        "glucose": 151,
+        "date": 1736937600000,
+        "dateString": "2025-01-15T10:40:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00",
+        "mealCarbs": 45
+      },
+      {
+        "glucose": 152,
+        "date": 1736937900000,
+        "dateString": "2025-01-15T10:45:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00",
+        "mealCarbs": 45
+      },
+      {
+        "glucose": 153,
+        "date": 1736938200000,
+        "dateString": "2025-01-15T10:50:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00",
+        "mealCarbs": 45
+      },
+      {
+        "glucose": 154,
+        "date": 1736938500000,
+        "dateString": "2025-01-15T10:55:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00",
+        "mealCarbs": 45
+      },
+      {
+        "glucose": 155,
+        "date": 1736938800000,
+        "dateString": "2025-01-15T11:00:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00",
+        "mealCarbs": 45
+      },
+      {
+        "glucose": 156,
+        "date": 1736939100000,
+        "dateString": "2025-01-15T11:05:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00",
+        "mealCarbs": 45
+      },
+      {
+        "glucose": 157,
+        "date": 1736939400000,
+        "dateString": "2025-01-15T11:10:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00",
+        "mealCarbs": 45
+      },
+      {
+        "glucose": 158,
+        "date": 1736939700000,
+        "dateString": "2025-01-15T11:15:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00",
+        "mealCarbs": 45
+      },
+      {
+        "glucose": 159,
+        "date": 1736940000000,
+        "dateString": "2025-01-15T11:20:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00",
+        "mealCarbs": 45
+      },
+      {
+        "glucose": 160,
+        "date": 1736940300000,
+        "dateString": "2025-01-15T11:25:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00",
+        "mealCarbs": 45
+      },
+      {
+        "glucose": 161,
+        "date": 1736940600000,
+        "dateString": "2025-01-15T11:30:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00",
+        "mealCarbs": 45
+      },
+      {
+        "glucose": 162,
+        "date": 1736940900000,
+        "dateString": "2025-01-15T11:35:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00",
+        "mealCarbs": 45
+      },
+      {
+        "glucose": 163,
+        "date": 1736941200000,
+        "dateString": "2025-01-15T11:40:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00",
+        "mealCarbs": 45
+      },
+      {
+        "glucose": 164,
+        "date": 1736941500000,
+        "dateString": "2025-01-15T11:45:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00",
+        "mealCarbs": 45
+      },
+      {
+        "glucose": 165,
+        "date": 1736941800000,
+        "dateString": "2025-01-15T11:50:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00",
+        "mealCarbs": 45
+      },
+      {
+        "glucose": 166,
+        "date": 1736942100000,
+        "dateString": "2025-01-15T11:55:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00",
+        "mealCarbs": 0
+      }
+    ],
+    "ISFGlucoseData": [],
+    "basalGlucoseData": [
+      {
+        "glucose": 124,
+        "date": 1736929500000,
+        "dateString": "2025-01-15T08:25:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00"
+      },
+      {
+        "glucose": 125,
+        "date": 1736929800000,
+        "dateString": "2025-01-15T08:30:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00"
+      },
+      {
+        "glucose": 126,
+        "date": 1736930100000,
+        "dateString": "2025-01-15T08:35:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00"
+      },
+      {
+        "glucose": 127,
+        "date": 1736930400000,
+        "dateString": "2025-01-15T08:40:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00"
+      },
+      {
+        "glucose": 128,
+        "date": 1736930700000,
+        "dateString": "2025-01-15T08:45:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00"
+      },
+      {
+        "glucose": 129,
+        "date": 1736931000000,
+        "dateString": "2025-01-15T08:50:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00"
+      },
+      {
+        "glucose": 130,
+        "date": 1736931300000,
+        "dateString": "2025-01-15T08:55:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00"
+      },
+      {
+        "glucose": 131,
+        "date": 1736931600000,
+        "dateString": "2025-01-15T09:00:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00"
+      },
+      {
+        "glucose": 132,
+        "date": 1736931900000,
+        "dateString": "2025-01-15T09:05:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00"
+      },
+      {
+        "glucose": 133,
+        "date": 1736932200000,
+        "dateString": "2025-01-15T09:10:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00"
+      },
+      {
+        "glucose": 134,
+        "date": 1736932500000,
+        "dateString": "2025-01-15T09:15:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00"
+      },
+      {
+        "glucose": 135,
+        "date": 1736932800000,
+        "dateString": "2025-01-15T09:20:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00"
+      },
+      {
+        "glucose": 136,
+        "date": 1736933100000,
+        "dateString": "2025-01-15T09:25:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00"
+      },
+      {
+        "glucose": 137,
+        "date": 1736933400000,
+        "dateString": "2025-01-15T09:30:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00"
+      },
+      {
+        "glucose": 138,
+        "date": 1736933700000,
+        "dateString": "2025-01-15T09:35:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00"
+      },
+      {
+        "glucose": 139,
+        "date": 1736934000000,
+        "dateString": "2025-01-15T09:40:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00"
+      },
+      {
+        "glucose": 140,
+        "date": 1736934300000,
+        "dateString": "2025-01-15T09:45:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00"
+      },
+      {
+        "glucose": 141,
+        "date": 1736934600000,
+        "dateString": "2025-01-15T09:50:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00"
+      },
+      {
+        "glucose": 142,
+        "date": 1736934900000,
+        "dateString": "2025-01-15T09:55:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00"
+      },
+      {
+        "glucose": 143,
+        "date": 1736935200000,
+        "dateString": "2025-01-15T10:00:00.000Z",
+        "avgDelta": "1.00",
+        "BGI": 0,
+        "deviation": "1.00"
+      }
+    ]
+  },
+  "categorize UAM as basal": {
+    "CRData": [],
+    "CSFGlucoseData": [],
+    "ISFGlucoseData": [],
+    "basalGlucoseData": [
+      {
+        "glucose": 108,
+        "date": 1736929500000,
+        "dateString": "2025-01-15T08:25:00.000Z",
+        "avgDelta": "2.00",
+        "BGI": 0,
+        "deviation": "2.00"
+      },
+      {
+        "glucose": 110,
+        "date": 1736929800000,
+        "dateString": "2025-01-15T08:30:00.000Z",
+        "avgDelta": "2.00",
+        "BGI": 0,
+        "deviation": "2.00"
+      },
+      {
+        "glucose": 112,
+        "date": 1736930100000,
+        "dateString": "2025-01-15T08:35:00.000Z",
+        "avgDelta": "2.00",
+        "BGI": 0,
+        "deviation": "2.00"
+      },
+      {
+        "glucose": 114,
+        "date": 1736930400000,
+        "dateString": "2025-01-15T08:40:00.000Z",
+        "avgDelta": "2.00",
+        "BGI": 0,
+        "deviation": "2.00"
+      },
+      {
+        "glucose": 116,
+        "date": 1736930700000,
+        "dateString": "2025-01-15T08:45:00.000Z",
+        "avgDelta": "2.00",
+        "BGI": 0,
+        "deviation": "2.00"
+      },
+      {
+        "glucose": 118,
+        "date": 1736931000000,
+        "dateString": "2025-01-15T08:50:00.000Z",
+        "avgDelta": "2.00",
+        "BGI": 0,
+        "deviation": "2.00"
+      },
+      {
+        "glucose": 120,
+        "date": 1736931300000,
+        "dateString": "2025-01-15T08:55:00.000Z",
+        "avgDelta": "2.00",
+        "BGI": 0,
+        "deviation": "2.00"
+      },
+      {
+        "glucose": 122,
+        "date": 1736931600000,
+        "dateString": "2025-01-15T09:00:00.000Z",
+        "avgDelta": "2.00",
+        "BGI": 0,
+        "deviation": "2.00"
+      },
+      {
+        "glucose": 124,
+        "date": 1736931900000,
+        "dateString": "2025-01-15T09:05:00.000Z",
+        "avgDelta": "2.00",
+        "BGI": 0,
+        "deviation": "2.00"
+      },
+      {
+        "glucose": 126,
+        "date": 1736932200000,
+        "dateString": "2025-01-15T09:10:00.000Z",
+        "avgDelta": "2.00",
+        "BGI": 0,
+        "deviation": "2.00"
+      },
+      {
+        "glucose": 128,
+        "date": 1736932500000,
+        "dateString": "2025-01-15T09:15:00.000Z",
+        "avgDelta": "2.00",
+        "BGI": 0,
+        "deviation": "2.00"
+      },
+      {
+        "glucose": 130,
+        "date": 1736932800000,
+        "dateString": "2025-01-15T09:20:00.000Z",
+        "avgDelta": "2.00",
+        "BGI": 0,
+        "deviation": "2.00"
+      },
+      {
+        "glucose": 132,
+        "date": 1736933100000,
+        "dateString": "2025-01-15T09:25:00.000Z",
+        "avgDelta": "2.00",
+        "BGI": 0,
+        "deviation": "2.00"
+      },
+      {
+        "glucose": 134,
+        "date": 1736933400000,
+        "dateString": "2025-01-15T09:30:00.000Z",
+        "avgDelta": "2.00",
+        "BGI": 0,
+        "deviation": "2.00"
+      },
+      {
+        "glucose": 136,
+        "date": 1736933700000,
+        "dateString": "2025-01-15T09:35:00.000Z",
+        "avgDelta": "2.00",
+        "BGI": 0,
+        "deviation": "2.00"
+      },
+      {
+        "glucose": 138,
+        "date": 1736934000000,
+        "dateString": "2025-01-15T09:40:00.000Z",
+        "avgDelta": "2.00",
+        "BGI": 0,
+        "deviation": "2.00"
+      },
+      {
+        "glucose": 140,
+        "date": 1736934300000,
+        "dateString": "2025-01-15T09:45:00.000Z",
+        "avgDelta": "2.00",
+        "BGI": 0,
+        "deviation": "2.00"
+      },
+      {
+        "glucose": 142,
+        "date": 1736934600000,
+        "dateString": "2025-01-15T09:50:00.000Z",
+        "avgDelta": "2.00",
+        "BGI": 0,
+        "deviation": "2.00"
+      },
+      {
+        "glucose": 144,
+        "date": 1736934900000,
+        "dateString": "2025-01-15T09:55:00.000Z",
+        "avgDelta": "2.00",
+        "BGI": 0,
+        "deviation": "2.00"
+      },
+      {
+        "glucose": 146,
+        "date": 1736935200000,
+        "dateString": "2025-01-15T10:00:00.000Z",
+        "avgDelta": "2.00",
+        "BGI": 0,
+        "deviation": "2.00"
+      },
+      {
+        "glucose": 148,
+        "date": 1736935500000,
+        "dateString": "2025-01-15T10:05:00.000Z",
+        "avgDelta": "2.00",
+        "BGI": 0,
+        "deviation": "2.00"
+      },
+      {
+        "glucose": 150,
+        "date": 1736935800000,
+        "dateString": "2025-01-15T10:10:00.000Z",
+        "avgDelta": "2.00",
+        "BGI": 0,
+        "deviation": "2.00"
+      },
+      {
+        "glucose": 152,
+        "date": 1736936100000,
+        "dateString": "2025-01-15T10:15:00.000Z",
+        "avgDelta": "2.00",
+        "BGI": 0,
+        "deviation": "2.00"
+      },
+      {
+        "glucose": 154,
+        "date": 1736936400000,
+        "dateString": "2025-01-15T10:20:00.000Z",
+        "avgDelta": "2.00",
+        "BGI": 0,
+        "deviation": "2.00"
+      },
+      {
+        "glucose": 156,
+        "date": 1736936700000,
+        "dateString": "2025-01-15T10:25:00.000Z",
+        "avgDelta": "2.00",
+        "BGI": 0,
+        "deviation": "2.00"
+      },
+      {
+        "glucose": 158,
+        "date": 1736937000000,
+        "dateString": "2025-01-15T10:30:00.000Z",
+        "avgDelta": "2.00",
+        "BGI": 0,
+        "deviation": "2.00"
+      },
+      {
+        "glucose": 160,
+        "date": 1736937300000,
+        "dateString": "2025-01-15T10:35:00.000Z",
+        "avgDelta": "2.00",
+        "BGI": 0,
+        "deviation": "2.00"
+      },
+      {
+        "glucose": 162,
+        "date": 1736937600000,
+        "dateString": "2025-01-15T10:40:00.000Z",
+        "avgDelta": "2.00",
+        "BGI": 0,
+        "deviation": "2.00"
+      },
+      {
+        "glucose": 164,
+        "date": 1736937900000,
+        "dateString": "2025-01-15T10:45:00.000Z",
+        "avgDelta": "2.00",
+        "BGI": 0,
+        "deviation": "2.00"
+      },
+      {
+        "glucose": 166,
+        "date": 1736938200000,
+        "dateString": "2025-01-15T10:50:00.000Z",
+        "avgDelta": "2.00",
+        "BGI": 0,
+        "deviation": "2.00"
+      },
+      {
+        "glucose": 168,
+        "date": 1736938500000,
+        "dateString": "2025-01-15T10:55:00.000Z",
+        "avgDelta": "2.00",
+        "BGI": 0,
+        "deviation": "2.00"
+      },
+      {
+        "glucose": 170,
+        "date": 1736938800000,
+        "dateString": "2025-01-15T11:00:00.000Z",
+        "avgDelta": "2.00",
+        "BGI": 0,
+        "deviation": "2.00"
+      },
+      {
+        "glucose": 172,
+        "date": 1736939100000,
+        "dateString": "2025-01-15T11:05:00.000Z",
+        "avgDelta": "2.00",
+        "BGI": 0,
+        "deviation": "2.00"
+      },
+      {
+        "glucose": 174,
+        "date": 1736939400000,
+        "dateString": "2025-01-15T11:10:00.000Z",
+        "avgDelta": "2.00",
+        "BGI": 0,
+        "deviation": "2.00"
+      },
+      {
+        "glucose": 176,
+        "date": 1736939700000,
+        "dateString": "2025-01-15T11:15:00.000Z",
+        "avgDelta": "2.00",
+        "BGI": 0,
+        "deviation": "2.00"
+      },
+      {
+        "glucose": 178,
+        "date": 1736940000000,
+        "dateString": "2025-01-15T11:20:00.000Z",
+        "avgDelta": "2.00",
+        "BGI": 0,
+        "deviation": "2.00"
+      },
+      {
+        "glucose": 180,
+        "date": 1736940300000,
+        "dateString": "2025-01-15T11:25:00.000Z",
+        "avgDelta": "2.00",
+        "BGI": 0,
+        "deviation": "2.00"
+      },
+      {
+        "glucose": 182,
+        "date": 1736940600000,
+        "dateString": "2025-01-15T11:30:00.000Z",
+        "avgDelta": "2.00",
+        "BGI": 0,
+        "deviation": "2.00"
+      },
+      {
+        "glucose": 184,
+        "date": 1736940900000,
+        "dateString": "2025-01-15T11:35:00.000Z",
+        "avgDelta": "2.00",
+        "BGI": 0,
+        "deviation": "2.00"
+      },
+      {
+        "glucose": 186,
+        "date": 1736941200000,
+        "dateString": "2025-01-15T11:40:00.000Z",
+        "avgDelta": "2.00",
+        "BGI": 0,
+        "deviation": "2.00"
+      },
+      {
+        "glucose": 188,
+        "date": 1736941500000,
+        "dateString": "2025-01-15T11:45:00.000Z",
+        "avgDelta": "2.00",
+        "BGI": 0,
+        "deviation": "2.00"
+      },
+      {
+        "glucose": 190,
+        "date": 1736941800000,
+        "dateString": "2025-01-15T11:50:00.000Z",
+        "avgDelta": "2.00",
+        "BGI": 0,
+        "deviation": "2.00"
+      },
+      {
+        "glucose": 192,
+        "date": 1736942100000,
+        "dateString": "2025-01-15T11:55:00.000Z",
+        "avgDelta": "2.00",
+        "BGI": 0,
+        "deviation": "2.00"
+      }
+    ]
+  }
+}

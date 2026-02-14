@@ -1,0 +1,56 @@
+{
+  "steady 120 no meal": {
+    "carbsAbsorbed": 18,
+    "currentDeviation": 0,
+    "maxDeviation": 0,
+    "minDeviation": 999,
+    "slopeFromMaxDeviation": 0,
+    "slopeFromMinDeviation": 999,
+    "allDeviations": []
+  },
+  "rising +5/5m meal 30m ago": {
+    "carbsAbsorbed": 8,
+    "currentDeviation": 5,
+    "maxDeviation": 0,
+    "minDeviation": 999,
+    "slopeFromMaxDeviation": 0,
+    "slopeFromMinDeviation": 999,
+    "allDeviations": []
+  },
+  "rising +10/5m meal 15m ago": {
+    "carbsAbsorbed": 2.5,
+    "currentDeviation": 10,
+    "maxDeviation": 0,
+    "minDeviation": 999,
+    "slopeFromMaxDeviation": 0,
+    "slopeFromMinDeviation": 999,
+    "allDeviations": []
+  },
+  "falling -5/5m meal 120m ago": {
+    "carbsAbsorbed": 18,
+    "currentDeviation": -5,
+    "maxDeviation": 0,
+    "minDeviation": 999,
+    "slopeFromMaxDeviation": 0,
+    "slopeFromMinDeviation": 999,
+    "allDeviations": []
+  },
+  "past maxMealAbsorptionTime": {
+    "carbsAbsorbed": 16,
+    "currentDeviation": 0,
+    "maxDeviation": 0,
+    "minDeviation": 999,
+    "slopeFromMaxDeviation": 0,
+    "slopeFromMinDeviation": 999,
+    "allDeviations": []
+  },
+  "high min_5m_carbimpact=20": {
+    "carbsAbsorbed": 20,
+    "currentDeviation": 3,
+    "maxDeviation": 0,
+    "minDeviation": 999,
+    "slopeFromMaxDeviation": 0,
+    "slopeFromMinDeviation": 999,
+    "allDeviations": []
+  }
+}

@@ -9,7 +9,7 @@
     "test:integration": "vitest run tests/integration",
     "test:legacy": "vitest run tests/legacy",
     "test:char:watch": "vitest",
-    "test:char:update": "vitest run --update",
+    "test:golden": "vitest run tests/golden",
     "test:coverage": "vitest run --coverage",
     "typecheck": "tsc --noEmit",
     "validate:dead-code": "knip",

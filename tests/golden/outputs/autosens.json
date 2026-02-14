@@ -1,0 +1,38 @@
+{
+  "steady 120 48 readings": {
+    "ratio": 1,
+    "newisf": 40
+  },
+  "rising +1/5m 48 readings": {
+    "ratio": 0.7,
+    "newisf": 57
+  },
+  "rising +3/5m 48 readings": {
+    "ratio": 0.7,
+    "newisf": 57
+  },
+  "falling -1/5m 48 readings": {
+    "ratio": 1.2,
+    "newisf": 33
+  },
+  "falling -3/5m 48 readings": {
+    "ratio": 1.2,
+    "newisf": 33
+  },
+  "bounds: ratio clamped to autosens_min": {
+    "ratio": 0.8,
+    "newisf": 50
+  },
+  "bounds: ratio clamped to autosens_max": {
+    "ratio": 1.1,
+    "newisf": 36
+  },
+  "minimal: 8 readings steady": {
+    "ratio": 1,
+    "newisf": 40
+  },
+  "high temp target raises sensitivity": {
+    "ratio": 1,
+    "newisf": 40
+  }
+}

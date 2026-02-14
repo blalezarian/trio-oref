@@ -1,0 +1,192 @@
+{
+  "steady BG at 120": {
+    "delta": 0,
+    "glucose": 120,
+    "noise": 1,
+    "short_avgdelta": 0,
+    "long_avgdelta": 0,
+    "date": 1736942400000,
+    "last_cal": 0,
+    "device": "fakecgm"
+  },
+  "steady BG at 180": {
+    "delta": 0,
+    "glucose": 180,
+    "noise": 1,
+    "short_avgdelta": 0,
+    "long_avgdelta": 0,
+    "date": 1736942400000,
+    "last_cal": 0,
+    "device": "fakecgm"
+  },
+  "rising +2/5m": {
+    "delta": 2,
+    "glucose": 130,
+    "noise": 1,
+    "short_avgdelta": 2,
+    "long_avgdelta": 2,
+    "date": 1736942400000,
+    "last_cal": 0,
+    "device": "fakecgm"
+  },
+  "rising +5/5m": {
+    "delta": 5,
+    "glucose": 145,
+    "noise": 1,
+    "short_avgdelta": 5,
+    "long_avgdelta": 5,
+    "date": 1736942400000,
+    "last_cal": 0,
+    "device": "fakecgm"
+  },
+  "rising +10/5m": {
+    "delta": 10,
+    "glucose": 170,
+    "noise": 1,
+    "short_avgdelta": 10,
+    "long_avgdelta": 10,
+    "date": 1736942400000,
+    "last_cal": 0,
+    "device": "fakecgm"
+  },
+  "falling -2/5m": {
+    "delta": -2,
+    "glucose": 110,
+    "noise": 1,
+    "short_avgdelta": -2,
+    "long_avgdelta": -2,
+    "date": 1736942400000,
+    "last_cal": 0,
+    "device": "fakecgm"
+  },
+  "falling -5/5m": {
+    "delta": -5,
+    "glucose": 95,
+    "noise": 1,
+    "short_avgdelta": -5,
+    "long_avgdelta": -5,
+    "date": 1736942400000,
+    "last_cal": 0,
+    "device": "fakecgm"
+  },
+  "falling -10/5m": {
+    "delta": -10,
+    "glucose": 70,
+    "noise": 1,
+    "short_avgdelta": -10,
+    "long_avgdelta": -10,
+    "date": 1736942400000,
+    "last_cal": 0,
+    "device": "fakecgm"
+  },
+  "mixed: recent rise long-term fall": {
+    "delta": 5,
+    "glucose": 125,
+    "noise": 1,
+    "short_avgdelta": -0.28,
+    "long_avgdelta": -3.87,
+    "date": 1736942400000,
+    "last_cal": 0,
+    "device": "fakecgm"
+  },
+  "mixed: recent fall long-term rise": {
+    "delta": -5,
+    "glucose": 115,
+    "noise": 1,
+    "short_avgdelta": 0.28,
+    "long_avgdelta": 3.88,
+    "date": 1736942400000,
+    "last_cal": 0,
+    "device": "fakecgm"
+  },
+  "single entry": {
+    "delta": 0,
+    "glucose": 120,
+    "noise": 1,
+    "short_avgdelta": 0,
+    "long_avgdelta": 0,
+    "date": 1736942400000,
+    "last_cal": 0,
+    "device": "fakecgm"
+  },
+  "two entries": {
+    "delta": 5,
+    "glucose": 125,
+    "noise": 1,
+    "short_avgdelta": 5,
+    "long_avgdelta": 0,
+    "date": 1736942400000,
+    "last_cal": 0,
+    "device": "fakecgm"
+  },
+  "three entries": {
+    "delta": 5,
+    "glucose": 130,
+    "noise": 1,
+    "short_avgdelta": 5,
+    "long_avgdelta": 0,
+    "date": 1736942400000,
+    "last_cal": 0,
+    "device": "fakecgm"
+  },
+  "low BG": {
+    "delta": 0,
+    "glucose": 55,
+    "noise": 1,
+    "short_avgdelta": 0,
+    "long_avgdelta": 0,
+    "date": 1736942400000,
+    "last_cal": 0,
+    "device": "fakecgm"
+  },
+  "high BG": {
+    "delta": 0,
+    "glucose": 350,
+    "noise": 1,
+    "short_avgdelta": 0,
+    "long_avgdelta": 0,
+    "date": 1736942400000,
+    "last_cal": 0,
+    "device": "fakecgm"
+  },
+  "noise level 3": {
+    "delta": 0,
+    "glucose": 120,
+    "noise": 3,
+    "short_avgdelta": 0,
+    "long_avgdelta": 0,
+    "date": 1736942400000,
+    "last_cal": 0,
+    "device": "fakecgm"
+  },
+  "noise level NaN": {
+    "delta": 0,
+    "glucose": 120,
+    "noise": "[NaN]",
+    "short_avgdelta": 0,
+    "long_avgdelta": 0,
+    "date": 1736942400000,
+    "last_cal": 0,
+    "device": "fakecgm"
+  },
+  "sgv field fallback": {
+    "delta": 0,
+    "glucose": 120,
+    "noise": 1,
+    "short_avgdelta": 0,
+    "long_avgdelta": 0,
+    "date": 1736942400000,
+    "last_cal": 0,
+    "device": "fakecgm"
+  },
+  "dateString fallback": {
+    "delta": 5,
+    "glucose": 130,
+    "noise": 1,
+    "short_avgdelta": 5,
+    "long_avgdelta": 0,
+    "date": 1736942400000,
+    "last_cal": 0,
+    "device": "fakecgm"
+  }
+}

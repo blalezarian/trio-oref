@@ -1,0 +1,1703 @@
+{
+  "empty prepped glucose": {
+    "basalprofile": [
+      {
+        "i": 0,
+        "start": "00:00:00",
+        "rate": 0.8,
+        "minutes": 0,
+        "untuned": 1
+      },
+      {
+        "i": 1,
+        "start": "01:00:00",
+        "rate": 0.8,
+        "minutes": 60,
+        "untuned": 1
+      },
+      {
+        "i": 2,
+        "start": "02:00:00",
+        "rate": 0.8,
+        "minutes": 120,
+        "untuned": 1
+      },
+      {
+        "i": 3,
+        "start": "03:00:00",
+        "rate": 0.8,
+        "minutes": 180,
+        "untuned": 1
+      },
+      {
+        "i": 4,
+        "start": "04:00:00",
+        "rate": 0.8,
+        "minutes": 240,
+        "untuned": 1
+      },
+      {
+        "i": 5,
+        "start": "05:00:00",
+        "rate": 0.8,
+        "minutes": 300,
+        "untuned": 1
+      },
+      {
+        "i": 6,
+        "start": "06:00:00",
+        "rate": 0.8,
+        "minutes": 360,
+        "untuned": 1
+      },
+      {
+        "i": 7,
+        "start": "07:00:00",
+        "rate": 0.8,
+        "minutes": 420,
+        "untuned": 1
+      },
+      {
+        "i": 8,
+        "start": "08:00:00",
+        "rate": 0.8,
+        "minutes": 480,
+        "untuned": 1
+      },
+      {
+        "i": 9,
+        "start": "09:00:00",
+        "rate": 0.8,
+        "minutes": 540,
+        "untuned": 1
+      },
+      {
+        "i": 10,
+        "start": "10:00:00",
+        "rate": 0.8,
+        "minutes": 600,
+        "untuned": 1
+      },
+      {
+        "i": 11,
+        "start": "11:00:00",
+        "rate": 0.8,
+        "minutes": 660,
+        "untuned": 1
+      },
+      {
+        "i": 12,
+        "start": "12:00:00",
+        "rate": 0.8,
+        "minutes": 720,
+        "untuned": 1
+      },
+      {
+        "i": 13,
+        "start": "13:00:00",
+        "rate": 0.8,
+        "minutes": 780,
+        "untuned": 1
+      },
+      {
+        "i": 14,
+        "start": "14:00:00",
+        "rate": 0.8,
+        "minutes": 840,
+        "untuned": 1
+      },
+      {
+        "i": 15,
+        "start": "15:00:00",
+        "rate": 0.8,
+        "minutes": 900,
+        "untuned": 1
+      },
+      {
+        "i": 16,
+        "start": "16:00:00",
+        "rate": 0.8,
+        "minutes": 960,
+        "untuned": 1
+      },
+      {
+        "i": 17,
+        "start": "17:00:00",
+        "rate": 0.8,
+        "minutes": 1020,
+        "untuned": 1
+      },
+      {
+        "i": 18,
+        "start": "18:00:00",
+        "rate": 0.8,
+        "minutes": 1080,
+        "untuned": 1
+      },
+      {
+        "i": 19,
+        "start": "19:00:00",
+        "rate": 0.8,
+        "minutes": 1140,
+        "untuned": 1
+      },
+      {
+        "i": 20,
+        "start": "20:00:00",
+        "rate": 0.8,
+        "minutes": 1200,
+        "untuned": 1
+      },
+      {
+        "i": 21,
+        "start": "21:00:00",
+        "rate": 0.8,
+        "minutes": 1260,
+        "untuned": 1
+      },
+      {
+        "i": 22,
+        "start": "22:00:00",
+        "rate": 0.8,
+        "minutes": 1320,
+        "untuned": 1
+      },
+      {
+        "i": 23,
+        "start": "23:00:00",
+        "rate": 0.8,
+        "minutes": 1380,
+        "untuned": 1
+      }
+    ],
+    "isfProfile": {
+      "sensitivities": [
+        {
+          "offset": 0,
+          "sensitivity": 100,
+          "endOffset": 1440
+        }
+      ]
+    },
+    "sens": 100,
+    "carb_ratio": 10,
+    "csf": 10,
+    "dia": 5,
+    "curve": "rapid-acting",
+    "useCustomPeakTime": false,
+    "insulinPeakTime": 75,
+    "min_5m_carbimpact": 8
+  },
+  "basal: positive deviation at hour 12": {
+    "basalprofile": [
+      {
+        "i": 0,
+        "start": "00:00:00",
+        "rate": 0.8,
+        "minutes": 0,
+        "untuned": 1
+      },
+      {
+        "i": 1,
+        "start": "01:00:00",
+        "rate": 0.8,
+        "minutes": 60,
+        "untuned": 1
+      },
+      {
+        "i": 2,
+        "start": "02:00:00",
+        "rate": 0.8,
+        "minutes": 120,
+        "untuned": 1
+      },
+      {
+        "i": 3,
+        "start": "03:00:00",
+        "rate": 0.8,
+        "minutes": 180,
+        "untuned": 1
+      },
+      {
+        "i": 4,
+        "start": "04:00:00",
+        "rate": 0.8,
+        "minutes": 240,
+        "untuned": 1
+      },
+      {
+        "i": 5,
+        "start": "05:00:00",
+        "rate": 0.8,
+        "minutes": 300,
+        "untuned": 1
+      },
+      {
+        "i": 6,
+        "start": "06:00:00",
+        "rate": 0.8,
+        "minutes": 360,
+        "untuned": 1
+      },
+      {
+        "i": 7,
+        "start": "07:00:00",
+        "rate": 0.8,
+        "minutes": 420,
+        "untuned": 1
+      },
+      {
+        "i": 8,
+        "start": "08:00:00",
+        "rate": 0.8,
+        "minutes": 480,
+        "untuned": 1
+      },
+      {
+        "i": 9,
+        "start": "09:00:00",
+        "rate": 0.8,
+        "minutes": 540,
+        "untuned": 1
+      },
+      {
+        "i": 10,
+        "start": "10:00:00",
+        "rate": 0.8,
+        "minutes": 600,
+        "untuned": 1
+      },
+      {
+        "i": 11,
+        "start": "11:00:00",
+        "rate": 0.8,
+        "minutes": 660,
+        "untuned": 1
+      },
+      {
+        "i": 12,
+        "start": "12:00:00",
+        "rate": 0.8,
+        "minutes": 720,
+        "untuned": 1
+      },
+      {
+        "i": 13,
+        "start": "13:00:00",
+        "rate": 0.8,
+        "minutes": 780,
+        "untuned": 1
+      },
+      {
+        "i": 14,
+        "start": "14:00:00",
+        "rate": 0.8,
+        "minutes": 840,
+        "untuned": 1
+      },
+      {
+        "i": 15,
+        "start": "15:00:00",
+        "rate": 0.8,
+        "minutes": 900,
+        "untuned": 1
+      },
+      {
+        "i": 16,
+        "start": "16:00:00",
+        "rate": 0.8,
+        "minutes": 960,
+        "untuned": 1
+      },
+      {
+        "i": 17,
+        "start": "17:00:00",
+        "rate": 0.8,
+        "minutes": 1020,
+        "untuned": 1
+      },
+      {
+        "i": 18,
+        "start": "18:00:00",
+        "rate": 0.8,
+        "minutes": 1080,
+        "untuned": 1
+      },
+      {
+        "i": 19,
+        "start": "19:00:00",
+        "rate": 0.8,
+        "minutes": 1140,
+        "untuned": 1
+      },
+      {
+        "i": 20,
+        "start": "20:00:00",
+        "rate": 0.8,
+        "minutes": 1200,
+        "untuned": 1
+      },
+      {
+        "i": 21,
+        "start": "21:00:00",
+        "rate": 0.8,
+        "minutes": 1260,
+        "untuned": 1
+      },
+      {
+        "i": 22,
+        "start": "22:00:00",
+        "rate": 0.8,
+        "minutes": 1320,
+        "untuned": 1
+      },
+      {
+        "i": 23,
+        "start": "23:00:00",
+        "rate": 0.8,
+        "minutes": 1380,
+        "untuned": 1
+      }
+    ],
+    "isfProfile": {
+      "sensitivities": [
+        {
+          "offset": 0,
+          "sensitivity": 100,
+          "endOffset": 1440
+        }
+      ]
+    },
+    "sens": 100,
+    "carb_ratio": 10,
+    "csf": 10,
+    "dia": 5,
+    "curve": "rapid-acting",
+    "useCustomPeakTime": false,
+    "insulinPeakTime": 75,
+    "min_5m_carbimpact": 8
+  },
+  "basal: negative deviation at hour 12": {
+    "basalprofile": [
+      {
+        "i": 0,
+        "start": "00:00:00",
+        "rate": 0.8,
+        "minutes": 0,
+        "untuned": 1
+      },
+      {
+        "i": 1,
+        "start": "01:00:00",
+        "rate": 0.8,
+        "minutes": 60,
+        "untuned": 1
+      },
+      {
+        "i": 2,
+        "start": "02:00:00",
+        "rate": 0.8,
+        "minutes": 120,
+        "untuned": 1
+      },
+      {
+        "i": 3,
+        "start": "03:00:00",
+        "rate": 0.8,
+        "minutes": 180,
+        "untuned": 1
+      },
+      {
+        "i": 4,
+        "start": "04:00:00",
+        "rate": 0.8,
+        "minutes": 240,
+        "untuned": 1
+      },
+      {
+        "i": 5,
+        "start": "05:00:00",
+        "rate": 0.8,
+        "minutes": 300,
+        "untuned": 1
+      },
+      {
+        "i": 6,
+        "start": "06:00:00",
+        "rate": 0.8,
+        "minutes": 360,
+        "untuned": 1
+      },
+      {
+        "i": 7,
+        "start": "07:00:00",
+        "rate": 0.8,
+        "minutes": 420,
+        "untuned": 1
+      },
+      {
+        "i": 8,
+        "start": "08:00:00",
+        "rate": 0.8,
+        "minutes": 480,
+        "untuned": 1
+      },
+      {
+        "i": 9,
+        "start": "09:00:00",
+        "rate": 0.8,
+        "minutes": 540,
+        "untuned": 1
+      },
+      {
+        "i": 10,
+        "start": "10:00:00",
+        "rate": 0.8,
+        "minutes": 600,
+        "untuned": 1
+      },
+      {
+        "i": 11,
+        "start": "11:00:00",
+        "rate": 0.8,
+        "minutes": 660,
+        "untuned": 1
+      },
+      {
+        "i": 12,
+        "start": "12:00:00",
+        "rate": 0.8,
+        "minutes": 720,
+        "untuned": 1
+      },
+      {
+        "i": 13,
+        "start": "13:00:00",
+        "rate": 0.8,
+        "minutes": 780,
+        "untuned": 1
+      },
+      {
+        "i": 14,
+        "start": "14:00:00",
+        "rate": 0.8,
+        "minutes": 840,
+        "untuned": 1
+      },
+      {
+        "i": 15,
+        "start": "15:00:00",
+        "rate": 0.8,
+        "minutes": 900,
+        "untuned": 1
+      },
+      {
+        "i": 16,
+        "start": "16:00:00",
+        "rate": 0.8,
+        "minutes": 960,
+        "untuned": 1
+      },
+      {
+        "i": 17,
+        "start": "17:00:00",
+        "rate": 0.8,
+        "minutes": 1020,
+        "untuned": 1
+      },
+      {
+        "i": 18,
+        "start": "18:00:00",
+        "rate": 0.8,
+        "minutes": 1080,
+        "untuned": 1
+      },
+      {
+        "i": 19,
+        "start": "19:00:00",
+        "rate": 0.8,
+        "minutes": 1140,
+        "untuned": 1
+      },
+      {
+        "i": 20,
+        "start": "20:00:00",
+        "rate": 0.8,
+        "minutes": 1200,
+        "untuned": 1
+      },
+      {
+        "i": 21,
+        "start": "21:00:00",
+        "rate": 0.8,
+        "minutes": 1260,
+        "untuned": 1
+      },
+      {
+        "i": 22,
+        "start": "22:00:00",
+        "rate": 0.8,
+        "minutes": 1320,
+        "untuned": 1
+      },
+      {
+        "i": 23,
+        "start": "23:00:00",
+        "rate": 0.8,
+        "minutes": 1380,
+        "untuned": 1
+      }
+    ],
+    "isfProfile": {
+      "sensitivities": [
+        {
+          "offset": 0,
+          "sensitivity": 100,
+          "endOffset": 1440
+        }
+      ]
+    },
+    "sens": 100,
+    "carb_ratio": 10,
+    "csf": 10,
+    "dia": 5,
+    "curve": "rapid-acting",
+    "useCustomPeakTime": false,
+    "insulinPeakTime": 75,
+    "min_5m_carbimpact": 8
+  },
+  "basal: multiple hours": {
+    "basalprofile": [
+      {
+        "i": 0,
+        "start": "00:00:00",
+        "rate": 0.8,
+        "minutes": 0,
+        "untuned": 1
+      },
+      {
+        "i": 1,
+        "start": "01:00:00",
+        "rate": 0.8,
+        "minutes": 60,
+        "untuned": 1
+      },
+      {
+        "i": 2,
+        "start": "02:00:00",
+        "rate": 0.8,
+        "minutes": 120,
+        "untuned": 1
+      },
+      {
+        "i": 3,
+        "start": "03:00:00",
+        "rate": 0.8,
+        "minutes": 180,
+        "untuned": 1
+      },
+      {
+        "i": 4,
+        "start": "04:00:00",
+        "rate": 0.8,
+        "minutes": 240,
+        "untuned": 1
+      },
+      {
+        "i": 5,
+        "start": "05:00:00",
+        "rate": 0.8,
+        "minutes": 300,
+        "untuned": 1
+      },
+      {
+        "i": 6,
+        "start": "06:00:00",
+        "rate": 0.8,
+        "minutes": 360,
+        "untuned": 1
+      },
+      {
+        "i": 7,
+        "start": "07:00:00",
+        "rate": 0.8,
+        "minutes": 420,
+        "untuned": 1
+      },
+      {
+        "i": 8,
+        "start": "08:00:00",
+        "rate": 0.8,
+        "minutes": 480,
+        "untuned": 1
+      },
+      {
+        "i": 9,
+        "start": "09:00:00",
+        "rate": 0.8,
+        "minutes": 540,
+        "untuned": 1
+      },
+      {
+        "i": 10,
+        "start": "10:00:00",
+        "rate": 0.8,
+        "minutes": 600,
+        "untuned": 1
+      },
+      {
+        "i": 11,
+        "start": "11:00:00",
+        "rate": 0.8,
+        "minutes": 660,
+        "untuned": 1
+      },
+      {
+        "i": 12,
+        "start": "12:00:00",
+        "rate": 0.8,
+        "minutes": 720,
+        "untuned": 1
+      },
+      {
+        "i": 13,
+        "start": "13:00:00",
+        "rate": 0.8,
+        "minutes": 780,
+        "untuned": 1
+      },
+      {
+        "i": 14,
+        "start": "14:00:00",
+        "rate": 0.8,
+        "minutes": 840,
+        "untuned": 1
+      },
+      {
+        "i": 15,
+        "start": "15:00:00",
+        "rate": 0.8,
+        "minutes": 900,
+        "untuned": 1
+      },
+      {
+        "i": 16,
+        "start": "16:00:00",
+        "rate": 0.8,
+        "minutes": 960,
+        "untuned": 1
+      },
+      {
+        "i": 17,
+        "start": "17:00:00",
+        "rate": 0.8,
+        "minutes": 1020,
+        "untuned": 1
+      },
+      {
+        "i": 18,
+        "start": "18:00:00",
+        "rate": 0.8,
+        "minutes": 1080,
+        "untuned": 1
+      },
+      {
+        "i": 19,
+        "start": "19:00:00",
+        "rate": 0.8,
+        "minutes": 1140,
+        "untuned": 1
+      },
+      {
+        "i": 20,
+        "start": "20:00:00",
+        "rate": 0.8,
+        "minutes": 1200,
+        "untuned": 1
+      },
+      {
+        "i": 21,
+        "start": "21:00:00",
+        "rate": 0.8,
+        "minutes": 1260,
+        "untuned": 1
+      },
+      {
+        "i": 22,
+        "start": "22:00:00",
+        "rate": 0.8,
+        "minutes": 1320,
+        "untuned": 1
+      },
+      {
+        "i": 23,
+        "start": "23:00:00",
+        "rate": 0.8,
+        "minutes": 1380,
+        "untuned": 1
+      }
+    ],
+    "isfProfile": {
+      "sensitivities": [
+        {
+          "offset": 0,
+          "sensitivity": 100,
+          "endOffset": 1440
+        }
+      ]
+    },
+    "sens": 100,
+    "carb_ratio": 10,
+    "csf": 10,
+    "dia": 5,
+    "curve": "rapid-acting",
+    "useCustomPeakTime": false,
+    "insulinPeakTime": 75,
+    "min_5m_carbimpact": 8
+  },
+  "ISF: positive deviation": {
+    "basalprofile": [
+      {
+        "i": 0,
+        "start": "00:00:00",
+        "rate": 0.8,
+        "minutes": 0,
+        "untuned": 1
+      },
+      {
+        "i": 1,
+        "start": "01:00:00",
+        "rate": 0.8,
+        "minutes": 60,
+        "untuned": 1
+      },
+      {
+        "i": 2,
+        "start": "02:00:00",
+        "rate": 0.8,
+        "minutes": 120,
+        "untuned": 1
+      },
+      {
+        "i": 3,
+        "start": "03:00:00",
+        "rate": 0.8,
+        "minutes": 180,
+        "untuned": 1
+      },
+      {
+        "i": 4,
+        "start": "04:00:00",
+        "rate": 0.8,
+        "minutes": 240,
+        "untuned": 1
+      },
+      {
+        "i": 5,
+        "start": "05:00:00",
+        "rate": 0.8,
+        "minutes": 300,
+        "untuned": 1
+      },
+      {
+        "i": 6,
+        "start": "06:00:00",
+        "rate": 0.8,
+        "minutes": 360,
+        "untuned": 1
+      },
+      {
+        "i": 7,
+        "start": "07:00:00",
+        "rate": 0.8,
+        "minutes": 420,
+        "untuned": 1
+      },
+      {
+        "i": 8,
+        "start": "08:00:00",
+        "rate": 0.8,
+        "minutes": 480,
+        "untuned": 1
+      },
+      {
+        "i": 9,
+        "start": "09:00:00",
+        "rate": 0.8,
+        "minutes": 540,
+        "untuned": 1
+      },
+      {
+        "i": 10,
+        "start": "10:00:00",
+        "rate": 0.8,
+        "minutes": 600,
+        "untuned": 1
+      },
+      {
+        "i": 11,
+        "start": "11:00:00",
+        "rate": 0.8,
+        "minutes": 660,
+        "untuned": 1
+      },
+      {
+        "i": 12,
+        "start": "12:00:00",
+        "rate": 0.8,
+        "minutes": 720,
+        "untuned": 1
+      },
+      {
+        "i": 13,
+        "start": "13:00:00",
+        "rate": 0.8,
+        "minutes": 780,
+        "untuned": 1
+      },
+      {
+        "i": 14,
+        "start": "14:00:00",
+        "rate": 0.8,
+        "minutes": 840,
+        "untuned": 1
+      },
+      {
+        "i": 15,
+        "start": "15:00:00",
+        "rate": 0.8,
+        "minutes": 900,
+        "untuned": 1
+      },
+      {
+        "i": 16,
+        "start": "16:00:00",
+        "rate": 0.8,
+        "minutes": 960,
+        "untuned": 1
+      },
+      {
+        "i": 17,
+        "start": "17:00:00",
+        "rate": 0.8,
+        "minutes": 1020,
+        "untuned": 1
+      },
+      {
+        "i": 18,
+        "start": "18:00:00",
+        "rate": 0.8,
+        "minutes": 1080,
+        "untuned": 1
+      },
+      {
+        "i": 19,
+        "start": "19:00:00",
+        "rate": 0.8,
+        "minutes": 1140,
+        "untuned": 1
+      },
+      {
+        "i": 20,
+        "start": "20:00:00",
+        "rate": 0.8,
+        "minutes": 1200,
+        "untuned": 1
+      },
+      {
+        "i": 21,
+        "start": "21:00:00",
+        "rate": 0.8,
+        "minutes": 1260,
+        "untuned": 1
+      },
+      {
+        "i": 22,
+        "start": "22:00:00",
+        "rate": 0.8,
+        "minutes": 1320,
+        "untuned": 1
+      },
+      {
+        "i": 23,
+        "start": "23:00:00",
+        "rate": 0.8,
+        "minutes": 1380,
+        "untuned": 1
+      }
+    ],
+    "isfProfile": {
+      "sensitivities": [
+        {
+          "offset": 0,
+          "sensitivity": 100,
+          "endOffset": 1440
+        }
+      ]
+    },
+    "sens": 100,
+    "carb_ratio": 10,
+    "csf": 10,
+    "dia": 5,
+    "curve": "rapid-acting",
+    "useCustomPeakTime": false,
+    "insulinPeakTime": 75,
+    "min_5m_carbimpact": 8
+  },
+  "ISF: negative deviation": {
+    "basalprofile": [
+      {
+        "i": 0,
+        "start": "00:00:00",
+        "rate": 0.8,
+        "minutes": 0,
+        "untuned": 1
+      },
+      {
+        "i": 1,
+        "start": "01:00:00",
+        "rate": 0.8,
+        "minutes": 60,
+        "untuned": 1
+      },
+      {
+        "i": 2,
+        "start": "02:00:00",
+        "rate": 0.8,
+        "minutes": 120,
+        "untuned": 1
+      },
+      {
+        "i": 3,
+        "start": "03:00:00",
+        "rate": 0.8,
+        "minutes": 180,
+        "untuned": 1
+      },
+      {
+        "i": 4,
+        "start": "04:00:00",
+        "rate": 0.8,
+        "minutes": 240,
+        "untuned": 1
+      },
+      {
+        "i": 5,
+        "start": "05:00:00",
+        "rate": 0.8,
+        "minutes": 300,
+        "untuned": 1
+      },
+      {
+        "i": 6,
+        "start": "06:00:00",
+        "rate": 0.8,
+        "minutes": 360,
+        "untuned": 1
+      },
+      {
+        "i": 7,
+        "start": "07:00:00",
+        "rate": 0.8,
+        "minutes": 420,
+        "untuned": 1
+      },
+      {
+        "i": 8,
+        "start": "08:00:00",
+        "rate": 0.8,
+        "minutes": 480,
+        "untuned": 1
+      },
+      {
+        "i": 9,
+        "start": "09:00:00",
+        "rate": 0.8,
+        "minutes": 540,
+        "untuned": 1
+      },
+      {
+        "i": 10,
+        "start": "10:00:00",
+        "rate": 0.8,
+        "minutes": 600,
+        "untuned": 1
+      },
+      {
+        "i": 11,
+        "start": "11:00:00",
+        "rate": 0.8,
+        "minutes": 660,
+        "untuned": 1
+      },
+      {
+        "i": 12,
+        "start": "12:00:00",
+        "rate": 0.8,
+        "minutes": 720,
+        "untuned": 1
+      },
+      {
+        "i": 13,
+        "start": "13:00:00",
+        "rate": 0.8,
+        "minutes": 780,
+        "untuned": 1
+      },
+      {
+        "i": 14,
+        "start": "14:00:00",
+        "rate": 0.8,
+        "minutes": 840,
+        "untuned": 1
+      },
+      {
+        "i": 15,
+        "start": "15:00:00",
+        "rate": 0.8,
+        "minutes": 900,
+        "untuned": 1
+      },
+      {
+        "i": 16,
+        "start": "16:00:00",
+        "rate": 0.8,
+        "minutes": 960,
+        "untuned": 1
+      },
+      {
+        "i": 17,
+        "start": "17:00:00",
+        "rate": 0.8,
+        "minutes": 1020,
+        "untuned": 1
+      },
+      {
+        "i": 18,
+        "start": "18:00:00",
+        "rate": 0.8,
+        "minutes": 1080,
+        "untuned": 1
+      },
+      {
+        "i": 19,
+        "start": "19:00:00",
+        "rate": 0.8,
+        "minutes": 1140,
+        "untuned": 1
+      },
+      {
+        "i": 20,
+        "start": "20:00:00",
+        "rate": 0.8,
+        "minutes": 1200,
+        "untuned": 1
+      },
+      {
+        "i": 21,
+        "start": "21:00:00",
+        "rate": 0.8,
+        "minutes": 1260,
+        "untuned": 1
+      },
+      {
+        "i": 22,
+        "start": "22:00:00",
+        "rate": 0.8,
+        "minutes": 1320,
+        "untuned": 1
+      },
+      {
+        "i": 23,
+        "start": "23:00:00",
+        "rate": 0.8,
+        "minutes": 1380,
+        "untuned": 1
+      }
+    ],
+    "isfProfile": {
+      "sensitivities": [
+        {
+          "offset": 0,
+          "sensitivity": 100,
+          "endOffset": 1440
+        }
+      ]
+    },
+    "sens": 100,
+    "carb_ratio": 10,
+    "csf": 10,
+    "dia": 5,
+    "curve": "rapid-acting",
+    "useCustomPeakTime": false,
+    "insulinPeakTime": 75,
+    "min_5m_carbimpact": 8
+  },
+  "CSF: with meal carbs": {
+    "basalprofile": [
+      {
+        "i": 0,
+        "start": "00:00:00",
+        "rate": 0.8,
+        "minutes": 0,
+        "untuned": 1
+      },
+      {
+        "i": 1,
+        "start": "01:00:00",
+        "rate": 0.8,
+        "minutes": 60,
+        "untuned": 1
+      },
+      {
+        "i": 2,
+        "start": "02:00:00",
+        "rate": 0.8,
+        "minutes": 120,
+        "untuned": 1
+      },
+      {
+        "i": 3,
+        "start": "03:00:00",
+        "rate": 0.8,
+        "minutes": 180,
+        "untuned": 1
+      },
+      {
+        "i": 4,
+        "start": "04:00:00",
+        "rate": 0.8,
+        "minutes": 240,
+        "untuned": 1
+      },
+      {
+        "i": 5,
+        "start": "05:00:00",
+        "rate": 0.8,
+        "minutes": 300,
+        "untuned": 1
+      },
+      {
+        "i": 6,
+        "start": "06:00:00",
+        "rate": 0.8,
+        "minutes": 360,
+        "untuned": 1
+      },
+      {
+        "i": 7,
+        "start": "07:00:00",
+        "rate": 0.8,
+        "minutes": 420,
+        "untuned": 1
+      },
+      {
+        "i": 8,
+        "start": "08:00:00",
+        "rate": 0.8,
+        "minutes": 480,
+        "untuned": 1
+      },
+      {
+        "i": 9,
+        "start": "09:00:00",
+        "rate": 0.8,
+        "minutes": 540,
+        "untuned": 1
+      },
+      {
+        "i": 10,
+        "start": "10:00:00",
+        "rate": 0.8,
+        "minutes": 600,
+        "untuned": 1
+      },
+      {
+        "i": 11,
+        "start": "11:00:00",
+        "rate": 0.8,
+        "minutes": 660,
+        "untuned": 1
+      },
+      {
+        "i": 12,
+        "start": "12:00:00",
+        "rate": 0.8,
+        "minutes": 720,
+        "untuned": 1
+      },
+      {
+        "i": 13,
+        "start": "13:00:00",
+        "rate": 0.8,
+        "minutes": 780,
+        "untuned": 1
+      },
+      {
+        "i": 14,
+        "start": "14:00:00",
+        "rate": 0.8,
+        "minutes": 840,
+        "untuned": 1
+      },
+      {
+        "i": 15,
+        "start": "15:00:00",
+        "rate": 0.8,
+        "minutes": 900,
+        "untuned": 1
+      },
+      {
+        "i": 16,
+        "start": "16:00:00",
+        "rate": 0.8,
+        "minutes": 960,
+        "untuned": 1
+      },
+      {
+        "i": 17,
+        "start": "17:00:00",
+        "rate": 0.8,
+        "minutes": 1020,
+        "untuned": 1
+      },
+      {
+        "i": 18,
+        "start": "18:00:00",
+        "rate": 0.8,
+        "minutes": 1080,
+        "untuned": 1
+      },
+      {
+        "i": 19,
+        "start": "19:00:00",
+        "rate": 0.8,
+        "minutes": 1140,
+        "untuned": 1
+      },
+      {
+        "i": 20,
+        "start": "20:00:00",
+        "rate": 0.8,
+        "minutes": 1200,
+        "untuned": 1
+      },
+      {
+        "i": 21,
+        "start": "21:00:00",
+        "rate": 0.8,
+        "minutes": 1260,
+        "untuned": 1
+      },
+      {
+        "i": 22,
+        "start": "22:00:00",
+        "rate": 0.8,
+        "minutes": 1320,
+        "untuned": 1
+      },
+      {
+        "i": 23,
+        "start": "23:00:00",
+        "rate": 0.8,
+        "minutes": 1380,
+        "untuned": 1
+      }
+    ],
+    "isfProfile": {
+      "sensitivities": [
+        {
+          "offset": 0,
+          "sensitivity": 100,
+          "endOffset": 1440
+        }
+      ]
+    },
+    "sens": 100,
+    "carb_ratio": 10,
+    "csf": 8.036,
+    "dia": 5,
+    "curve": "rapid-acting",
+    "useCustomPeakTime": false,
+    "insulinPeakTime": 75,
+    "min_5m_carbimpact": 8
+  },
+  "CR: single datum": {
+    "basalprofile": [
+      {
+        "i": 0,
+        "start": "00:00:00",
+        "rate": 0.8,
+        "minutes": 0,
+        "untuned": 1
+      },
+      {
+        "i": 1,
+        "start": "01:00:00",
+        "rate": 0.8,
+        "minutes": 60,
+        "untuned": 1
+      },
+      {
+        "i": 2,
+        "start": "02:00:00",
+        "rate": 0.8,
+        "minutes": 120,
+        "untuned": 1
+      },
+      {
+        "i": 3,
+        "start": "03:00:00",
+        "rate": 0.8,
+        "minutes": 180,
+        "untuned": 1
+      },
+      {
+        "i": 4,
+        "start": "04:00:00",
+        "rate": 0.8,
+        "minutes": 240,
+        "untuned": 1
+      },
+      {
+        "i": 5,
+        "start": "05:00:00",
+        "rate": 0.8,
+        "minutes": 300,
+        "untuned": 1
+      },
+      {
+        "i": 6,
+        "start": "06:00:00",
+        "rate": 0.8,
+        "minutes": 360,
+        "untuned": 1
+      },
+      {
+        "i": 7,
+        "start": "07:00:00",
+        "rate": 0.8,
+        "minutes": 420,
+        "untuned": 1
+      },
+      {
+        "i": 8,
+        "start": "08:00:00",
+        "rate": 0.8,
+        "minutes": 480,
+        "untuned": 1
+      },
+      {
+        "i": 9,
+        "start": "09:00:00",
+        "rate": 0.8,
+        "minutes": 540,
+        "untuned": 1
+      },
+      {
+        "i": 10,
+        "start": "10:00:00",
+        "rate": 0.8,
+        "minutes": 600,
+        "untuned": 1
+      },
+      {
+        "i": 11,
+        "start": "11:00:00",
+        "rate": 0.8,
+        "minutes": 660,
+        "untuned": 1
+      },
+      {
+        "i": 12,
+        "start": "12:00:00",
+        "rate": 0.8,
+        "minutes": 720,
+        "untuned": 1
+      },
+      {
+        "i": 13,
+        "start": "13:00:00",
+        "rate": 0.8,
+        "minutes": 780,
+        "untuned": 1
+      },
+      {
+        "i": 14,
+        "start": "14:00:00",
+        "rate": 0.8,
+        "minutes": 840,
+        "untuned": 1
+      },
+      {
+        "i": 15,
+        "start": "15:00:00",
+        "rate": 0.8,
+        "minutes": 900,
+        "untuned": 1
+      },
+      {
+        "i": 16,
+        "start": "16:00:00",
+        "rate": 0.8,
+        "minutes": 960,
+        "untuned": 1
+      },
+      {
+        "i": 17,
+        "start": "17:00:00",
+        "rate": 0.8,
+        "minutes": 1020,
+        "untuned": 1
+      },
+      {
+        "i": 18,
+        "start": "18:00:00",
+        "rate": 0.8,
+        "minutes": 1080,
+        "untuned": 1
+      },
+      {
+        "i": 19,
+        "start": "19:00:00",
+        "rate": 0.8,
+        "minutes": 1140,
+        "untuned": 1
+      },
+      {
+        "i": 20,
+        "start": "20:00:00",
+        "rate": 0.8,
+        "minutes": 1200,
+        "untuned": 1
+      },
+      {
+        "i": 21,
+        "start": "21:00:00",
+        "rate": 0.8,
+        "minutes": 1260,
+        "untuned": 1
+      },
+      {
+        "i": 22,
+        "start": "22:00:00",
+        "rate": 0.8,
+        "minutes": 1320,
+        "untuned": 1
+      },
+      {
+        "i": 23,
+        "start": "23:00:00",
+        "rate": 0.8,
+        "minutes": 1380,
+        "untuned": 1
+      }
+    ],
+    "isfProfile": {
+      "sensitivities": [
+        {
+          "offset": 0,
+          "sensitivity": 100,
+          "endOffset": 1440
+        }
+      ]
+    },
+    "sens": 100,
+    "carb_ratio": 10.368,
+    "csf": 10,
+    "dia": 5,
+    "curve": "rapid-acting",
+    "useCustomPeakTime": false,
+    "insulinPeakTime": 75,
+    "min_5m_carbimpact": 8
+  },
+  "bounds: autosens_max limits ratio": {
+    "basalprofile": [
+      {
+        "i": 0,
+        "start": "00:00:00",
+        "rate": 0.8,
+        "minutes": 0,
+        "untuned": 1
+      },
+      {
+        "i": 1,
+        "start": "01:00:00",
+        "rate": 0.8,
+        "minutes": 60,
+        "untuned": 1
+      },
+      {
+        "i": 2,
+        "start": "02:00:00",
+        "rate": 0.8,
+        "minutes": 120,
+        "untuned": 1
+      },
+      {
+        "i": 3,
+        "start": "03:00:00",
+        "rate": 0.8,
+        "minutes": 180,
+        "untuned": 1
+      },
+      {
+        "i": 4,
+        "start": "04:00:00",
+        "rate": 0.8,
+        "minutes": 240,
+        "untuned": 1
+      },
+      {
+        "i": 5,
+        "start": "05:00:00",
+        "rate": 0.8,
+        "minutes": 300,
+        "untuned": 1
+      },
+      {
+        "i": 6,
+        "start": "06:00:00",
+        "rate": 0.8,
+        "minutes": 360,
+        "untuned": 1
+      },
+      {
+        "i": 7,
+        "start": "07:00:00",
+        "rate": 0.8,
+        "minutes": 420,
+        "untuned": 1
+      },
+      {
+        "i": 8,
+        "start": "08:00:00",
+        "rate": 0.8,
+        "minutes": 480,
+        "untuned": 1
+      },
+      {
+        "i": 9,
+        "start": "09:00:00",
+        "rate": 0.8,
+        "minutes": 540,
+        "untuned": 1
+      },
+      {
+        "i": 10,
+        "start": "10:00:00",
+        "rate": 0.8,
+        "minutes": 600,
+        "untuned": 1
+      },
+      {
+        "i": 11,
+        "start": "11:00:00",
+        "rate": 0.8,
+        "minutes": 660,
+        "untuned": 1
+      },
+      {
+        "i": 12,
+        "start": "12:00:00",
+        "rate": 0.8,
+        "minutes": 720,
+        "untuned": 1
+      },
+      {
+        "i": 13,
+        "start": "13:00:00",
+        "rate": 0.8,
+        "minutes": 780,
+        "untuned": 1
+      },
+      {
+        "i": 14,
+        "start": "14:00:00",
+        "rate": 0.8,
+        "minutes": 840,
+        "untuned": 1
+      },
+      {
+        "i": 15,
+        "start": "15:00:00",
+        "rate": 0.8,
+        "minutes": 900,
+        "untuned": 1
+      },
+      {
+        "i": 16,
+        "start": "16:00:00",
+        "rate": 0.8,
+        "minutes": 960,
+        "untuned": 1
+      },
+      {
+        "i": 17,
+        "start": "17:00:00",
+        "rate": 0.8,
+        "minutes": 1020,
+        "untuned": 1
+      },
+      {
+        "i": 18,
+        "start": "18:00:00",
+        "rate": 0.8,
+        "minutes": 1080,
+        "untuned": 1
+      },
+      {
+        "i": 19,
+        "start": "19:00:00",
+        "rate": 0.8,
+        "minutes": 1140,
+        "untuned": 1
+      },
+      {
+        "i": 20,
+        "start": "20:00:00",
+        "rate": 0.8,
+        "minutes": 1200,
+        "untuned": 1
+      },
+      {
+        "i": 21,
+        "start": "21:00:00",
+        "rate": 0.8,
+        "minutes": 1260,
+        "untuned": 1
+      },
+      {
+        "i": 22,
+        "start": "22:00:00",
+        "rate": 0.8,
+        "minutes": 1320,
+        "untuned": 1
+      },
+      {
+        "i": 23,
+        "start": "23:00:00",
+        "rate": 0.8,
+        "minutes": 1380,
+        "untuned": 1
+      }
+    ],
+    "isfProfile": {
+      "sensitivities": [
+        {
+          "offset": 0,
+          "sensitivity": 100,
+          "endOffset": 1440
+        }
+      ]
+    },
+    "sens": 100,
+    "carb_ratio": 10,
+    "csf": 10,
+    "dia": 5,
+    "curve": "rapid-acting",
+    "useCustomPeakTime": false,
+    "insulinPeakTime": 75,
+    "min_5m_carbimpact": 8
+  }
+}

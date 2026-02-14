@@ -1,0 +1,164 @@
+{
+  "rapid-acting 1U at 0m": {
+    "activityContrib": 0,
+    "iobContrib": 1
+  },
+  "rapid-acting 1U at 5m": {
+    "activityContrib": 0.0009999831151973248,
+    "iobContrib": 0.9974481484496988
+  },
+  "rapid-acting 1U at 15m": {
+    "activityContrib": 0.002651751430246632,
+    "iobContrib": 0.9788245454057859
+  },
+  "rapid-acting 1U at 30m": {
+    "activityContrib": 0.004397195558815253,
+    "iobContrib": 0.9249701856314995
+  },
+  "rapid-acting 1U at 45m": {
+    "activityContrib": 0.005451769994893109,
+    "iobContrib": 0.850355814600309
+  },
+  "rapid-acting 1U at 60m": {
+    "activityContrib": 0.005987443000582721,
+    "iobContrib": 0.7640057035577161
+  },
+  "rapid-acting 1U at 75m": {
+    "activityContrib": 0.006140684019609894,
+    "iobContrib": 0.6726398904581075
+  },
+  "rapid-acting 1U at 90m": {
+    "activityContrib": 0.006019062352392295,
+    "iobContrib": 0.581155607346601
+  },
+  "rapid-acting 1U at 120m": {
+    "activityContrib": 0.00526876620123548,
+    "iobContrib": 0.41057994214803417
+  },
+  "rapid-acting 1U at 150m": {
+    "activityContrib": 0.0042036430643167845,
+    "iobContrib": 0.26811268376309616
+  },
+  "rapid-acting 1U at 180m": {
+    "activityContrib": 0.003090901773437026,
+    "iobContrib": 0.15879641537283806
+  },
+  "rapid-acting 1U at 240m": {
+    "activityContrib": 0.0012088438935091224,
+    "iobContrib": 0.032924868796628814
+  },
+  "rapid-acting 1U at 300m": {
+    "activityContrib": 0,
+    "iobContrib": 0
+  },
+  "rapid-acting 2U at 60m": {
+    "activityContrib": 0.011974886001165442,
+    "iobContrib": 1.5280114071154323
+  },
+  "rapid-acting 0.5U at 30m": {
+    "activityContrib": 0.0021985977794076266,
+    "iobContrib": 0.46248509281574973
+  },
+  "ultra-rapid 1U at 0m": {
+    "activityContrib": 0,
+    "iobContrib": 1
+  },
+  "ultra-rapid 1U at 15m": {
+    "activityContrib": 0.004179599881938281,
+    "iobContrib": 0.9657090553900602
+  },
+  "ultra-rapid 1U at 30m": {
+    "activityContrib": 0.0064095732707394925,
+    "iobContrib": 0.8843166919212472
+  },
+  "ultra-rapid 1U at 55m": {
+    "activityContrib": 0.007495179744488486,
+    "iobContrib": 0.7053625074116086
+  },
+  "ultra-rapid 1U at 75m": {
+    "activityContrib": 0.007079855674747175,
+    "iobContrib": 0.5583902561202713
+  },
+  "ultra-rapid 1U at 120m": {
+    "activityContrib": 0.004804751152084165,
+    "iobContrib": 0.2882542500311185
+  },
+  "ultra-rapid 1U at 180m": {
+    "activityContrib": 0.002061830375294394,
+    "iobContrib": 0.0883831674425879
+  },
+  "ultra-rapid 1U at 300m": {
+    "activityContrib": 0,
+    "iobContrib": 0
+  },
+  "bilinear 1U at 0m DIA=3": {
+    "activityContrib": 0,
+    "iobContrib": 1
+  },
+  "bilinear 1U at 15m DIA=3": {
+    "activityContrib": 0.0022222222222222222,
+    "iobContrib": 0.977776
+  },
+  "bilinear 1U at 30m DIA=3": {
+    "activityContrib": 0.0044444444444444444,
+    "iobContrib": 0.922216
+  },
+  "bilinear 1U at 45m DIA=3": {
+    "activityContrib": 0.006666666666666666,
+    "iobContrib": 0.8333200000000001
+  },
+  "bilinear 1U at 60m DIA=3": {
+    "activityContrib": 0.008888888888888889,
+    "iobContrib": 0.7110879999999999
+  },
+  "bilinear 1U at 75m DIA=3": {
+    "activityContrib": 0.011111111111111112,
+    "iobContrib": 0.55556
+  },
+  "bilinear 1U at 90m DIA=3": {
+    "activityContrib": 0.009523809523809525,
+    "iobContrib": 0.404768
+  },
+  "bilinear 1U at 120m DIA=3": {
+    "activityContrib": 0.006349206349206349,
+    "iobContrib": 0.17462600000000006
+  },
+  "bilinear 1U at 150m DIA=3": {
+    "activityContrib": 0.0031746031746031755,
+    "iobContrib": 0.039739999999999887
+  },
+  "bilinear 1U at 180m DIA=3": {
+    "activityContrib": 0,
+    "iobContrib": 0
+  },
+  "custom peak 50m rapid": {
+    "activityContrib": 0.007907646930920114,
+    "iobContrib": 0.6318025861644805
+  },
+  "custom peak 120m rapid": {
+    "activityContrib": 0.004038335236554084,
+    "iobContrib": 0.8608485007723026
+  },
+  "custom peak 35m ultra-rapid": {
+    "activityContrib": 0.009108362675806937,
+    "iobContrib": 0.4705133995340688
+  },
+  "zero insulin": {},
+  "no insulin property": {},
+  "future treatment": {
+    "activityContrib": -0.0024014208189625753,
+    "iobContrib": 0.9884644150603206
+  },
+  "past DIA 360m": {
+    "activityContrib": 0,
+    "iobContrib": 0
+  },
+  "peak clamped to 120 (rapid, peak=150)": {
+    "activityContrib": 0.004038335236554084,
+    "iobContrib": 0.8608485007723026
+  },
+  "peak clamped to 50 (rapid, peak=30)": {
+    "activityContrib": 0.007907646930920114,
+    "iobContrib": 0.6318025861644805
+  }
+}

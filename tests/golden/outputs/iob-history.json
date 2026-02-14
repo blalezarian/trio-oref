@@ -1,0 +1,591 @@
+{
+  "single bolus": [
+    {
+      "timestamp": "2025-01-15T11:30:00.000Z",
+      "started_at": "[NOW-30m]",
+      "date": "[NOW-30m]",
+      "insulin": 2
+    },
+    {
+      "rate": 0,
+      "started_at": "[NOW+1m]",
+      "date": "[NOW+1m]",
+      "duration": 0
+    }
+  ],
+  "multiple boluses": [
+    {
+      "timestamp": "2025-01-15T11:00:00.000Z",
+      "started_at": "[NOW-60m]",
+      "date": "[NOW-60m]",
+      "insulin": 0.5
+    },
+    {
+      "timestamp": "2025-01-15T11:30:00.000Z",
+      "started_at": "[NOW-30m]",
+      "date": "[NOW-30m]",
+      "insulin": 1
+    },
+    {
+      "timestamp": "2025-01-15T12:00:00.000Z",
+      "started_at": "[NOW+0m]",
+      "date": "[NOW+0m]",
+      "insulin": 2
+    },
+    {
+      "rate": 0,
+      "started_at": "[NOW+1m]",
+      "date": "[NOW+1m]",
+      "duration": 0
+    },
+    {
+      "rate": 0,
+      "started_at": "[NOW+1m]",
+      "date": "[NOW+1m]",
+      "duration": 0
+    },
+    {
+      "rate": 0,
+      "started_at": "[NOW+1m]",
+      "date": "[NOW+1m]",
+      "duration": 0
+    }
+  ],
+  "temp basal pair": [
+    {
+      "insulin": 0.05,
+      "date": "[NOW-30m]",
+      "created_at": "[NOW-30m]"
+    },
+    {
+      "rate": 2,
+      "timestamp": "2025-01-15T11:30:00.000Z",
+      "started_at": "[NOW-30m]",
+      "date": "[NOW-30m]",
+      "duration": 30
+    },
+    {
+      "insulin": 0.05,
+      "date": "[NOW-27m]",
+      "created_at": "[NOW-27m]"
+    },
+    {
+      "insulin": 0.05,
+      "date": "[NOW-24m]",
+      "created_at": "[NOW-24m]"
+    },
+    {
+      "insulin": 0.05,
+      "date": "[NOW-21m]",
+      "created_at": "[NOW-21m]"
+    },
+    {
+      "insulin": 0.05,
+      "date": "[NOW-18m]",
+      "created_at": "[NOW-18m]"
+    },
+    {
+      "insulin": 0.05,
+      "date": "[NOW-15m]",
+      "created_at": "[NOW-15m]"
+    },
+    {
+      "insulin": 0.05,
+      "date": "[NOW-12m]",
+      "created_at": "[NOW-12m]"
+    },
+    {
+      "insulin": 0.05,
+      "date": "[NOW-9m]",
+      "created_at": "[NOW-9m]"
+    },
+    {
+      "insulin": 0.05,
+      "date": "[NOW-6m]",
+      "created_at": "[NOW-6m]"
+    },
+    {
+      "insulin": 0.05,
+      "date": "[NOW-3m]",
+      "created_at": "[NOW-3m]"
+    },
+    {
+      "rate": 0,
+      "started_at": "[NOW+1m]",
+      "date": "[NOW+1m]",
+      "duration": 0
+    },
+    {
+      "rate": 0,
+      "started_at": "[NOW+1m]",
+      "date": "[NOW+1m]",
+      "duration": 0
+    }
+  ],
+  "zero temp pair": [
+    {
+      "insulin": -0.05,
+      "date": "[NOW-30m]",
+      "created_at": "[NOW-30m]"
+    },
+    {
+      "rate": 0,
+      "timestamp": "2025-01-15T11:30:00.000Z",
+      "started_at": "[NOW-30m]",
+      "date": "[NOW-30m]",
+      "duration": 30
+    },
+    {
+      "insulin": -0.05,
+      "date": "[NOW-27m]",
+      "created_at": "[NOW-27m]"
+    },
+    {
+      "insulin": -0.05,
+      "date": "[NOW-24m]",
+      "created_at": "[NOW-24m]"
+    },
+    {
+      "insulin": -0.05,
+      "date": "[NOW-21m]",
+      "created_at": "[NOW-21m]"
+    },
+    {
+      "insulin": -0.05,
+      "date": "[NOW-18m]",
+      "created_at": "[NOW-18m]"
+    },
+    {
+      "insulin": -0.05,
+      "date": "[NOW-15m]",
+      "created_at": "[NOW-15m]"
+    },
+    {
+      "insulin": -0.05,
+      "date": "[NOW-12m]",
+      "created_at": "[NOW-12m]"
+    },
+    {
+      "insulin": -0.05,
+      "date": "[NOW-9m]",
+      "created_at": "[NOW-9m]"
+    },
+    {
+      "insulin": -0.05,
+      "date": "[NOW-6m]",
+      "created_at": "[NOW-6m]"
+    },
+    {
+      "insulin": -0.05,
+      "date": "[NOW-3m]",
+      "created_at": "[NOW-3m]"
+    },
+    {
+      "rate": 0,
+      "started_at": "[NOW+1m]",
+      "date": "[NOW+1m]",
+      "duration": 0
+    },
+    {
+      "rate": 0,
+      "started_at": "[NOW+1m]",
+      "date": "[NOW+1m]",
+      "duration": 0
+    }
+  ],
+  "percent temp skipped": [
+    {
+      "rate": 0,
+      "started_at": "[NOW+1m]",
+      "date": "[NOW+1m]",
+      "duration": 0
+    }
+  ],
+  "consecutive temps": [
+    {
+      "insulin": 0.05,
+      "date": "[NOW-60m]",
+      "created_at": "[NOW-60m]"
+    },
+    {
+      "rate": 2,
+      "timestamp": "2025-01-15T11:00:00.000Z",
+      "started_at": "[NOW-60m]",
+      "date": "[NOW-60m]",
+      "duration": 60
+    },
+    {
+      "insulin": 0.05,
+      "date": "[NOW-57m]",
+      "created_at": "[NOW-57m]"
+    },
+    {
+      "insulin": 0.05,
+      "date": "[NOW-54m]",
+      "created_at": "[NOW-54m]"
+    },
+    {
+      "insulin": 0.05,
+      "date": "[NOW-51m]",
+      "created_at": "[NOW-51m]"
+    },
+    {
+      "insulin": 0.05,
+      "date": "[NOW-48m]",
+      "created_at": "[NOW-48m]"
+    },
+    {
+      "insulin": 0.05,
+      "date": "[NOW-45m]",
+      "created_at": "[NOW-45m]"
+    },
+    {
+      "insulin": 0.05,
+      "date": "[NOW-42m]",
+      "created_at": "[NOW-42m]"
+    },
+    {
+      "insulin": 0.05,
+      "date": "[NOW-39m]",
+      "created_at": "[NOW-39m]"
+    },
+    {
+      "insulin": 0.05,
+      "date": "[NOW-36m]",
+      "created_at": "[NOW-36m]"
+    },
+    {
+      "insulin": 0.05,
+      "date": "[NOW-33m]",
+      "created_at": "[NOW-33m]"
+    },
+    {
+      "insulin": 0.05,
+      "date": "[NOW-30m]",
+      "created_at": "[NOW-30m]"
+    },
+    {
+      "insulin": 0.05,
+      "date": "[NOW-27m]",
+      "created_at": "[NOW-27m]"
+    },
+    {
+      "insulin": 0.05,
+      "date": "[NOW-24m]",
+      "created_at": "[NOW-24m]"
+    },
+    {
+      "insulin": 0.05,
+      "date": "[NOW-21m]",
+      "created_at": "[NOW-21m]"
+    },
+    {
+      "insulin": 0.05,
+      "date": "[NOW-18m]",
+      "created_at": "[NOW-18m]"
+    },
+    {
+      "insulin": 0.05,
+      "date": "[NOW-15m]",
+      "created_at": "[NOW-15m]"
+    },
+    {
+      "insulin": 0.05,
+      "date": "[NOW-12m]",
+      "created_at": "[NOW-12m]"
+    },
+    {
+      "insulin": 0.05,
+      "date": "[NOW-9m]",
+      "created_at": "[NOW-9m]"
+    },
+    {
+      "insulin": 0.05,
+      "date": "[NOW-6m]",
+      "created_at": "[NOW-6m]"
+    },
+    {
+      "insulin": 0.05,
+      "date": "[NOW-3m]",
+      "created_at": "[NOW-3m]"
+    },
+    {
+      "rate": 0,
+      "started_at": "[NOW+1m]",
+      "date": "[NOW+1m]",
+      "duration": 0
+    },
+    {
+      "rate": 0,
+      "started_at": "[NOW+1m]",
+      "date": "[NOW+1m]",
+      "duration": 0
+    }
+  ],
+  "low temp negative IOB": [
+    {
+      "insulin": -0.05,
+      "date": "[NOW-30m]",
+      "created_at": "[NOW-30m]"
+    },
+    {
+      "rate": 0.1,
+      "timestamp": "2025-01-15T11:30:00.000Z",
+      "started_at": "[NOW-30m]",
+      "date": "[NOW-30m]",
+      "duration": 30
+    },
+    {
+      "insulin": -0.05,
+      "date": "[NOW-27m]",
+      "created_at": "[NOW-27m]"
+    },
+    {
+      "insulin": -0.05,
+      "date": "[NOW-23m]",
+      "created_at": "[NOW-23m]"
+    },
+    {
+      "insulin": -0.05,
+      "date": "[NOW-20m]",
+      "created_at": "[NOW-20m]"
+    },
+    {
+      "insulin": -0.05,
+      "date": "[NOW-17m]",
+      "created_at": "[NOW-17m]"
+    },
+    {
+      "insulin": -0.05,
+      "date": "[NOW-13m]",
+      "created_at": "[NOW-13m]"
+    },
+    {
+      "insulin": -0.05,
+      "date": "[NOW-10m]",
+      "created_at": "[NOW-10m]"
+    },
+    {
+      "insulin": -0.05,
+      "date": "[NOW-7m]",
+      "created_at": "[NOW-7m]"
+    },
+    {
+      "insulin": -0.05,
+      "date": "[NOW-3m]",
+      "created_at": "[NOW-3m]"
+    },
+    {
+      "rate": 0,
+      "started_at": "[NOW+1m]",
+      "date": "[NOW+1m]",
+      "duration": 0
+    },
+    {
+      "rate": 0,
+      "started_at": "[NOW+1m]",
+      "date": "[NOW+1m]",
+      "duration": 0
+    }
+  ],
+  "pump suspend/resume": [
+    {
+      "insulin": 0.05,
+      "date": "[NOW-60m]",
+      "created_at": "[NOW-60m]"
+    },
+    {
+      "rate": 2,
+      "timestamp": "2025-01-15T11:00:00.000Z",
+      "started_at": "[NOW-60m]",
+      "date": "[NOW-60m]",
+      "duration": 60
+    },
+    {
+      "insulin": 0.05,
+      "date": "[NOW-57m]",
+      "created_at": "[NOW-57m]"
+    },
+    {
+      "insulin": 0.05,
+      "date": "[NOW-54m]",
+      "created_at": "[NOW-54m]"
+    },
+    {
+      "insulin": 0.05,
+      "date": "[NOW-51m]",
+      "created_at": "[NOW-51m]"
+    },
+    {
+      "insulin": 0.05,
+      "date": "[NOW-48m]",
+      "created_at": "[NOW-48m]"
+    },
+    {
+      "insulin": 0.05,
+      "date": "[NOW-45m]",
+      "created_at": "[NOW-45m]"
+    },
+    {
+      "insulin": 0.05,
+      "date": "[NOW-42m]",
+      "created_at": "[NOW-42m]"
+    },
+    {
+      "insulin": 0.05,
+      "date": "[NOW-39m]",
+      "created_at": "[NOW-39m]"
+    },
+    {
+      "insulin": 0.05,
+      "date": "[NOW-36m]",
+      "created_at": "[NOW-36m]"
+    },
+    {
+      "insulin": 0.05,
+      "date": "[NOW-33m]",
+      "created_at": "[NOW-33m]"
+    },
+    {
+      "insulin": -0.05,
+      "date": "[NOW-30m]",
+      "created_at": "[NOW-30m]"
+    },
+    {
+      "insulin": -0.05,
+      "date": "[NOW-27m]",
+      "created_at": "[NOW-27m]"
+    },
+    {
+      "insulin": -0.05,
+      "date": "[NOW-24m]",
+      "created_at": "[NOW-24m]"
+    },
+    {
+      "insulin": -0.05,
+      "date": "[NOW-21m]",
+      "created_at": "[NOW-21m]"
+    },
+    {
+      "insulin": -0.05,
+      "date": "[NOW-18m]",
+      "created_at": "[NOW-18m]"
+    },
+    {
+      "insulin": 0.05,
+      "date": "[NOW-15m]",
+      "created_at": "[NOW-15m]"
+    },
+    {
+      "insulin": 0.05,
+      "date": "[NOW-12m]",
+      "created_at": "[NOW-12m]"
+    },
+    {
+      "insulin": 0.05,
+      "date": "[NOW-9m]",
+      "created_at": "[NOW-9m]"
+    },
+    {
+      "insulin": 0.05,
+      "date": "[NOW-6m]",
+      "created_at": "[NOW-6m]"
+    },
+    {
+      "insulin": 0.05,
+      "date": "[NOW-3m]",
+      "created_at": "[NOW-3m]"
+    },
+    {
+      "rate": 0,
+      "started_at": "[NOW+1m]",
+      "date": "[NOW+1m]",
+      "duration": 0
+    },
+    {
+      "rate": 0,
+      "started_at": "[NOW+1m]",
+      "date": "[NOW+1m]",
+      "duration": 0
+    }
+  ],
+  "Meal Bolus": [
+    {
+      "timestamp": "2025-01-15T11:30:00.000Z",
+      "started_at": "[NOW-30m]",
+      "date": "[NOW-30m]",
+      "insulin": 3
+    },
+    {
+      "rate": 0,
+      "started_at": "[NOW+1m]",
+      "date": "[NOW+1m]",
+      "duration": 0
+    }
+  ],
+  "Correction Bolus": [
+    {
+      "timestamp": "2025-01-15T11:00:00.000Z",
+      "started_at": "[NOW-60m]",
+      "date": "[NOW-60m]",
+      "insulin": 1.5
+    },
+    {
+      "rate": 0,
+      "started_at": "[NOW+1m]",
+      "date": "[NOW+1m]",
+      "duration": 0
+    }
+  ],
+  "Snack Bolus": [
+    {
+      "timestamp": "2025-01-15T11:15:00.000Z",
+      "started_at": "[NOW-45m]",
+      "date": "[NOW-45m]",
+      "insulin": 1
+    },
+    {
+      "rate": 0,
+      "started_at": "[NOW+1m]",
+      "date": "[NOW+1m]",
+      "duration": 0
+    }
+  ],
+  "Bolus Wizard": [
+    {
+      "timestamp": "2025-01-15T11:40:00.000Z",
+      "started_at": "[NOW-20m]",
+      "date": "[NOW-20m]",
+      "insulin": 2.5
+    },
+    {
+      "rate": 0,
+      "started_at": "[NOW+1m]",
+      "date": "[NOW+1m]",
+      "duration": 0
+    }
+  ],
+  "xDrip bolus": [
+    {
+      "rate": 0,
+      "started_at": "[NOW+1m]",
+      "date": "[NOW+1m]",
+      "duration": 0
+    }
+  ],
+  "mixed bolus and temp": [
+    {
+      "timestamp": "2025-01-15T11:00:00.000Z",
+      "started_at": "[NOW-60m]",
+      "date": "[NOW-60m]",
+      "insulin": 1
+    },
+    {
+      "rate": 0,
+      "started_at": "[NOW+1m]",
+      "date": "[NOW+1m]",
+      "duration": 0
+    }
+  ],
+  "empty history": []
+}
