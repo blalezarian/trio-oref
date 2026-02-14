@@ -1,6 +1,6 @@
 import { percentile } from '../utils/percentile';
 import { roundTo2dp } from '../utils/rounding';
-import { MEDIAN_PERCENTILE } from '../shared/constants';
+import { MEDIAN_PERCENTILE, PERCENT_MULTIPLIER } from '../shared/constants';
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -8,8 +8,6 @@ import { MEDIAN_PERCENTILE } from '../shared/constants';
 
 /** Deviations per hour (60 min / 5 min intervals) */
 const DEVIATIONS_PER_HOUR = 12;
-/** Multiplier to convert fraction to percentage */
-const PERCENT_MULTIPLIER = 100;
 /** Upper bound for percentile scan loop */
 const PERCENTILE_SCAN_HIGH = 0.9;
 /** Lower bound for percentile scan loop */

@@ -95,6 +95,11 @@ export const DEFAULT_SMB_INTERVAL_MINUTES = 3;
 /** Default maxSMBBasalMinutes */
 export const DEFAULT_MAX_SMB_BASAL_MINUTES = 30;
 
+// === Percentage Conversion ===
+
+/** Multiplier to convert a fraction (0–1) to a percentage (0–100) */
+export const PERCENT_MULTIPLIER = 100;
+
 // === Temp Basal Rate Tolerance ===
 
 /** Lower rate tolerance factor for current temp comparison */

@@ -2,7 +2,7 @@
 // It is not in the webpack bundle and not imported by any production code.
 
 import type { PumpHistoryEvent, PumpHistoryEventType } from '../types/index';
-import { MS_PER_MINUTE } from '../shared/constants';
+import { MS_PER_MINUTE, PERCENT_MULTIPLIER } from '../shared/constants';
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -10,8 +10,6 @@ import { MS_PER_MINUTE } from '../shared/constants';
 
 /** Minutes window for grouping related bolus events */
 const BOLUS_GROUPING_MINUTES = 2;
-/** Multiplier to convert ratio to percentage */
-const PERCENT_MULTIPLIER = 100;
 /** Path to IOB monitor file (read at runtime on device) */
 const IOB_FILE_PATH = './monitor/iob.json';
 
