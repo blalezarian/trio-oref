@@ -11,6 +11,7 @@ import {
     EXERCISE_NORMAL_TARGET,
     DEFAULT_AUTOSENS_LOOKBACK,
     AUTOSENS_MIN_VALID_BG,
+    TRAILING_BUCKETS_FOR_DELTA,
 } from '../shared/constants';
 import { resolveGlucoseTime } from '../utils/time';
 
@@ -24,8 +25,6 @@ const MEAL_EXCLUSION_COUNTER = 9;
 const MEAL_ABSORPTION_LONG_COUNTER = 60;
 /** Temp-target deviation divisor: (tempTarget - 100) / this */
 const TEMP_TARGET_DEVIATION_DIVISOR = 20;
-/** Minimum trailing buckets required for delta calculations */
-const TRAILING_BUCKETS = 3;
 /** Minimum COB threshold for "depleted" checks */
 const COB_DEPLETED_THRESHOLD = 0.5;
 /** Initial meal-start counter sentinel (well above all thresholds) */
@@ -92,7 +91,7 @@ export function analyzeDeviations(
 
     const isfProfileData = profile.isfProfile as NonNullable<typeof profile.isfProfile>;
 
-    for (let bucketIdx = TRAILING_BUCKETS; bucketIdx < bucketedData.length; ++bucketIdx) {
+    for (let bucketIdx = TRAILING_BUCKETS_FOR_DELTA; bucketIdx < bucketedData.length; ++bucketIdx) {
         const entry = bucketedData[bucketIdx];
         bgTime = entry.date != null
             ? new Date(entry.date)
@@ -109,7 +108,7 @@ export function analyzeDeviations(
         if (bucketedData[bucketIdx].glucose !== undefined) {
             bg = Number(bucketedData[bucketIdx].glucose);
             lastBG = Number(bucketedData[bucketIdx - 1].glucose);
-            oldBG = Number(bucketedData[bucketIdx - TRAILING_BUCKETS].glucose);
+            oldBG = Number(bucketedData[bucketIdx - TRAILING_BUCKETS_FOR_DELTA].glucose);
 
             if (isNaN(bg) || !bg || bg < AUTOSENS_MIN_VALID_BG
                 || isNaN(oldBG) || !oldBG || oldBG < AUTOSENS_MIN_VALID_BG
@@ -118,7 +117,7 @@ export function analyzeDeviations(
                 continue;
             }
 
-            avgDelta = (bg - oldBG) / TRAILING_BUCKETS;
+            avgDelta = (bg - oldBG) / TRAILING_BUCKETS_FOR_DELTA;
             delta = bg - lastBG;
         } else {
             console.log("Could not find glucose data");

@@ -95,6 +95,11 @@ export const DEFAULT_SMB_INTERVAL_MINUTES = 3;
 /** Default maxSMBBasalMinutes */
 export const DEFAULT_MAX_SMB_BASAL_MINUTES = 30;
 
+// === Deviation Loop ===
+
+/** Minimum trailing glucose buckets required for avgDelta calculations */
+export const TRAILING_BUCKETS_FOR_DELTA = 3;
+
 // === Percentage Conversion ===
 
 /** Multiplier to convert a fraction (0–1) to a percentage (0–100) */

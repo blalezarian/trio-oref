@@ -7,6 +7,7 @@ import type { IobProfile, HistoryBasalProfileEntry, IobInputs, IobTreatment } fr
 import {
     MIN_VALID_GLUCOSE_MGDL,
     MS_PER_5_MIN,
+    TRAILING_BUCKETS_FOR_DELTA,
 } from '../shared/constants';
 import { roundTo2dp, roundTo3dp } from '../utils/rounding';
 import { resolveGlucoseTime } from '../utils/time';
@@ -29,8 +30,6 @@ export interface CarbAbsorptionResult {
 // Constants
 // ---------------------------------------------------------------------------
 
-/** Minimum trailing buckets required for delta calculations */
-const TRAILING_BUCKETS_REQUIRED = 3;
 /** Initial sentinel for min-deviation slope (large positive to be overwritten) */
 const SLOPE_INITIAL_HIGH = 999;
 /** Initial sentinel for min-deviation (large positive to be overwritten) */
@@ -62,7 +61,7 @@ export function analyzeAbsorption(
 
     const isfProfileData = profile.isfProfile as NonNullable<typeof profile.isfProfile>;
 
-    for (let bucketIdx = 0; bucketIdx < bucketedData.length - TRAILING_BUCKETS_REQUIRED; ++bucketIdx) {
+    for (let bucketIdx = 0; bucketIdx < bucketedData.length - TRAILING_BUCKETS_FOR_DELTA; ++bucketIdx) {
         const entry = bucketedData[bucketIdx];
         const bgTime = entry.date != null
             ? new Date(entry.date)
@@ -147,14 +146,14 @@ export function resolveGlucoseDeltas(
     }
 
     const bg = Number(bucketedData[bucketIdx].glucose);
-    const trailingBg = bucketedData[bucketIdx + TRAILING_BUCKETS_REQUIRED].glucose ?? 0;
+    const trailingBg = bucketedData[bucketIdx + TRAILING_BUCKETS_FOR_DELTA].glucose ?? 0;
 
     if (bg < MIN_VALID_GLUCOSE_MGDL || trailingBg < MIN_VALID_GLUCOSE_MGDL) {
         console.log("!");
         return 'skip';
     }
 
-    const avgDelta = roundTo2dp((bg - trailingBg) / TRAILING_BUCKETS_REQUIRED);
+    const avgDelta = roundTo2dp((bg - trailingBg) / TRAILING_BUCKETS_FOR_DELTA);
     const delta = bg - (bucketedData[bucketIdx + 1].glucose ?? 0);
 
     return { bg, delta, avgDelta };
