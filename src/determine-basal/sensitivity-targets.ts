@@ -43,9 +43,9 @@ export function configureSensitivityAndTargets(
     bg: number,
     dynISFenabled: boolean,
     newRatio: number,
-    tdd24h_14d_Ratio: number,
+    tdd24hTo14dRatio: number,
     overrideFactor: number,
-    profile_current_basal: number,
+    profileCurrentBasal: number,
     tdd_before: number,
     weightedAverage: number,
     average_total_data: number,
@@ -59,19 +59,19 @@ export function configureSensitivityAndTargets(
     const targetsResult = resolveProfileTargets(profileTarget, profile, cgmReason);
     if ('earlyReturn' in targetsResult) return targetsResult;
     let { target_bg, min_bg, max_bg } = targetsResult;
-    const { high_bg } = targetsResult;
+    const { high_bg: highBG } = targetsResult;
 
-    const max_iob = profile.max_iob; // maximum amount of non-bolus IOB OpenAPS will ever deliver
+    const maxIOB = profile.max_iob; // maximum amount of non-bolus IOB OpenAPS will ever deliver
 
     // Calculate sensitivityRatio and apply override target
     const sensResult = resolveSensitivityRatio(target_bg, overrideTarget, bg, dynISFenabled, newRatio, profile, autosens_data);
     target_bg = sensResult.target_bg;
     const sensitivityRatio = sensResult.sensitivityRatio;
 
-    basal = adjustBasalBySensitivity(basal, sensitivityRatio, overrideFactor, dynISFenabled, profile, profile_current_basal);
+    basal = adjustBasalBySensitivity(basal, sensitivityRatio, overrideFactor, dynISFenabled, profile, profileCurrentBasal);
 
     if (dynISFenabled && profile.tddAdjBasal) {
-        basal = adjustBasalByTDD(basal, tdd24h_14d_Ratio, overrideFactor, profile, profile_current_basal, tdd_before, weightedAverage, average_total_data, weightPercentage);
+        basal = adjustBasalByTDD(basal, tdd24hTo14dRatio, overrideFactor, profile, profileCurrentBasal, tdd_before, weightedAverage, average_total_data, weightPercentage);
     }
 
     // Adjust BG target based on autosens ratio if no temp target is running
@@ -98,7 +98,7 @@ export function configureSensitivityAndTargets(
     const { adjustedSens, isfreason } = adjustISFBySensitivity(sensitivity, Number(sensitivityRatio), profile, autosens_data);
     console.log(`CR:${carbRatio}`);
 
-    return { max_iob, target_bg: Number(target_bg), min_bg: Number(min_bg), max_bg: Number(max_bg), high_bg: Number(high_bg), sensitivityRatio, basal, threshold: thresholdFinal, adjustedSens, isfreason, targetLog };
+    return { maxIOB, targetBG: Number(target_bg), minBG: Number(min_bg), maxBG: Number(max_bg), highBG: Number(highBG), sensitivityRatio, basal, threshold: thresholdFinal, adjustedSens, isfreason, targetLog };
 }
 
 // ---------------------------------------------------------------------------

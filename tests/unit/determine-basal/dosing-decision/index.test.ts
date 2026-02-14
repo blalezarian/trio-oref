@@ -28,7 +28,7 @@ beforeEach(() => {
 function makeDosingInputs(overrides: Partial<DosingDecisionInputs> = {}): DosingDecisionInputs {
     return {
         result: { reason: '' } as DetermineBasalResult,
-        iob_data: {
+        iobData: {
             iob: 2.0,
             lastBolusTime: new Date(FIXED_TIME).getTime() - 600000,
             activity: 0.05,
@@ -38,7 +38,7 @@ function makeDosingInputs(overrides: Partial<DosingDecisionInputs> = {}): Dosing
             bolusinsulin: 3.0,
             time: new Date(FIXED_TIME),
         } as IOBData,
-        meal_data: {
+        mealData: {
             mealCOB: 0,
             carbs: 0,
             nsCarbs: 0,
@@ -75,7 +75,7 @@ function makeDosingInputs(overrides: Partial<DosingDecisionInputs> = {}): Dosing
             sens: 50,
             carb_ratio: 10,
         } as Profile,
-        glucose_status: {
+        glucoseStatus: {
             glucose: 150,
             delta: 5,
             short_avgdelta: 4,
@@ -97,7 +97,7 @@ function makeDosingInputs(overrides: Partial<DosingDecisionInputs> = {}): Dosing
             getMaxSafeBasal: vi.fn(() => 4),
         } as unknown as TempBasalFunctions,
         systemTime: new Date(FIXED_TIME),
-        trio_custom_variables: {
+        trioCustomVariables: {
             useOverride: false,
             advancedSettings: false,
             smbMinutes: 30,
@@ -118,12 +118,12 @@ function makeDosingInputs(overrides: Partial<DosingDecisionInputs> = {}): Dosing
         } as TrioCustomVariables,
         bg: 150,
         eventualBG: 150,
-        naive_eventualBG: 150,
+        naiveEventualBG: 150,
         threshold: 65,
-        target_bg: 100,
-        min_bg: 80,
-        max_bg: 120,
-        max_iob: 10,
+        targetBG: 100,
+        minBG: 80,
+        maxBG: 120,
+        maxIOB: 10,
         basal: 1.0,
         adjustedSens: 50,
         carbRatio: 10,
@@ -174,7 +174,7 @@ describe('calculateDosingDecision', () => {
         // eventualBG=60 < min_bg=80 triggers handleLowBG early return
         const inputs = makeDosingInputs({
             eventualBG: 60,
-            naive_eventualBG: 60,
+            naiveEventualBG: 60,
             minDelta: -1,
             expectedDelta: 0,
         });

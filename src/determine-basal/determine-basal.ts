@@ -98,14 +98,14 @@ export function determine_basal(
     );
     dynISFenabled = dynResult.dynISFenabled;
     tdd = dynResult.tdd;
-    const { tddReason, newRatio, insulinFactor, adjustmentFactor, enable_sigmoid, tdd24h_14d_Ratio } = dynResult;
+    const { tddReason, newRatio, insulinFactor, adjustmentFactor, enableSigmoid: enable_sigmoid, tdd24hTo14dRatio: tdd24h_14d_Ratio } = dynResult;
 
     const cgmValidation = validateCGMData(
         glucose_status, profile, systemTime, overrideFactor,
         currenttemp, trio_custom_variables.useOverride, trio_custom_variables.duration
     );
     if ('earlyReturn' in cgmValidation) return cgmValidation.earlyReturn;
-    const { bg, tick, minDelta, minAvgDelta, maxDelta, deliverAt, profile_current_basal } = cgmValidation;
+    const { bg, tick, minDelta, minAvgDelta, maxDelta, deliverAt, profileCurrentBasal: profile_current_basal } = cgmValidation;
 
     const sensTargets = configureSensitivityAndTargets(
         glucose_status, profile, autosens_data, profileTarget, overrideTarget,
@@ -114,7 +114,7 @@ export function determine_basal(
         weightPercentage, sensitivity, carbRatio, cgmValidation.basal, cgmValidation.reason
     );
     if ('earlyReturn' in sensTargets) return sensTargets.earlyReturn;
-    const { max_iob, target_bg, min_bg, max_bg, high_bg, sensitivityRatio, adjustedSens, isfreason, targetLog } = sensTargets;
+    const { maxIOB: max_iob, targetBG: target_bg, minBG: min_bg, maxBG: max_bg, highBG: high_bg, sensitivityRatio, adjustedSens, isfreason, targetLog } = sensTargets;
     let basal = sensTargets.basal;
     let threshold = sensTargets.threshold;
 
@@ -204,10 +204,10 @@ export function determine_basal(
     const { lastIOBpredBG, lastCOBpredBG, lastUAMpredBG, minIOBPredBG, IOBpredBGs, COBpredBGs } = bgPred;
 
     return calculateDosingDecision({
-        result, iob_data: iob_datum, meal_data, profile, glucose_status, currenttemp,
-        tempBasalFunctions, systemTime, trio_custom_variables,
-        bg, eventualBG, naive_eventualBG,
-        threshold, target_bg, min_bg, max_bg, max_iob,
+        result, iobData: iob_datum, mealData: meal_data, profile, glucoseStatus: glucose_status, currenttemp,
+        tempBasalFunctions, systemTime, trioCustomVariables: trio_custom_variables,
+        bg, eventualBG, naiveEventualBG: naive_eventualBG,
+        threshold, targetBG: target_bg, minBG: min_bg, maxBG: max_bg, maxIOB: max_iob,
         basal, adjustedSens, carbRatio, overrideFactor,
         expectedDelta, minDelta, maxDelta, tick,
         bgImpact, deviation,

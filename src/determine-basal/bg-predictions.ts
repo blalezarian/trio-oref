@@ -155,7 +155,7 @@ export function generateBGPredictions(
         COBpredBGs,
         UAMpredBGs,
         eventualBG,
-        target_bg,
+        targetBG: target_bg,
         mealCOB: meal_data.mealCOB,
         carbImpact,
         remainingCIpeak,
@@ -179,7 +179,7 @@ export function generateBGPredictions(
         bg,
         maxCOBPredBG,
         threshold,
-        target_bg,
+        targetBG: target_bg,
         mealCOB: meal_data.mealCOB,
         carbs: meal_data.carbs,
         carbImpactDuration,
@@ -323,7 +323,7 @@ export function clipAndTrimPredictions(inputs: ClipAndTrimInputs): ClipAndTrimRe
         ZTpredBGs,
         COBpredBGs,
         UAMpredBGs,
-        target_bg,
+        targetBG,
         mealCOB,
         carbImpact,
         remainingCIpeak,
@@ -349,7 +349,7 @@ export function clipAndTrimPredictions(inputs: ClipAndTrimInputs): ClipAndTrimRe
 
     // ZT: clip to [39, 401], trim rising-above-target tail
     clipArray(ZTpredBGs, MIN_VALID_GLUCOSE_MGDL, MAX_VALID_GLUCOSE_MGDL + 1);
-    trimRisingAboveTarget(ZTpredBGs, target_bg, MIN_ZT_TRIM_POINTS);
+    trimRisingAboveTarget(ZTpredBGs, targetBG, MIN_ZT_TRIM_POINTS);
     predBGs.ZT = ZTpredBGs;
 
     // COB: clip to [39, 1500], trim flat tail (only if mealCOB and carb impact present)
@@ -421,7 +421,7 @@ export function calculateMinAndGuardBGs(inputs: MinGuardBGInputs): MinGuardBGRes
         bg,
         maxCOBPredBG,
         threshold,
-        target_bg,
+        targetBG,
         mealCOB,
         carbs,
         carbImpactDuration,
@@ -446,7 +446,7 @@ export function calculateMinAndGuardBGs(inputs: MinGuardBGInputs): MinGuardBGRes
     const { minGuardBG, minZTUAMPredBG } = blendMinGuardBG(
         fractionCarbsLeft, minCOBGuardBG, minUAMGuardBG, minIOBGuardBG, minZTGuardBG,
         minUAMPredBG, carbImpactDuration, remainingCIpeak, enableUAM,
-        threshold, target_bg,
+        threshold, targetBG,
     );
 
     let minPredBG = selectMinPredBG(

@@ -16,8 +16,8 @@ export interface DynamicISFResult {
     newRatio: number;
     insulinFactor: number;
     adjustmentFactor: number;
-    enable_sigmoid: boolean;
-    tdd24h_14d_Ratio: number;
+    enableSigmoid: boolean;
+    tdd24hTo14dRatio: number;
 }
 
 export interface CGMValidationResult {
@@ -30,17 +30,17 @@ export interface CGMValidationResult {
     minAgo: number;
     bgTime: Date;
     deliverAt: Date;
-    profile_current_basal: number;
+    profileCurrentBasal: number;
     basal: number;
     reason: string | undefined;
 }
 
 export interface SensitivityAndTargetsResult {
-    max_iob: number;
-    target_bg: number;
-    min_bg: number;
-    max_bg: number;
-    high_bg: number;
+    maxIOB: number;
+    targetBG: number;
+    minBG: number;
+    maxBG: number;
+    highBG: number;
     sensitivityRatio: number | undefined;
     basal: number;
     threshold: number;
@@ -96,7 +96,7 @@ export interface ClipAndTrimInputs {
 
     // BG context
     eventualBG: number;
-    target_bg: number;
+    targetBG: number;
 
     // Meal / carb context
     mealCOB: number;
@@ -140,7 +140,7 @@ export interface MinGuardBGInputs {
     bg: number;
     maxCOBPredBG: number;
     threshold: number;
-    target_bg: number;
+    targetBG: number;
 
     // Meal / carb context
     mealCOB: number;
@@ -165,22 +165,22 @@ export interface MinGuardBGResult {
 
 export interface DosingDecisionInputs {
     result: DetermineBasalResult;
-    iob_data: IOBData;
-    meal_data: MealData;
+    iobData: IOBData;
+    mealData: MealData;
     profile: Profile;
-    glucose_status: GlucoseStatus;
+    glucoseStatus: GlucoseStatus;
     currenttemp: CurrentTemp;
     tempBasalFunctions: TempBasalFunctions;
     systemTime: Date;
-    trio_custom_variables: TrioCustomVariables;
+    trioCustomVariables: TrioCustomVariables;
     bg: number;
     eventualBG: number;
-    naive_eventualBG: number;
+    naiveEventualBG: number;
     threshold: number;
-    target_bg: number;
-    min_bg: number;
-    max_bg: number;
-    max_iob: number;
+    targetBG: number;
+    minBG: number;
+    maxBG: number;
+    maxIOB: number;
     basal: number;
     adjustedSens: number;
     carbRatio: number;

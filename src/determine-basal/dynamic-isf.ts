@@ -56,13 +56,13 @@ export function calculateDynamicISF(
     const bg = glucose_status.glucose;
     const adjustmentFactor = preferences.adjustmentFactor;
     const adjustmentFactorSigmoid = preferences.adjustmentFactorSigmoid;
-    const enable_sigmoid = preferences.sigmoid;
+    const enableSigmoid = preferences.sigmoid;
     const exerciseSetting = profile.high_temptarget_raises_sensitivity || profile.exercise_mode;
 
     const rawTDDRatio = average_total_data > 0 ? weightedAverage / average_total_data : 1;
-    // respect autosens_max/min for tdd24h_14d_Ratio, used to adjust basal similarly as autosens
-    const tdd24h_14d_Ratio = clampTDDRatio(rawTDDRatio, profile.autosens_min, profile.autosens_max);
-    const basal_ratio_log = `, Basal ratio: ${tdd24h_14d_Ratio}`;
+    // respect autosens_max/min for tdd24hTo14dRatio, used to adjust basal similarly as autosens
+    const tdd24hTo14dRatio = clampTDDRatio(rawTDDRatio, profile.autosens_min, profile.autosens_max);
+    const basal_ratio_log = `, Basal ratio: ${tdd24hTo14dRatio}`;
 
     // Turn off Chris' formula when using a temp target >= 118 (6.5 mol/l) and if an exercise setting is enabled.
     let log = "";
@@ -72,7 +72,7 @@ export function calculateDynamicISF(
     }
 
     const startLog = ", Dynamic ratios log: ";
-    const afLog = `, AF: ${enable_sigmoid ? adjustmentFactorSigmoid : adjustmentFactor}`;
+    const afLog = `, AF: ${enableSigmoid ? adjustmentFactorSigmoid : adjustmentFactor}`;
     const bgLog = `BG: ${bg} mg/dl (${(bg * MGDL_TO_MMOL).toPrecision(2)} mmol/l)`;
     let formula = "";
     let weightLog = "";
@@ -96,11 +96,11 @@ export function calculateDynamicISF(
     let newRatio: number | undefined;
 
     if (dynISFenabled) {
-        if (!enable_sigmoid) {
+        if (!enableSigmoid) {
             newRatio = calculateLogarithmicRatio(sensitivity, adjustmentFactor, tdd, bg, insulinFactor);
             formula = ", Logarithmic formula";
         } else {
-            newRatio = calculateSigmoidRatio(bg, profileTarget, tdd24h_14d_Ratio, adjustmentFactorSigmoid, minLimitChris, maxLimitChris);
+            newRatio = calculateSigmoidRatio(bg, profileTarget, tdd24hTo14dRatio, adjustmentFactorSigmoid, minLimitChris, maxLimitChris);
             formula = ", Sigmoid function";
         }
     }
@@ -124,7 +124,7 @@ export function calculateDynamicISF(
 
         sigmoidLog = `. Using Sigmoid function, the autosens ratio has been adjusted with sigmoid factor to: ${round(autosens_data.ratio, 2)}. New ISF = ${round(isf, 2)} mg/dl (${round(MGDL_TO_MMOL * isf, 2)} (mmol/l).`;
 
-        if (!enable_sigmoid) {
+        if (!enableSigmoid) {
             log += `, Dynamic autosens.ratio set to ${round(Number(newRatio), 2)} with ISF: ${isf.toPrecision(3)} mg/dl/U (${(isf * MGDL_TO_MMOL).toPrecision(3)} mmol/l/U)`;
         } else {
             log += sigmoidLog;
@@ -147,7 +147,7 @@ export function calculateDynamicISF(
         middleWare,
     );
 
-    return { dynISFenabled, tdd, tddReason, newRatio: Number(newRatio), insulinFactor, adjustmentFactor, enable_sigmoid, tdd24h_14d_Ratio };
+    return { dynISFenabled, tdd, tddReason, newRatio: Number(newRatio), insulinFactor, adjustmentFactor, enableSigmoid, tdd24hTo14dRatio };
 }
 
 // ---------------------------------------------------------------------------

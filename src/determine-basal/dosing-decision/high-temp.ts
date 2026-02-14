@@ -34,26 +34,26 @@ import {
 /** Checks if eventual BG is above target and if IOB exceeds max_iob. Returns basal temp if IOB is over limit. */
 export function checkIOBLimit(ctx: DosingContext): PhaseOutcome {
     const {
-        iob_data,
+        iobData,
         profile,
         eventualBG,
-        target_bg,
-        max_bg,
-        max_iob,
+        targetBG,
+        maxBG,
+        maxIOB,
         adjustedSens,
     } = ctx.inputs;
     const { result } = ctx;
 
     // eventual BG is at/above target
     // if iob is over max, just cancel any temps
-    if (eventualBG >= max_bg) {
-        result.reason += `Eventual BG ${convertBG(eventualBG, profile)} >= ${convertBG(max_bg, profile)}, `;
-        if (eventualBG > max_bg) {
-            result.insulinForManualBolus = round((eventualBG - target_bg) / adjustedSens, 2);
+    if (eventualBG >= maxBG) {
+        result.reason += `Eventual BG ${convertBG(eventualBG, profile)} >= ${convertBG(maxBG, profile)}, `;
+        if (eventualBG > maxBG) {
+            result.insulinForManualBolus = round((eventualBG - targetBG) / adjustedSens, 2);
         }
     }
-    if (iob_data.iob > max_iob) {
-        result.reason += `IOB ${round(iob_data.iob, 2)} > max_iob ${max_iob}`;
+    if (iobData.iob > maxIOB) {
+        result.reason += `IOB ${round(iobData.iob, 2)} > max_iob ${maxIOB}`;
         return keepOrSetBasalTemp(ctx);
     }
 
@@ -67,11 +67,11 @@ export function checkIOBLimit(ctx: DosingContext): PhaseOutcome {
 /** Computes insulinReq and rate to bring minPredBG down to target. Stores on context for SMB/temp phases. */
 export function calculateHighInsulinReq(ctx: DosingContext): PhaseOutcome {
     const {
-        iob_data,
+        iobData,
         profile,
         eventualBG,
-        target_bg,
-        max_iob,
+        targetBG,
+        maxIOB,
         basal,
         adjustedSens,
         minPredBG,
@@ -80,18 +80,18 @@ export function calculateHighInsulinReq(ctx: DosingContext): PhaseOutcome {
 
     // otherwise, calculate 30m high-temp required to get projected BG down to target
     // insulinReq is the additional insulin required to get minPredBG down to target_bg
-    ctx.insulinReq = round((Math.min(minPredBG, eventualBG) - target_bg) / adjustedSens, 2);
-    const insulinForManualBolus = round((eventualBG - target_bg) / adjustedSens, 2);
+    ctx.insulinReq = round((Math.min(minPredBG, eventualBG) - targetBG) / adjustedSens, 2);
+    const insulinForManualBolus = round((eventualBG - targetBG) / adjustedSens, 2);
     // if that would put us over max_iob, then reduce accordingly
-    if (ctx.insulinReq > max_iob - iob_data.iob) {
-        console.log(`SMB limited by maxIOB: ${max_iob - iob_data.iob} (. insulinReq: ${ctx.insulinReq} U)`);
-        result.reason += `max_iob ${max_iob}, `;
-        ctx.insulinReq = max_iob - iob_data.iob;
+    if (ctx.insulinReq > maxIOB - iobData.iob) {
+        console.log(`SMB limited by maxIOB: ${maxIOB - iobData.iob} (. insulinReq: ${ctx.insulinReq} U)`);
+        result.reason += `max_iob ${maxIOB}, `;
+        ctx.insulinReq = maxIOB - iobData.iob;
     } else { console.log(`SMB not limited by maxIOB ( insulinReq: ${ctx.insulinReq} U).`); }
 
-    if (insulinForManualBolus > max_iob - iob_data.iob) {
-        console.log(`Ev. Bolus limited by maxIOB: ${max_iob - iob_data.iob} (. insulinForManualBolus: ${insulinForManualBolus} U)`);
-        result.reason += `max_iob ${max_iob}, `;
+    if (insulinForManualBolus > maxIOB - iobData.iob) {
+        console.log(`Ev. Bolus limited by maxIOB: ${maxIOB - iobData.iob} (. insulinForManualBolus: ${insulinForManualBolus} U)`);
+        result.reason += `max_iob ${maxIOB}, `;
     } else { console.log(`Ev. Bolus would not be limited by maxIOB ( insulinForManualBolus: ${insulinForManualBolus} U).`); }
 
     // rate required to deliver insulinReq more insulin over 30m:
@@ -110,41 +110,41 @@ export function calculateHighInsulinReq(ctx: DosingContext): PhaseOutcome {
 /** Calculates SMB microBolus amount, zero-temp duration, and SMB timing. Returns early if zero temp is needed. */
 export function handleSMB(ctx: DosingContext): PhaseOutcome {
     const {
-        iob_data,
-        meal_data,
+        iobData,
+        mealData,
         profile,
         systemTime,
-        trio_custom_variables,
+        trioCustomVariables,
         microBolusAllowed,
         bg,
-        target_bg,
+        targetBG,
         threshold,
         basal,
         carbRatio,
         adjustedSens,
         overrideFactor,
-        naive_eventualBG,
+        naiveEventualBG,
         minIOBPredBG,
     } = ctx.inputs;
     const { result } = ctx;
 
     // minutes since last bolus
-    const lastBolusAge = round((systemTime.getTime() - Number(iob_data.lastBolusTime)) / MS_PER_MINUTE, 1);
+    const lastBolusAge = round((systemTime.getTime() - Number(iobData.lastBolusTime)) / MS_PER_MINUTE, 1);
 
     if (!(microBolusAllowed && ctx.enableSMB && bg > threshold)) {
         return { done: false };
     }
 
     // --- Resolve SMB/UAM minute settings ---
-    const { smbMinutesSetting, uamMinutesSetting } = resolveSMBMinuteSettings(profile, trio_custom_variables);
+    const { smbMinutesSetting, uamMinutesSetting } = resolveSMBMinuteSettings(profile, trioCustomVariables);
 
     // --- Calculate max bolus and micro bolus ---
-    const mealInsulinReq = round(meal_data.mealCOB / carbRatio, 3);
+    const mealInsulinReq = round(mealData.mealCOB / carbRatio, 3);
     const effectiveBasal = profile.current_basal * overrideFactor;
     const maxBolus = determineSMBMaxBolus(
         ctx.insulinReq,
-        iob_data.iob,
-        meal_data.mealCOB,
+        iobData.iob,
+        mealData.mealCOB,
         mealInsulinReq,
         effectiveBasal,
         smbMinutesSetting,
@@ -160,7 +160,7 @@ export function handleSMB(ctx: DosingContext): PhaseOutcome {
     const microBolus = Math.floor(Math.min(ctx.insulinReq * smb_ratio, maxBolus) * roundSMBTo) / roundSMBTo;
 
     // --- Calculate zero-temp duration ---
-    const worstCaseInsulinReq = (target_bg - (naive_eventualBG + minIOBPredBG) / 2) / adjustedSens;
+    const worstCaseInsulinReq = (targetBG - (naiveEventualBG + minIOBPredBG) / 2) / adjustedSens;
     const { durationReq, smbLowTempReq } = calculateSMBZeroTemp(
         ctx.insulinReq,
         microBolus,
@@ -185,7 +185,7 @@ export function handleSMB(ctx: DosingContext): PhaseOutcome {
     const smbInterval = resolveSMBInterval(profile);
     const nextBolusMins = round(smbInterval - lastBolusAge, 0);
     const nextBolusSeconds = round((smbInterval - lastBolusAge) * SECONDS_PER_MINUTE, 0) % SECONDS_PER_MINUTE;
-    console.log(`naive_eventualBG ${naive_eventualBG},${durationReq}m ${smbLowTempReq}U/h temp needed; last bolus ${lastBolusAge}m ago; maxBolus: ${maxBolus}`);
+    console.log(`naive_eventualBG ${naiveEventualBG},${durationReq}m ${smbLowTempReq}U/h temp needed; last bolus ${lastBolusAge}m ago; maxBolus: ${maxBolus}`);
 
     if (lastBolusAge > smbInterval) {
         if (microBolus > 0) {
@@ -213,7 +213,7 @@ export function handleSMB(ctx: DosingContext): PhaseOutcome {
 /** Resolves effective SMB and UAM minute settings from profile + override. */
 export function resolveSMBMinuteSettings(
     profile: DosingContext['inputs']['profile'],
-    trio_custom_variables: DosingContext['inputs']['trio_custom_variables'],
+    trio_custom_variables: DosingContext['inputs']['trioCustomVariables'],
 ): { smbMinutesSetting: number; uamMinutesSetting: number } {
     const { advancedSettings, smbMinutes, uamMinutes } = trio_custom_variables;
 

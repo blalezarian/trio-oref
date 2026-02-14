@@ -50,7 +50,7 @@ const mockTempBasalFunctions = {
 function makeTestContext(overrides: Partial<DosingContext> = {}): DosingContext {
     const inputs: DosingDecisionInputs = {
         result: { reason: '' } as DetermineBasalResult,
-        iob_data: {
+        iobData: {
             iob: 1.5,
             activity: 0.02,
             basaliob: 0.5,
@@ -59,7 +59,7 @@ function makeTestContext(overrides: Partial<DosingContext> = {}): DosingContext 
             bolusinsulin: 2.0,
             time: new Date('2025-01-15T12:00:00Z'),
         },
-        meal_data: {
+        mealData: {
             carbs: 0,
             nsCarbs: 0,
             bwCarbs: 0,
@@ -92,7 +92,7 @@ function makeTestContext(overrides: Partial<DosingContext> = {}): DosingContext 
             carb_ratio: 10,
             out_units: 'mg/dL',
         } as unknown as Profile,
-        glucose_status: {
+        glucoseStatus: {
             glucose: 120,
             delta: 2,
             short_avgdelta: 2,
@@ -104,7 +104,7 @@ function makeTestContext(overrides: Partial<DosingContext> = {}): DosingContext 
         },
         tempBasalFunctions: mockTempBasalFunctions,
         systemTime: new Date('2025-01-15T12:00:00Z'),
-        trio_custom_variables: {
+        trioCustomVariables: {
             useOverride: false,
             overridePercentage: 100,
             overrideTarget: 0,
@@ -125,12 +125,12 @@ function makeTestContext(overrides: Partial<DosingContext> = {}): DosingContext 
         },
         bg: 120,
         eventualBG: 100,
-        naive_eventualBG: 100,
+        naiveEventualBG: 100,
         threshold: 80,
-        target_bg: 100,
-        min_bg: 100,
-        max_bg: 100,
-        max_iob: 10,
+        targetBG: 100,
+        minBG: 100,
+        maxBG: 100,
+        maxIOB: 10,
         basal: 1.0,
         adjustedSens: 50,
         carbRatio: 10,
@@ -280,11 +280,11 @@ describe('checkPredictiveLGS', () => {
         (ctx.inputs as { bg: number }).bg = 70;
         (ctx.inputs as { threshold: number }).threshold = 80;
         (ctx.inputs as { minGuardBG: number }).minGuardBG = 65;
-        (ctx.inputs as { target_bg: number }).target_bg = 100;
+        (ctx.inputs as { targetBG: number }).targetBG = 100;
         (ctx.inputs as { eventualBG: number }).eventualBG = 90;
         (ctx.inputs as { adjustedSens: number }).adjustedSens = 50;
         // IOB positive so the "super negative" skip branch is not triggered
-        (ctx.inputs.iob_data as { iob: number }).iob = 1.5;
+        (ctx.inputs.iobData as { iob: number }).iob = 1.5;
 
         const outcome = checkPredictiveLGS(ctx);
 
@@ -306,7 +306,7 @@ describe('checkPredictiveLGS', () => {
         // IOB_NEG_CHECK_MINUTES = 20, current_basal = 1.0, overrideFactor = 1.0
         // Negative IOB threshold = -1.0 * 1.0 * 20 / 60 = -0.333
         // Set iob below that
-        (ctx.inputs.iob_data as { iob: number }).iob = -0.5;
+        (ctx.inputs.iobData as { iob: number }).iob = -0.5;
         (ctx.inputs.profile as { current_basal: number }).current_basal = 1.0;
         (ctx.inputs as { overrideFactor: number }).overrideFactor = 1.0;
         // minDelta > 0 and minDelta > expectedDelta
@@ -327,10 +327,10 @@ describe('checkPredictiveLGS', () => {
         (ctx.inputs as { threshold: number }).threshold = 80;
         // minGuardBG below threshold triggers LGS
         (ctx.inputs as { minGuardBG: number }).minGuardBG = 70;
-        (ctx.inputs as { target_bg: number }).target_bg = 100;
+        (ctx.inputs as { targetBG: number }).targetBG = 100;
         (ctx.inputs as { eventualBG: number }).eventualBG = 90;
         (ctx.inputs as { adjustedSens: number }).adjustedSens = 50;
-        (ctx.inputs.iob_data as { iob: number }).iob = 1.5;
+        (ctx.inputs.iobData as { iob: number }).iob = 1.5;
 
         checkPredictiveLGS(ctx);
 

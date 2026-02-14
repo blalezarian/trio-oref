@@ -30,11 +30,11 @@ import { keepOrSetBasalTemp, calculateZeroTempDuration } from './helpers';
 
 /** Handles BG below min_bg: calculates low temp rate, zero temp duration, or returns basal. */
 export function handleLowBG(ctx: DosingContext): PhaseOutcome {
-    const { eventualBG, min_bg, minDelta, expectedDelta } = ctx.inputs;
+    const { eventualBG, minBG, minDelta, expectedDelta } = ctx.inputs;
     const { result } = ctx;
 
-    if (eventualBG < min_bg) { // if eventual BG is below target:
-        result.reason += `Eventual BG ${convertBG(eventualBG, ctx.inputs.profile)} < ${convertBG(min_bg, ctx.inputs.profile)}`;
+    if (eventualBG < minBG) { // if eventual BG is below target:
+        result.reason += `Eventual BG ${convertBG(eventualBG, ctx.inputs.profile)} < ${convertBG(minBG, ctx.inputs.profile)}`;
         // if 5m or 30m avg BG is rising faster than expected delta
         if (minDelta > expectedDelta && minDelta > 0 && !ctx.carbsReq) {
             return handleLowBGRisingFast(ctx);
@@ -55,10 +55,10 @@ export function handleLowBG(ctx: DosingContext): PhaseOutcome {
 function handleLowBGRisingFast(ctx: DosingContext): PhaseOutcome {
     const {
         profile,
-        glucose_status,
+        glucoseStatus,
         currenttemp,
         tempBasalFunctions,
-        naive_eventualBG,
+        naiveEventualBG,
         expectedDelta,
         minDelta,
         tick,
@@ -66,11 +66,11 @@ function handleLowBGRisingFast(ctx: DosingContext): PhaseOutcome {
     const { result } = ctx;
 
     // if naive_eventualBG < 40, set a 30m zero temp (oref0-pump-loop will let any longer SMB zero temp run)
-    if (naive_eventualBG < LOW_BG_SAFETY_THRESHOLD) {
+    if (naiveEventualBG < LOW_BG_SAFETY_THRESHOLD) {
         result.reason += ", naive_eventualBG < 40. ";
         return { done: true, result: tempBasalFunctions.setTempBasal(0, TEMP_BASAL_DURATION_MINUTES, profile, result, currenttemp) };
     }
-    if (glucose_status.delta > minDelta) {
+    if (glucoseStatus.delta > minDelta) {
         result.reason += `, but Delta ${convertBG(Number(tick), profile)} > expectedDelta ${convertBG(expectedDelta, profile)}`;
     } else {
         result.reason += `, but Min. Delta ${minDelta.toFixed(2)} > Exp. Delta ${convertBG(expectedDelta, profile)}`;
@@ -83,8 +83,8 @@ function calculateLowTempRate(ctx: DosingContext): number {
     const {
         profile,
         eventualBG,
-        naive_eventualBG,
-        target_bg,
+        naiveEventualBG,
+        targetBG,
         basal,
         adjustedSens,
         expectedDelta,
@@ -93,10 +93,10 @@ function calculateLowTempRate(ctx: DosingContext): number {
 
     // calculate 30m low-temp required to get projected BG up to target
     // multiply by 2 to low-temp faster for increased hypo safety
-    ctx.insulinReq = LOW_TEMP_CORRECTION_FACTOR * Math.min(0, (eventualBG - target_bg) / adjustedSens);
+    ctx.insulinReq = LOW_TEMP_CORRECTION_FACTOR * Math.min(0, (eventualBG - targetBG) / adjustedSens);
     ctx.insulinReq = round(ctx.insulinReq, 2);
     // calculate naiveInsulinReq based on naive_eventualBG
-    let naiveInsulinReq = Math.min(0, (naive_eventualBG - target_bg) / adjustedSens);
+    let naiveInsulinReq = Math.min(0, (naiveEventualBG - targetBG) / adjustedSens);
     naiveInsulinReq = round(naiveInsulinReq, 2);
     if (minDelta < 0 && minDelta > expectedDelta) {
         // if we're barely falling, newinsulinReq should be barely negative
@@ -116,8 +116,8 @@ function applyLowTempOrZero(ctx: DosingContext, naiveInsulinReq: number): PhaseO
         profile,
         currenttemp,
         tempBasalFunctions,
-        naive_eventualBG,
-        target_bg,
+        naiveEventualBG,
+        targetBG,
         basal,
         adjustedSens,
         overrideFactor,
@@ -144,7 +144,7 @@ function applyLowTempOrZero(ctx: DosingContext, naiveInsulinReq: number): PhaseO
 
     // calculate a long enough zero temp to eventually correct back up to target
     if (ctx.rate <= 0) {
-        const durationReq = calculateZeroTempDuration(target_bg - naive_eventualBG, adjustedSens, profile.current_basal, overrideFactor);
+        const durationReq = calculateZeroTempDuration(targetBG - naiveEventualBG, adjustedSens, profile.current_basal, overrideFactor);
         if (durationReq > 0) {
             result.reason += `, setting ${durationReq}m zero temp. `;
             return { done: true, result: tempBasalFunctions.setTempBasal(ctx.rate, durationReq, profile, result, currenttemp) };
@@ -166,10 +166,10 @@ function applyLowTempOrZero(ctx: DosingContext, naiveInsulinReq: number): PhaseO
 export function handleFallingDelta(ctx: DosingContext): PhaseOutcome {
     const {
         profile,
-        glucose_status,
+        glucoseStatus,
         microBolusAllowed,
         eventualBG,
-        min_bg,
+        minBG,
         adjustedSens,
         expectedDelta,
         minDelta,
@@ -187,10 +187,10 @@ export function handleFallingDelta(ctx: DosingContext): PhaseOutcome {
 
         // if in SMB mode, don't cancel SMB zero temp
         if (!(microBolusAllowed && ctx.enableSMB)) {
-            if (glucose_status.delta < minDelta) {
-                result.reason += `Eventual BG ${convertBG(eventualBG, profile)} > ${convertBG(min_bg, profile)} but Delta ${convertBG(Number(tick), profile)} < Exp. Delta ${convertBG(expectedDelta, profile)}`;
+            if (glucoseStatus.delta < minDelta) {
+                result.reason += `Eventual BG ${convertBG(eventualBG, profile)} > ${convertBG(minBG, profile)} but Delta ${convertBG(Number(tick), profile)} < Exp. Delta ${convertBG(expectedDelta, profile)}`;
             } else {
-                result.reason += `Eventual BG ${convertBG(eventualBG, profile)} > ${convertBG(min_bg, profile)} but Min. Delta ${minDelta.toFixed(2)} < Exp. Delta ${convertBG(expectedDelta, profile)}`;
+                result.reason += `Eventual BG ${convertBG(eventualBG, profile)} > ${convertBG(minBG, profile)} but Min. Delta ${minDelta.toFixed(2)} < Exp. Delta ${convertBG(expectedDelta, profile)}`;
             }
             return keepOrSetBasalTemp(ctx);
         }
@@ -238,16 +238,16 @@ export function handleInRange(ctx: DosingContext): PhaseOutcome {
         profile,
         microBolusAllowed,
         eventualBG,
-        min_bg,
-        max_bg,
+        minBG,
+        maxBG,
         adjustedSens,
         minPredBG,
     } = ctx.inputs;
     const { result } = ctx;
 
     // eventualBG or minPredBG is below max_bg
-    if (Math.min(eventualBG, minPredBG) < max_bg) {
-        if (minPredBG < min_bg && eventualBG > min_bg) {
+    if (Math.min(eventualBG, minPredBG) < maxBG) {
+        if (minPredBG < minBG && eventualBG > minBG) {
             result.manualBolusErrorString = BOLUS_ERR_MIN_PRED_BELOW_MIN;
             result.insulinForManualBolus = round(((Number(result.eventualBG)) - (Number(result.target_bg))) / adjustedSens, 2);
         }

@@ -96,7 +96,7 @@ describe('validateCGMData', () => {
         if (!('earlyReturn' in result)) {
             expect(result.bg).toBe(120);
             expect(result.basal).toBe(1.0);
-            expect(result.profile_current_basal).toBe(1.0);
+            expect(result.profileCurrentBasal).toBe(1.0);
         }
     });
 

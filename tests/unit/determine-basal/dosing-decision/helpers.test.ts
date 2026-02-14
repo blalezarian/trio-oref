@@ -52,18 +52,18 @@ function makeTestContext(overrides: {
         basal: 1.0,
         adjustedSens: 50,
         threshold: 65,
-        target_bg: 100,
-        min_bg: 80,
-        max_bg: 120,
-        max_iob: 10,
+        targetBG: 100,
+        minBG: 80,
+        maxBG: 120,
+        maxIOB: 10,
         eventualBG: 150,
         minPredBG: 130,
         minIOBPredBG: 120,
-        naive_eventualBG: 150,
+        naiveEventualBG: 150,
         overrideFactor: 1.0,
         carbRatio: 10,
         bg: 150,
-        iob_data: {
+        iobData: {
             iob: 2.0,
             lastBolusTime: Date.now() - 600000,
             activity: 0.05,
@@ -73,7 +73,7 @@ function makeTestContext(overrides: {
             bolusinsulin: 3.0,
             time: new Date('2025-01-15T12:00:00Z'),
         } as IOBData,
-        meal_data: {
+        mealData: {
             mealCOB: 0,
             carbs: 0,
         } as MealData,
@@ -84,7 +84,7 @@ function makeTestContext(overrides: {
             bolus_increment: 0.1,
             smb_delivery_ratio: 0.5,
         } as Profile,
-        glucose_status: {
+        glucoseStatus: {
             glucose: 150,
             delta: 5,
             short_avgdelta: 4,
@@ -106,7 +106,7 @@ function makeTestContext(overrides: {
             getMaxSafeBasal: vi.fn(() => 4),
         } as unknown as TempBasalFunctions,
         systemTime: new Date('2025-01-15T12:00:00Z'),
-        trio_custom_variables: {
+        trioCustomVariables: {
             useOverride: false,
             advancedSettings: false,
             smbMinutes: 30,

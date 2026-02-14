@@ -44,8 +44,8 @@ export function validateCGMData(
         basalResult.error ='Error: could not get current basal rate';
         return { earlyReturn: basalResult };
     }
-    const profile_current_basal = roundBasal(profile.current_basal, profile) * overrideFactor;
-    const basal = profile_current_basal;
+    const profileCurrentBasal = roundBasal(profile.current_basal, profile) * overrideFactor;
+    const basal = profileCurrentBasal;
 
     logOverrideStatus(useOverride, overrideFactor, overrideDuration);
 
@@ -69,7 +69,7 @@ export function validateCGMData(
         return { earlyReturn: handleCGMError(basalResult, currenttemp, basal, deliverAt) };
     }
 
-    return { bg, noise, tick, minDelta, minAvgDelta, maxDelta, minAgo, bgTime, deliverAt, profile_current_basal, basal, reason: basalResult.reason };
+    return { bg, noise, tick, minDelta, minAvgDelta, maxDelta, minAgo, bgTime, deliverAt, profileCurrentBasal, basal, reason: basalResult.reason };
 }
 
 // ---------------------------------------------------------------------------

@@ -249,7 +249,7 @@ function makeClipInputs(overrides: Partial<ClipAndTrimInputs> = {}): ClipAndTrim
         COBpredBGs: [120, 125, 130, 135, 140, 145, 150, 155, 160, 165, 170, 175, 180],
         UAMpredBGs: [120, 125, 130, 135, 140, 145, 150, 155, 160, 165, 170, 175, 180],
         eventualBG: 100,
-        target_bg: 100,
+        targetBG: 100,
         mealCOB: 0,
         carbImpact: 0,
         remainingCIpeak: 0,
@@ -280,7 +280,7 @@ function makeMinGuardInputs(overrides: Partial<MinGuardBGInputs> = {}): MinGuard
         bg: 120,
         maxCOBPredBG: 120,
         threshold: 65,
-        target_bg: 100,
+        targetBG: 100,
         // Meal / carb context
         mealCOB: 0,
         carbs: 0,
@@ -336,7 +336,7 @@ describe('clipAndTrimPredictions', () => {
     it('trims ZT predictions that are rising and above target', () => {
         // Rising sequence above target_bg=100
         const rising = [90, 95, 100, 105, 110, 115, 120, 125];
-        const inputs = makeClipInputs({ ZTpredBGs: rising, target_bg: 100 });
+        const inputs = makeClipInputs({ ZTpredBGs: rising, targetBG: 100 });
         const result = clipAndTrimPredictions(inputs);
         // Should trim trailing rising values above 100 (keeps >= MIN_ZT_TRIM_POINTS=6)
         expect(result.predBGs.ZT.length).toBeLessThanOrEqual(rising.length);
@@ -344,7 +344,7 @@ describe('clipAndTrimPredictions', () => {
 
     it('does not trim ZT when values are falling', () => {
         const falling = [120, 115, 110, 105, 100, 95, 90, 85];
-        const inputs = makeClipInputs({ ZTpredBGs: falling, target_bg: 100 });
+        const inputs = makeClipInputs({ ZTpredBGs: falling, targetBG: 100 });
         const result = clipAndTrimPredictions(inputs);
         expect(result.predBGs.ZT.length).toBe(8);
     });
@@ -545,7 +545,7 @@ describe('calculateMinAndGuardBGs', () => {
             UAMpredBG: 80,
             minZTGuardBG: 60,
             threshold: 65,
-            target_bg: 100,
+            targetBG: 100,
             minIOBPredBG: 80,
         });
         const result = calculateMinAndGuardBGs(inputs);

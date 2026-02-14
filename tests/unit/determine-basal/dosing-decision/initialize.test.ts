@@ -94,22 +94,22 @@ function makeTestContext(overrides: Partial<DosingDecisionInputs> = {}): DosingC
 
     const inputs: DosingDecisionInputs = {
         result: {} as DetermineBasalResult,
-        iob_data: defaultIobData,
-        meal_data: defaultMealData,
+        iobData: defaultIobData,
+        mealData: defaultMealData,
         profile: defaultProfile,
-        glucose_status: defaultGlucoseStatus,
+        glucoseStatus: defaultGlucoseStatus,
         currenttemp: defaultCurrentTemp,
         tempBasalFunctions: defaultTempBasalFunctions,
         systemTime: new Date('2025-01-15T12:00:00.000Z'),
-        trio_custom_variables: defaultTrioCustomVariables,
+        trioCustomVariables: defaultTrioCustomVariables,
         bg: 120,
         eventualBG: 110,
-        naive_eventualBG: 110,
+        naiveEventualBG: 110,
         threshold: 65,
-        target_bg: 100,
-        min_bg: 90,
-        max_bg: 120,
-        max_iob: 8,
+        targetBG: 100,
+        minBG: 90,
+        maxBG: 120,
+        maxIOB: 8,
         basal: 1.0,
         adjustedSens: 50,
         carbRatio: 10,
@@ -169,7 +169,7 @@ describe('initializeTelemetry', () => {
             deviation: 12,
             adjustedSens: 55,
             carbRatio: 10.456,
-            target_bg: 105,
+            targetBG: 105,
         });
 
         initializeTelemetry(ctx);
@@ -260,7 +260,7 @@ describe('calculateCarbsContext', () => {
         // All COBpredBGs stay well above min_bg (90) and threshold (65)
         const ctx = makeTestContext({
             COBpredBGs: [150, 140, 130, 120, 110],
-            min_bg: 90,
+            minBG: 90,
             threshold: 65,
             carbImpact: 5,
             remainingCIpeak: 3,
@@ -278,7 +278,7 @@ describe('calculateCarbsContext', () => {
         // PRED_INTERVAL_MINUTES = 5, so minutesAboveMinBG = 5 * 3 = 15
         const ctx = makeTestContext({
             COBpredBGs: [120, 100, 95, 70, 60],
-            min_bg: 90,
+            minBG: 90,
             threshold: 65,
             carbImpact: 5,
             remainingCIpeak: 3,
@@ -310,10 +310,10 @@ describe('calculateCarbsContext', () => {
 
         // IOBpredBGs: index 0=120, 1=100, 2=80 (< 90 at index 2)
         const ctx = makeTestContext({
-            meal_data: mealData,
+            mealData: mealData,
             IOBpredBGs: [120, 100, 80, 60, 50],
             COBpredBGs: [200, 200, 200, 200, 200], // should be ignored
-            min_bg: 90,
+            minBG: 90,
             threshold: 65,
             carbImpact: 0,
             remainingCIpeak: 0,
@@ -329,7 +329,7 @@ describe('calculateCarbsContext', () => {
 
     it('computes bgUndershoot = threshold - carbsReqBG', () => {
         const ctx = makeTestContext({
-            naive_eventualBG: 55,
+            naiveEventualBG: 55,
             threshold: 65,
             minGuardBG: 60,
         });
@@ -343,7 +343,7 @@ describe('calculateCarbsContext', () => {
 
     it('uses minGuardBG when carbsReqBG < LOW_BG_SAFETY_THRESHOLD (40)', () => {
         const ctx = makeTestContext({
-            naive_eventualBG: 35,
+            naiveEventualBG: 35,
             threshold: 65,
             minGuardBG: 50,
         });

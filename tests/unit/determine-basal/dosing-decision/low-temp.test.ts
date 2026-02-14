@@ -50,9 +50,9 @@ function makeTestContext(overrides: {
         ...overrides.inputs?.profile,
     } as Profile;
 
-    const glucose_status = {
+    const glucoseStatus = {
         delta: 0,
-        ...overrides.inputs?.glucose_status,
+        ...overrides.inputs?.glucoseStatus,
     } as GlucoseStatus;
 
     const currenttemp = {
@@ -78,11 +78,11 @@ function makeTestContext(overrides: {
         basal: 1.0,
         adjustedSens: 50,
         threshold: 65,
-        target_bg: 100,
-        min_bg: 80,
-        max_bg: 120,
+        targetBG: 100,
+        minBG: 80,
+        maxBG: 120,
         eventualBG: 120,
-        naive_eventualBG: 120,
+        naiveEventualBG: 120,
         minPredBG: 100,
         minDelta: 0,
         expectedDelta: 0,
@@ -90,13 +90,13 @@ function makeTestContext(overrides: {
         tick: 0,
         profile,
         currenttemp,
-        glucose_status,
+        glucoseStatus,
         tempBasalFunctions,
         microBolusAllowed: false,
         ...overrides.inputs,
         // Re-apply nested objects so partial overrides merge correctly
         ...(overrides.inputs?.profile ? { profile } : {}),
-        ...(overrides.inputs?.glucose_status ? { glucose_status } : {}),
+        ...(overrides.inputs?.glucoseStatus ? { glucoseStatus } : {}),
         ...(overrides.inputs?.currenttemp ? { currenttemp } : {}),
         ...(overrides.inputs?.tempBasalFunctions ? { tempBasalFunctions } : {}),
     } as DosingContext['inputs'];
@@ -130,7 +130,7 @@ describe('handleLowBG', () => {
         const ctx = makeTestContext({
             inputs: {
                 eventualBG: 80,
-                min_bg: 80,
+                minBG: 80,
             },
         });
 
@@ -145,8 +145,8 @@ describe('handleLowBG', () => {
         const ctx = makeTestContext({
             inputs: {
                 eventualBG: 60,
-                naive_eventualBG: 35,
-                min_bg: 80,
+                naiveEventualBG: 35,
+                minBG: 80,
                 minDelta: 2,
                 expectedDelta: -1,
             },
@@ -178,8 +178,8 @@ describe('handleLowBG', () => {
         const ctx = makeTestContext({
             inputs: {
                 eventualBG: 60,
-                naive_eventualBG: 50,
-                min_bg: 80,
+                naiveEventualBG: 50,
+                minBG: 80,
                 minDelta: 2,
                 expectedDelta: -1,
                 basal: 1.0,
@@ -187,7 +187,7 @@ describe('handleLowBG', () => {
                     rate: 1.0,
                     duration: 20,
                 },
-                glucose_status: {
+                glucoseStatus: {
                     delta: 1,
                 } as GlucoseStatus,
             },
@@ -222,9 +222,9 @@ describe('handleLowBG', () => {
         const ctx = makeTestContext({
             inputs: {
                 eventualBG: 60,
-                naive_eventualBG: 60,
-                min_bg: 80,
-                target_bg: 100,
+                naiveEventualBG: 60,
+                minBG: 80,
+                targetBG: 100,
                 basal: 1.0,
                 adjustedSens: 50,
                 minDelta: -1,
@@ -262,9 +262,9 @@ describe('handleLowBG', () => {
         const ctx = makeTestContext({
             inputs: {
                 eventualBG: 70,
-                naive_eventualBG: 90,
-                min_bg: 80,
-                target_bg: 100,
+                naiveEventualBG: 90,
+                minBG: 80,
+                targetBG: 100,
                 basal: 0.5,
                 adjustedSens: 50,
                 minDelta: -1,
@@ -323,7 +323,7 @@ describe('handleFallingDelta', () => {
         const ctx = makeTestContext({
             inputs: {
                 eventualBG: 120,
-                min_bg: 80,
+                minBG: 80,
                 minDelta: -2,
                 expectedDelta: 1,
                 adjustedSens: 50,
@@ -331,7 +331,7 @@ describe('handleFallingDelta', () => {
             },
             result: {
                 eventualBG: 120,
-                target_bg: 100,
+                targetBG: 100,
             },
         });
 
@@ -346,14 +346,14 @@ describe('handleFallingDelta', () => {
         const ctx = makeTestContext({
             inputs: {
                 eventualBG: 120,
-                min_bg: 80,
+                minBG: 80,
                 minDelta: -1,
                 expectedDelta: 0,
                 basal: 1.0,
                 adjustedSens: 50,
                 tick: -1,
                 microBolusAllowed: false,
-                glucose_status: {
+                glucoseStatus: {
                     delta: 0,
                 } as GlucoseStatus,
                 currenttemp: {
@@ -366,7 +366,7 @@ describe('handleFallingDelta', () => {
             },
             result: {
                 eventualBG: 120,
-                target_bg: 100,
+                targetBG: 100,
             },
         });
 
@@ -391,7 +391,7 @@ describe('handleFallingDelta', () => {
         const ctx = makeTestContext({
             inputs: {
                 eventualBG: 120,
-                min_bg: 80,
+                minBG: 80,
                 minDelta: -1,
                 expectedDelta: 0,
                 basal: 1.0,
@@ -404,7 +404,7 @@ describe('handleFallingDelta', () => {
             },
             result: {
                 eventualBG: 120,
-                target_bg: 100,
+                targetBG: 100,
             },
         });
 
@@ -417,20 +417,20 @@ describe('handleFallingDelta', () => {
         expect(ctx.result.expectedDelta).toBe(0);
     });
 
-    it('uses Delta (tick) in reason when glucose_status.delta < minDelta in non-SMB mode', () => {
-        // Trigger: minDelta < expectedDelta, not SMB mode, and glucose_status.delta < minDelta
+    it('uses Delta (tick) in reason when glucoseStatus.delta < minDelta in non-SMB mode', () => {
+        // Trigger: minDelta < expectedDelta, not SMB mode, and glucoseStatus.delta < minDelta
         // This exercises the "Delta ... < Exp. Delta" branch (line 191)
         const ctx = makeTestContext({
             inputs: {
                 eventualBG: 120,
-                min_bg: 80,
+                minBG: 80,
                 minDelta: -1,
                 expectedDelta: 0,
                 basal: 1.0,
                 adjustedSens: 50,
                 tick: -3,
                 microBolusAllowed: false,
-                glucose_status: {
+                glucoseStatus: {
                     delta: -3,
                 } as GlucoseStatus,
                 currenttemp: {
@@ -443,7 +443,7 @@ describe('handleFallingDelta', () => {
             },
             result: {
                 eventualBG: 120,
-                target_bg: 100,
+                targetBG: 100,
             },
         });
 
@@ -455,20 +455,20 @@ describe('handleFallingDelta', () => {
         expect(ctx.result.reason).toContain('< Exp. Delta');
     });
 
-    it('uses Min. Delta in reason when glucose_status.delta >= minDelta in non-SMB mode', () => {
-        // Trigger: minDelta < expectedDelta, not SMB mode, and glucose_status.delta >= minDelta
+    it('uses Min. Delta in reason when glucoseStatus.delta >= minDelta in non-SMB mode', () => {
+        // Trigger: minDelta < expectedDelta, not SMB mode, and glucoseStatus.delta >= minDelta
         // This exercises the "Min. Delta ... < Exp. Delta" branch (line 193)
         const ctx = makeTestContext({
             inputs: {
                 eventualBG: 120,
-                min_bg: 80,
+                minBG: 80,
                 minDelta: -2,
                 expectedDelta: 0,
                 basal: 1.0,
                 adjustedSens: 50,
                 tick: 0,
                 microBolusAllowed: false,
-                glucose_status: {
+                glucoseStatus: {
                     delta: 0,
                 } as GlucoseStatus,
                 currenttemp: {
@@ -481,7 +481,7 @@ describe('handleFallingDelta', () => {
             },
             result: {
                 eventualBG: 120,
-                target_bg: 100,
+                targetBG: 100,
             },
         });
 
@@ -522,7 +522,7 @@ describe('handleFallingDelta', () => {
         const ctx = makeTestContext({
             inputs: {
                 eventualBG: 120,
-                min_bg: 80,
+                minBG: 80,
                 minDelta: -0.5,
                 expectedDelta: 0,
                 basal: 1.0,
@@ -535,7 +535,7 @@ describe('handleFallingDelta', () => {
             },
             result: {
                 eventualBG: 120,
-                target_bg: 100,
+                targetBG: 100,
             },
         });
 
@@ -552,7 +552,7 @@ describe('handleFallingDelta', () => {
         const ctx = makeTestContext({
             inputs: {
                 eventualBG: 120,
-                min_bg: 80,
+                minBG: 80,
                 minDelta: 0,
                 expectedDelta: 3,
                 basal: 1.0,
@@ -565,7 +565,7 @@ describe('handleFallingDelta', () => {
             },
             result: {
                 eventualBG: 120,
-                target_bg: 100,
+                targetBG: 100,
             },
         });
 
@@ -585,7 +585,7 @@ describe('handleInRange', () => {
             inputs: {
                 eventualBG: 130,
                 minPredBG: 125,
-                max_bg: 120,
+                maxBG: 120,
             },
         });
 
@@ -600,8 +600,8 @@ describe('handleInRange', () => {
             inputs: {
                 eventualBG: 110,
                 minPredBG: 90,
-                min_bg: 80,
-                max_bg: 120,
+                minBG: 80,
+                maxBG: 120,
                 basal: 1.0,
                 adjustedSens: 50,
                 microBolusAllowed: false,
@@ -627,8 +627,8 @@ describe('handleInRange', () => {
             inputs: {
                 eventualBG: 110,
                 minPredBG: 100,
-                min_bg: 80,
-                max_bg: 120,
+                minBG: 80,
+                maxBG: 120,
                 basal: 1.0,
                 adjustedSens: 50,
                 microBolusAllowed: false,
@@ -665,8 +665,8 @@ describe('handleInRange', () => {
             inputs: {
                 eventualBG: 110,
                 minPredBG: 100,
-                min_bg: 80,
-                max_bg: 120,
+                minBG: 80,
+                maxBG: 120,
                 basal: 1.0,
                 adjustedSens: 50,
                 microBolusAllowed: true,
