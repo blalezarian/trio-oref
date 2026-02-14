@@ -9,11 +9,11 @@ import {
     calculateAvgPredBG,
     blendMinGuardBG,
     selectMinPredBG,
-} from '../../../src/determine-basal/bg-predictions';
+} from '../../../src/determineBasal/bgPredictions';
 import type {
     ClipAndTrimInputs,
     MinGuardBGInputs,
-} from '../../../src/determine-basal/types';
+} from '../../../src/determineBasal/types';
 import type { IOBData, IOBEntry } from '../../../src/types/index';
 
 // Constants from the source for reference in assertions:

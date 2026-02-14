@@ -3,7 +3,7 @@ import { describe, it, expect } from 'vitest';
 import {
     resolveProfileTarget,
     resolveOverrides,
-} from '../../../src/determine-basal/determine-basal';
+} from '../../../src/determineBasal/determineBasal';
 
 import type { Profile, TrioCustomVariables } from '../../../src/types/index';
 

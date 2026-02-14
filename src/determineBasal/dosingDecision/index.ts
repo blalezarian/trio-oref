@@ -4,8 +4,8 @@ import type { DosingContext, DosingPhase } from './types';
 
 import { initializeTelemetry, calculateCarbsContext, calculateCarbsRequired } from './initialize';
 import { enforceSMBSafetyGuards, checkPredictiveLGS, checkTopOfHourCancel } from './safety';
-import { handleLowBG, handleFallingDelta, handleInRange } from './low-temp';
-import { checkIOBLimit, calculateHighInsulinReq, handleSMB, applyFinalHighTemp } from './high-temp';
+import { handleLowBG, handleFallingDelta, handleInRange } from './lowTemp';
+import { checkIOBLimit, calculateHighInsulinReq, handleSMB, applyFinalHighTemp } from './highTemp';
 
 /** Ordered pipeline of dosing decision phases. Each phase either returns early or continues to the next. */
 const phases: DosingPhase[] = [

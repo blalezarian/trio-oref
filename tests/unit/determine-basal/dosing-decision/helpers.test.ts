@@ -5,11 +5,11 @@ import {
     calculateZeroTempDuration,
     determineSMBMaxBolus,
     calculateSMBZeroTemp,
-} from '../../../../src/determine-basal/dosing-decision/helpers';
+} from '../../../../src/determineBasal/dosingDecision/helpers';
 
-import { findMinutesAbove } from '../../../../src/determine-basal/dosing-decision/initialize';
+import { findMinutesAbove } from '../../../../src/determineBasal/dosingDecision/initialize';
 
-import type { DosingContext } from '../../../../src/determine-basal/dosing-decision/types';
+import type { DosingContext } from '../../../../src/determineBasal/dosingDecision/types';
 import type {
     Profile,
     DetermineBasalResult,
@@ -20,7 +20,7 @@ import type {
     GlucoseStatus,
     TrioCustomVariables,
 } from '../../../../src/types/index';
-import type { DosingDecisionInputs } from '../../../../src/determine-basal/types';
+import type { DosingDecisionInputs } from '../../../../src/determineBasal/types';
 
 // ---------------------------------------------------------------------------
 // Console mocking

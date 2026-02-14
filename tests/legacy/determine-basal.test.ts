@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 
 import { roundBasal } from '../../src/utils/rounding';
-import { determineBasal } from '../../src/determine-basal/determine-basal';
+import { determineBasal } from '../../src/determineBasal/determineBasal';
 import { tempBasalFunctions } from '../../src/setTempBasal/index';
 
 describe('roundBasal', () => {

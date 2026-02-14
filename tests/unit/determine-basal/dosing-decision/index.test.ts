@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-import { calculateDosingDecision } from '../../../../src/determine-basal/dosing-decision/index';
+import { calculateDosingDecision } from '../../../../src/determineBasal/dosingDecision/index';
 
 import type {
     IOBData,
@@ -12,7 +12,7 @@ import type {
     DetermineBasalResult,
     TrioCustomVariables,
 } from '../../../../src/types/index';
-import type { DosingDecisionInputs } from '../../../../src/determine-basal/types';
+import type { DosingDecisionInputs } from '../../../../src/determineBasal/types';
 
 const FIXED_TIME = '2025-01-15T12:00:00.000Z';
 

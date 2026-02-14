@@ -7,7 +7,7 @@ import {
     adjustTargetsForNoisyCGM,
     calculateLowGlucoseThreshold,
     adjustISFBySensitivity,
-} from '../../../src/determine-basal/sensitivity-targets';
+} from '../../../src/determineBasal/sensitivityTargets';
 import type { Profile, AutosensData } from '../../../src/types/index';
 
 const minProfile = {

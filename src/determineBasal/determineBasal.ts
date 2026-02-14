@@ -39,13 +39,13 @@ import {
 
 import { round } from '../utils/rounding';
 import { convertBG, calculateExpectedDelta, validateIOBAndTemps, projectEventualBG } from './helpers';
-import { enableSMB as checkSMBEnabled } from './smb-eligibility';
-import { calculateDynamicISF } from './dynamic-isf';
-import { validateCGMData } from './cgm-validation';
-import { configureSensitivityAndTargets } from './sensitivity-targets';
-import { calculateCarbAbsorption } from './carb-absorption';
-import { generateBGPredictions } from './bg-predictions';
-import { calculateDosingDecision } from './dosing-decision';
+import { enableSMB as checkSMBEnabled } from './smbEligibility';
+import { calculateDynamicISF } from './dynamicIsf';
+import { validateCGMData } from './cgmValidation';
+import { configureSensitivityAndTargets } from './sensitivityTargets';
+import { calculateCarbAbsorption } from './carbAbsorption';
+import { generateBGPredictions } from './bgPredictions';
+import { calculateDosingDecision } from './dosingDecision';
 
 /** Main determine-basal entry point: calculates the recommended temp basal / SMB dosing action. */
 export function determineBasal(

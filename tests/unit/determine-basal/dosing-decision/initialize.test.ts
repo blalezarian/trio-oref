@@ -4,9 +4,9 @@ import {
     initializeTelemetry,
     calculateCarbsContext,
     calculateCarbsRequired,
-} from '../../../../src/determine-basal/dosing-decision/initialize';
+} from '../../../../src/determineBasal/dosingDecision/initialize';
 
-import type { DosingContext } from '../../../../src/determine-basal/dosing-decision/types';
+import type { DosingContext } from '../../../../src/determineBasal/dosingDecision/types';
 import type {
     DetermineBasalResult,
     Profile,
@@ -17,7 +17,7 @@ import type {
     TempBasalFunctions,
     TrioCustomVariables,
 } from '../../../../src/types/index';
-import type { DosingDecisionInputs } from '../../../../src/determine-basal/types';
+import type { DosingDecisionInputs } from '../../../../src/determineBasal/types';
 
 // ---------------------------------------------------------------------------
 // Factory

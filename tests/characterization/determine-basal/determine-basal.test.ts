@@ -23,7 +23,7 @@ import {
   defaultBasalProfile,
 } from '../helpers/defaults';
 
-import { determineBasal } from '../../../src/determine-basal/determine-basal';
+import { determineBasal } from '../../../src/determineBasal/determineBasal';
 import { tempBasalFunctions } from '../../../src/setTempBasal/index';
 import type { TempBasalFunctions, DetermineBasalResult } from '../../../src/types/index';
 

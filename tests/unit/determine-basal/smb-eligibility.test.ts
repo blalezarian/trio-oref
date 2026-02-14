@@ -3,7 +3,7 @@ import {
     isTimeInSMBDisabledWindow,
     logBWWarningIfFound,
     logBWWarningIfCarbs,
-} from '../../../src/determine-basal/smb-eligibility';
+} from '../../../src/determineBasal/smbEligibility';
 import type { MealData } from '../../../src/types/index';
 
 // ---------------------------------------------------------------------------

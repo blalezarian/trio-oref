@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-import { validateCGMData } from '../../../src/determine-basal/cgm-validation';
+import { validateCGMData } from '../../../src/determineBasal/cgmValidation';
 
 import type {
     GlucoseStatus,

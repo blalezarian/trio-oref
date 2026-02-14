@@ -6,7 +6,7 @@ import {
     calculateSigmoidRatio,
     enforceAutosensLimits,
     buildTDDReasonString,
-} from '../../../src/determine-basal/dynamic-isf';
+} from '../../../src/determineBasal/dynamicIsf';
 
 beforeEach(() => {
     vi.spyOn(console, 'log').mockImplementation(() => {});

@@ -7,9 +7,9 @@ import {
     applyFinalHighTemp,
     resolveSMBMinuteSettings,
     resolveSMBInterval,
-} from '../../../../src/determine-basal/dosing-decision/high-temp';
+} from '../../../../src/determineBasal/dosingDecision/highTemp';
 
-import type { DosingContext } from '../../../../src/determine-basal/dosing-decision/types';
+import type { DosingContext } from '../../../../src/determineBasal/dosingDecision/types';
 import type {
     IOBData,
     MealData,
@@ -20,7 +20,7 @@ import type {
     TrioCustomVariables,
     TempBasalFunctions,
 } from '../../../../src/types/index';
-import type { DosingDecisionInputs } from '../../../../src/determine-basal/types';
+import type { DosingDecisionInputs } from '../../../../src/determineBasal/types';
 
 // ---------------------------------------------------------------------------
 // Test helpers

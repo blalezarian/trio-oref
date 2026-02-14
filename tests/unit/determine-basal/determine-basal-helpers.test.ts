@@ -4,7 +4,7 @@ import {
     validateIOBAndTemps,
     projectEventualBG,
     checkStaleTempBasal,
-} from '../../../src/determine-basal/helpers';
+} from '../../../src/determineBasal/helpers';
 
 import type {
     IOBData,

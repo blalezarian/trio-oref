@@ -16,12 +16,12 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 
 import { generate } from '../../src/profile/index';
 import { resetISFCache } from '../../src/profile/isf';
-import { validateCGMData } from '../../src/determine-basal/cgm-validation';
+import { validateCGMData } from '../../src/determineBasal/cgmValidation';
 import {
     adjustISFBySensitivity,
     adjustBasalBySensitivity,
     calculateTempTargetSensitivityRatio,
-} from '../../src/determine-basal/sensitivity-targets';
+} from '../../src/determineBasal/sensitivityTargets';
 import type {
     GlucoseStatus,
     Profile,

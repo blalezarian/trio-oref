@@ -4,9 +4,9 @@ import {
     handleLowBG,
     handleFallingDelta,
     handleInRange,
-} from '../../../../src/determine-basal/dosing-decision/low-temp';
+} from '../../../../src/determineBasal/dosingDecision/lowTemp';
 
-import type { DosingContext } from '../../../../src/determine-basal/dosing-decision/types';
+import type { DosingContext } from '../../../../src/determineBasal/dosingDecision/types';
 import type {
     Profile,
     GlucoseStatus,

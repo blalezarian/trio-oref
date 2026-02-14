@@ -4,11 +4,11 @@ import {
     enforceSMBSafetyGuards,
     checkPredictiveLGS,
     checkTopOfHourCancel,
-} from '../../../../src/determine-basal/dosing-decision/safety';
+} from '../../../../src/determineBasal/dosingDecision/safety';
 
 import type { Profile, DetermineBasalResult } from '../../../../src/types/index';
-import type { DosingContext } from '../../../../src/determine-basal/dosing-decision/types';
-import type { DosingDecisionInputs } from '../../../../src/determine-basal/types';
+import type { DosingContext } from '../../../../src/determineBasal/dosingDecision/types';
+import type { DosingDecisionInputs } from '../../../../src/determineBasal/types';
 
 // ---------------------------------------------------------------------------
 // Constants from the source (for reference in assertions)
