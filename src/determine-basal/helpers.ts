@@ -20,12 +20,7 @@ import type {
     DetermineBasalResult,
 } from '../types/index';
 
-/** Rounds value to the given number of decimal places (default 0). */
-export function round(value: number, digits?: number): number {
-    if (! digits) { digits = 0; }
-    const scale = Math.pow(10, digits);
-    return Math.round(value * scale) / scale;
-}
+import { round } from '../utils/rounding';
 
 /**
  * Calculate expected BG delta: we expect BG to rise or fall at the rate of BGI,
@@ -130,7 +125,7 @@ export function checkStaleTempBasal(
  * Projects 30m deviation using minDelta/minAvgDelta/long_avgdelta, then calculates
  * naiveEventualBG and eventualBG based on net IOB and sensitivity.
  */
-export function calculateDeviation(
+export function projectEventualBG(
     bg: number,
     iobData: IOBData,
     adjustedSens: number,

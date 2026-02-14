@@ -18,7 +18,8 @@ import {
     SECONDS_PER_MINUTE,
 } from '../constants';
 
-import { round, convertBG } from '../helpers';
+import { round } from '../../utils/rounding';
+import { convertBG } from '../helpers';
 
 import type { DosingContext, PhaseOutcome } from './types';
 import {

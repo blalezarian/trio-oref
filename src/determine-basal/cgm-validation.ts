@@ -25,7 +25,8 @@ import {
 
 import type { CGMValidationResult } from './types';
 
-import { round, convertBG } from './helpers';
+import { round } from '../utils/rounding';
+import { convertBG } from './helpers';
 
 /** Validates CGM data and returns either an early-return basalResult (for error conditions) or validated CGM values. */
 export function validateCGMData(

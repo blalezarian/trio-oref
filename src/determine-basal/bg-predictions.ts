@@ -32,7 +32,7 @@ import type {
     MinGuardBGResult,
 } from './types';
 
-import { round } from './helpers';
+import { round } from '../utils/rounding';
 
 // ---------------------------------------------------------------------------
 // Main function

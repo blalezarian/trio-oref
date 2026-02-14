@@ -12,7 +12,7 @@ import {
     SMB_MAX_ZERO_TEMP_MINUTES,
 } from '../constants';
 
-import { round } from '../helpers';
+import { round } from '../../utils/rounding';
 
 import type { DosingContext, PhaseOutcome } from './types';
 

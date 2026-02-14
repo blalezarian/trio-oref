@@ -21,7 +21,7 @@ import {
 
 import type { DynamicISFResult } from './types';
 
-import { round } from './helpers';
+import { round } from '../utils/rounding';
 
 // ---------------------------------------------------------------------------
 // Main function

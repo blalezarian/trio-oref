@@ -18,7 +18,8 @@ import {
     BOLUS_ERR_MIN_PRED_BELOW_MIN,
 } from '../constants';
 
-import { round, convertBG } from '../helpers';
+import { round } from '../../utils/rounding';
+import { convertBG } from '../helpers';
 
 import type { DetermineBasalResult } from '../../types/index';
 import type { DosingContext, PhaseOutcome } from './types';

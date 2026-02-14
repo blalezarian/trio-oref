@@ -11,7 +11,8 @@ import {
     LOW_BG_SAFETY_THRESHOLD,
 } from '../constants';
 
-import { round, convertBG } from '../helpers';
+import { round } from '../../utils/rounding';
+import { convertBG } from '../helpers';
 
 import type { DosingContext, PhaseOutcome } from './types';
 

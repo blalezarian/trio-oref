@@ -21,7 +21,8 @@ import {
 
 import type { CarbAbsorptionResult } from './types';
 
-import { round, convertBG } from './helpers';
+import { round } from '../utils/rounding';
+import { convertBG } from './helpers';
 
 /** Calculates carb impact, absorption rate, and remaining carb time for BG prediction. */
 export function calculateCarbAbsorption(

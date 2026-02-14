@@ -37,7 +37,8 @@ import {
     DEFAULT_TRIO_CUSTOM_VARIABLES,
 } from './constants';
 
-import { round, convertBG, calculateExpectedDelta, validateIOBAndTemps, calculateDeviation } from './helpers';
+import { round } from '../utils/rounding';
+import { convertBG, calculateExpectedDelta, validateIOBAndTemps, projectEventualBG } from './helpers';
 import { enableSMB as checkSMBEnabled } from './smb-eligibility';
 import { calculateDynamicISF } from './dynamic-isf';
 import { validateCGMData } from './cgm-validation';
@@ -131,7 +132,7 @@ export function determineBasal(
     //calculate BG impact: the amount BG "should" be rising or falling based on insulin activity alone
     const bgImpact = round(( -iobDatum.activity * adjustedSens * PRED_INTERVAL_MINUTES ), 2);
 
-    const deviationResult = calculateDeviation(bg, iobDatum, adjustedSens, sensitivity, minDelta, minAvgDelta, glucoseStatus.long_avgdelta, bgImpact);
+    const deviationResult = projectEventualBG(bg, iobDatum, adjustedSens, sensitivity, minDelta, minAvgDelta, glucoseStatus.long_avgdelta, bgImpact);
     const { deviation, naiveEventualBG } = deviationResult;
     let eventualBG = deviationResult.eventualBG;
 

@@ -27,7 +27,8 @@ import {
 
 import type { SensitivityAndTargetsResult } from './types';
 
-import { round, convertBG } from './helpers';
+import { round } from '../utils/rounding';
+import { convertBG } from './helpers';
 
 // ---------------------------------------------------------------------------
 // Main function
