@@ -3,7 +3,7 @@ import {
     TEMP_BASAL_DURATION_MINUTES,
 } from '../../shared/constants';
 
-import { round_basal } from '../../utils/rounding';
+import { roundBasal } from '../../utils/rounding';
 
 import {
     TEMP_SHORT_DURATION_MINUTES,
@@ -105,7 +105,7 @@ function calculateLowTempRate(ctx: DosingContext): number {
     }
     // rate required to deliver insulinReq less insulin over 30m:
     ctx.rate = basal + (LOW_TEMP_CORRECTION_FACTOR * ctx.insulinReq);
-    ctx.rate = round_basal(ctx.rate, profile);
+    ctx.rate = roundBasal(ctx.rate, profile);
 
     return naiveInsulinReq;
 }

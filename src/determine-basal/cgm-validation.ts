@@ -3,7 +3,7 @@ import {
     TEMP_BASAL_DURATION_MINUTES,
 } from '../shared/constants';
 
-import { round_basal } from '../utils/rounding';
+import { roundBasal } from '../utils/rounding';
 
 import type {
     GlucoseStatus,
@@ -44,7 +44,7 @@ export function validateCGMData(
         basalResult.error ='Error: could not get current basal rate';
         return { earlyReturn: basalResult };
     }
-    const profile_current_basal = round_basal(profile.current_basal, profile) * overrideFactor;
+    const profile_current_basal = roundBasal(profile.current_basal, profile) * overrideFactor;
     const basal = profile_current_basal;
 
     logOverrideStatus(useOverride, overrideFactor, overrideDuration);

@@ -295,7 +295,7 @@ describe('setTempBasal', () => {
         expect(result.duration).toBe(30);
     });
 
-    it('rounds the rate via round_basal', () => {
+    it('rounds the rate via roundBasal', () => {
         const profile = makeProfile({ current_basal: 1.0 });
         const requestedTempBasalResult = makeResult();
         const result = setTempBasal(0.33, 30, profile, requestedTempBasalResult);

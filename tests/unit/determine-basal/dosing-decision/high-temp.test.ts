@@ -342,7 +342,7 @@ describe('calculateHighInsulinReq', () => {
 
     it('sets ctx.rate = basal + 2 * insulinReq (rounded to pump increment)', () => {
         // insulinReq = (130 - 100) / 50 = 0.6
-        // rate = 1.0 + 2 * 0.6 = 2.2 → round_basal(2.2, profile) = 2.2
+        // rate = 1.0 + 2 * 0.6 = 2.2 → roundBasal(2.2, profile) = 2.2
         const ctx = makeTestContext({
             inputs: {
                 minPredBG: 130,
@@ -356,7 +356,7 @@ describe('calculateHighInsulinReq', () => {
         calculateHighInsulinReq(ctx);
 
         // LOW_TEMP_CORRECTION_FACTOR = 2
-        // rate = 1.0 + 2 * 0.6 = 2.2, round_basal(2.2) = 2.2
+        // rate = 1.0 + 2 * 0.6 = 2.2, roundBasal(2.2) = 2.2
         expect(ctx.rate).toBe(2.2);
     });
 
@@ -614,7 +614,7 @@ describe('applyFinalHighTemp', () => {
 
         applyFinalHighTemp(ctx);
 
-        // rate should be capped to 3.0 (round_basal(3.0) = 3.0)
+        // rate should be capped to 3.0 (roundBasal(3.0) = 3.0)
         expect(ctx.rate).toBe(3.0);
         expect(ctx.result.reason).toContain('maxSafeBasal');
     });

@@ -7,7 +7,7 @@ import {
     DEFAULT_MAX_SMB_BASAL_MINUTES,
 } from '../../shared/constants';
 
-import { round_basal } from '../../utils/rounding';
+import { roundBasal } from '../../utils/rounding';
 
 import {
     TEMP_SHORT_DURATION_MINUTES,
@@ -96,7 +96,7 @@ export function calculateHighInsulinReq(ctx: DosingContext): PhaseOutcome {
 
     // rate required to deliver insulinReq more insulin over 30m:
     ctx.rate = basal + (LOW_TEMP_CORRECTION_FACTOR * ctx.insulinReq);
-    ctx.rate = round_basal(ctx.rate, profile);
+    ctx.rate = roundBasal(ctx.rate, profile);
     ctx.insulinReq = round(ctx.insulinReq, 3);
     result.insulinReq = ctx.insulinReq;
 
@@ -260,7 +260,7 @@ export function applyFinalHighTemp(ctx: DosingContext): PhaseOutcome {
 
     if (ctx.rate > maxSafeBasal) {
         result.reason += `adj. req. rate: ${ctx.rate} to maxSafeBasal: ${round(maxSafeBasal, 2)}, `;
-        ctx.rate = round_basal(maxSafeBasal, profile);
+        ctx.rate = roundBasal(maxSafeBasal, profile);
     }
 
     ctx.insulinScheduled = currenttemp.duration * (currenttemp.rate - basal) / MINUTES_PER_HOUR;
@@ -274,7 +274,7 @@ export function applyFinalHighTemp(ctx: DosingContext): PhaseOutcome {
         return { done: true, result: tempBasalFunctions.setTempBasal(ctx.rate, TEMP_BASAL_DURATION_MINUTES, profile, result, currenttemp) };
     }
 
-    if (currenttemp.duration > TEMP_SHORT_DURATION_MINUTES && (round_basal(ctx.rate, profile) <= round_basal(currenttemp.rate, profile))) { // if required temp <~ existing temp basal
+    if (currenttemp.duration > TEMP_SHORT_DURATION_MINUTES && (roundBasal(ctx.rate, profile) <= roundBasal(currenttemp.rate, profile))) { // if required temp <~ existing temp basal
         result.reason += `temp ${currenttemp.rate} >~ req ${ctx.rate}U/hr. `;
         return { done: true, result };
     }

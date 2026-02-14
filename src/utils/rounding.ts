@@ -43,7 +43,7 @@ interface RoundBasalProfile {
 }
 
 /** Round a basal rate to the pump's supported increment based on pump model and rate magnitude */
-export const round_basal = (basal: number, profile?: RoundBasalProfile): number => {
+export const roundBasal = (basal: number, profile?: RoundBasalProfile): number => {
     /* x23 and x54 pumps change basal increment depending on how much basal is being delivered:
             0.025u for 0.025 < x < 0.975
             0.05u for 1 < x < 9.95

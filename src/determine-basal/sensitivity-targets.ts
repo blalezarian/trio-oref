@@ -4,7 +4,7 @@ import {
     MAX_BG_TARGET,
 } from '../shared/constants';
 
-import { round_basal } from '../utils/rounding';
+import { roundBasal } from '../utils/rounding';
 
 import type {
     GlucoseStatus,
@@ -241,7 +241,7 @@ export function adjustBasalBySensitivity(
 ): number {
     if (sensitivityRatio && !dynISFenabled) { // Only enable adjustment of basal by sensitivityRatio when not using dISF
         basal = profile.current_basal * overrideFactor * sensitivityRatio;
-        basal = round_basal(basal, profile);
+        basal = roundBasal(basal, profile);
         if (basal !== profile_current_basal) {
             console.log(`Adjusting basal from ${profile_current_basal} to ${basal}; `);
         } else {
@@ -264,7 +264,7 @@ export function adjustBasalByTDD(
     weightPercentage: number,
 ): number {
     basal = profile.current_basal * tdd24h_14d_Ratio * overrideFactor;
-    basal = round_basal(basal, profile);
+    basal = roundBasal(basal, profile);
     if (average_total_data > 0) {
         console.log(`TDD-adjustment of basals activated, using tdd24h_14d_Ratio ${round(tdd24h_14d_Ratio, 2)}, TDD 24h = ${round(tdd_before, 2)}U, Weighted average TDD = ${round(weightedAverage, 2)}U, (Weight percentage = ${weightPercentage}), Total data of TDDs (up to 14 days) average = ${round(average_total_data, 2)}U. `);
         if (basal !== profile_current_basal * overrideFactor) {

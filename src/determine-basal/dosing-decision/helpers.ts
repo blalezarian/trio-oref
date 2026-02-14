@@ -5,7 +5,7 @@ import {
     DEFAULT_MAX_SMB_BASAL_MINUTES,
 } from '../../shared/constants';
 
-import { round_basal } from '../../utils/rounding';
+import { roundBasal } from '../../utils/rounding';
 
 import {
     TEMP_ACTIVE_DURATION_MINUTES,
@@ -25,7 +25,7 @@ export function keepOrSetBasalTemp(ctx: DosingContext): PhaseOutcome {
     const { result } = ctx;
 
     if (currenttemp.duration > TEMP_ACTIVE_DURATION_MINUTES &&
-        round_basal(basal, profile) === round_basal(currenttemp.rate, profile)) {
+        roundBasal(basal, profile) === roundBasal(currenttemp.rate, profile)) {
         result.reason += `, temp ${currenttemp.rate} ~ req ${basal}U/hr. `;
         return { done: true, result };
     }

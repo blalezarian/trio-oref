@@ -1,20 +1,20 @@
 import { describe, it, expect } from 'vitest';
 
-import { round_basal } from '../../src/utils/rounding';
+import { roundBasal } from '../../src/utils/rounding';
 import { determine_basal } from '../../src/determine-basal/determine-basal';
 import { tempBasalFunctions } from '../../src/set-temp-basal/index';
 
-describe('round_basal', () => {
+describe('roundBasal', () => {
     it('should round correctly without profile being passed in', () => {
         const basal = 0.025;
-        const output = round_basal(basal);
+        const output = roundBasal(basal);
         expect(output).toBe(0.05);
     });
 
     const profile = {model: "522"} as any;
     it('should round correctly with an old pump model', () => {
         const basal = 0.025;
-        const output = round_basal(basal, profile);
+        const output = roundBasal(basal, profile);
         expect(output).toBe(0.05);
     });
 
@@ -22,7 +22,7 @@ describe('round_basal', () => {
     it('should round correctly with a new pump model', () => {
         const basal = 0.025;
         profile.model = "554";
-        const output = round_basal(basal, profile);
+        const output = roundBasal(basal, profile);
         expect(output).toBe(0.025);
         //console.error(output);
     });
@@ -30,7 +30,7 @@ describe('round_basal', () => {
     it('should round correctly with an invalid pump model', () => {
         const basal = 0.025;
         profile.model = "HelloThisIsntAPumpModel";
-        const output = round_basal(basal, profile);
+        const output = roundBasal(basal, profile);
         expect(output).toBe(0.05);
     });
 
@@ -45,7 +45,7 @@ describe('round_basal', () => {
 
     data.forEach((rate) => {
         it('should round basal rates properly (' + rate.basal + ' -> ' + rate.rounded + ')', () => {
-            const output = round_basal(rate.basal);
+            const output = roundBasal(rate.basal);
             expect(output).toBe(rate.rounded);
         });
     });

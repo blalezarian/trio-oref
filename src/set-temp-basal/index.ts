@@ -1,4 +1,4 @@
-import { round_basal } from '../utils/rounding';
+import { roundBasal } from '../utils/rounding';
 import {
     DEFAULT_MAX_DAILY_SAFETY_MULTIPLIER,
     DEFAULT_CURRENT_BASAL_SAFETY_MULTIPLIER,
@@ -83,7 +83,7 @@ function setTempBasal(
     currenttemp?: CurrentTemp,
 ): TempBasalResult {
     const clampedRate = Math.min(Math.max(0, rate), getMaxSafeBasal(profile));
-    const suggestedRate = round_basal(clampedRate, profile);
+    const suggestedRate = roundBasal(clampedRate, profile);
 
     // If a current temp is running and close enough to the suggestion, keep it
     if (currenttemp?.duration != null && currenttemp?.rate != null

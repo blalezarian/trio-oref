@@ -73,16 +73,16 @@ describe('calculateTempTargetSensitivityRatio', () => {
 describe('adjustBasalBySensitivity', () => {
     // Signature: (basal, sensitivityRatio, overrideFactor, dynISFenabled, profile, profile_current_basal)
     // Adjusts only when sensitivityRatio is truthy AND dynISFenabled is false.
-    // Formula: profile.current_basal * overrideFactor * sensitivityRatio -> round_basal
+    // Formula: profile.current_basal * overrideFactor * sensitivityRatio -> roundBasal
 
     it('returns adjusted basal when sensitivity changes it', () => {
-        // 1.0 * 1.0 * 0.8 = 0.8, round_basal(0.8) with BASAL_SCALE_DEFAULT=20 -> 0.8
+        // 1.0 * 1.0 * 0.8 = 0.8, roundBasal(0.8) with BASAL_SCALE_DEFAULT=20 -> 0.8
         const result = adjustBasalBySensitivity(1.0, 0.8, 1.0, false, minProfile, 1.0);
         expect(result).toBe(0.8);
     });
 
     it('applies override factor', () => {
-        // 1.0 * 1.5 * 1.0 = 1.5, round_basal(1.5) with mid-range scale=20 -> 1.5
+        // 1.0 * 1.5 * 1.0 = 1.5, roundBasal(1.5) with mid-range scale=20 -> 1.5
         const result = adjustBasalBySensitivity(1.0, 1.0, 1.5, false, minProfile, 1.5);
         expect(result).toBe(1.5);
     });
@@ -116,10 +116,10 @@ describe('adjustBasalBySensitivity', () => {
 describe('adjustBasalByTDD', () => {
     // Signature: (basal, tdd24h_14d_Ratio, overrideFactor, profile, profile_current_basal,
     //             tdd_before, weightedAverage, average_total_data, weightPercentage)
-    // Formula: profile.current_basal * tdd24h_14d_Ratio * overrideFactor -> round_basal
+    // Formula: profile.current_basal * tdd24h_14d_Ratio * overrideFactor -> roundBasal
 
     it('returns basal adjusted by TDD ratio and override factor', () => {
-        // 1.0 * 1.1 * 1.0 = 1.1, round_basal(1.1) with mid-range scale=20 -> 1.1
+        // 1.0 * 1.1 * 1.0 = 1.1, roundBasal(1.1) with mid-range scale=20 -> 1.1
         const result = adjustBasalByTDD(1.0, 1.1, 1.0, minProfile, 1.0, 50, 40, 45, 0.5);
         expect(result).toBe(1.1);
     });

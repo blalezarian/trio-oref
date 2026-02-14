@@ -174,7 +174,7 @@ describe('handleLowBG', () => {
 
     it('returns { done: true } with basal temp when BG rising faster than expected and current temp matches', () => {
         // Trigger: eventualBG < min_bg, minDelta > expectedDelta, minDelta > 0,
-        //          naive_eventualBG >= 40, currenttemp.duration > 15 and round_basal(basal) === round_basal(currenttemp.rate)
+        //          naive_eventualBG >= 40, currenttemp.duration > 15 and roundBasal(basal) === roundBasal(currenttemp.rate)
         const ctx = makeTestContext({
             inputs: {
                 eventualBG: 60,
@@ -239,7 +239,7 @@ describe('handleLowBG', () => {
         if (outcome.done) {
             const mock = ctx.inputs.tempBasalFunctions.setTempBasal as ReturnType<typeof vi.fn>;
             expect(mock).toHaveBeenCalledTimes(1);
-            // rate should be <= 0, rounded via round_basal
+            // rate should be <= 0, rounded via roundBasal
             const calledRate = mock.mock.calls[0][0];
             expect(calledRate).toBeLessThanOrEqual(0);
             // Duration should be 60 min (calculated zero-temp duration)
@@ -254,7 +254,7 @@ describe('handleLowBG', () => {
         // Use settings where rate ends up <= 0 but with a small undershoot so durationReq is short.
         // eventualBG=70, target_bg=100, adjustedSens=50, basal=0.5
         // insulinReq = 2 * min(0, (70 - 100) / 50) = 2 * -0.6 = -1.2
-        // rate = 0.5 + 2 * -1.2 = 0.5 - 2.4 = -1.9 => round_basal -> some negative
+        // rate = 0.5 + 2 * -1.2 = 0.5 - 2.4 = -1.9 => roundBasal -> some negative
         // naive_eventualBG=90 => bgUndershoot = 100 - 90 = 10
         // worstCaseInsulinReq = 10 / 50 = 0.2
         // durationReq = round(60 * 0.2 / 0.5 * 1) = round(24) = 24

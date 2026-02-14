@@ -2015,7 +2015,7 @@ export function generateAllFixtures(): FixtureSpec[] {
       // expectedDelta = round(-0.2+(110-107.4)/24,1) = round(-0.092,1) = -0.1
       // minDelta(-0.5) > expectedDelta(-0.1)? NO => skip first branch
       // insulinReq = 2*min(0, (107.4-110)/40) = 2*(-0.065) = -0.13
-      // rate = 0.9 + 2*(-0.13) = 0.64 => round_basal => 0.65
+      // rate = 0.9 + 2*(-0.13) = 0.64 => roundBasal => 0.65
       // currenttemp: {duration: 20, rate: 0.7}, lastTemp matching
       // insulinScheduled = 20*(0.7-0.9)/60 = -0.0667
       // naiveInsulinReq = min(0, (108-110)/40) = -0.05
