@@ -709,19 +709,19 @@ export interface TempBasalFunctions {
 
 /** Complete set of inputs for a single determine-basal invocation */
 export interface DetermineBasalInputs {
-  glucose_status: GlucoseStatus;
+  glucoseStatus: GlucoseStatus;
   currenttemp: CurrentTemp;
-  iob_data: IOBData;
+  iobData: IOBData;
   profile: Profile;
-  autosens_data: AutosensData;
-  meal_data: MealData;
+  autosensData: AutosensData;
+  mealData: MealData;
   microBolusAllowed: boolean;
-  reservoir_data?: number;
+  reservoirData?: number;
   currentTime?: ISODateString;
   pumphistory?: unknown[];
   preferences: Preferences;
   basalprofile?: BasalEntry[];
-  trio_custom_variables: TrioCustomVariables;
+  trioCustomVariables: TrioCustomVariables;
   middleWare?: unknown;
 }
 

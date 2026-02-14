@@ -125,7 +125,7 @@ export function determineBasal(
 
     const iobValidation = validateIOBAndTemps(iobData, currenttemp, profile, systemTime, microBolusAllowed, tempBasalFunctions, result, deliverAt);
     if ('earlyReturn' in iobValidation) return iobValidation.earlyReturn;
-    const iobDatum = iobValidation.iob_data;
+    const iobDatum = iobValidation.iobData;
     const iobArray = iobValidation.iobArray;
 
     //calculate BG impact: the amount BG "should" be rising or falling based on insulin activity alone

@@ -63,7 +63,7 @@ export function validateIOBAndTemps(
     tempBasalFunctions: TempBasalFunctions,
     result: DetermineBasalResult,
     deliverAt: Date,
-): { earlyReturn: DetermineBasalResult } | { iob_data: IOBData; iobArray: IOBData[] } {
+): { earlyReturn: DetermineBasalResult } | { iobData: IOBData; iobArray: IOBData[] } {
     if (iobData === undefined) {
         result.error ='Error: iob_data undefined. ';
         return { earlyReturn: result };
@@ -94,7 +94,7 @@ export function validateIOBAndTemps(
     );
     if (staleTempResult) return { earlyReturn: staleTempResult };
 
-    return { iob_data: iob_datum, iobArray };
+    return { iobData: iob_datum, iobArray };
 }
 
 /**

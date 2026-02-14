@@ -67,19 +67,19 @@ function fixture(
   name: string,
   category: string,
   overrides: {
-    glucose_status?: Parameters<typeof defaultGlucoseStatus>[0];
+    glucoseStatus?: Parameters<typeof defaultGlucoseStatus>[0];
     currenttemp?: Parameters<typeof defaultCurrentTemp>[0];
-    iob_data?: Parameters<typeof defaultIOBData>[0];
-    meal_data?: Parameters<typeof defaultMealData>[0];
+    iobData?: Parameters<typeof defaultIOBData>[0];
+    mealData?: Parameters<typeof defaultMealData>[0];
     profile?: Parameters<typeof defaultProfile>[0];
-    autosens_data?: Parameters<typeof defaultAutosensData>[0];
-    trio_custom_variables?: Parameters<typeof defaultTrioCustomVariables>[0];
+    autosensData?: Parameters<typeof defaultAutosensData>[0];
+    trioCustomVariables?: Parameters<typeof defaultTrioCustomVariables>[0];
     preferences?: Parameters<typeof defaultPreferences>[0];
     microBolusAllowed?: boolean;
     currentTime?: string;
     middleWare?: unknown;
-    reservoir_data?: number;
-    // When set, iob_data is passed as a raw array (for full iobArray coverage)
+    reservoirData?: number;
+    // When set, iobData is passed as a raw array (for full iobArray coverage)
     rawIobData?: unknown;
   } = {},
 ): FixtureSpec {
@@ -87,20 +87,20 @@ function fixture(
     name,
     category,
     input: {
-      glucose_status: defaultGlucoseStatus(overrides.glucose_status),
+      glucoseStatus: defaultGlucoseStatus(overrides.glucoseStatus),
       currenttemp: defaultCurrentTemp(overrides.currenttemp),
-      iob_data: overrides.rawIobData != null
+      iobData: overrides.rawIobData != null
         ? overrides.rawIobData as any
-        : defaultIOBData(overrides.iob_data),
-      meal_data: defaultMealData(overrides.meal_data),
+        : defaultIOBData(overrides.iobData),
+      mealData: defaultMealData(overrides.mealData),
       profile: defaultProfile(overrides.profile),
-      autosens_data: defaultAutosensData(overrides.autosens_data),
-      trio_custom_variables: defaultTrioCustomVariables(overrides.trio_custom_variables),
+      autosensData: defaultAutosensData(overrides.autosensData),
+      trioCustomVariables: defaultTrioCustomVariables(overrides.trioCustomVariables),
       preferences: defaultPreferences(overrides.preferences),
       microBolusAllowed: overrides.microBolusAllowed ?? false,
       currentTime: overrides.currentTime ?? new Date().toISOString(),
       basalprofile: defaultBasalProfile(),
-      reservoir_data: overrides.reservoir_data ?? 100,
+      reservoirData: overrides.reservoirData ?? 100,
       pumphistory: [],
       middleWare: overrides.middleWare,
     },
@@ -121,31 +121,31 @@ export function generateAllFixtures(): FixtureSpec[] {
     // =====================================================================
     fixture('In range, no IOB, no temp running', 'steady-state', {
       currentTime: FIXED_TIME,
-      glucose_status: { date: FIXED_DATE - 60_000 },
+      glucoseStatus: { date: FIXED_DATE - 60_000 },
     }),
 
     fixture('In range, no IOB, high temp running — should cancel', 'steady-state', {
       currentTime: FIXED_TIME,
-      glucose_status: { date: FIXED_DATE - 60_000 },
+      glucoseStatus: { date: FIXED_DATE - 60_000 },
       currenttemp: { duration: 30, rate: 1.5 },
     }),
 
     fixture('In range, no IOB, zero temp running', 'steady-state', {
       currentTime: FIXED_TIME,
-      glucose_status: { date: FIXED_DATE - 60_000 },
+      glucoseStatus: { date: FIXED_DATE - 60_000 },
       currenttemp: { duration: 30, rate: 0 },
     }),
 
     fixture('In range, small positive IOB', 'steady-state', {
       currentTime: FIXED_TIME,
-      glucose_status: { date: FIXED_DATE - 60_000 },
-      iob_data: { iob: 0.5, activity: 0.005 },
+      glucoseStatus: { date: FIXED_DATE - 60_000 },
+      iobData: { iob: 0.5, activity: 0.005 },
     }),
 
     fixture('In range, small negative IOB', 'steady-state', {
       currentTime: FIXED_TIME,
-      glucose_status: { date: FIXED_DATE - 60_000 },
-      iob_data: { iob: -0.3, activity: -0.003 },
+      glucoseStatus: { date: FIXED_DATE - 60_000 },
+      iobData: { iob: -0.3, activity: -0.003 },
     }),
 
     // =====================================================================
@@ -153,40 +153,40 @@ export function generateAllFixtures(): FixtureSpec[] {
     // =====================================================================
     fixture('Low BG, falling, no IOB — should zero temp', 'low-bg', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 75, delta: -5, short_avgdelta: -5, long_avgdelta: -5, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 75, delta: -5, short_avgdelta: -5, long_avgdelta: -5, date: FIXED_DATE - 60_000 },
     }),
 
     fixture('Low BG, falling, with IOB — should zero temp', 'low-bg', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 75, delta: -1, short_avgdelta: -1, long_avgdelta: -1, date: FIXED_DATE - 60_000 },
-      iob_data: { iob: 1, activity: 0.01 },
+      glucoseStatus: { glucose: 75, delta: -1, short_avgdelta: -1, long_avgdelta: -1, date: FIXED_DATE - 60_000 },
+      iobData: { iob: 1, activity: 0.01 },
     }),
 
     fixture('Low BG, rising, no IOB — should set current basal', 'low-bg', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 75, delta: 6, short_avgdelta: 6, long_avgdelta: 6, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 75, delta: 6, short_avgdelta: 6, long_avgdelta: 6, date: FIXED_DATE - 60_000 },
     }),
 
     fixture('Low BG, rising slower than BGI — should zero temp', 'low-bg', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 75, delta: 1, short_avgdelta: 1, long_avgdelta: 1, date: FIXED_DATE - 60_000 },
-      iob_data: { iob: -0.5, activity: -0.01 },
+      glucoseStatus: { glucose: 75, delta: 1, short_avgdelta: 1, long_avgdelta: 1, date: FIXED_DATE - 60_000 },
+      iobData: { iob: -0.5, activity: -0.01 },
     }),
 
     fixture('Very low BG (55) — should zero temp', 'low-bg', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 55, delta: -3, short_avgdelta: -3, long_avgdelta: -3, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 55, delta: -3, short_avgdelta: -3, long_avgdelta: -3, date: FIXED_DATE - 60_000 },
     }),
 
     fixture('Low BG with zero temp already running (not extending)', 'low-bg', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 75, delta: -5, short_avgdelta: -5, long_avgdelta: -5, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 75, delta: -5, short_avgdelta: -5, long_avgdelta: -5, date: FIXED_DATE - 60_000 },
       currenttemp: { duration: 57, rate: 0 },
     }),
 
     fixture('BG at threshold (80), falling', 'low-bg', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 80, delta: -3, short_avgdelta: -3, long_avgdelta: -3, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 80, delta: -3, short_avgdelta: -3, long_avgdelta: -3, date: FIXED_DATE - 60_000 },
     }),
 
     // =====================================================================
@@ -194,38 +194,38 @@ export function generateAllFixtures(): FixtureSpec[] {
     // =====================================================================
     fixture('High BG (180), no IOB — should high temp', 'high-bg', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 180, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 180, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
     }),
 
     fixture('High BG (180), with IOB already covering', 'high-bg', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 180, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
-      iob_data: { iob: 2.0, activity: 0.02 },
+      glucoseStatus: { glucose: 180, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
+      iobData: { iob: 2.0, activity: 0.02 },
     }),
 
     fixture('High BG (200), rising fast', 'high-bg', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 200, delta: 10, short_avgdelta: 10, long_avgdelta: 8, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 200, delta: 10, short_avgdelta: 10, long_avgdelta: 8, date: FIXED_DATE - 60_000 },
     }),
 
     fixture('High BG (250), no IOB', 'high-bg', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 250, delta: 5, short_avgdelta: 5, long_avgdelta: 5, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 250, delta: 5, short_avgdelta: 5, long_avgdelta: 5, date: FIXED_DATE - 60_000 },
     }),
 
     fixture('Very high BG (350), no IOB', 'high-bg', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 350, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 350, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
     }),
 
     fixture('Slightly above range (130), no IOB', 'high-bg', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 130, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 130, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
     }),
 
     fixture('High BG, already has high temp running', 'high-bg', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 180, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 180, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
       currenttemp: { duration: 25, rate: 2.5 },
     }),
 
@@ -234,23 +234,23 @@ export function generateAllFixtures(): FixtureSpec[] {
     // =====================================================================
     fixture('Slow rise (+2/5m) from in-range', 'rising-bg', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 120, delta: 2, short_avgdelta: 2, long_avgdelta: 1.5, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 120, delta: 2, short_avgdelta: 2, long_avgdelta: 1.5, date: FIXED_DATE - 60_000 },
     }),
 
     fixture('Moderate rise (+5/5m) from in-range', 'rising-bg', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 125, delta: 5, short_avgdelta: 5, long_avgdelta: 4, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 125, delta: 5, short_avgdelta: 5, long_avgdelta: 4, date: FIXED_DATE - 60_000 },
     }),
 
     fixture('Fast rise (+10/5m) from in-range', 'rising-bg', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 130, delta: 10, short_avgdelta: 9, long_avgdelta: 7, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 130, delta: 10, short_avgdelta: 9, long_avgdelta: 7, date: FIXED_DATE - 60_000 },
     }),
 
     fixture('Rise with existing IOB', 'rising-bg', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 130, delta: 5, short_avgdelta: 5, long_avgdelta: 4, date: FIXED_DATE - 60_000 },
-      iob_data: { iob: 1.5, activity: 0.015 },
+      glucoseStatus: { glucose: 130, delta: 5, short_avgdelta: 5, long_avgdelta: 4, date: FIXED_DATE - 60_000 },
+      iobData: { iob: 1.5, activity: 0.015 },
     }),
 
     // =====================================================================
@@ -258,24 +258,24 @@ export function generateAllFixtures(): FixtureSpec[] {
     // =====================================================================
     fixture('Slow fall (-2/5m) from in-range', 'falling-bg', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 110, delta: -2, short_avgdelta: -2, long_avgdelta: -1.5, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 110, delta: -2, short_avgdelta: -2, long_avgdelta: -1.5, date: FIXED_DATE - 60_000 },
     }),
 
     fixture('Moderate fall (-5/5m) from in-range', 'falling-bg', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 105, delta: -5, short_avgdelta: -5, long_avgdelta: -4, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 105, delta: -5, short_avgdelta: -5, long_avgdelta: -4, date: FIXED_DATE - 60_000 },
     }),
 
     fixture('Fast fall (-10/5m) from high', 'falling-bg', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 150, delta: -10, short_avgdelta: -9, long_avgdelta: -7, date: FIXED_DATE - 60_000 },
-      iob_data: { iob: 2.0, activity: 0.03 },
+      glucoseStatus: { glucose: 150, delta: -10, short_avgdelta: -9, long_avgdelta: -7, date: FIXED_DATE - 60_000 },
+      iobData: { iob: 2.0, activity: 0.03 },
     }),
 
     fixture('Fall with negative IOB', 'falling-bg', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 100, delta: -3, short_avgdelta: -3, long_avgdelta: -2, date: FIXED_DATE - 60_000 },
-      iob_data: { iob: -0.5, activity: -0.005 },
+      glucoseStatus: { glucose: 100, delta: -3, short_avgdelta: -3, long_avgdelta: -2, date: FIXED_DATE - 60_000 },
+      iobData: { iob: -0.5, activity: -0.005 },
     }),
 
     // =====================================================================
@@ -283,8 +283,8 @@ export function generateAllFixtures(): FixtureSpec[] {
     // =====================================================================
     fixture('Early meal absorption — high COB, rising BG', 'post-meal', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 140, delta: 8, short_avgdelta: 7, long_avgdelta: 5, date: FIXED_DATE - 60_000 },
-      meal_data: {
+      glucoseStatus: { glucose: 140, delta: 8, short_avgdelta: 7, long_avgdelta: 5, date: FIXED_DATE - 60_000 },
+      mealData: {
         carbs: 50, nsCarbs: 50, bwCarbs: 0, journalCarbs: 0,
         mealCOB: 40, currentDeviation: 15, maxDeviation: 15, minDeviation: 0,
         slopeFromMaxDeviation: 0, slopeFromMinDeviation: 0,
@@ -295,8 +295,8 @@ export function generateAllFixtures(): FixtureSpec[] {
 
     fixture('Peak meal absorption — high COB, BG still rising', 'post-meal', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 170, delta: 5, short_avgdelta: 6, long_avgdelta: 8, date: FIXED_DATE - 60_000 },
-      meal_data: {
+      glucoseStatus: { glucose: 170, delta: 5, short_avgdelta: 6, long_avgdelta: 8, date: FIXED_DATE - 60_000 },
+      mealData: {
         carbs: 50, nsCarbs: 50, bwCarbs: 0, journalCarbs: 0,
         mealCOB: 25, currentDeviation: 10, maxDeviation: 20, minDeviation: 0,
         slopeFromMaxDeviation: -0.5, slopeFromMinDeviation: 0,
@@ -307,8 +307,8 @@ export function generateAllFixtures(): FixtureSpec[] {
 
     fixture('Late meal absorption — low COB, BG coming down', 'post-meal', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 145, delta: -2, short_avgdelta: -1, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
-      meal_data: {
+      glucoseStatus: { glucose: 145, delta: -2, short_avgdelta: -1, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
+      mealData: {
         carbs: 50, nsCarbs: 50, bwCarbs: 0, journalCarbs: 0,
         mealCOB: 8, currentDeviation: 3, maxDeviation: 20, minDeviation: 0,
         slopeFromMaxDeviation: -1.0, slopeFromMinDeviation: 0,
@@ -319,8 +319,8 @@ export function generateAllFixtures(): FixtureSpec[] {
 
     fixture('Large meal (90g) early absorption', 'post-meal', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 160, delta: 12, short_avgdelta: 10, long_avgdelta: 6, date: FIXED_DATE - 60_000 },
-      meal_data: {
+      glucoseStatus: { glucose: 160, delta: 12, short_avgdelta: 10, long_avgdelta: 6, date: FIXED_DATE - 60_000 },
+      mealData: {
         carbs: 90, nsCarbs: 90, bwCarbs: 0, journalCarbs: 0,
         mealCOB: 75, currentDeviation: 20, maxDeviation: 20, minDeviation: 0,
         slopeFromMaxDeviation: 0, slopeFromMinDeviation: 0,
@@ -334,10 +334,10 @@ export function generateAllFixtures(): FixtureSpec[] {
     // =====================================================================
     fixture('SMB enabled always, high BG, no IOB', 'smb', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 180, delta: 2, short_avgdelta: 2, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 180, delta: 2, short_avgdelta: 2, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
       profile: { enableSMB_always: true },
       microBolusAllowed: true,
-      iob_data: {
+      iobData: {
         iob: 0, activity: 0,
         lastBolusTime: FIXED_DATE - 10 * 60_000,
       },
@@ -345,17 +345,17 @@ export function generateAllFixtures(): FixtureSpec[] {
 
     fixture('SMB with COB enabled, meal active', 'smb', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 160, delta: 5, short_avgdelta: 5, long_avgdelta: 4, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 160, delta: 5, short_avgdelta: 5, long_avgdelta: 4, date: FIXED_DATE - 60_000 },
       profile: { enableSMB_with_COB: true },
       microBolusAllowed: true,
-      meal_data: {
+      mealData: {
         carbs: 50, nsCarbs: 50, bwCarbs: 0, journalCarbs: 0,
         mealCOB: 30, currentDeviation: 10, maxDeviation: 15, minDeviation: 0,
         slopeFromMaxDeviation: -0.3, slopeFromMinDeviation: 0,
         allDeviations: [10, 12, 15, 12, 8], lastCarbTime: FIXED_DATE - 45 * 60_000,
         bwFound: false,
       },
-      iob_data: {
+      iobData: {
         iob: 0.5, activity: 0.005,
         lastBolusTime: FIXED_DATE - 10 * 60_000,
       },
@@ -363,10 +363,10 @@ export function generateAllFixtures(): FixtureSpec[] {
 
     fixture('SMB with high BG target enabled', 'smb', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 160, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 160, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
       profile: { enableSMB_high_bg: true, enableSMB_high_bg_target: 110 },
       microBolusAllowed: true,
-      iob_data: {
+      iobData: {
         iob: 0, activity: 0,
         lastBolusTime: FIXED_DATE - 10 * 60_000,
       },
@@ -374,10 +374,10 @@ export function generateAllFixtures(): FixtureSpec[] {
 
     fixture('SMB at max IOB — should not SMB', 'smb', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 180, delta: 5, short_avgdelta: 5, long_avgdelta: 5, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 180, delta: 5, short_avgdelta: 5, long_avgdelta: 5, date: FIXED_DATE - 60_000 },
       profile: { enableSMB_always: true, max_iob: 2.5 },
       microBolusAllowed: true,
-      iob_data: {
+      iobData: {
         iob: 2.5, activity: 0.025,
         lastBolusTime: FIXED_DATE - 10 * 60_000,
       },
@@ -385,17 +385,17 @@ export function generateAllFixtures(): FixtureSpec[] {
 
     fixture('SMB disabled (microBolusAllowed=false), high BG', 'smb', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 180, delta: 5, short_avgdelta: 5, long_avgdelta: 5, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 180, delta: 5, short_avgdelta: 5, long_avgdelta: 5, date: FIXED_DATE - 60_000 },
       profile: { enableSMB_always: true },
       microBolusAllowed: false,
     }),
 
     fixture('SMB with temp target — low TT enables SMB', 'smb', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 130, delta: 2, short_avgdelta: 2, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 130, delta: 2, short_avgdelta: 2, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
       profile: { enableSMB_with_temptarget: true, temptargetSet: true, min_bg: 80, max_bg: 80 },
       microBolusAllowed: true,
-      iob_data: {
+      iobData: {
         iob: 0, activity: 0,
         lastBolusTime: FIXED_DATE - 10 * 60_000,
       },
@@ -403,7 +403,7 @@ export function generateAllFixtures(): FixtureSpec[] {
 
     fixture('SMB blocked by high temp target', 'smb', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 130, delta: 2, short_avgdelta: 2, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 130, delta: 2, short_avgdelta: 2, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
       profile: {
         enableSMB_always: true,
         allowSMB_with_high_temptarget: false,
@@ -418,16 +418,16 @@ export function generateAllFixtures(): FixtureSpec[] {
     // =====================================================================
     fixture('UAM — rising BG with no carbs entered', 'uam', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 150, delta: 8, short_avgdelta: 7, long_avgdelta: 4, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 150, delta: 8, short_avgdelta: 7, long_avgdelta: 4, date: FIXED_DATE - 60_000 },
       profile: { enableUAM: true, enableSMB_always: true },
       microBolusAllowed: true,
-      meal_data: {
+      mealData: {
         carbs: 0, nsCarbs: 0, bwCarbs: 0, journalCarbs: 0,
         mealCOB: 0, currentDeviation: 15, maxDeviation: 15, minDeviation: 0,
         slopeFromMaxDeviation: 0, slopeFromMinDeviation: 0,
         allDeviations: [15, 12, 8, 4, 0], bwFound: false,
       },
-      iob_data: {
+      iobData: {
         iob: 0, activity: 0,
         lastBolusTime: FIXED_DATE - 10 * 60_000,
       },
@@ -435,16 +435,16 @@ export function generateAllFixtures(): FixtureSpec[] {
 
     fixture('UAM — BG rising fast, already has IOB', 'uam', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 170, delta: 12, short_avgdelta: 10, long_avgdelta: 6, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 170, delta: 12, short_avgdelta: 10, long_avgdelta: 6, date: FIXED_DATE - 60_000 },
       profile: { enableUAM: true, enableSMB_always: true },
       microBolusAllowed: true,
-      meal_data: {
+      mealData: {
         carbs: 0, nsCarbs: 0, bwCarbs: 0, journalCarbs: 0,
         mealCOB: 0, currentDeviation: 20, maxDeviation: 20, minDeviation: 0,
         slopeFromMaxDeviation: 0, slopeFromMinDeviation: 0,
         allDeviations: [20, 15, 8, 0, 0], bwFound: false,
       },
-      iob_data: {
+      iobData: {
         iob: 1.5, activity: 0.015,
         lastBolusTime: FIXED_DATE - 5 * 60_000,
       },
@@ -455,14 +455,14 @@ export function generateAllFixtures(): FixtureSpec[] {
     // =====================================================================
     fixture('BG predicted to go low — should zero temp', 'zero-temp', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 100, delta: -3, short_avgdelta: -3, long_avgdelta: -3, date: FIXED_DATE - 60_000 },
-      iob_data: { iob: 2.0, activity: 0.025 },
+      glucoseStatus: { glucose: 100, delta: -3, short_avgdelta: -3, long_avgdelta: -3, date: FIXED_DATE - 60_000 },
+      iobData: { iob: 2.0, activity: 0.025 },
     }),
 
     fixture('Eventual BG well below target with high IOB', 'zero-temp', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 110, delta: -1, short_avgdelta: -1, long_avgdelta: -1, date: FIXED_DATE - 60_000 },
-      iob_data: { iob: 3.0, activity: 0.03 },
+      glucoseStatus: { glucose: 110, delta: -1, short_avgdelta: -1, long_avgdelta: -1, date: FIXED_DATE - 60_000 },
+      iobData: { iob: 3.0, activity: 0.03 },
     }),
 
     // =====================================================================
@@ -470,28 +470,28 @@ export function generateAllFixtures(): FixtureSpec[] {
     // =====================================================================
     fixture('CGM calibrating (BG=5)', 'cgm-error', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 5, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000, noise: 1 },
+      glucoseStatus: { glucose: 5, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000, noise: 1 },
     }),
 
     fixture('CGM error state (BG=38)', 'cgm-error', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 38, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000, noise: 1 },
+      glucoseStatus: { glucose: 38, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000, noise: 1 },
     }),
 
     fixture('High CGM noise (noise=3)', 'cgm-error', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 120, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000, noise: 3 },
+      glucoseStatus: { glucose: 120, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000, noise: 3 },
       currenttemp: { duration: 25, rate: 2.0 },
     }),
 
     fixture('Stale CGM data (15 min old)', 'cgm-error', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 120, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 15 * 60_000, noise: 1 },
+      glucoseStatus: { glucose: 120, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 15 * 60_000, noise: 1 },
     }),
 
     fixture('CGM data unchanged (flat deltas)', 'cgm-error', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 120, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000, noise: 1 },
+      glucoseStatus: { glucose: 120, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000, noise: 1 },
     }),
 
     // =====================================================================
@@ -499,14 +499,14 @@ export function generateAllFixtures(): FixtureSpec[] {
     // =====================================================================
     fixture('High sensitivity (ratio=0.8) — less insulin needed', 'autosens', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 150, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
-      autosens_data: { ratio: 0.8 },
+      glucoseStatus: { glucose: 150, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
+      autosensData: { ratio: 0.8 },
     }),
 
     fixture('Insulin resistance (ratio=1.2) — more insulin needed', 'autosens', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 150, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
-      autosens_data: { ratio: 1.2 },
+      glucoseStatus: { glucose: 150, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
+      autosensData: { ratio: 1.2 },
     }),
 
     // =====================================================================
@@ -514,7 +514,7 @@ export function generateAllFixtures(): FixtureSpec[] {
     // =====================================================================
     fixture('Low temp target (80) — exercise mode', 'temp-target', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 120, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 120, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
       profile: {
         temptargetSet: true, min_bg: 80, max_bg: 80,
         exercise_mode: true, half_basal_exercise_target: 160,
@@ -523,7 +523,7 @@ export function generateAllFixtures(): FixtureSpec[] {
 
     fixture('High temp target (150) — exercise raises sensitivity', 'temp-target', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 130, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 130, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
       profile: {
         temptargetSet: true, min_bg: 150, max_bg: 150,
         high_temptarget_raises_sensitivity: true, half_basal_exercise_target: 160,
@@ -535,31 +535,31 @@ export function generateAllFixtures(): FixtureSpec[] {
     // =====================================================================
     fixture('Dynamic ISF logarithmic — high BG', 'dynamic-isf', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 200, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 200, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
       preferences: { useNewFormula: true, adjustmentFactor: 0.8, sigmoid: false },
       profile: { useNewFormula: true, autosens_min: 0.7, autosens_max: 1.2 },
-      trio_custom_variables: { currentTDD: 40, weightedAverage: 40, average_total_data: 40 },
+      trioCustomVariables: { currentTDD: 40, weightedAverage: 40, average_total_data: 40 },
     }),
 
     fixture('Dynamic ISF logarithmic — in-range BG', 'dynamic-isf', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 110, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 110, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
       preferences: { useNewFormula: true, adjustmentFactor: 0.8, sigmoid: false },
       profile: { useNewFormula: true, autosens_min: 0.7, autosens_max: 1.2 },
-      trio_custom_variables: { currentTDD: 40, weightedAverage: 40, average_total_data: 40 },
+      trioCustomVariables: { currentTDD: 40, weightedAverage: 40, average_total_data: 40 },
     }),
 
     fixture('Dynamic ISF sigmoid — high BG', 'dynamic-isf', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 200, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 200, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
       preferences: { useNewFormula: true, adjustmentFactorSigmoid: 0.5, sigmoid: true },
       profile: { useNewFormula: true, sigmoid: true, autosens_min: 0.7, autosens_max: 1.2 },
-      trio_custom_variables: { currentTDD: 40, weightedAverage: 40, average_total_data: 40 },
+      trioCustomVariables: { currentTDD: 40, weightedAverage: 40, average_total_data: 40 },
     }),
 
     fixture('Dynamic ISF disabled by equal autosens min/max', 'dynamic-isf', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 200, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 200, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
       preferences: { useNewFormula: true },
       profile: { useNewFormula: true, autosens_min: 1.0, autosens_max: 1.0 },
     }),
@@ -569,8 +569,8 @@ export function generateAllFixtures(): FixtureSpec[] {
     // =====================================================================
     fixture('Override active — 120% (more aggressive)', 'trio-override', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 150, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
-      trio_custom_variables: {
+      glucoseStatus: { glucose: 150, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
+      trioCustomVariables: {
         useOverride: true, overridePercentage: 120, isfAndCr: true,
         overrideTarget: 0, duration: 0,
       },
@@ -578,8 +578,8 @@ export function generateAllFixtures(): FixtureSpec[] {
 
     fixture('Override active — 80% (less aggressive)', 'trio-override', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 150, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
-      trio_custom_variables: {
+      glucoseStatus: { glucose: 150, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
+      trioCustomVariables: {
         useOverride: true, overridePercentage: 80, isfAndCr: true,
         overrideTarget: 0, duration: 0,
       },
@@ -587,8 +587,8 @@ export function generateAllFixtures(): FixtureSpec[] {
 
     fixture('Override with custom target (100)', 'trio-override', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 150, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
-      trio_custom_variables: {
+      glucoseStatus: { glucose: 150, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
+      trioCustomVariables: {
         useOverride: true, overridePercentage: 100,
         overrideTarget: 100, duration: 60, isfAndCr: false,
       },
@@ -596,11 +596,11 @@ export function generateAllFixtures(): FixtureSpec[] {
 
     fixture('SMBs disabled by override', 'trio-override', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 180, delta: 5, short_avgdelta: 5, long_avgdelta: 5, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 180, delta: 5, short_avgdelta: 5, long_avgdelta: 5, date: FIXED_DATE - 60_000 },
       profile: { enableSMB_always: true },
       microBolusAllowed: true,
-      trio_custom_variables: { smbIsOff: true },
-      iob_data: {
+      trioCustomVariables: { smbIsOff: true },
+      iobData: {
         iob: 0, activity: 0,
         lastBolusTime: FIXED_DATE - 10 * 60_000,
       },
@@ -611,18 +611,18 @@ export function generateAllFixtures(): FixtureSpec[] {
     // =====================================================================
     fixture('TDD-adjusted basal — higher recent TDD', 'tdd-basal', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 130, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 130, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
       profile: { tddAdjBasal: true, useNewFormula: true, autosens_min: 0.7, autosens_max: 1.2 },
       preferences: { useNewFormula: true },
-      trio_custom_variables: { currentTDD: 50, weightedAverage: 50, average_total_data: 40 },
+      trioCustomVariables: { currentTDD: 50, weightedAverage: 50, average_total_data: 40 },
     }),
 
     fixture('TDD-adjusted basal — lower recent TDD', 'tdd-basal', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 130, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 130, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
       profile: { tddAdjBasal: true, useNewFormula: true, autosens_min: 0.7, autosens_max: 1.2 },
       preferences: { useNewFormula: true },
-      trio_custom_variables: { currentTDD: 30, weightedAverage: 30, average_total_data: 40 },
+      trioCustomVariables: { currentTDD: 30, weightedAverage: 30, average_total_data: 40 },
     }),
 
     // =====================================================================
@@ -630,7 +630,7 @@ export function generateAllFixtures(): FixtureSpec[] {
     // =====================================================================
     fixture('Full iobArray — high BG with SMB always, prediction loop', 'iob-array-predictions', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 180, delta: 2, short_avgdelta: 2, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 180, delta: 2, short_avgdelta: 2, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
       profile: { enableSMB_always: true, enableUAM: true },
       microBolusAllowed: true,
       rawIobData: makeIobArray(1.0, 0.01, 5, FIXED_DATE),
@@ -638,16 +638,16 @@ export function generateAllFixtures(): FixtureSpec[] {
 
     fixture('Full iobArray — low BG, high IOB, should zero temp', 'iob-array-predictions', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 85, delta: -3, short_avgdelta: -3, long_avgdelta: -2, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 85, delta: -3, short_avgdelta: -3, long_avgdelta: -2, date: FIXED_DATE - 60_000 },
       rawIobData: makeIobArray(2.5, 0.025, 5, FIXED_DATE),
     }),
 
     fixture('Full iobArray — with COB, UAM enabled, meal rising', 'iob-array-predictions', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 155, delta: 6, short_avgdelta: 5, long_avgdelta: 3, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 155, delta: 6, short_avgdelta: 5, long_avgdelta: 3, date: FIXED_DATE - 60_000 },
       profile: { enableUAM: true, enableSMB_always: true },
       microBolusAllowed: true,
-      meal_data: {
+      mealData: {
         carbs: 60, nsCarbs: 60, bwCarbs: 0, journalCarbs: 0,
         mealCOB: 45, currentDeviation: 12, maxDeviation: 15, minDeviation: 0,
         slopeFromMaxDeviation: -0.2, slopeFromMinDeviation: 0,
@@ -659,26 +659,26 @@ export function generateAllFixtures(): FixtureSpec[] {
 
     fixture('Full iobArray — in range, no deviation, full prediction curves', 'iob-array-predictions', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 115, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 115, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
       rawIobData: makeIobArray(0.5, 0.005, 5, FIXED_DATE),
     }),
 
     fixture('Full iobArray — dynamic ISF logarithmic predictions', 'iob-array-predictions', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 190, delta: 3, short_avgdelta: 3, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 190, delta: 3, short_avgdelta: 3, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
       preferences: { useNewFormula: true, adjustmentFactor: 0.8, sigmoid: false },
       profile: { useNewFormula: true, autosens_min: 0.7, autosens_max: 1.2, enableSMB_always: true, enableUAM: true },
-      trio_custom_variables: { currentTDD: 40, weightedAverage: 40, average_total_data: 40 },
+      trioCustomVariables: { currentTDD: 40, weightedAverage: 40, average_total_data: 40 },
       microBolusAllowed: true,
       rawIobData: makeIobArray(1.2, 0.012, 5, FIXED_DATE),
     }),
 
     fixture('Full iobArray — UAM with negative deviation slope', 'iob-array-predictions', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 160, delta: 5, short_avgdelta: 4, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 160, delta: 5, short_avgdelta: 4, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
       profile: { enableUAM: true, enableSMB_always: true },
       microBolusAllowed: true,
-      meal_data: {
+      mealData: {
         carbs: 0, nsCarbs: 0, bwCarbs: 0, journalCarbs: 0,
         mealCOB: 0, currentDeviation: 10, maxDeviation: 20, minDeviation: -2,
         slopeFromMaxDeviation: -1.0, slopeFromMinDeviation: 0.5,
@@ -692,7 +692,7 @@ export function generateAllFixtures(): FixtureSpec[] {
     // =====================================================================
     fixture('SMB full path — UAM minutes override, high IOB > mealInsulinReq', 'smb-full-path', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 200, delta: 5, short_avgdelta: 4, long_avgdelta: 3, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 200, delta: 5, short_avgdelta: 4, long_avgdelta: 3, date: FIXED_DATE - 60_000 },
       profile: {
         enableSMB_always: true, enableUAM: true,
         maxSMBBasalMinutes: 60, maxUAMSMBBasalMinutes: 45,
@@ -703,13 +703,13 @@ export function generateAllFixtures(): FixtureSpec[] {
 
     fixture('SMB full path — with COB, IOB less than mealInsulinReq', 'smb-full-path', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 170, delta: 3, short_avgdelta: 3, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 170, delta: 3, short_avgdelta: 3, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
       profile: {
         enableSMB_with_COB: true, enableUAM: true,
         maxSMBBasalMinutes: 30, maxUAMSMBBasalMinutes: 30,
       },
       microBolusAllowed: true,
-      meal_data: {
+      mealData: {
         carbs: 80, nsCarbs: 80, bwCarbs: 0, journalCarbs: 0,
         mealCOB: 60, currentDeviation: 8, maxDeviation: 12, minDeviation: 0,
         slopeFromMaxDeviation: -0.3, slopeFromMinDeviation: 0,
@@ -721,7 +721,7 @@ export function generateAllFixtures(): FixtureSpec[] {
 
     fixture('SMB full path — custom delivery ratio (0.3)', 'smb-full-path', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 190, delta: 2, short_avgdelta: 2, long_avgdelta: 1, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 190, delta: 2, short_avgdelta: 2, long_avgdelta: 1, date: FIXED_DATE - 60_000 },
       profile: {
         enableSMB_always: true, smb_delivery_ratio: 0.3,
         maxSMBBasalMinutes: 30,
@@ -732,7 +732,7 @@ export function generateAllFixtures(): FixtureSpec[] {
 
     fixture('SMB full path — recent bolus, should wait for SMBInterval', 'smb-full-path', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 180, delta: 2, short_avgdelta: 2, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 180, delta: 2, short_avgdelta: 2, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
       profile: { enableSMB_always: true, SMBInterval: 5 },
       microBolusAllowed: true,
       rawIobData: (() => {
@@ -746,7 +746,7 @@ export function generateAllFixtures(): FixtureSpec[] {
 
     fixture('SMB full path — maxBolus limited by insulinReq', 'smb-full-path', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 250, delta: 8, short_avgdelta: 7, long_avgdelta: 5, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 250, delta: 8, short_avgdelta: 7, long_avgdelta: 5, date: FIXED_DATE - 60_000 },
       profile: {
         enableSMB_always: true, enableUAM: true,
         maxSMBBasalMinutes: 120, maxUAMSMBBasalMinutes: 120,
@@ -761,42 +761,42 @@ export function generateAllFixtures(): FixtureSpec[] {
     // =====================================================================
     fixture('Noise=3 with high temp running — should replace with neutral', 'cgm-error-extended', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 150, delta: 5, short_avgdelta: 3, long_avgdelta: 2, date: FIXED_DATE - 60_000, noise: 3 },
+      glucoseStatus: { glucose: 150, delta: 5, short_avgdelta: 3, long_avgdelta: 2, date: FIXED_DATE - 60_000, noise: 3 },
       currenttemp: { duration: 25, rate: 2.5 },
     }),
 
     fixture('Noise=3 with long zero temp — should shorten to 30m', 'cgm-error-extended', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 150, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000, noise: 3 },
+      glucoseStatus: { glucose: 150, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000, noise: 3 },
       currenttemp: { duration: 60, rate: 0 },
     }),
 
     fixture('Noise=3 with low temp — should do nothing', 'cgm-error-extended', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 150, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000, noise: 3 },
+      glucoseStatus: { glucose: 150, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000, noise: 3 },
       currenttemp: { duration: 25, rate: 0.5 },
     }),
 
     fixture('BG=38 (xDrip error) with high temp — replace neutral', 'cgm-error-extended', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 38, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000, noise: 1 },
+      glucoseStatus: { glucose: 38, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000, noise: 1 },
       currenttemp: { duration: 30, rate: 2.0 },
     }),
 
     fixture('Stale CGM data with high temp running', 'cgm-error-extended', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 120, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 15 * 60_000, noise: 1 },
+      glucoseStatus: { glucose: 120, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 15 * 60_000, noise: 1 },
       currenttemp: { duration: 25, rate: 2.0 },
     }),
 
     fixture('Future CGM data (date 10min ahead)', 'cgm-error-extended', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 120, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE + 10 * 60_000, noise: 1 },
+      glucoseStatus: { glucose: 120, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE + 10 * 60_000, noise: 1 },
     }),
 
     fixture('CGM just calibrated (last_cal=2)', 'cgm-error-extended', {
       currentTime: FIXED_TIME,
-      glucose_status: {
+      glucoseStatus: {
         glucose: 120, delta: 0, short_avgdelta: 0, long_avgdelta: 0,
         date: FIXED_DATE - 60_000, noise: 1, last_cal: 2,
       },
@@ -807,16 +807,16 @@ export function generateAllFixtures(): FixtureSpec[] {
     // =====================================================================
     fixture('Sensitivity raises target (ratio=0.8, sensitivity_raises_target on)', 'sens-target-adjust', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 150, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 150, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
       profile: { sensitivity_raises_target: true },
-      autosens_data: { ratio: 0.8 },
+      autosensData: { ratio: 0.8 },
     }),
 
     fixture('Resistance lowers target (ratio=1.2, resistance_lowers_target on)', 'sens-target-adjust', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 150, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 150, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
       profile: { resistance_lowers_target: true },
-      autosens_data: { ratio: 1.2 },
+      autosensData: { ratio: 1.2 },
     }),
 
     // =====================================================================
@@ -824,8 +824,8 @@ export function generateAllFixtures(): FixtureSpec[] {
     // =====================================================================
     fixture('Override ISF only (not CR)', 'override-isf-cr', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 160, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
-      trio_custom_variables: {
+      glucoseStatus: { glucose: 160, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
+      trioCustomVariables: {
         useOverride: true, overridePercentage: 120, isfAndCr: false,
         isf: true, cr: false, duration: 30,
       },
@@ -833,8 +833,8 @@ export function generateAllFixtures(): FixtureSpec[] {
 
     fixture('Override CR only (not ISF)', 'override-isf-cr', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 160, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
-      trio_custom_variables: {
+      glucoseStatus: { glucose: 160, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
+      trioCustomVariables: {
         useOverride: true, overridePercentage: 80, isfAndCr: false,
         isf: false, cr: true, duration: 30,
       },
@@ -842,8 +842,8 @@ export function generateAllFixtures(): FixtureSpec[] {
 
     fixture('Override both ISF and CR separately', 'override-isf-cr', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 160, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
-      trio_custom_variables: {
+      glucoseStatus: { glucose: 160, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
+      trioCustomVariables: {
         useOverride: true, overridePercentage: 110, isfAndCr: false,
         isf: true, cr: true, duration: 0,
       },
@@ -854,14 +854,14 @@ export function generateAllFixtures(): FixtureSpec[] {
     // =====================================================================
     fixture('Ultra-rapid insulin curve', 'insulin-curve', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 170, delta: 3, short_avgdelta: 3, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 170, delta: 3, short_avgdelta: 3, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
       preferences: { curve: 'ultra-rapid' },
       profile: { curve: 'ultra-rapid' },
     }),
 
     fixture('Custom peak time enabled', 'insulin-curve', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 170, delta: 3, short_avgdelta: 3, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 170, delta: 3, short_avgdelta: 3, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
       preferences: { useCustomPeakTime: true },
       profile: { useCustomPeakTime: true, insulinPeakTime: 55 },
     }),
@@ -871,7 +871,7 @@ export function generateAllFixtures(): FixtureSpec[] {
     // =====================================================================
     fixture('Output in mmol/L units', 'mmol-units', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 170, delta: 3, short_avgdelta: 3, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 170, delta: 3, short_avgdelta: 3, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
       profile: { out_units: 'mmol/L' },
     }),
 
@@ -880,7 +880,7 @@ export function generateAllFixtures(): FixtureSpec[] {
     // =====================================================================
     fixture('Low TT lowers sensitivity — active temp target below 100', 'low-tt-sensitivity', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 120, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 120, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
       profile: {
         temptargetSet: true, min_bg: 80, max_bg: 80,
         low_temptarget_lowers_sensitivity: true,
@@ -890,7 +890,7 @@ export function generateAllFixtures(): FixtureSpec[] {
 
     fixture('Low TT with dynamic ISF — ratio should increase', 'low-tt-sensitivity', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 140, delta: 3, short_avgdelta: 3, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 140, delta: 3, short_avgdelta: 3, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
       profile: {
         temptargetSet: true, min_bg: 80, max_bg: 80,
         low_temptarget_lowers_sensitivity: true,
@@ -898,7 +898,7 @@ export function generateAllFixtures(): FixtureSpec[] {
         useNewFormula: true, autosens_min: 0.7, autosens_max: 1.4,
       },
       preferences: { useNewFormula: true, adjustmentFactor: 0.8, sigmoid: false },
-      trio_custom_variables: { currentTDD: 40, weightedAverage: 40, average_total_data: 40 },
+      trioCustomVariables: { currentTDD: 40, weightedAverage: 40, average_total_data: 40 },
     }),
 
     // =====================================================================
@@ -906,14 +906,14 @@ export function generateAllFixtures(): FixtureSpec[] {
     // =====================================================================
     fixture('Dynamic ISF disabled by high TT with exercise', 'dynamic-isf-exercise', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 130, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 130, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
       profile: {
         temptargetSet: true, min_bg: 120, max_bg: 120,
         exercise_mode: true, half_basal_exercise_target: 160,
         useNewFormula: true, autosens_min: 0.7, autosens_max: 1.2,
       },
       preferences: { useNewFormula: true, adjustmentFactor: 0.8, sigmoid: false },
-      trio_custom_variables: { currentTDD: 40, weightedAverage: 40, average_total_data: 40 },
+      trioCustomVariables: { currentTDD: 40, weightedAverage: 40, average_total_data: 40 },
     }),
 
     // =====================================================================
@@ -921,26 +921,26 @@ export function generateAllFixtures(): FixtureSpec[] {
     // =====================================================================
     fixture('Dynamic ISF logarithmic — capped by autosens_max', 'dynamic-isf-limits', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 300, delta: 5, short_avgdelta: 5, long_avgdelta: 3, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 300, delta: 5, short_avgdelta: 5, long_avgdelta: 3, date: FIXED_DATE - 60_000 },
       preferences: { useNewFormula: true, adjustmentFactor: 1.5, sigmoid: false },
       profile: { useNewFormula: true, autosens_min: 0.7, autosens_max: 1.2 },
-      trio_custom_variables: { currentTDD: 60, weightedAverage: 60, average_total_data: 40 },
+      trioCustomVariables: { currentTDD: 60, weightedAverage: 60, average_total_data: 40 },
     }),
 
     fixture('Dynamic ISF sigmoid — capped by autosens_min', 'dynamic-isf-limits', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 80, delta: -2, short_avgdelta: -2, long_avgdelta: -1, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 80, delta: -2, short_avgdelta: -2, long_avgdelta: -1, date: FIXED_DATE - 60_000 },
       preferences: { useNewFormula: true, adjustmentFactorSigmoid: 0.5, sigmoid: true },
       profile: { useNewFormula: true, sigmoid: true, autosens_min: 0.7, autosens_max: 1.2 },
-      trio_custom_variables: { currentTDD: 40, weightedAverage: 40, average_total_data: 40 },
+      trioCustomVariables: { currentTDD: 40, weightedAverage: 40, average_total_data: 40 },
     }),
 
     fixture('Dynamic ISF — maxLimitChris equals 1 (edge case)', 'dynamic-isf-limits', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 180, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 180, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
       preferences: { useNewFormula: true, adjustmentFactorSigmoid: 0.5, sigmoid: true },
       profile: { useNewFormula: true, sigmoid: true, autosens_min: 0.7, autosens_max: 1.0 },
-      trio_custom_variables: { currentTDD: 40, weightedAverage: 40, average_total_data: 40 },
+      trioCustomVariables: { currentTDD: 40, weightedAverage: 40, average_total_data: 40 },
     }),
 
     // =====================================================================
@@ -948,25 +948,25 @@ export function generateAllFixtures(): FixtureSpec[] {
     // =====================================================================
     fixture('Weighted TDD average used when weightPercentage < 1', 'tdd-weighted', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 150, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 150, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
       profile: { weightPercentage: 0.5 },
-      trio_custom_variables: { currentTDD: 30, weightedAverage: 45, average_total_data: 40 },
+      trioCustomVariables: { currentTDD: 30, weightedAverage: 45, average_total_data: 40 },
     }),
 
     fixture('TDD = 0 — dynamic ISF disabled', 'tdd-weighted', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 150, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 150, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
       preferences: { useNewFormula: true, adjustmentFactor: 0.8, sigmoid: false },
       profile: { useNewFormula: true, autosens_min: 0.7, autosens_max: 1.2 },
-      trio_custom_variables: { currentTDD: 0, weightedAverage: 0, average_total_data: 40 },
+      trioCustomVariables: { currentTDD: 0, weightedAverage: 0, average_total_data: 40 },
     }),
 
     fixture('average_total_data = 0 — no TDD ratio', 'tdd-weighted', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 150, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 150, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
       preferences: { useNewFormula: true, adjustmentFactor: 0.8, sigmoid: false },
       profile: { useNewFormula: true, autosens_min: 0.7, autosens_max: 1.2 },
-      trio_custom_variables: { currentTDD: 40, weightedAverage: 40, average_total_data: 0 },
+      trioCustomVariables: { currentTDD: 40, weightedAverage: 40, average_total_data: 0 },
     }),
 
     // =====================================================================
@@ -974,7 +974,7 @@ export function generateAllFixtures(): FixtureSpec[] {
     // =====================================================================
     fixture('Non-default SMB delivery ratio (0.7)', 'smb-delivery-ratio', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 180, delta: 3, short_avgdelta: 3, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 180, delta: 3, short_avgdelta: 3, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
       profile: { enableSMB_always: true, smb_delivery_ratio: 0.7 },
       microBolusAllowed: true,
       rawIobData: makeIobArray(0.5, 0.005, 5, FIXED_DATE),
@@ -985,19 +985,19 @@ export function generateAllFixtures(): FixtureSpec[] {
     // =====================================================================
     fixture('Middleware active with change text', 'middleware', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 150, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 150, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
       middleWare: 'Custom middleware adjustment applied',
     }),
 
     fixture('Middleware set to empty string', 'middleware', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 150, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 150, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
       middleWare: '',
     }),
 
     fixture('Middleware set to Nothing changed', 'middleware', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 150, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 150, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
       middleWare: 'Nothing changed',
     }),
 
@@ -1006,27 +1006,27 @@ export function generateAllFixtures(): FixtureSpec[] {
     // =====================================================================
     fixture('EventualBG below min_bg, delta > expectedDelta, naive_eventualBG < 40', 'eventual-bg-low', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 70, delta: 5, short_avgdelta: 4, long_avgdelta: 3, date: FIXED_DATE - 60_000 },
-      iob_data: { iob: 3.0, activity: 0.03 },
+      glucoseStatus: { glucose: 70, delta: 5, short_avgdelta: 4, long_avgdelta: 3, date: FIXED_DATE - 60_000 },
+      iobData: { iob: 3.0, activity: 0.03 },
     }),
 
     fixture('EventualBG below min_bg, minDelta barely falling, newinsulinReq calculation', 'eventual-bg-low', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 95, delta: -1, short_avgdelta: -1, long_avgdelta: -0.5, date: FIXED_DATE - 60_000 },
-      iob_data: { iob: 1.5, activity: 0.015 },
+      glucoseStatus: { glucose: 95, delta: -1, short_avgdelta: -1, long_avgdelta: -0.5, date: FIXED_DATE - 60_000 },
+      iobData: { iob: 1.5, activity: 0.015 },
     }),
 
     fixture('EventualBG below min_bg, delta > expectedDelta, temp ~= basal', 'eventual-bg-low', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 85, delta: 3, short_avgdelta: 3, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
-      iob_data: { iob: 2.0, activity: 0.02 },
+      glucoseStatus: { glucose: 85, delta: 3, short_avgdelta: 3, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
+      iobData: { iob: 2.0, activity: 0.02 },
       currenttemp: { duration: 25, rate: 0.9 },
     }),
 
     fixture('EventualBG below min_bg, rate <= 0, long zero temp needed', 'eventual-bg-low', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 90, delta: -4, short_avgdelta: -4, long_avgdelta: -3, date: FIXED_DATE - 60_000 },
-      iob_data: { iob: 2.5, activity: 0.025 },
+      glucoseStatus: { glucose: 90, delta: -4, short_avgdelta: -4, long_avgdelta: -3, date: FIXED_DATE - 60_000 },
+      iobData: { iob: 2.5, activity: 0.025 },
     }),
 
     // =====================================================================
@@ -1034,23 +1034,23 @@ export function generateAllFixtures(): FixtureSpec[] {
     // =====================================================================
     fixture('Eventual BG above min_bg, minDelta < expectedDelta, temp exists', 'mindelta-paths', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 130, delta: -3, short_avgdelta: -4, long_avgdelta: -2, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 130, delta: -3, short_avgdelta: -4, long_avgdelta: -2, date: FIXED_DATE - 60_000 },
       currenttemp: { duration: 25, rate: 0.9 },
     }),
 
     fixture('Eventual BG above min_bg, minDelta < expectedDelta, no temp', 'mindelta-paths', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 130, delta: -3, short_avgdelta: -4, long_avgdelta: -2, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 130, delta: -3, short_avgdelta: -4, long_avgdelta: -2, date: FIXED_DATE - 60_000 },
     }),
 
     fixture('Eventual BG above min_bg, Delta < minDelta', 'mindelta-paths', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 130, delta: -5, short_avgdelta: -3, long_avgdelta: -2, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 130, delta: -5, short_avgdelta: -3, long_avgdelta: -2, date: FIXED_DATE - 60_000 },
     }),
 
     fixture('minDelta < expectedDelta with SMB enabled (do not cancel zero temp)', 'mindelta-paths', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 140, delta: -3, short_avgdelta: -4, long_avgdelta: -2, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 140, delta: -3, short_avgdelta: -4, long_avgdelta: -2, date: FIXED_DATE - 60_000 },
       profile: { enableSMB_always: true },
       microBolusAllowed: true,
       rawIobData: makeIobArray(0.5, 0.005, 5, FIXED_DATE),
@@ -1061,7 +1061,7 @@ export function generateAllFixtures(): FixtureSpec[] {
     // =====================================================================
     fixture('In range with SMB enabled — do not cancel zero temp', 'in-range-smb', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 115, delta: 1, short_avgdelta: 1, long_avgdelta: 1, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 115, delta: 1, short_avgdelta: 1, long_avgdelta: 1, date: FIXED_DATE - 60_000 },
       profile: { enableSMB_always: true },
       microBolusAllowed: true,
       rawIobData: makeIobArray(0.3, 0.003, 5, FIXED_DATE),
@@ -1069,8 +1069,8 @@ export function generateAllFixtures(): FixtureSpec[] {
 
     fixture('In range, minPredBG < min_bg but eventualBG > min_bg', 'in-range-smb', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 115, delta: -1, short_avgdelta: -1, long_avgdelta: -1, date: FIXED_DATE - 60_000 },
-      iob_data: { iob: 1.0, activity: 0.01 },
+      glucoseStatus: { glucose: 115, delta: -1, short_avgdelta: -1, long_avgdelta: -1, date: FIXED_DATE - 60_000 },
+      iobData: { iob: 1.0, activity: 0.01 },
     }),
 
     // =====================================================================
@@ -1078,16 +1078,16 @@ export function generateAllFixtures(): FixtureSpec[] {
     // =====================================================================
     fixture('IOB > max_iob, eventualBG high, should set basal as temp', 'iob-over-max', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 200, delta: 5, short_avgdelta: 5, long_avgdelta: 3, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 200, delta: 5, short_avgdelta: 5, long_avgdelta: 3, date: FIXED_DATE - 60_000 },
       profile: { max_iob: 2.0 },
-      iob_data: { iob: 2.5, activity: 0.025 },
+      iobData: { iob: 2.5, activity: 0.025 },
     }),
 
     fixture('IOB > max_iob with existing temp ~= basal', 'iob-over-max', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 200, delta: 5, short_avgdelta: 5, long_avgdelta: 3, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 200, delta: 5, short_avgdelta: 5, long_avgdelta: 3, date: FIXED_DATE - 60_000 },
       profile: { max_iob: 2.0 },
-      iob_data: { iob: 2.5, activity: 0.025 },
+      iobData: { iob: 2.5, activity: 0.025 },
       currenttemp: { duration: 25, rate: 0.9 },
     }),
 
@@ -1096,7 +1096,7 @@ export function generateAllFixtures(): FixtureSpec[] {
     // =====================================================================
     fixture('Rate exceeds max safe basal — should clamp', 'max-safe-basal', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 300, delta: 10, short_avgdelta: 10, long_avgdelta: 8, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 300, delta: 10, short_avgdelta: 10, long_avgdelta: 8, date: FIXED_DATE - 60_000 },
       profile: { max_basal: 2.0, max_daily_basal: 1.0 },
     }),
 
@@ -1105,25 +1105,25 @@ export function generateAllFixtures(): FixtureSpec[] {
     // =====================================================================
     fixture('Required temp > existing temp — should increase', 'temp-comparison', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 200, delta: 3, short_avgdelta: 3, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 200, delta: 3, short_avgdelta: 3, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
       currenttemp: { duration: 15, rate: 1.5 },
     }),
 
     fixture('Existing temp delivers > 2x insulinReq — should lower', 'temp-comparison', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 135, delta: 1, short_avgdelta: 1, long_avgdelta: 0.5, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 135, delta: 1, short_avgdelta: 1, long_avgdelta: 0.5, date: FIXED_DATE - 60_000 },
       currenttemp: { duration: 25, rate: 3.0 },
     }),
 
     fixture('Existing temp ~>= required rate — keep running', 'temp-comparison', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 160, delta: 2, short_avgdelta: 2, long_avgdelta: 1, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 160, delta: 2, short_avgdelta: 2, long_avgdelta: 1, date: FIXED_DATE - 60_000 },
       currenttemp: { duration: 20, rate: 2.5 },
     }),
 
     fixture('No temp running, eventualBG above target — should set high temp', 'temp-comparison', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 170, delta: 2, short_avgdelta: 2, long_avgdelta: 1, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 170, delta: 2, short_avgdelta: 2, long_avgdelta: 1, date: FIXED_DATE - 60_000 },
     }),
 
     // =====================================================================
@@ -1131,7 +1131,7 @@ export function generateAllFixtures(): FixtureSpec[] {
     // =====================================================================
     fixture('CGM noise=2 — target raised for noisy data', 'noisy-cgm', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 150, delta: 3, short_avgdelta: 3, long_avgdelta: 2, date: FIXED_DATE - 60_000, noise: 2 },
+      glucoseStatus: { glucose: 150, delta: 3, short_avgdelta: 3, long_avgdelta: 2, date: FIXED_DATE - 60_000, noise: 2 },
     }),
 
     // =====================================================================
@@ -1139,10 +1139,10 @@ export function generateAllFixtures(): FixtureSpec[] {
     // =====================================================================
     fixture('SMB enabled after carbs — carbs entered, no COB remaining', 'smb-after-carbs', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 160, delta: 3, short_avgdelta: 3, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 160, delta: 3, short_avgdelta: 3, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
       profile: { enableSMB_after_carbs: true },
       microBolusAllowed: true,
-      meal_data: {
+      mealData: {
         carbs: 40, nsCarbs: 40, bwCarbs: 0, journalCarbs: 0,
         mealCOB: 0, currentDeviation: 5, maxDeviation: 10, minDeviation: 0,
         slopeFromMaxDeviation: -0.5, slopeFromMinDeviation: 0,
@@ -1157,10 +1157,10 @@ export function generateAllFixtures(): FixtureSpec[] {
     // =====================================================================
     fixture('SMB with bwFound — A52_risk_enable off, should disable SMB', 'bolus-wizard', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 180, delta: 3, short_avgdelta: 3, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 180, delta: 3, short_avgdelta: 3, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
       profile: { enableSMB_always: true, A52_risk_enable: false },
       microBolusAllowed: true,
-      meal_data: {
+      mealData: {
         carbs: 0, nsCarbs: 0, bwCarbs: 0, journalCarbs: 0,
         mealCOB: 0, currentDeviation: 5, maxDeviation: 10, minDeviation: 0,
         slopeFromMaxDeviation: 0, slopeFromMinDeviation: 0,
@@ -1171,10 +1171,10 @@ export function generateAllFixtures(): FixtureSpec[] {
 
     fixture('SMB always with bwFound — A52_risk_enable on, should warn but allow', 'bolus-wizard', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 180, delta: 3, short_avgdelta: 3, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 180, delta: 3, short_avgdelta: 3, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
       profile: { enableSMB_always: true, A52_risk_enable: true },
       microBolusAllowed: true,
-      meal_data: {
+      mealData: {
         carbs: 0, nsCarbs: 0, bwCarbs: 0, journalCarbs: 0,
         mealCOB: 0, currentDeviation: 5, maxDeviation: 10, minDeviation: 0,
         slopeFromMaxDeviation: 0, slopeFromMinDeviation: 0,
@@ -1189,13 +1189,13 @@ export function generateAllFixtures(): FixtureSpec[] {
     // =====================================================================
     fixture('Override advanced SMB minutes', 'smb-override-minutes', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 200, delta: 5, short_avgdelta: 4, long_avgdelta: 3, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 200, delta: 5, short_avgdelta: 4, long_avgdelta: 3, date: FIXED_DATE - 60_000 },
       profile: {
         enableSMB_always: true, enableUAM: true,
         maxSMBBasalMinutes: 30, maxUAMSMBBasalMinutes: 30,
       },
       microBolusAllowed: true,
-      trio_custom_variables: {
+      trioCustomVariables: {
         useOverride: true, overridePercentage: 100,
         advancedSettings: true, smbMinutes: 60, uamMinutes: 45,
         isfAndCr: false, duration: 0,
@@ -1208,7 +1208,7 @@ export function generateAllFixtures(): FixtureSpec[] {
     // =====================================================================
     fixture('minGuardBG below threshold — SMB disabled', 'smb-guard', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 110, delta: -2, short_avgdelta: -2, long_avgdelta: -1, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 110, delta: -2, short_avgdelta: -2, long_avgdelta: -1, date: FIXED_DATE - 60_000 },
       profile: { enableSMB_always: true },
       microBolusAllowed: true,
       rawIobData: makeIobArray(2.0, 0.02, 5, FIXED_DATE),
@@ -1219,7 +1219,7 @@ export function generateAllFixtures(): FixtureSpec[] {
     // =====================================================================
     fixture('maxDelta > threshold % of BG — SMB disabled', 'smb-maxdelta', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 120, delta: 30, short_avgdelta: 25, long_avgdelta: 20, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 120, delta: 30, short_avgdelta: 25, long_avgdelta: 20, date: FIXED_DATE - 60_000 },
       profile: { enableSMB_always: true, maxDelta_bg_threshold: 0.2 },
       microBolusAllowed: true,
       rawIobData: makeIobArray(0.5, 0.005, 5, FIXED_DATE),
@@ -1231,13 +1231,13 @@ export function generateAllFixtures(): FixtureSpec[] {
     fixture('Skip neutral temps near hour (at :55)', 'skip-neutral-temps', {
       // Set time to XX:55 to trigger skip_neutral_temps
       currentTime: '2025-01-15T12:55:00.000Z',
-      glucose_status: { glucose: 130, delta: 1, short_avgdelta: 1, long_avgdelta: 1, date: new Date('2025-01-15T12:54:00.000Z').getTime() },
+      glucoseStatus: { glucose: 130, delta: 1, short_avgdelta: 1, long_avgdelta: 1, date: new Date('2025-01-15T12:54:00.000Z').getTime() },
       profile: { skip_neutral_temps: true },
     }),
 
     fixture('Skip neutral temps near hour but SMB enabled — not skipping', 'skip-neutral-temps', {
       currentTime: '2025-01-15T12:55:00.000Z',
-      glucose_status: { glucose: 170, delta: 3, short_avgdelta: 3, long_avgdelta: 2, date: new Date('2025-01-15T12:54:00.000Z').getTime() },
+      glucoseStatus: { glucose: 170, delta: 3, short_avgdelta: 3, long_avgdelta: 2, date: new Date('2025-01-15T12:54:00.000Z').getTime() },
       profile: { skip_neutral_temps: true, enableSMB_always: true },
       microBolusAllowed: true,
       rawIobData: makeIobArray(0.5, 0.005, 5, new Date('2025-01-15T12:55:00.000Z').getTime()),
@@ -1248,8 +1248,8 @@ export function generateAllFixtures(): FixtureSpec[] {
     // =====================================================================
     fixture('BG below threshold, super negative IOB, rising fast — special case', 'low-bg-neg-iob', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 65, delta: 5, short_avgdelta: 4, long_avgdelta: 3, date: FIXED_DATE - 60_000 },
-      iob_data: { iob: -1.0, activity: -0.01 },
+      glucoseStatus: { glucose: 65, delta: 5, short_avgdelta: 4, long_avgdelta: 3, date: FIXED_DATE - 60_000 },
+      iobData: { iob: -1.0, activity: -0.01 },
     }),
 
     // =====================================================================
@@ -1257,8 +1257,8 @@ export function generateAllFixtures(): FixtureSpec[] {
     // =====================================================================
     fixture('carbsReq >= threshold within 45min — should recommend carbs', 'carbs-req', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 85, delta: -2, short_avgdelta: -2, long_avgdelta: -1, date: FIXED_DATE - 60_000 },
-      iob_data: { iob: 1.5, activity: 0.015 },
+      glucoseStatus: { glucose: 85, delta: -2, short_avgdelta: -2, long_avgdelta: -1, date: FIXED_DATE - 60_000 },
+      iobData: { iob: 1.5, activity: 0.015 },
       profile: { carbsReqThreshold: 1 },
     }),
 
@@ -1267,11 +1267,11 @@ export function generateAllFixtures(): FixtureSpec[] {
     // =====================================================================
     fixture('currenttemp rate != lastTemp rate, old lastTemp — cancel temp', 'temp-mismatch', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 150, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 150, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
       profile: { enableSMB_always: true },
       microBolusAllowed: true,
       currenttemp: { duration: 25, rate: 1.5 },
-      iob_data: {
+      iobData: {
         iob: 0.5, activity: 0.005,
         lastBolusTime: FIXED_DATE - 10 * 60_000,
         lastTemp: { rate: 0.9, duration: 30, date: FIXED_DATE - 15 * 60_000 },
@@ -1280,9 +1280,9 @@ export function generateAllFixtures(): FixtureSpec[] {
 
     fixture('currenttemp running but lastTemp ended long ago — cancel temp', 'temp-mismatch', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 150, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 150, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
       currenttemp: { duration: 25, rate: 1.5 },
-      iob_data: {
+      iobData: {
         iob: 0.5, activity: 0.005,
         lastTemp: { rate: 1.5, duration: 5, date: FIXED_DATE - 20 * 60_000 },
       },
@@ -1293,14 +1293,14 @@ export function generateAllFixtures(): FixtureSpec[] {
     // =====================================================================
     fixture('Negative deviation, minAvgDelta also negative — use long_avgdelta', 'deviation-refinement', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 120, delta: -5, short_avgdelta: -4, long_avgdelta: -1, date: FIXED_DATE - 60_000 },
-      iob_data: { iob: 0.3, activity: 0.003 },
+      glucoseStatus: { glucose: 120, delta: -5, short_avgdelta: -4, long_avgdelta: -1, date: FIXED_DATE - 60_000 },
+      iobData: { iob: 0.3, activity: 0.003 },
     }),
 
     fixture('Negative deviation from minDelta, but minAvgDelta positive', 'deviation-refinement', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 120, delta: -3, short_avgdelta: -2, long_avgdelta: 1, date: FIXED_DATE - 60_000 },
-      iob_data: { iob: 0.3, activity: 0.003 },
+      glucoseStatus: { glucose: 120, delta: -3, short_avgdelta: -2, long_avgdelta: 1, date: FIXED_DATE - 60_000 },
+      iobData: { iob: 0.3, activity: 0.003 },
     }),
 
     // =====================================================================
@@ -1308,18 +1308,18 @@ export function generateAllFixtures(): FixtureSpec[] {
     // =====================================================================
     fixture('TDD-adjusted basal with zero average_total_data', 'tdd-basal-edge', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 150, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 150, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
       profile: { tddAdjBasal: true, useNewFormula: true, autosens_min: 0.7, autosens_max: 1.2 },
       preferences: { useNewFormula: true },
-      trio_custom_variables: { currentTDD: 40, weightedAverage: 40, average_total_data: 0 },
+      trioCustomVariables: { currentTDD: 40, weightedAverage: 40, average_total_data: 0 },
     }),
 
     fixture('DynISF on but tddAdjBasal off — no basal ratio adjustment', 'tdd-basal-edge', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 150, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 150, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
       profile: { tddAdjBasal: false, useNewFormula: true, autosens_min: 0.7, autosens_max: 1.2 },
       preferences: { useNewFormula: true },
-      trio_custom_variables: { currentTDD: 40, weightedAverage: 40, average_total_data: 40 },
+      trioCustomVariables: { currentTDD: 40, weightedAverage: 40, average_total_data: 40 },
     }),
 
     // =====================================================================
@@ -1327,10 +1327,10 @@ export function generateAllFixtures(): FixtureSpec[] {
     // =====================================================================
     fixture('SMB scheduled off — start=0, end=0 (all day)', 'smb-scheduled-off', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 180, delta: 3, short_avgdelta: 3, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 180, delta: 3, short_avgdelta: 3, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
       profile: { enableSMB_always: true },
       microBolusAllowed: true,
-      trio_custom_variables: { smbIsScheduledOff: true, start: 0, end: 0 },
+      trioCustomVariables: { smbIsScheduledOff: true, start: 0, end: 0 },
       rawIobData: makeIobArray(0.5, 0.005, 5, FIXED_DATE),
     }),
 
@@ -1339,14 +1339,14 @@ export function generateAllFixtures(): FixtureSpec[] {
     // =====================================================================
     fixture('EventualBG above max_bg, insulinReq limited by max_iob', 'eventual-bg-high', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 200, delta: 5, short_avgdelta: 5, long_avgdelta: 3, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 200, delta: 5, short_avgdelta: 5, long_avgdelta: 3, date: FIXED_DATE - 60_000 },
       profile: { max_iob: 3.0 },
-      iob_data: { iob: 2.0, activity: 0.02 },
+      iobData: { iob: 2.0, activity: 0.02 },
     }),
 
     fixture('EventualBG equals max_bg exactly', 'eventual-bg-high', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 120, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 120, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
     }),
 
     // =====================================================================
@@ -1357,35 +1357,35 @@ export function generateAllFixtures(): FixtureSpec[] {
       // BG=90, rising, but IOB high enough that eventualBG < min_bg
       // Need: minDelta > expectedDelta, minDelta > 0, !carbsReq
       // delta > minDelta (short_avgdelta < delta)
-      glucose_status: { glucose: 90, delta: 5, short_avgdelta: 3, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
-      iob_data: { iob: 2.0, activity: 0.02 },
+      glucoseStatus: { glucose: 90, delta: 5, short_avgdelta: 3, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
+      iobData: { iob: 2.0, activity: 0.02 },
       currenttemp: { duration: 25, rate: 0.9 },
     }),
 
     fixture('eventualBG < min_bg, minDelta > 0 > expectedDelta, delta <= minDelta — set basal', 'eventual-bg-low-iob', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 90, delta: 3, short_avgdelta: 5, long_avgdelta: 4, date: FIXED_DATE - 60_000 },
-      iob_data: { iob: 2.0, activity: 0.02 },
+      glucoseStatus: { glucose: 90, delta: 3, short_avgdelta: 5, long_avgdelta: 4, date: FIXED_DATE - 60_000 },
+      iobData: { iob: 2.0, activity: 0.02 },
     }),
 
     fixture('eventualBG < min_bg, rate <= 0 with durationReq > 0 — set zero temp', 'eventual-bg-low-iob', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 95, delta: -3, short_avgdelta: -3, long_avgdelta: -2, date: FIXED_DATE - 60_000 },
-      iob_data: { iob: 2.0, activity: 0.02 },
+      glucoseStatus: { glucose: 95, delta: -3, short_avgdelta: -3, long_avgdelta: -2, date: FIXED_DATE - 60_000 },
+      iobData: { iob: 2.0, activity: 0.02 },
       rawIobData: makeIobArray(2.0, 0.02, 5, FIXED_DATE),
     }),
 
     fixture('eventualBG < min_bg, insulinScheduled < minInsulinReq - 0.3*basal', 'eventual-bg-low-iob', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 100, delta: -2, short_avgdelta: -2, long_avgdelta: -1, date: FIXED_DATE - 60_000 },
-      iob_data: { iob: 1.5, activity: 0.015 },
+      glucoseStatus: { glucose: 100, delta: -2, short_avgdelta: -2, long_avgdelta: -1, date: FIXED_DATE - 60_000 },
+      iobData: { iob: 1.5, activity: 0.015 },
       currenttemp: { duration: 25, rate: 2.0 },
     }),
 
     fixture('eventualBG < min_bg, existing temp ~< required rate — keep temp', 'eventual-bg-low-iob', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 100, delta: -1, short_avgdelta: -1, long_avgdelta: -0.5, date: FIXED_DATE - 60_000 },
-      iob_data: { iob: 1.0, activity: 0.01 },
+      glucoseStatus: { glucose: 100, delta: -1, short_avgdelta: -1, long_avgdelta: -0.5, date: FIXED_DATE - 60_000 },
+      iobData: { iob: 1.0, activity: 0.01 },
       currenttemp: { duration: 20, rate: 0.5 },
     }),
 
@@ -1394,7 +1394,7 @@ export function generateAllFixtures(): FixtureSpec[] {
     // =====================================================================
     fixture('minDelta < expectedDelta, delta < minDelta, existing basal temp', 'mindelta-detail', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 140, delta: -6, short_avgdelta: -3, long_avgdelta: -1, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 140, delta: -6, short_avgdelta: -3, long_avgdelta: -1, date: FIXED_DATE - 60_000 },
       currenttemp: { duration: 25, rate: 0.9 },
     }),
 
@@ -1403,14 +1403,14 @@ export function generateAllFixtures(): FixtureSpec[] {
       // Need: eventualBG >= min_bg, minDelta < expectedDelta
       // Need: expectedDelta - minDelta >= 2, minDelta >= 0, expectedDelta > 0
       // BG high enough eventualBG > min_bg, but falling slower than expected
-      glucose_status: { glucose: 155, delta: 0, short_avgdelta: 0.5, long_avgdelta: 1, date: FIXED_DATE - 60_000 },
-      iob_data: { iob: 0.2, activity: 0.002 },
+      glucoseStatus: { glucose: 155, delta: 0, short_avgdelta: 0.5, long_avgdelta: 1, date: FIXED_DATE - 60_000 },
+      iobData: { iob: 0.2, activity: 0.002 },
     }),
 
     fixture('minDelta < expectedDelta, manualBolusErrorString=4 (minDelta<0, expectedDelta<=0)', 'mindelta-detail', {
       currentTime: FIXED_TIME,
       // Both minDelta and expectedDelta negative, minDelta more negative
-      glucose_status: { glucose: 130, delta: -4, short_avgdelta: -5, long_avgdelta: -3, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 130, delta: -4, short_avgdelta: -5, long_avgdelta: -3, date: FIXED_DATE - 60_000 },
     }),
 
     // =====================================================================
@@ -1418,13 +1418,13 @@ export function generateAllFixtures(): FixtureSpec[] {
     // =====================================================================
     fixture('In range, no SMB, existing temp ~= basal — keep running', 'in-range-temp', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 115, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 115, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
       currenttemp: { duration: 25, rate: 0.9 },
     }),
 
     fixture('In range with SMB enabled, eventualBG < max_bg — skip return', 'in-range-temp', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 115, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 115, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
       profile: { enableSMB_always: true },
       microBolusAllowed: true,
       rawIobData: makeIobArray(0.2, 0.002, 5, FIXED_DATE),
@@ -1435,9 +1435,9 @@ export function generateAllFixtures(): FixtureSpec[] {
     // =====================================================================
     fixture('IOB > max_iob with temp ~= basal — just return', 'iob-max-temp', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 180, delta: 3, short_avgdelta: 3, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 180, delta: 3, short_avgdelta: 3, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
       profile: { max_iob: 1.5 },
-      iob_data: { iob: 2.0, activity: 0.02 },
+      iobData: { iob: 2.0, activity: 0.02 },
       currenttemp: { duration: 25, rate: 0.9 },
     }),
 
@@ -1446,34 +1446,34 @@ export function generateAllFixtures(): FixtureSpec[] {
     // =====================================================================
     fixture('High BG, no temp, eventualBG >= max_bg — should set new temp', 'high-temp-calc', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 180, delta: 2, short_avgdelta: 2, long_avgdelta: 1, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 180, delta: 2, short_avgdelta: 2, long_avgdelta: 1, date: FIXED_DATE - 60_000 },
       rawIobData: makeIobArray(0.5, 0.005, 5, FIXED_DATE),
     }),
 
     fixture('High BG, existing temp rate > required — keep running', 'high-temp-calc', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 140, delta: 1, short_avgdelta: 1, long_avgdelta: 0.5, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 140, delta: 1, short_avgdelta: 1, long_avgdelta: 0.5, date: FIXED_DATE - 60_000 },
       currenttemp: { duration: 20, rate: 2.0 },
       rawIobData: makeIobArray(0.3, 0.003, 5, FIXED_DATE),
     }),
 
     fixture('High BG, existing temp delivers > 2x insulinReq — lower rate', 'high-temp-calc', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 130, delta: 0.5, short_avgdelta: 0.5, long_avgdelta: 0.5, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 130, delta: 0.5, short_avgdelta: 0.5, long_avgdelta: 0.5, date: FIXED_DATE - 60_000 },
       currenttemp: { duration: 25, rate: 3.0 },
       rawIobData: makeIobArray(0.2, 0.002, 5, FIXED_DATE),
     }),
 
     fixture('High BG, rate exceeds maxSafeBasal — clamped', 'high-temp-calc', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 300, delta: 5, short_avgdelta: 5, long_avgdelta: 3, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 300, delta: 5, short_avgdelta: 5, long_avgdelta: 3, date: FIXED_DATE - 60_000 },
       profile: { max_basal: 2.0, max_daily_basal: 1.0 },
       rawIobData: makeIobArray(0.3, 0.003, 5, FIXED_DATE),
     }),
 
     fixture('High BG, required temp > existing — set higher', 'high-temp-calc', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 200, delta: 3, short_avgdelta: 3, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 200, delta: 3, short_avgdelta: 3, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
       currenttemp: { duration: 15, rate: 1.2 },
       rawIobData: makeIobArray(0.5, 0.005, 5, FIXED_DATE),
     }),
@@ -1483,7 +1483,7 @@ export function generateAllFixtures(): FixtureSpec[] {
     // =====================================================================
     fixture('SMB path — smbMinutesSetting undefined', 'smb-subpath', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 200, delta: 5, short_avgdelta: 4, long_avgdelta: 3, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 200, delta: 5, short_avgdelta: 4, long_avgdelta: 3, date: FIXED_DATE - 60_000 },
       profile: {
         enableSMB_always: true,
         // Omitting maxSMBBasalMinutes to test the undefined case
@@ -1494,7 +1494,7 @@ export function generateAllFixtures(): FixtureSpec[] {
 
     fixture('SMB path — durationReq short (< 30m), sets nonzero low temp', 'smb-subpath', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 150, delta: 2, short_avgdelta: 2, long_avgdelta: 1, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 150, delta: 2, short_avgdelta: 2, long_avgdelta: 1, date: FIXED_DATE - 60_000 },
       profile: { enableSMB_always: true },
       microBolusAllowed: true,
       rawIobData: makeIobArray(0.3, 0.003, 5, FIXED_DATE),
@@ -1502,7 +1502,7 @@ export function generateAllFixtures(): FixtureSpec[] {
 
     fixture('SMB path — microBolus >= maxBolus (capped by maxBolus)', 'smb-subpath', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 250, delta: 5, short_avgdelta: 5, long_avgdelta: 3, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 250, delta: 5, short_avgdelta: 5, long_avgdelta: 3, date: FIXED_DATE - 60_000 },
       profile: {
         enableSMB_always: true,
         maxSMBBasalMinutes: 15, // very small: 0.9 * 15/60 = 0.225
@@ -1515,7 +1515,7 @@ export function generateAllFixtures(): FixtureSpec[] {
     fixture('SMB path — insulinReq > 0 but microBolus < bolusIncrement', 'smb-subpath', {
       currentTime: FIXED_TIME,
       // Very slightly above target to produce tiny insulinReq
-      glucose_status: { glucose: 122, delta: 0.5, short_avgdelta: 0.5, long_avgdelta: 0.5, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 122, delta: 0.5, short_avgdelta: 0.5, long_avgdelta: 0.5, date: FIXED_DATE - 60_000 },
       profile: { enableSMB_always: true, bolus_increment: 0.1 },
       microBolusAllowed: true,
       rawIobData: makeIobArray(0.1, 0.001, 5, FIXED_DATE),
@@ -1526,9 +1526,9 @@ export function generateAllFixtures(): FixtureSpec[] {
     // =====================================================================
     fixture('COB with iobArray and UAM — blended minPredBG', 'cob-predictions', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 140, delta: 3, short_avgdelta: 2, long_avgdelta: 1, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 140, delta: 3, short_avgdelta: 2, long_avgdelta: 1, date: FIXED_DATE - 60_000 },
       profile: { enableUAM: true },
-      meal_data: {
+      mealData: {
         carbs: 50, nsCarbs: 50, bwCarbs: 0, journalCarbs: 0,
         mealCOB: 30, currentDeviation: 8, maxDeviation: 12, minDeviation: 0,
         slopeFromMaxDeviation: -0.3, slopeFromMinDeviation: 0,
@@ -1540,9 +1540,9 @@ export function generateAllFixtures(): FixtureSpec[] {
 
     fixture('COB with iobArray, UAM disabled — average IOB and COB minPredBGs', 'cob-predictions', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 140, delta: 3, short_avgdelta: 2, long_avgdelta: 1, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 140, delta: 3, short_avgdelta: 2, long_avgdelta: 1, date: FIXED_DATE - 60_000 },
       profile: { enableUAM: false },
-      meal_data: {
+      mealData: {
         carbs: 50, nsCarbs: 50, bwCarbs: 0, journalCarbs: 0,
         mealCOB: 30, currentDeviation: 8, maxDeviation: 12, minDeviation: 0,
         slopeFromMaxDeviation: -0.3, slopeFromMinDeviation: 0,
@@ -1554,9 +1554,9 @@ export function generateAllFixtures(): FixtureSpec[] {
 
     fixture('Carbs entered but COB exhausted, UAM enabled — use minZTUAMPredBG', 'cob-predictions', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 140, delta: 3, short_avgdelta: 2, long_avgdelta: 1, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 140, delta: 3, short_avgdelta: 2, long_avgdelta: 1, date: FIXED_DATE - 60_000 },
       profile: { enableUAM: true },
-      meal_data: {
+      mealData: {
         carbs: 30, nsCarbs: 30, bwCarbs: 0, journalCarbs: 0,
         mealCOB: 0, currentDeviation: 5, maxDeviation: 10, minDeviation: 0,
         slopeFromMaxDeviation: -0.5, slopeFromMinDeviation: 0,
@@ -1568,9 +1568,9 @@ export function generateAllFixtures(): FixtureSpec[] {
 
     fixture('Carbs entered, COB exhausted, UAM disabled — use minGuardBG', 'cob-predictions', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 140, delta: 3, short_avgdelta: 2, long_avgdelta: 1, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 140, delta: 3, short_avgdelta: 2, long_avgdelta: 1, date: FIXED_DATE - 60_000 },
       profile: { enableUAM: false },
-      meal_data: {
+      mealData: {
         carbs: 30, nsCarbs: 30, bwCarbs: 0, journalCarbs: 0,
         mealCOB: 0, currentDeviation: 5, maxDeviation: 10, minDeviation: 0,
         slopeFromMaxDeviation: -0.5, slopeFromMinDeviation: 0,
@@ -1585,15 +1585,15 @@ export function generateAllFixtures(): FixtureSpec[] {
     // =====================================================================
     fixture('COB predBGs drop below threshold — carbsReq with COB', 'cob-carbs-req', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 100, delta: -2, short_avgdelta: -2, long_avgdelta: -1, date: FIXED_DATE - 60_000 },
-      meal_data: {
+      glucoseStatus: { glucose: 100, delta: -2, short_avgdelta: -2, long_avgdelta: -1, date: FIXED_DATE - 60_000 },
+      mealData: {
         carbs: 30, nsCarbs: 30, bwCarbs: 0, journalCarbs: 0,
         mealCOB: 10, currentDeviation: -2, maxDeviation: 5, minDeviation: -5,
         slopeFromMaxDeviation: -1.0, slopeFromMinDeviation: 0.3,
         allDeviations: [-2, 0, 3, 5, 3], lastCarbTime: FIXED_DATE - 90 * 60_000,
         bwFound: false,
       },
-      iob_data: { iob: 1.5, activity: 0.015 },
+      iobData: { iob: 1.5, activity: 0.015 },
       rawIobData: makeIobArray(1.5, 0.015, 5, FIXED_DATE),
     }),
 
@@ -1602,10 +1602,10 @@ export function generateAllFixtures(): FixtureSpec[] {
     // =====================================================================
     fixture('SMB with COB enabled and bwCarbs present — warning', 'smb-bwcarbs', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 170, delta: 5, short_avgdelta: 4, long_avgdelta: 3, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 170, delta: 5, short_avgdelta: 4, long_avgdelta: 3, date: FIXED_DATE - 60_000 },
       profile: { enableSMB_with_COB: true, A52_risk_enable: true },
       microBolusAllowed: true,
-      meal_data: {
+      mealData: {
         carbs: 40, nsCarbs: 40, bwCarbs: 20, journalCarbs: 0,
         mealCOB: 25, currentDeviation: 8, maxDeviation: 12, minDeviation: 0,
         slopeFromMaxDeviation: -0.2, slopeFromMinDeviation: 0,
@@ -1620,10 +1620,10 @@ export function generateAllFixtures(): FixtureSpec[] {
     // =====================================================================
     fixture('SMB high BG with bwFound — warning', 'smb-highbg-bw', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 180, delta: 3, short_avgdelta: 3, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 180, delta: 3, short_avgdelta: 3, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
       profile: { enableSMB_high_bg: true, enableSMB_high_bg_target: 150, A52_risk_enable: true },
       microBolusAllowed: true,
-      meal_data: {
+      mealData: {
         carbs: 0, nsCarbs: 0, bwCarbs: 0, journalCarbs: 0,
         mealCOB: 0, currentDeviation: 5, maxDeviation: 8, minDeviation: 0,
         slopeFromMaxDeviation: 0, slopeFromMinDeviation: 0,
@@ -1638,10 +1638,10 @@ export function generateAllFixtures(): FixtureSpec[] {
     // =====================================================================
     fixture('SMB after carbs with bwCarbs — warning', 'smb-aftercarbs-bw', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 160, delta: 3, short_avgdelta: 3, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 160, delta: 3, short_avgdelta: 3, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
       profile: { enableSMB_after_carbs: true, A52_risk_enable: true },
       microBolusAllowed: true,
-      meal_data: {
+      mealData: {
         carbs: 40, nsCarbs: 40, bwCarbs: 15, journalCarbs: 0,
         mealCOB: 0, currentDeviation: 5, maxDeviation: 10, minDeviation: 0,
         slopeFromMaxDeviation: -0.5, slopeFromMinDeviation: 0,
@@ -1656,13 +1656,13 @@ export function generateAllFixtures(): FixtureSpec[] {
     // =====================================================================
     fixture('SMB with low temp target and bwFound — warning', 'smb-tt-bw', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 140, delta: 3, short_avgdelta: 3, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 140, delta: 3, short_avgdelta: 3, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
       profile: {
         enableSMB_with_temptarget: true, temptargetSet: true,
         min_bg: 80, max_bg: 80, A52_risk_enable: true,
       },
       microBolusAllowed: true,
-      meal_data: {
+      mealData: {
         carbs: 0, nsCarbs: 0, bwCarbs: 0, journalCarbs: 0,
         mealCOB: 0, currentDeviation: 5, maxDeviation: 8, minDeviation: 0,
         slopeFromMaxDeviation: 0, slopeFromMinDeviation: 0,
@@ -1680,11 +1680,11 @@ export function generateAllFixtures(): FixtureSpec[] {
     // Lines 57-59: startTime < endTime, current hour is in [start, end)
     fixture('SMB scheduled off — start < end, current hour in range', 'smb-schedule', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 180, delta: 3, short_avgdelta: 3, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 180, delta: 3, short_avgdelta: 3, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
       profile: { enableSMB_always: true },
       microBolusAllowed: true,
       // start = localHour - 2, end = localHour + 2 => localHour in [start, end)
-      trio_custom_variables: {
+      trioCustomVariables: {
         smbIsScheduledOff: true,
         start: (FIXED_LOCAL_HOUR - 2 + 24) % 24,
         end: (FIXED_LOCAL_HOUR + 2) % 24,
@@ -1695,7 +1695,7 @@ export function generateAllFixtures(): FixtureSpec[] {
     // Lines 60-62: startTime > endTime (wraps midnight), current hour in range
     fixture('SMB scheduled off — start > end (wraps midnight), current hour in range', 'smb-schedule', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 180, delta: 3, short_avgdelta: 3, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 180, delta: 3, short_avgdelta: 3, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
       profile: { enableSMB_always: true },
       microBolusAllowed: true,
       // Wrapping window: start = localHour + 20 (mod 24), end = localHour + 4 (mod 24)
@@ -1703,7 +1703,7 @@ export function generateAllFixtures(): FixtureSpec[] {
       // localHour >= start? localHour >= (localHour+20)%24. If localHour=4: start=0, end=8 => 0 < 8 NOT > (bad).
       // Better: start = localHour - 1 + 24) % 24, end = (localHour - 3 + 24) % 24
       // For localHour=4: start=3, end=1 => 3 > 1 => wrap. 4 >= 3? Yes => disabled.
-      trio_custom_variables: {
+      trioCustomVariables: {
         smbIsScheduledOff: true,
         start: (FIXED_LOCAL_HOUR - 1 + 24) % 24,
         end: (FIXED_LOCAL_HOUR - 3 + 24) % 24,
@@ -1714,10 +1714,10 @@ export function generateAllFixtures(): FixtureSpec[] {
     // Lines 66-68: startTime == endTime && currentHour == startTime
     fixture('SMB scheduled off — start == end == currentHour', 'smb-schedule', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 180, delta: 3, short_avgdelta: 3, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 180, delta: 3, short_avgdelta: 3, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
       profile: { enableSMB_always: true },
       microBolusAllowed: true,
-      trio_custom_variables: {
+      trioCustomVariables: {
         smbIsScheduledOff: true,
         start: FIXED_LOCAL_HOUR,
         end: FIXED_LOCAL_HOUR,
@@ -1729,12 +1729,12 @@ export function generateAllFixtures(): FixtureSpec[] {
     // Need to exercise the `currentHour < endTime` part of the OR (when `currentHour >= startTime` is false)
     fixture('SMB scheduled off — start > end, currentHour < start but < end', 'smb-schedule', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 180, delta: 3, short_avgdelta: 3, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 180, delta: 3, short_avgdelta: 3, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
       profile: { enableSMB_always: true },
       microBolusAllowed: true,
       // Need start > end, localHour < start, localHour < end
       // E.g. localHour=4: start=6, end=5 => 6>5 yes. 4>=6? no. 4<5? yes => disabled
-      trio_custom_variables: {
+      trioCustomVariables: {
         smbIsScheduledOff: true,
         start: (FIXED_LOCAL_HOUR + 2) % 24,
         end: (FIXED_LOCAL_HOUR + 1) % 24,
@@ -1745,10 +1745,10 @@ export function generateAllFixtures(): FixtureSpec[] {
     // SMB scheduled off but current hour is OUTSIDE the window — should allow SMB
     fixture('SMB scheduled off — current hour outside window, SMB allowed', 'smb-schedule', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 180, delta: 3, short_avgdelta: 3, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 180, delta: 3, short_avgdelta: 3, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
       profile: { enableSMB_always: true },
       microBolusAllowed: true,
-      trio_custom_variables: {
+      trioCustomVariables: {
         smbIsScheduledOff: true,
         start: (FIXED_LOCAL_HOUR + 3) % 24,
         end: (FIXED_LOCAL_HOUR + 6) % 24,
@@ -1761,7 +1761,7 @@ export function generateAllFixtures(): FixtureSpec[] {
     // =====================================================================
     fixture('SMB disabled — no enableSMB preference active', 'smb-disabled-fallthrough', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 180, delta: 3, short_avgdelta: 3, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 180, delta: 3, short_avgdelta: 3, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
       profile: {
         enableSMB_always: false,
         enableSMB_with_COB: false,
@@ -1779,7 +1779,7 @@ export function generateAllFixtures(): FixtureSpec[] {
     // =====================================================================
     fixture('Low TT — c*(c+target_bg-normalTarget) <= 0, use autosens_max', 'low-tt-edge', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 120, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 120, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
       profile: {
         temptargetSet: true, min_bg: 50, max_bg: 50,
         low_temptarget_lowers_sensitivity: true,
@@ -1808,7 +1808,7 @@ export function generateAllFixtures(): FixtureSpec[] {
       // Also need sensitivityRatio < newRatio (the dISF-computed ratio)
       // sensitivityRatio from the low_temptarget_lowers_sensitivity block will be computed first
       // Then if sensitivityRatio < newRatio, we boost
-      glucose_status: { glucose: 140, delta: 3, short_avgdelta: 3, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 140, delta: 3, short_avgdelta: 3, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
       profile: {
         temptargetSet: true, min_bg: 80, max_bg: 80,
         low_temptarget_lowers_sensitivity: true,
@@ -1818,7 +1818,7 @@ export function generateAllFixtures(): FixtureSpec[] {
         enableSMB_always: true,
       },
       preferences: { useNewFormula: true, adjustmentFactor: 1.5, sigmoid: false },
-      trio_custom_variables: { currentTDD: 50, weightedAverage: 50, average_total_data: 50 },
+      trioCustomVariables: { currentTDD: 50, weightedAverage: 50, average_total_data: 50 },
       microBolusAllowed: true,
       rawIobData: makeIobArray(0.3, 0.003, 5, FIXED_DATE),
     }),
@@ -1829,12 +1829,12 @@ export function generateAllFixtures(): FixtureSpec[] {
     // =====================================================================
     fixture('TDD-adjusted basal — ratio 1.0, basal unchanged', 'tdd-basal-unchanged', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 150, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 150, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
       profile: { tddAdjBasal: true, useNewFormula: true, autosens_min: 0.7, autosens_max: 1.2 },
       preferences: { useNewFormula: true },
       // weightedAverage / average_total_data = 40/40 = 1.0 => tdd24h_14d_Ratio = 1
       // basal = current_basal * 1.0 * 1 = 0.9 => unchanged
-      trio_custom_variables: { currentTDD: 40, weightedAverage: 40, average_total_data: 40 },
+      trioCustomVariables: { currentTDD: 40, weightedAverage: 40, average_total_data: 40 },
     }),
 
     // =====================================================================
@@ -1845,7 +1845,7 @@ export function generateAllFixtures(): FixtureSpec[] {
     // With target_bg=80, ratio=1.0 => unchanged, but ratio<1 is required.
     // Actually need: max(80, round((target_bg-60)/ratio)+60) == target_bg
     // If target_bg=80 and ratio close to 1: round((80-60)/0.99)+60 = round(20.2)+60 = 80 => unchanged!
-    // But autosens_data ratio is typically limited to e.g. 0.7-1.2
+    // But autosensData ratio is typically limited to e.g. 0.7-1.2
     // Actually, let's use a target that is already at the floor: 80
     // round((80-60)/0.95)+60 = round(21.05)+60 = 81 => changed to 81
     // round((80-60)/1.0)+60 = 80 => same but ratio not < 1
@@ -1863,13 +1863,13 @@ export function generateAllFixtures(): FixtureSpec[] {
     // =====================================================================
     fixture('Sensitivity raises target — target_bg unchanged due to floor', 'sens-target-unchanged', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 120, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 120, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
       profile: {
         sensitivity_raises_target: true,
         min_bg: 80, max_bg: 80,
       },
       // ratio=0.98 => new_target_bg = round((80-60)/0.98)+60 = round(20.408)+60 = 80 => unchanged
-      autosens_data: { ratio: 0.98 },
+      autosensData: { ratio: 0.98 },
     }),
 
     // =====================================================================
@@ -1879,7 +1879,7 @@ export function generateAllFixtures(): FixtureSpec[] {
     // =====================================================================
     fixture('Override target + sensitivity adjustment — triple arrow log', 'override-target-double-arrow', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 150, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 150, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
       profile: {
         min_bg: 110, max_bg: 120,
         sensitivity_raises_target: true,
@@ -1896,22 +1896,22 @@ export function generateAllFixtures(): FixtureSpec[] {
       // So profileTarget=100, overrideTarget=100, target_bg=110
       // Condition: overrideTarget !== 0 && overrideTarget !== 6 && overrideTarget !== target_bg
       // 100 !== 0, 100 !== 6, 100 !== 110 => TRUE => double arrow
-      trio_custom_variables: {
+      trioCustomVariables: {
         useOverride: true, overridePercentage: 100, isfAndCr: false,
         overrideTarget: 100, duration: 0,
       },
-      autosens_data: { ratio: 0.8 },
+      autosensData: { ratio: 0.8 },
     }),
 
     // =====================================================================
-    // CATEGORY: meal_data.reason == "Could not parse clock data" — line 1249
+    // CATEGORY: mealData.reason == "Could not parse clock data" — line 1249
     // =====================================================================
     fixture('Meal data with clock parse error — carbsReq unknown', 'clock-parse-error', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 85, delta: -2, short_avgdelta: -2, long_avgdelta: -1, date: FIXED_DATE - 60_000 },
-      iob_data: { iob: 1.5, activity: 0.015 },
+      glucoseStatus: { glucose: 85, delta: -2, short_avgdelta: -2, long_avgdelta: -1, date: FIXED_DATE - 60_000 },
+      iobData: { iob: 1.5, activity: 0.015 },
       profile: { carbsReqThreshold: 1 },
-      meal_data: {
+      mealData: {
         carbs: 0, nsCarbs: 0, bwCarbs: 0, journalCarbs: 0,
         mealCOB: 0, currentDeviation: -2, maxDeviation: 5, minDeviation: -5,
         slopeFromMaxDeviation: -0.5, slopeFromMinDeviation: 0,
@@ -1937,8 +1937,8 @@ export function generateAllFixtures(): FixtureSpec[] {
       // expectedDelta = round(-10.4+(110-(-22))/24,1) = round(-4.9,1) = -4.9
       // minDelta(1.5) > expectedDelta(-4.9) YES, minDelta > 0 YES
       // carbsReq = round((110-(-93)-144)/400) = round(59/400) = 0 => !carbsReq = true
-      glucose_status: { glucose: 115, delta: 2, short_avgdelta: 1.5, long_avgdelta: 1, date: FIXED_DATE - 60_000 },
-      iob_data: { iob: 5.2, activity: 0.052 },
+      glucoseStatus: { glucose: 115, delta: 2, short_avgdelta: 1.5, long_avgdelta: 1, date: FIXED_DATE - 60_000 },
+      iobData: { iob: 5.2, activity: 0.052 },
     }),
 
     // =====================================================================
@@ -1956,24 +1956,24 @@ export function generateAllFixtures(): FixtureSpec[] {
       // minDelta(2) > expectedDelta(-1.8) YES, > 0 YES
       // carbsReq = round((110-63-144)/400) = 0 => !carbsReq = true
       // delta(3) > minDelta(2) YES => line 1306
-      glucose_status: { glucose: 115, delta: 3, short_avgdelta: 2, long_avgdelta: 1, date: FIXED_DATE - 60_000 },
-      iob_data: { iob: 1.3, activity: 0.013 },
+      glucoseStatus: { glucose: 115, delta: 3, short_avgdelta: 2, long_avgdelta: 1, date: FIXED_DATE - 60_000 },
+      iobData: { iob: 1.3, activity: 0.013 },
     }),
 
     // Lines 1308-1309: delta <= minDelta (short_avgdelta >= delta)
     fixture('EventualBG < min_bg, rising, delta <= minDelta — set basal temp', 'eventual-bg-low-delta-le-mindelta', {
       currentTime: FIXED_TIME,
       // Same as above but delta=2, short_avgdelta=3 => minDelta=2 => delta NOT > minDelta => else
-      glucose_status: { glucose: 115, delta: 2, short_avgdelta: 3, long_avgdelta: 1, date: FIXED_DATE - 60_000 },
-      iob_data: { iob: 1.3, activity: 0.013 },
+      glucoseStatus: { glucose: 115, delta: 2, short_avgdelta: 3, long_avgdelta: 1, date: FIXED_DATE - 60_000 },
+      iobData: { iob: 1.3, activity: 0.013 },
     }),
 
     // Lines 1311-1313: matching temp (currenttemp.rate ~ basal)
     fixture('EventualBG < min_bg, rising, temp matches basal — return', 'eventual-bg-low-temp-match', {
       currentTime: FIXED_TIME,
       // Same BG scenario as delta-gt-mindelta, with matching temp
-      glucose_status: { glucose: 115, delta: 3, short_avgdelta: 2, long_avgdelta: 1, date: FIXED_DATE - 60_000 },
-      iob_data: {
+      glucoseStatus: { glucose: 115, delta: 3, short_avgdelta: 2, long_avgdelta: 1, date: FIXED_DATE - 60_000 },
+      iobData: {
         iob: 1.3, activity: 0.013,
         lastTemp: { rate: 0.9, duration: 30, date: FIXED_DATE - 5 * 60_000 },
       },
@@ -1996,8 +1996,8 @@ export function generateAllFixtures(): FixtureSpec[] {
       // With currenttemp={duration:35, rate:0}: insulinScheduled = 35*(0-0.9)/60 = -0.525
       // minInsulinReq = min(-0.2,-0.1) = -0.2
       // -0.525 < -0.2 - 0.27 = -0.47? YES => line 1345
-      glucose_status: { glucose: 112, delta: -0.5, short_avgdelta: -0.5, long_avgdelta: -0.3, date: FIXED_DATE - 60_000 },
-      iob_data: {
+      glucoseStatus: { glucose: 112, delta: -0.5, short_avgdelta: -0.5, long_avgdelta: -0.3, date: FIXED_DATE - 60_000 },
+      iobData: {
         iob: 0.15, activity: 0.0015,
         lastTemp: { rate: 0, duration: 35, date: FIXED_DATE - 5 * 60_000 },
       },
@@ -2022,8 +2022,8 @@ export function generateAllFixtures(): FixtureSpec[] {
       // minInsulinReq = min(-0.13, -0.05) = -0.13
       // -0.0667 < -0.13 - 0.27 = -0.4? NO => skip 1345
       // 1349: currenttemp.rate=0.7 defined, duration(20)>5, rate(0.65) >= 0.7*0.8=0.56? YES => line 1349!
-      glucose_status: { glucose: 112, delta: -0.5, short_avgdelta: -0.5, long_avgdelta: -0.3, date: FIXED_DATE - 60_000 },
-      iob_data: {
+      glucoseStatus: { glucose: 112, delta: -0.5, short_avgdelta: -0.5, long_avgdelta: -0.3, date: FIXED_DATE - 60_000 },
+      iobData: {
         iob: 0.1, activity: 0.001,
         lastTemp: { rate: 0.7, duration: 30, date: FIXED_DATE - 5 * 60_000 },
       },
@@ -2042,28 +2042,28 @@ export function generateAllFixtures(): FixtureSpec[] {
       // insulinScheduled = 0 (no temp). minInsulinReq = -1.55. 0 < -1.82? NO => skip 1345
       // bgUndershoot = 110-115 = -5 => worstCaseInsulinReq = -0.125
       // durationReq = round(60*(-0.125)/0.9) = -8 < 0 => line 1360
-      glucose_status: { glucose: 115, delta: -8, short_avgdelta: -8, long_avgdelta: -6, date: FIXED_DATE - 60_000 },
-      iob_data: { iob: 0, activity: 0 },
+      glucoseStatus: { glucose: 115, delta: -8, short_avgdelta: -8, long_avgdelta: -6, date: FIXED_DATE - 60_000 },
+      iobData: { iob: 0, activity: 0 },
     }),
 
     // =====================================================================
     // CATEGORY: minDelta < expectedDelta without SMB — lines 1403-1416
     // =====================================================================
     // Lines 1403-1405: delta < minDelta (impossible since minDelta = min(delta, short_avgdelta))
-    // Actually: glucose_status.delta < minDelta is possible when short_avgdelta > delta
+    // Actually: glucoseStatus.delta < minDelta is possible when short_avgdelta > delta
     // Wait: minDelta = min(delta, short_avgdelta). So minDelta <= delta always.
-    // Line 1404: glucose_status.delta < minDelta => delta < min(delta, short_avgdelta) => impossible!
-    // Hmm, but maybe there's some rounding? Actually no, delta IS glucose_status.delta
+    // Line 1404: glucoseStatus.delta < minDelta => delta < min(delta, short_avgdelta) => impossible!
+    // Hmm, but maybe there's some rounding? Actually no, delta IS glucoseStatus.delta
     // So line 1404 is unreachable. The else (line 1406-1407) always executes.
-    // Let me check: line 1404 says `if (glucose_status.delta < minDelta)` where minDelta = min(glucose_status.delta, glucose_status.short_avgdelta)
+    // Let me check: line 1404 says `if (glucoseStatus.delta < minDelta)` where minDelta = min(glucoseStatus.delta, glucoseStatus.short_avgdelta)
     // This can never be true. So line 1405 is unreachable. Only lines 1406-1407 can execute.
     // Lines 1409-1411: currenttemp.duration > 15 && basal matches currenttemp.rate => keep
     fixture('minDelta < expectedDelta, no SMB, temp matches basal — keep', 'mindelta-no-smb-temp-match', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 130, delta: -4, short_avgdelta: -3, long_avgdelta: -2, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 130, delta: -4, short_avgdelta: -3, long_avgdelta: -2, date: FIXED_DATE - 60_000 },
       currenttemp: { duration: 25, rate: 0.9 }, // matches basal
       // Provide matching lastTemp so the temp mismatch check at line 682-688 doesn't cancel
-      iob_data: {
+      iobData: {
         iob: 0, activity: 0,
         lastTemp: { rate: 0.9, duration: 30, date: FIXED_DATE - 5 * 60_000 },
       },
@@ -2072,7 +2072,7 @@ export function generateAllFixtures(): FixtureSpec[] {
     // Lines 1412-1414: no matching temp — set basal as temp
     fixture('minDelta < expectedDelta, no SMB, no matching temp — set basal', 'mindelta-no-smb-set-basal', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 130, delta: -4, short_avgdelta: -3, long_avgdelta: -2, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 130, delta: -4, short_avgdelta: -3, long_avgdelta: -2, date: FIXED_DATE - 60_000 },
       // No temp running (default duration=0)
     }),
 
@@ -2082,9 +2082,9 @@ export function generateAllFixtures(): FixtureSpec[] {
     // Lines 1431-1433: matching temp
     fixture('In range, no SMB, temp matches basal — keep running', 'in-range-no-smb-temp', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 115, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 115, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
       currenttemp: { duration: 25, rate: 0.9 },
-      iob_data: {
+      iobData: {
         iob: 0, activity: 0,
         lastTemp: { rate: 0.9, duration: 30, date: FIXED_DATE - 5 * 60_000 },
       },
@@ -2093,7 +2093,7 @@ export function generateAllFixtures(): FixtureSpec[] {
     // Line 1435: no matching temp
     fixture('In range, no SMB, no matching temp — set basal', 'in-range-no-smb-set-basal', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 115, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 115, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
       // No temp running
     }),
 
@@ -2104,18 +2104,18 @@ export function generateAllFixtures(): FixtureSpec[] {
     // Let's also add: IOB > max_iob, no matching temp (line 1455)
     fixture('IOB > max_iob, no temp running — set basal as temp', 'iob-over-max-no-temp', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 200, delta: 5, short_avgdelta: 5, long_avgdelta: 3, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 200, delta: 5, short_avgdelta: 5, long_avgdelta: 3, date: FIXED_DATE - 60_000 },
       profile: { max_iob: 2.0 },
-      iob_data: { iob: 2.5, activity: 0.025 },
+      iobData: { iob: 2.5, activity: 0.025 },
       // No temp running (duration=0)
     }),
 
     // IOB > max_iob with matching temp (~= basal) — line 1451
     fixture('IOB > max_iob, temp matches basal — keep running', 'iob-over-max-temp-match', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 200, delta: 5, short_avgdelta: 5, long_avgdelta: 3, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 200, delta: 5, short_avgdelta: 5, long_avgdelta: 3, date: FIXED_DATE - 60_000 },
       profile: { max_iob: 2.0 },
-      iob_data: {
+      iobData: {
         iob: 2.5, activity: 0.025,
         lastTemp: { rate: 0.9, duration: 30, date: FIXED_DATE - 5 * 60_000 },
       },
@@ -2130,7 +2130,7 @@ export function generateAllFixtures(): FixtureSpec[] {
     // =====================================================================
     fixture('SMB — maxSMBBasalMinutes not in profile (undefined path)', 'smb-minutes-undefined', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 200, delta: 5, short_avgdelta: 4, long_avgdelta: 3, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 200, delta: 5, short_avgdelta: 4, long_avgdelta: 3, date: FIXED_DATE - 60_000 },
       profile: {
         enableSMB_always: true,
         enableUAM: true,
@@ -2147,7 +2147,7 @@ export function generateAllFixtures(): FixtureSpec[] {
     // =====================================================================
     fixture('SMB — maxUAMSMBBasalMinutes=0, IOB > mealInsulinReq', 'smb-uam-minutes-zero', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 200, delta: 5, short_avgdelta: 4, long_avgdelta: 3, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 200, delta: 5, short_avgdelta: 4, long_avgdelta: 3, date: FIXED_DATE - 60_000 },
       profile: {
         enableSMB_always: true,
         enableUAM: true,
@@ -2167,7 +2167,7 @@ export function generateAllFixtures(): FixtureSpec[] {
     fixture('SMB — durationReq <= 0 (insulinReq tiny, microBolus < increment)', 'smb-duration-zero', {
       currentTime: FIXED_TIME,
       // Just barely above target
-      glucose_status: { glucose: 121, delta: 0.2, short_avgdelta: 0.2, long_avgdelta: 0.2, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 121, delta: 0.2, short_avgdelta: 0.2, long_avgdelta: 0.2, date: FIXED_DATE - 60_000 },
       profile: { enableSMB_always: true, bolus_increment: 0.1 },
       microBolusAllowed: true,
       rawIobData: makeIobArray(0.05, 0.0005, 5, FIXED_DATE),
@@ -2179,7 +2179,7 @@ export function generateAllFixtures(): FixtureSpec[] {
     // =====================================================================
     fixture('SMB — durationReq >= 30, long zero temp', 'smb-duration-long', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 250, delta: 5, short_avgdelta: 5, long_avgdelta: 3, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 250, delta: 5, short_avgdelta: 5, long_avgdelta: 3, date: FIXED_DATE - 60_000 },
       profile: {
         enableSMB_always: true,
         enableUAM: true,
@@ -2198,9 +2198,9 @@ export function generateAllFixtures(): FixtureSpec[] {
     // =====================================================================
     fixture('High BG, required temp rate > existing temp rate — set higher temp', 'req-temp-gt-existing', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 180, delta: 3, short_avgdelta: 3, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 180, delta: 3, short_avgdelta: 3, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
       currenttemp: { duration: 10, rate: 1.0 }, // low existing temp
-      iob_data: {
+      iobData: {
         iob: 0, activity: 0,
         lastTemp: { rate: 1.0, duration: 30, date: FIXED_DATE - 5 * 60_000 },
       },
@@ -2209,7 +2209,7 @@ export function generateAllFixtures(): FixtureSpec[] {
     // Additional fixture for line 1638 with iobArray
     fixture('High BG with iobArray, required temp > existing — replace temp', 'req-temp-gt-existing', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 200, delta: 3, short_avgdelta: 3, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 200, delta: 3, short_avgdelta: 3, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
       currenttemp: { duration: 10, rate: 1.2 },
       rawIobData: (() => {
         const arr = makeIobArray(0.3, 0.003, 5, FIXED_DATE);
@@ -2231,7 +2231,7 @@ export function generateAllFixtures(): FixtureSpec[] {
       // - BG is above target
       // - With zero temp, predictions initially fall but then bounce back up
       // High IOB means lots of activity reduction in zero-temp, causing BG to rise
-      glucose_status: { glucose: 160, delta: 2, short_avgdelta: 2, long_avgdelta: 1, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 160, delta: 2, short_avgdelta: 2, long_avgdelta: 1, date: FIXED_DATE - 60_000 },
       profile: { enableSMB_always: true, enableUAM: true },
       microBolusAllowed: true,
       // Use a special iobArray where iobWithZeroTemp has very low IOB (simulating zero temp effect)
@@ -2269,7 +2269,7 @@ export function generateAllFixtures(): FixtureSpec[] {
       // eventualBG = -45 + 66 = 21 < 110 YES
       // expectedDelta = round(-8+(110-21)/24,1) = round(-4.29,1) = -4.3
       // minDelta(3) > expectedDelta(-4.3) YES, > 0 YES
-      glucose_status: { glucose: 115, delta: 4, short_avgdelta: 3, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 115, delta: 4, short_avgdelta: 3, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
       rawIobData: (() => {
         const arr = makeIobArray(4.0, 0.04, 5, FIXED_DATE);
         // Ensure minGuardBG stays above threshold by making IOBGuardBG high
@@ -2283,7 +2283,7 @@ export function generateAllFixtures(): FixtureSpec[] {
       currentTime: FIXED_TIME,
       // iob=1.5 => naive = 115 - 60 = 55 >= 40
       // delta=5, short_avgdelta=3 => minDelta=3, delta(5) > minDelta(3) YES
-      glucose_status: { glucose: 115, delta: 5, short_avgdelta: 3, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 115, delta: 5, short_avgdelta: 3, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
       rawIobData: makeIobArray(1.5, 0.015, 5, FIXED_DATE),
     }),
 
@@ -2291,14 +2291,14 @@ export function generateAllFixtures(): FixtureSpec[] {
     fixture('eventualBG < min_bg, rising, iobArray, delta <= minDelta', 'eventual-bg-low-rising-iob', {
       currentTime: FIXED_TIME,
       // delta=3, short_avgdelta=5 => minDelta=3, delta(3) NOT > minDelta(3) => else at 1308
-      glucose_status: { glucose: 115, delta: 3, short_avgdelta: 5, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 115, delta: 3, short_avgdelta: 5, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
       rawIobData: makeIobArray(1.5, 0.015, 5, FIXED_DATE),
     }),
 
     // Lines 1311-1313: temp matches basal (rising, naive >= 40)
     fixture('eventualBG < min_bg, rising, iobArray, temp matches basal', 'eventual-bg-low-rising-iob', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 115, delta: 5, short_avgdelta: 3, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 115, delta: 5, short_avgdelta: 3, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
       currenttemp: { duration: 25, rate: 0.9 },
       rawIobData: (() => {
         const arr = makeIobArray(1.5, 0.015, 5, FIXED_DATE);
@@ -2383,15 +2383,15 @@ export function generateAllFixtures(): FixtureSpec[] {
       // This requires very specific tuning. Let me just use falling BG instead.
       // For manualBolusErrorString=4: minDelta < 0, expectedDelta <= 0
       // This is the easy case since BG falling with eventualBG > min_bg
-      glucose_status: { glucose: 130, delta: -5, short_avgdelta: -3, long_avgdelta: -2, date: FIXED_DATE - 60_000 },
-      iob_data: { iob: 0, activity: 0 },
+      glucoseStatus: { glucose: 130, delta: -5, short_avgdelta: -3, long_avgdelta: -2, date: FIXED_DATE - 60_000 },
+      iobData: { iob: 0, activity: 0 },
       rawIobData: makeIobArray(0.0, 0.0, 5, FIXED_DATE),
     }),
 
     // Lines 1403-1411: non-SMB, temp matches basal — keep running
     fixture('minDelta < expectedDelta, non-SMB with iobArray, temp match', 'mindelta-non-smb', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 130, delta: -5, short_avgdelta: -3, long_avgdelta: -2, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 130, delta: -5, short_avgdelta: -3, long_avgdelta: -2, date: FIXED_DATE - 60_000 },
       currenttemp: { duration: 25, rate: 0.9 },
       rawIobData: (() => {
         const arr = makeIobArray(0.0, 0.0, 5, FIXED_DATE);
@@ -2403,7 +2403,7 @@ export function generateAllFixtures(): FixtureSpec[] {
     // Lines 1412-1414: non-SMB, no matching temp — set basal
     fixture('minDelta < expectedDelta, non-SMB with iobArray, no temp', 'mindelta-non-smb', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 130, delta: -5, short_avgdelta: -3, long_avgdelta: -2, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 130, delta: -5, short_avgdelta: -3, long_avgdelta: -2, date: FIXED_DATE - 60_000 },
       rawIobData: makeIobArray(0.0, 0.0, 5, FIXED_DATE),
     }),
 
@@ -2414,7 +2414,7 @@ export function generateAllFixtures(): FixtureSpec[] {
     // =====================================================================
     fixture('In-range, non-SMB with iobArray, temp matches basal', 'in-range-non-smb-iob', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 115, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 115, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
       currenttemp: { duration: 25, rate: 0.9 },
       rawIobData: (() => {
         const arr = makeIobArray(0.0, 0.0, 5, FIXED_DATE);
@@ -2425,7 +2425,7 @@ export function generateAllFixtures(): FixtureSpec[] {
 
     fixture('In-range, non-SMB with iobArray, no temp', 'in-range-non-smb-iob', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 115, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 115, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
       rawIobData: makeIobArray(0.0, 0.0, 5, FIXED_DATE),
     }),
 
@@ -2435,7 +2435,7 @@ export function generateAllFixtures(): FixtureSpec[] {
     // =====================================================================
     fixture('SMB — smbMinutesSetting undefined, insulinReq > maxBolus', 'smb-minutes-undef-iob', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 250, delta: 5, short_avgdelta: 5, long_avgdelta: 3, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 250, delta: 5, short_avgdelta: 5, long_avgdelta: 3, date: FIXED_DATE - 60_000 },
       profile: {
         enableSMB_always: true, enableUAM: true,
         maxSMBBasalMinutes: undefined as any,
@@ -2451,7 +2451,7 @@ export function generateAllFixtures(): FixtureSpec[] {
     fixture('SMB — durationReq <= 0 with iobArray', 'smb-duration-iob', {
       currentTime: FIXED_TIME,
       // BG barely above target, tiny insulinReq => microBolus < bolusIncrement => durationReq=0
-      glucose_status: { glucose: 122, delta: 0.5, short_avgdelta: 0.5, long_avgdelta: 0.3, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 122, delta: 0.5, short_avgdelta: 0.5, long_avgdelta: 0.3, date: FIXED_DATE - 60_000 },
       profile: { enableSMB_always: true, bolus_increment: 0.1 },
       microBolusAllowed: true,
       rawIobData: makeIobArray(0.1, 0.001, 5, FIXED_DATE),
@@ -2459,7 +2459,7 @@ export function generateAllFixtures(): FixtureSpec[] {
 
     fixture('SMB — durationReq >= 30 with iobArray, long zero', 'smb-duration-iob', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 250, delta: 8, short_avgdelta: 7, long_avgdelta: 5, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 250, delta: 8, short_avgdelta: 7, long_avgdelta: 5, date: FIXED_DATE - 60_000 },
       profile: {
         enableSMB_always: true, enableUAM: true,
         maxSMBBasalMinutes: 90, maxUAMSMBBasalMinutes: 90,
@@ -2474,14 +2474,14 @@ export function generateAllFixtures(): FixtureSpec[] {
     // =====================================================================
     fixture('High BG, rate > maxSafeBasal with iobArray', 'high-temp-end-iob', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 300, delta: 5, short_avgdelta: 5, long_avgdelta: 3, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 300, delta: 5, short_avgdelta: 5, long_avgdelta: 3, date: FIXED_DATE - 60_000 },
       profile: { max_basal: 2.0, max_daily_basal: 1.0 },
       rawIobData: makeIobArray(0.3, 0.003, 5, FIXED_DATE),
     }),
 
     fixture('High BG, existing temp delivers > 2x insulinReq with iobArray', 'high-temp-end-iob', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 130, delta: 0.5, short_avgdelta: 0.5, long_avgdelta: 0.5, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 130, delta: 0.5, short_avgdelta: 0.5, long_avgdelta: 0.5, date: FIXED_DATE - 60_000 },
       currenttemp: { duration: 25, rate: 3.0 },
       rawIobData: (() => {
         const arr = makeIobArray(0.2, 0.002, 5, FIXED_DATE);
@@ -2492,13 +2492,13 @@ export function generateAllFixtures(): FixtureSpec[] {
 
     fixture('High BG, no temp running with iobArray', 'high-temp-end-iob', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 170, delta: 2, short_avgdelta: 2, long_avgdelta: 1, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 170, delta: 2, short_avgdelta: 2, long_avgdelta: 1, date: FIXED_DATE - 60_000 },
       rawIobData: makeIobArray(0.3, 0.003, 5, FIXED_DATE),
     }),
 
     fixture('High BG, existing temp >= required with iobArray — keep', 'high-temp-end-iob', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 140, delta: 1, short_avgdelta: 1, long_avgdelta: 0.5, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 140, delta: 1, short_avgdelta: 1, long_avgdelta: 0.5, date: FIXED_DATE - 60_000 },
       currenttemp: { duration: 20, rate: 2.5 },
       rawIobData: (() => {
         const arr = makeIobArray(0.2, 0.002, 5, FIXED_DATE);
@@ -2509,7 +2509,7 @@ export function generateAllFixtures(): FixtureSpec[] {
 
     fixture('High BG, existing temp < required with iobArray — increase', 'high-temp-end-iob', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 200, delta: 3, short_avgdelta: 3, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 200, delta: 3, short_avgdelta: 3, long_avgdelta: 2, date: FIXED_DATE - 60_000 },
       currenttemp: { duration: 10, rate: 1.2 },
       rawIobData: (() => {
         const arr = makeIobArray(0.3, 0.003, 5, FIXED_DATE);
@@ -2527,8 +2527,8 @@ export function generateAllFixtures(): FixtureSpec[] {
     // Cover: ci > maxCI (line 802)
     fixture('Carb impact exceeds maxCI — capped', 'prediction-deep', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 160, delta: 15, short_avgdelta: 12, long_avgdelta: 8, date: FIXED_DATE - 60_000 },
-      meal_data: {
+      glucoseStatus: { glucose: 160, delta: 15, short_avgdelta: 12, long_avgdelta: 8, date: FIXED_DATE - 60_000 },
+      mealData: {
         carbs: 80, nsCarbs: 80, bwCarbs: 0, journalCarbs: 0,
         mealCOB: 70, currentDeviation: 25, maxDeviation: 25, minDeviation: 0,
         slopeFromMaxDeviation: 0, slopeFromMinDeviation: 0,
@@ -2541,17 +2541,17 @@ export function generateAllFixtures(): FixtureSpec[] {
     // Cover: IOBpredBGs rising and falling patterns (lines 940-1000)
     fixture('Prediction loop with very high IOB — IOBpredBGs hit floor', 'prediction-deep', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 100, delta: -5, short_avgdelta: -4, long_avgdelta: -3, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 100, delta: -5, short_avgdelta: -4, long_avgdelta: -3, date: FIXED_DATE - 60_000 },
       rawIobData: makeIobArray(5.0, 0.05, 5, FIXED_DATE),
     }),
 
     // Cover: UAM predictions with high deviation (lines 960-989)
     fixture('UAM predictions with high positive deviation', 'prediction-deep', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 180, delta: 10, short_avgdelta: 8, long_avgdelta: 5, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 180, delta: 10, short_avgdelta: 8, long_avgdelta: 5, date: FIXED_DATE - 60_000 },
       profile: { enableUAM: true, enableSMB_always: true },
       microBolusAllowed: true,
-      meal_data: {
+      mealData: {
         carbs: 0, nsCarbs: 0, bwCarbs: 0, journalCarbs: 0,
         mealCOB: 0, currentDeviation: 18, maxDeviation: 20, minDeviation: 2,
         slopeFromMaxDeviation: -0.5, slopeFromMinDeviation: 0.2,
@@ -2563,23 +2563,23 @@ export function generateAllFixtures(): FixtureSpec[] {
     // Cover: COBpredBGs with large COB that exceeds min and falls (lines 1014-1027)
     fixture('COB predictions crossing min_bg — large meal falling', 'prediction-deep', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 110, delta: -3, short_avgdelta: -2, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 110, delta: -3, short_avgdelta: -2, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
       profile: { enableUAM: true },
-      meal_data: {
+      mealData: {
         carbs: 100, nsCarbs: 100, bwCarbs: 0, journalCarbs: 0,
         mealCOB: 80, currentDeviation: -5, maxDeviation: 15, minDeviation: -8,
         slopeFromMaxDeviation: -2.0, slopeFromMinDeviation: 0.5,
         allDeviations: [-5, 0, 5, 15, 12], lastCarbTime: FIXED_DATE - 60 * 60_000,
         bwFound: false,
       },
-      iob_data: { iob: 2.0, activity: 0.02 },
+      iobData: { iob: 2.0, activity: 0.02 },
       rawIobData: makeIobArray(2.0, 0.02, 5, FIXED_DATE),
     }),
 
     // Cover prediction paths where all predictions stay near target (flat lines)
     fixture('Flat predictions — all pred values near target', 'prediction-deep', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 115, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 115, delta: 0, short_avgdelta: 0, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
       profile: { enableUAM: true, enableSMB_always: true },
       microBolusAllowed: true,
       rawIobData: makeIobArray(0.01, 0.0001, 5, FIXED_DATE),
@@ -2588,7 +2588,7 @@ export function generateAllFixtures(): FixtureSpec[] {
     // Cover: minZTGuardBG < threshold path (line 1091) and related blending
     fixture('Zero-temp predictions drop below threshold — blend minZTUAMPredBG', 'prediction-deep', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 120, delta: -2, short_avgdelta: -1, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 120, delta: -2, short_avgdelta: -1, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
       profile: { enableUAM: true, enableSMB_always: true },
       microBolusAllowed: true,
       rawIobData: (() => {
@@ -2606,7 +2606,7 @@ export function generateAllFixtures(): FixtureSpec[] {
     // Cover: minZTGuardBG between threshold and target (line 1094) — blendPct path
     fixture('ZT guard between threshold and target — blended prediction', 'prediction-deep', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 130, delta: -1, short_avgdelta: -0.5, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 130, delta: -1, short_avgdelta: -0.5, long_avgdelta: 0, date: FIXED_DATE - 60_000 },
       profile: { enableUAM: true, enableSMB_always: true },
       microBolusAllowed: true,
       rawIobData: (() => {
@@ -2624,10 +2624,10 @@ export function generateAllFixtures(): FixtureSpec[] {
     // Cover: various allDeviations paths for slopeFromDeviations calculation
     fixture('allDeviations with mixed positive/negative — slope refinement', 'prediction-deep', {
       currentTime: FIXED_TIME,
-      glucose_status: { glucose: 150, delta: 3, short_avgdelta: 2, long_avgdelta: 1, date: FIXED_DATE - 60_000 },
+      glucoseStatus: { glucose: 150, delta: 3, short_avgdelta: 2, long_avgdelta: 1, date: FIXED_DATE - 60_000 },
       profile: { enableUAM: true, enableSMB_always: true },
       microBolusAllowed: true,
-      meal_data: {
+      mealData: {
         carbs: 0, nsCarbs: 0, bwCarbs: 0, journalCarbs: 0,
         mealCOB: 0, currentDeviation: 8, maxDeviation: 15, minDeviation: -3,
         slopeFromMaxDeviation: -1.5, slopeFromMinDeviation: 1.0,

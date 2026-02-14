@@ -128,9 +128,9 @@ describe('validateIOBAndTemps', () => {
             new Date('2025-01-15T12:00:00Z'),
         );
 
-        expect('iob_data' in outcome).toBe(true);
-        if ('iob_data' in outcome) {
-            expect(outcome.iob_data.iob).toBe(1.5);
+        expect('iobData' in outcome).toBe(true);
+        if ('iobData' in outcome) {
+            expect(outcome.iobData.iob).toBe(1.5);
             expect(outcome.iobArray).toHaveLength(2);
         }
     });
@@ -150,7 +150,7 @@ describe('validateIOBAndTemps', () => {
             deliverAt,
         );
 
-        expect('iob_data' in outcome).toBe(true);
+        expect('iobData' in outcome).toBe(true);
         expect(result.temp).toBe('absolute');
         expect(result.deliverAt).toBeDefined();
     });
@@ -217,9 +217,9 @@ describe('validateIOBAndTemps', () => {
             new Date('2025-01-15T12:00:00Z'),
         );
 
-        expect('iob_data' in outcome).toBe(true);
-        if ('iob_data' in outcome) {
-            expect(outcome.iob_data).toBeDefined();
+        expect('iobData' in outcome).toBe(true);
+        if ('iobData' in outcome) {
+            expect(outcome.iobData).toBeDefined();
             expect(outcome.iobArray).toBeDefined();
         }
     });
