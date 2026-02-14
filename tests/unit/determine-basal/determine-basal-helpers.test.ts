@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 import {
     validateIOBAndTemps,
-    calculateDeviation,
+    projectEventualBG,
     checkStaleTempBasal,
 } from '../../../src/determine-basal/helpers';
 
@@ -350,16 +350,16 @@ describe('checkStaleTempBasal', () => {
 });
 
 // ---------------------------------------------------------------------------
-// calculateDeviation
+// projectEventualBG
 // ---------------------------------------------------------------------------
 
-describe('calculateDeviation', () => {
+describe('projectEventualBG', () => {
     const iob = makeIOBData({ iob: 2.0 });
 
     it('computes positive deviation from positive minDelta', () => {
         // bgImpact = -2 (BG falling), minDelta = 5 (BG actually rising)
         // deviation = round(30/5 * (5 - (-2))) = round(6 * 7) = 42
-        const result = calculateDeviation(150, iob, 50, 50, 5, 3, 1, -2);
+        const result = projectEventualBG(150, iob, 50, 50, 5, 3, 1, -2);
         expect(result.deviation).toBe(42);
     });
 
@@ -367,14 +367,14 @@ describe('calculateDeviation', () => {
         // bgImpact = 5, minDelta = 2 → deviation = round(6 * (2 - 5)) = -18 (negative)
         // Falls back to minAvgDelta = 4 → deviation = round(6 * (4 - 5)) = -6 (still negative)
         // Falls back to long_avgdelta = 6 → deviation = round(6 * (6 - 5)) = 6
-        const result = calculateDeviation(150, iob, 50, 50, 2, 4, 6, 5);
+        const result = projectEventualBG(150, iob, 50, 50, 2, 4, 6, 5);
         expect(result.deviation).toBe(6);
     });
 
     it('falls back to long_avgdelta when minAvgDelta deviation is also negative', () => {
         // bgImpact = 5, minDelta = 1 → negative, minAvgDelta = 3 → negative, long_avgdelta = 4 → negative
         // deviation = round(6 * (4 - 5)) = -6
-        const result = calculateDeviation(150, iob, 50, 50, 1, 3, 4, 5);
+        const result = projectEventualBG(150, iob, 50, 50, 1, 3, 4, 5);
         expect(result.deviation).toBe(-6);
     });
 
@@ -382,21 +382,21 @@ describe('calculateDeviation', () => {
         // bgImpact = 3, minDelta = 1 → deviation = round(6 * (1 - 3)) = round(-12) = -12 (negative)
         // Falls back to minAvgDelta = 4 → deviation = round(6 * (4 - 3)) = round(6) = 6 (non-negative, stops here)
         // Does NOT fall through to long_avgdelta
-        const result = calculateDeviation(150, iob, 50, 50, 1, 4, 10, 3);
+        const result = projectEventualBG(150, iob, 50, 50, 1, 4, 10, 3);
         expect(result.deviation).toBe(6);
     });
 
     it('computes naiveEventualBG using adjustedSens for positive IOB', () => {
         // bg=150, iob=2.0 > 0, adjustedSens=50
         // naiveEventualBG = round(150 - 2.0 * 50) = round(50) = 50
-        const result = calculateDeviation(150, makeIOBData({ iob: 2.0 }), 50, 40, 0, 0, 0, 0);
+        const result = projectEventualBG(150, makeIOBData({ iob: 2.0 }), 50, 40, 0, 0, 0, 0);
         expect(result.naiveEventualBG).toBe(50);
     });
 
     it('uses min(adjustedSens, sensitivity) for negative IOB', () => {
         // bg=150, iob=-1.0, adjustedSens=50, sensitivity=40
         // naiveEventualBG = round(150 - (-1.0) * min(50, 40)) = round(150 + 40) = 190
-        const result = calculateDeviation(150, makeIOBData({ iob: -1.0 }), 50, 40, 0, 0, 0, 0);
+        const result = projectEventualBG(150, makeIOBData({ iob: -1.0 }), 50, 40, 0, 0, 0, 0);
         expect(result.naiveEventualBG).toBe(190);
     });
 
@@ -404,13 +404,13 @@ describe('calculateDeviation', () => {
         // bg=150, iob=2.0, adjustedSens=50 → naiveEventualBG = 50
         // bgImpact = -2, minDelta = 5 → deviation = 42
         // eventualBG = 50 + 42 = 92
-        const result = calculateDeviation(150, makeIOBData({ iob: 2.0 }), 50, 50, 5, 3, 1, -2);
+        const result = projectEventualBG(150, makeIOBData({ iob: 2.0 }), 50, 50, 5, 3, 1, -2);
         expect(result.eventualBG).toBe(result.naiveEventualBG + result.deviation);
     });
 
     it('returns zero deviation when minDelta equals bgImpact', () => {
         // minDelta = bgImpact → deviation = round(6 * (3 - 3)) = 0
-        const result = calculateDeviation(150, iob, 50, 50, 3, 3, 3, 3);
+        const result = projectEventualBG(150, iob, 50, 50, 3, 3, 3, 3);
         expect(result.deviation).toBe(0);
     });
 });
