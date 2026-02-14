@@ -6,19 +6,11 @@ import type {
     InsulinCurve,
     EpochMillis,
     ISODateString,
+    BasalProfileEntry,
 } from '../types/index';
 
-// ---------------------------------------------------------------------------
-// Basal profile entry
-// ---------------------------------------------------------------------------
-
-/** Single entry in the basal schedule used by IOB history processing */
-export interface HistoryBasalProfileEntry {
-    i: number;
-    start: string;
-    rate: number;
-    minutes: number;
-}
+/** @deprecated Use BasalProfileEntry from types/index.ts */
+export type HistoryBasalProfileEntry = BasalProfileEntry;
 
 // ---------------------------------------------------------------------------
 // Profile shapes used across IOB sub-modules

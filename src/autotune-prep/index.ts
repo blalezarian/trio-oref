@@ -4,7 +4,7 @@
 import { findMealInputs as findMeals } from '../meal/history';
 import { categorizeBGDatums as categorize } from './categorize';
 import type { CategorizeResult, CategorizeGlucoseDatum } from './categorize';
-import type { PumpHistoryEvent, InsulinCurve } from '../types/index';
+import type { PumpHistoryEvent, InsulinCurve, BasalProfileEntry } from '../types/index';
 import { ULTRA_RAPID_PEAK, RAPID_ACTING_PEAK, HOURS_PER_DAY } from '../shared/constants';
 import { roundTo3dp } from '../utils/rounding';
 
@@ -16,12 +16,6 @@ const DIA_SEARCH_RANGE = 2;
 const PEAK_SEARCH_RANGE = 10;
 /** Peak time search step size (minutes) */
 const PEAK_SEARCH_STEP = 5;
-interface AutotunePrepBasalProfileEntry {
-  i: number;
-  start: string;
-  rate: number;
-  minutes: number;
-}
 
 interface AutotunePrepISFProfile {
   sensitivities: Array<{
@@ -37,7 +31,7 @@ interface AutotunePrepProfile {
   useCustomPeakTime?: boolean;
   insulinPeakTime?: number;
   current_basal?: number;
-  basalprofile: AutotunePrepBasalProfileEntry[];
+  basalprofile: BasalProfileEntry[];
   min_5m_carbimpact: number;
   carb_ratio: number;
   sens?: number;
@@ -46,7 +40,7 @@ interface AutotunePrepProfile {
 }
 
 interface AutotunePrepPumpProfile {
-  basalprofile: AutotunePrepBasalProfileEntry[];
+  basalprofile: BasalProfileEntry[];
   [key: string]: unknown;
 }
 

@@ -16,6 +16,14 @@
 /** Insulin absorption curve model used across all modules */
 export type InsulinCurve = 'bilinear' | 'rapid-acting' | 'ultra-rapid';
 
+/** Single entry in a basal rate schedule (shared across IOB, autotune, autotune-prep) */
+export interface BasalProfileEntry {
+    i: number;
+    start: string;
+    rate: number;
+    minutes: number;
+}
+
 /** Medtronic pump history event types */
 export type PumpHistoryEventType =
   | 'Bolus'

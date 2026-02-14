@@ -1,4 +1,4 @@
-import type { InsulinCurve, MealAbsorptionPhase } from '../types/index';
+import type { InsulinCurve, MealAbsorptionPhase, BasalProfileEntry } from '../types/index';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -6,11 +6,7 @@ import type { InsulinCurve, MealAbsorptionPhase } from '../types/index';
 
 // --- Basal profile entry ---
 
-export interface AutotuneBasalProfileEntry {
-    i: number;
-    start: string;
-    rate: number;
-    minutes: number;
+export interface AutotuneBasalProfileEntry extends BasalProfileEntry {
     untuned?: number;
 }
 

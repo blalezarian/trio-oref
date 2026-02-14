@@ -5,7 +5,7 @@ import { calcTempTreatments as findInsulin } from '../iob/extract-treatments';
 import type { IobInputs } from '../iob/types';
 import { insulinDosed as dosed } from './dosed';
 import type { DosedOpts } from './dosed';
-import type { PumpHistoryEvent, CarbTreatment, InsulinCurve, MealAbsorptionPhase } from '../types/index';
+import type { PumpHistoryEvent, CarbTreatment, InsulinCurve, MealAbsorptionPhase, BasalProfileEntry } from '../types/index';
 import {
     MIN_VALID_GLUCOSE_MGDL,
     MS_PER_MINUTE,
@@ -56,13 +56,6 @@ interface CategorizeGlucoseEntry {
   uamAbsorption?: 'start';
 }
 
-interface CategorizeBasalProfileEntry {
-  i: number;
-  start: string;
-  rate: number;
-  minutes: number;
-}
-
 interface CategorizeISFProfile {
   sensitivities: Array<{
     offset: number;
@@ -77,7 +70,7 @@ interface CategorizeProfile {
   useCustomPeakTime?: boolean;
   insulinPeakTime?: number;
   current_basal?: number;
-  basalprofile: CategorizeBasalProfileEntry[];
+  basalprofile: BasalProfileEntry[];
   min_5m_carbimpact: number;
   carb_ratio: number;
   sens?: number;
@@ -91,8 +84,8 @@ interface CategorizeOpts {
   profile: CategorizeProfile;
   pumpHistory: PumpHistoryEvent[];
   glucose: CategorizeGlucoseEntry[];
-  basalprofile: CategorizeBasalProfileEntry[];
-  pumpbasalprofile: CategorizeBasalProfileEntry[];
+  basalprofile: BasalProfileEntry[];
+  pumpbasalprofile: BasalProfileEntry[];
   categorize_uam_as_basal?: boolean;
 }
 
