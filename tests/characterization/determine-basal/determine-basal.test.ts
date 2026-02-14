@@ -23,7 +23,7 @@ import {
   defaultBasalProfile,
 } from '../helpers/defaults';
 
-import { determine_basal } from '../../../src/determine-basal/determine-basal';
+import { determineBasal } from '../../../src/determine-basal/determine-basal';
 import { tempBasalFunctions } from '../../../src/set-temp-basal/index';
 import type { TempBasalFunctions, DetermineBasalResult } from '../../../src/types/index';
 
@@ -98,7 +98,7 @@ describe('determine-basal characterization tests', () => {
             middleWare,
           } = f.input;
 
-          const output = determine_basal(
+          const output = determineBasal(
             glucose_status,
             currenttemp,
             Array.isArray(iob_data) ? iob_data : [iob_data],
@@ -157,7 +157,7 @@ function callDetermineBasal(overrides: {
   const FIXED_TIME = '2025-01-15T12:00:00.000Z';
   const FIXED_DATE = new Date(FIXED_TIME).getTime();
 
-  return determine_basal(
+  return determineBasal(
     overrides.glucose_status ?? defaultGlucoseStatus({ date: FIXED_DATE - 60_000 }),
     overrides.currenttemp ?? defaultCurrentTemp(),
     overrides.iob_data_raw ? overrides.iob_data : [overrides.iob_data ?? defaultIOBData()],

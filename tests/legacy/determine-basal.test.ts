@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 
 import { roundBasal } from '../../src/utils/rounding';
-import { determine_basal } from '../../src/determine-basal/determine-basal';
+import { determineBasal } from '../../src/determine-basal/determine-basal';
 import { tempBasalFunctions } from '../../src/set-temp-basal/index';
 
 describe('roundBasal', () => {
@@ -52,7 +52,7 @@ describe('roundBasal', () => {
 });
 
 describe('determine-basal', () => {
-   //function determine_basal(glucose_status, currenttemp, iob_data, profile)
+   //function determineBasal(glucose_status, currenttemp, iob_data, profile)
 
     // standard initial conditions for all determine-basal test cases unless overridden
     const glucose_status = {"delta":0,"glucose":115,"long_avgdelta":0.1,"short_avgdelta":0} as any;
@@ -64,7 +64,7 @@ describe('determine-basal', () => {
 
     it('should cancel high temp when in range w/o IOB', () => {
         const currenttemp = {"duration":30,"rate":1.5,"temp":"absolute"} as any;
-        const output = determine_basal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
+        const output = determineBasal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
         // Trio uses min_bg (110) as target; BG 115 > 110, so algorithm sets temp above current_basal
         expect(output.rate).toBe(1.15);
         expect(output.duration).toBe(30);
@@ -72,7 +72,7 @@ describe('determine-basal', () => {
 
     //it('should let low temp run in range w/o IOB', () => {
         //const currenttemp = {"duration":30,"rate":0,"temp":"absolute"};
-        //const output = determine_basal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
+        //const output = determineBasal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
         //console.error(output);
         //expect(output.rate).toBeUndefined();
         //expect(output.duration).toBeUndefined();
@@ -82,7 +82,7 @@ describe('determine-basal', () => {
     // low glucose suspend test cases
     it('should temp to 0 when low w/o IOB', () => {
         const glucose_status = {"delta":-5,"glucose":75,"long_avgdelta":-5,"short_avgdelta":-5} as any;
-        const output = determine_basal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
+        const output = determineBasal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
         expect(output.rate).toBe(0);
         expect(output.duration).toBeGreaterThan(29);
         //expect(output.reason).toMatch(/BG 75<80/);
@@ -91,7 +91,7 @@ describe('determine-basal', () => {
     it('should not extend temp to 0 when <10m elapsed', () => {
         const currenttemp = {"duration":57,"rate":0,"temp":"absolute"} as any;
         const glucose_status = {"delta":-5,"glucose":75,"long_avgdelta":-5,"short_avgdelta":-5} as any;
-        const output = determine_basal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
+        const output = determineBasal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
         //console.log(output);
         expect(output.rate).toBeUndefined();
         expect(output.duration).toBeUndefined();
@@ -99,7 +99,7 @@ describe('determine-basal', () => {
 
     it('should do nothing when low and rising w/o IOB', () => {
         const glucose_status = {"delta":6,"glucose":75,"long_avgdelta":6,"short_avgdelta":6} as any;
-        const output = determine_basal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
+        const output = determineBasal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
         // Trio target adjustment causes slightly different rate
         expect(output.rate).toBe(0.95);
         expect(output.duration).toBe(30);
@@ -108,7 +108,7 @@ describe('determine-basal', () => {
     //it('should do nothing when low and rising w/ negative IOB', () => {
         //const glucose_status = {"delta":5,"glucose":75,"long_avgdelta":5,"short_avgdelta":5};
         //const iob_data = {"iob":-1,"activity":-0.01,"bolussnooze":0};
-        //const output = determine_basal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
+        //const output = determineBasal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
         //console.log(output);
         //expect(output.rate).toBe(0.9);
         //expect(output.duration).toBe(30);
@@ -117,7 +117,7 @@ describe('determine-basal', () => {
 
     //it('should do nothing on large uptick even if avgdelta is still negative', () => {
         //const glucose_status = {"delta":4,"glucose":75,"long_avgdelta":-2,"short_avgdelta":-2};
-        //const output = determine_basal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
+        //const output = determineBasal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
         //console.log(output);
         //expect(output.rate).toBe(0.9);
         //expect(output.duration).toBe(30);
@@ -127,7 +127,7 @@ describe('determine-basal', () => {
     it('should temp to zero when rising slower than BGI', () => {
         const glucose_status = {"delta":1,"glucose":75,"long_avgdelta":1,"short_avgdelta":1} as any;
         const iob_data = [{"iob":-0.5,"activity":-0.01,"bolussnooze":0}] as any;
-        const output = determine_basal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
+        const output = determineBasal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
         //console.log(output);
         expect(output.rate).toBe(0);
         expect(output.duration).toBe(30);
@@ -137,7 +137,7 @@ describe('determine-basal', () => {
     it('should temp to 0 when low and falling, regardless of BGI', () => {
         const glucose_status = {"delta":-1,"glucose":75,"long_avgdelta":-1,"short_avgdelta":-1} as any;
         const iob_data = [{"iob":1,"activity":0.01,"bolussnooze":0.5}] as any;
-        const output = determine_basal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
+        const output = determineBasal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
         //console.log(output);
         expect(output.rate).toBe(0);
         expect(output.duration).toBeGreaterThan(29);
@@ -148,7 +148,7 @@ describe('determine-basal', () => {
         //const currenttemp = {"duration":20,"rate":2,"temp":"absolute"};
         //const glucose_status = {"delta":5,"glucose":75,"long_avgdelta":5,"short_avgdelta":5};
         //const iob_data = {"iob":-1,"activity":-0.01,"bolussnooze":0};
-        //const output = determine_basal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
+        //const output = determineBasal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
         //console.log(output);
         //expect(output.rate).toBe(0.9);
         //expect(output.duration).toBe(30);
@@ -159,7 +159,7 @@ describe('determine-basal', () => {
         //const currenttemp = {"duration":20,"rate":0,"temp":"absolute"};
         //const glucose_status = {"delta":5,"glucose":75,"long_avgdelta":5,"short_avgdelta":5};
         //const iob_data = {"iob":-1,"activity":-0.01,"bolussnooze":0};
-        //const output = determine_basal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
+        //const output = determineBasal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
         //console.log(output);
         //expect(output.rate).toBe(0.9);
         //expect(output.duration).toBe(30);
@@ -169,7 +169,7 @@ describe('determine-basal', () => {
     it('should high-temp when > 80-ish and rising w/ lots of negative IOB', () => {
         const glucose_status = {"delta":5,"glucose":85,"long_avgdelta":5,"short_avgdelta":5} as any;
         const iob_data = [{"iob":-1,"activity":-0.01,"bolussnooze":0}] as any;
-        const output = determine_basal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
+        const output = determineBasal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
         expect(output.rate).toBeGreaterThan(1);
         expect(output.duration).toBe(30);
         expect(output.reason).toMatch(/no temp, setting/);
@@ -178,7 +178,7 @@ describe('determine-basal', () => {
     it('should high-temp when > 180-ish and rising but not more then maxSafeBasal', () => {
         const glucose_status = {"delta":5,"glucose":185,"long_avgdelta":5,"short_avgdelta":5} as any;
         const iob_data = [{"iob":0,"activity":-0.01,"bolussnooze":0}] as any;
-        const output = determine_basal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
+        const output = determineBasal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
         expect(output.reason).toMatch(/.*, adj. req. rate:.* to maxSafeBasal:.*, no temp, setting/);
     });
 
@@ -186,7 +186,7 @@ describe('determine-basal', () => {
         const glucose_status = {"delta":5,"glucose":145,"long_avgdelta":5,"short_avgdelta":5} as any;
         const currenttemp = {"duration":160,"rate":1.9,"temp":"absolute"} as any;
         const iob_data = [{"iob":0,"activity":-0.01,"bolussnooze":0}] as any;
-        const output = determine_basal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
+        const output = determineBasal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
         expect(output.duration).toBe(30);
         expect(output.reason).toMatch(/.* > 2.*insulinReq. Setting temp.*/);
     });
@@ -195,7 +195,7 @@ describe('determine-basal', () => {
         const glucose_status = {"delta":5,"glucose":145,"long_avgdelta":5,"short_avgdelta":5} as any;
         const currenttemp = {"duration":30,"rate":3.5,"temp":"absolute"} as any;
         const iob_data = [{"iob":0,"activity":-0.01,"bolussnooze":0}] as any;
-        const output = determine_basal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
+        const output = determineBasal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
         //console.log(output);
         expect(output.rate).toBeUndefined();
         expect(output.duration).toBeUndefined();
@@ -206,7 +206,7 @@ describe('determine-basal', () => {
         const glucose_status = {"delta":5,"glucose":145,"long_avgdelta":5,"short_avgdelta":5} as any;
         const currenttemp = {"duration":30,"rate":1.1,"temp":"absolute"} as any;
         const iob_data = [{"iob":0,"activity":-0.01,"bolussnooze":0}] as any;
-        const output = determine_basal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
+        const output = determineBasal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
         expect(output.duration).toBe(30);
         expect(output.reason).toMatch(/Eventual BG .*>.*, temp/);
     });
@@ -214,7 +214,7 @@ describe('determine-basal', () => {
     it('should stop high-temp when iob is near max_iob.', () => {
         const glucose_status = {"delta":5,"glucose":485,"long_avgdelta":5,"short_avgdelta":5} as any;
         const iob_data = [{"iob":3.5,"activity":0.05,"bolussnooze":0}] as any;
-        const output = determine_basal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
+        const output = determineBasal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
         expect(output.rate).toBe(0.9);
         expect(output.duration).toBe(30);
         expect(output.reason).toMatch(/IOB .* > max_iob .*/);
@@ -223,7 +223,7 @@ describe('determine-basal', () => {
     it('should temp to 0 when LOW w/ positive IOB', () => {
         const glucose_status = {"delta":0,"glucose":39,"long_avgdelta":0.1,"short_avgdelta":0} as any;
         const iob_data = [{"iob":1,"activity":0.01,"bolussnooze":0.5}] as any;
-        const output = determine_basal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
+        const output = determineBasal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
         expect(output.rate).toBe(0);
         expect(output.duration).toBeGreaterThan(29);
         //expect(output.reason).toMatch(/BG 39<80/);
@@ -232,7 +232,7 @@ describe('determine-basal', () => {
     it('should low temp when LOW w/ negative IOB', () => {
         const glucose_status = {"delta":0,"glucose":39,"long_avgdelta":0.1,"short_avgdelta":0} as any;
         const iob_data = [{"iob":-2.5,"activity":-0.03,"bolussnooze":0}] as any;
-        const output = determine_basal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
+        const output = determineBasal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
         expect(output.rate).toBeLessThan(0.8);
         expect(output.duration).toBeGreaterThan(29);
         //expect(output.reason).toMatch(/BG 39<80/);
@@ -241,7 +241,7 @@ describe('determine-basal', () => {
     it('should temp to 0 when LOW w/ no IOB', () => {
         const glucose_status = {"delta":0,"glucose":39,"long_avgdelta":0.1,"short_avgdelta":0} as any;
         const iob_data = [{"iob":0,"activity":0,"bolussnooze":0}] as any;
-        const output = determine_basal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
+        const output = determineBasal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
         expect(output.rate).toBe(0);
         expect(output.duration).toBeGreaterThan(29);
         //expect(output.reason).toMatch(/BG 39<80/);
@@ -253,7 +253,7 @@ describe('determine-basal', () => {
 
     it('should low-temp when eventualBG < min_bg', () => {
         const glucose_status = {"delta":-3,"glucose":110,"long_avgdelta":-1,"short_avgdelta":-1} as any;
-        const output = determine_basal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
+        const output = determineBasal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
         //console.log(output);
         expect(output.rate).toBeLessThan(0.8);
         expect(output.duration).toBeGreaterThan(29);
@@ -263,7 +263,7 @@ describe('determine-basal', () => {
     it('should low-temp when eventualBG < min_bg with delta > exp. delta', () => {
         const glucose_status = {"delta":-5,"glucose":115,"long_avgdelta":-6,"short_avgdelta":-6} as any;
         const iob_data = [{"iob":2,"activity":0.05,"bolussnooze":0}] as any;
-        const output = determine_basal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
+        const output = determineBasal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
         //console.log(output);
         expect(output.rate).toBeLessThan(0.2);
         expect(output.duration).toBeGreaterThan(29);
@@ -273,7 +273,7 @@ describe('determine-basal', () => {
     it('should low-temp when eventualBG < min_bg with delta > exp. delta', () => {
         const glucose_status = {"delta":-2,"glucose":156,"long_avgdelta":-1.33,"short_avgdelta":-1.33} as any;
         const iob_data = [{"iob":3.51,"activity":0.06,"bolussnooze":0.08}] as any;
-        const output = determine_basal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
+        const output = determineBasal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
         //console.log(output);
         expect(output.rate).toBeLessThan(0.8);
         expect(output.duration).toBe(30);
@@ -283,7 +283,7 @@ describe('determine-basal', () => {
     it('should low-temp much less when eventualBG < min_bg with delta barely negative', () => {
         const glucose_status = {"delta":-1,"glucose":115,"long_avgdelta":-1,"short_avgdelta":-1} as any;
         const iob_data = [{"iob":2,"activity":0.05,"bolussnooze":0}] as any;
-        const output = determine_basal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
+        const output = determineBasal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
         expect(output.rate).toBeGreaterThan(0.3);
         expect(output.rate).toBeLessThan(0.8);
         expect(output.duration).toBe(30);
@@ -293,7 +293,7 @@ describe('determine-basal', () => {
     //it('should do nothing when eventualBG < min_bg but appropriate low temp in progress', () => {
         //const glucose_status = {"delta":-1,"glucose":110,"long_avgdelta":-1,"short_avgdelta":-1};
         //const currenttemp = {"duration":20,"rate":0.25,"temp":"absolute"};
-        //const output = determine_basal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
+        //const output = determineBasal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
         ////console.log(output);
         //expect(output.rate).toBeUndefined();
         //expect(output.duration).toBeUndefined();
@@ -304,7 +304,7 @@ describe('determine-basal', () => {
         const currenttemp = {"duration":20,"rate":0.5,"temp":"absolute"} as any;
         const glucose_status = {"delta":3,"glucose":85,"long_avgdelta":3,"short_avgdelta":3} as any;
         const iob_data = [{"iob":-0.7,"activity":-0.01,"bolussnooze":0}] as any;
-        const output = determine_basal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
+        const output = determineBasal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
         expect(output.rate).toBeGreaterThan(0.8);
         expect(output.duration).toBe(30);
         //expect(output.rate).toBe(0);
@@ -316,7 +316,7 @@ describe('determine-basal', () => {
         const currenttemp = {"duration":20,"rate":0.5,"temp":"absolute"} as any;
         const glucose_status = {"delta":3,"glucose":85,"long_avgdelta":3,"short_avgdelta":3} as any;
         const iob_data = [{"iob":-0.7,"activity":-0.01,"bolussnooze":0}] as any;
-        const output = determine_basal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
+        const output = determineBasal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
         //console.log(output);
         expect(output.rate).toBeGreaterThan(0.8);
         expect(output.duration).toBe(30);
@@ -326,7 +326,7 @@ describe('determine-basal', () => {
         const currenttemp = {"duration":0,"rate":0.5,"temp":"absolute"} as any;
         const glucose_status = {"delta":3,"glucose":85,"long_avgdelta":3,"short_avgdelta":3} as any;
         const iob_data = [{"iob":-0.7,"activity":-0.01,"bolussnooze":0}] as any;
-        const output = determine_basal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
+        const output = determineBasal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
         // Trio target change: BG 85 with negative IOB triggers higher rate
         expect(output.rate).toBe(1.35);
         expect(output.duration).toBe(30);
@@ -336,7 +336,7 @@ describe('determine-basal', () => {
     it('should low-temp when low and rising slower than BGI', () => {
         const glucose_status = {"delta":1,"glucose":85,"long_avgdelta":1,"short_avgdelta":1} as any;
         const iob_data = [{"iob":-0.5,"activity":-0.01,"bolussnooze":0}] as any;
-        const output = determine_basal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
+        const output = determineBasal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
         expect(output.rate).toBeLessThan(0.8);
         expect(output.duration).toBe(30);
         //expect(output.reason).toMatch(/setting/);
@@ -346,7 +346,7 @@ describe('determine-basal', () => {
 
     it('should high-temp when eventualBG > max_bg', () => {
         const glucose_status = {"delta":+3,"glucose":120,"long_avgdelta":0,"short_avgdelta":+1} as any;
-        const output = determine_basal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
+        const output = determineBasal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
         expect(output.rate).toBeGreaterThan(1);
         expect(output.duration).toBe(30);
         expect(output.reason).toMatch(/Eventual BG .*>= 110/);
@@ -356,7 +356,7 @@ describe('determine-basal', () => {
         const currenttemp = {"duration":20,"rate":2,"temp":"absolute"} as any;
         const glucose_status = {"delta":-5,"glucose":175,"long_avgdelta":-5,"short_avgdelta":-5} as any;
         const iob_data = [{"iob":1,"activity":0.01,"bolussnooze":0}] as any;
-        const output = determine_basal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
+        const output = determineBasal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
         expect(output.rate).toBe(0.9);
         expect(output.duration).toBe(30);
         //expect(output.reason).toMatch(/.*; cancel/);
@@ -369,7 +369,7 @@ describe('determine-basal', () => {
         const currenttemp = {"duration":20,"rate":2,"temp":"absolute"} as any;
         const glucose_status = {"delta":-5,"glucose":175,"long_avgdelta":-4,"short_avgdelta":-4} as any;
         const iob_data = [{"iob":1,"activity":0.01,"bolussnooze":0}] as any;
-        const output = determine_basal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
+        const output = determineBasal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
         expect(output.rate).toBe(0.9);
         expect(output.duration).toBe(30);
         expect(output.reason).toMatch(/Eventual BG.*>.*but.*Delta.*< Exp.*/);
@@ -379,7 +379,7 @@ describe('determine-basal', () => {
         const currenttemp = {"duration":0,"rate":0,"temp":"absolute"} as any;
         const glucose_status = {"delta":-5,"glucose":175,"long_avgdelta":-4,"short_avgdelta":-4} as any;
         const iob_data = [{"iob":1,"activity":0.01,"bolussnooze":0}] as any;
-        const output = determine_basal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
+        const output = determineBasal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
         //expect(output.rate).toBeUndefined();
         //expect(output.duration).toBeUndefined();
         expect(output.rate).toBe(0.9);
@@ -390,7 +390,7 @@ describe('determine-basal', () => {
     it('should high-temp when high and falling slower than BGI', () => {
         const glucose_status = {"delta":-1,"glucose":175,"long_avgdelta":-1,"short_avgdelta":-1} as any;
         const iob_data = [{"iob":1,"activity":0.01,"bolussnooze":0}] as any;
-        const output = determine_basal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
+        const output = determineBasal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
         expect(output.rate).toBeGreaterThan(1);
         expect(output.duration).toBe(30);
         expect(output.reason).toMatch(/no temp, setting/);
@@ -399,7 +399,7 @@ describe('determine-basal', () => {
     it('should high-temp when high and falling slowly with low insulin activity', () => {
         const glucose_status = {"delta":-1,"glucose":300,"long_avgdelta":-1,"short_avgdelta":-1} as any;
         const iob_data = [{"iob":0.5,"activity":0.005,"bolussnooze":0}] as any;
-        const output = determine_basal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
+        const output = determineBasal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
         expect(output.rate).toBeGreaterThan(2.5);
         expect(output.duration).toBe(30);
         expect(output.reason).toMatch(/no temp, setting/);
@@ -408,7 +408,7 @@ describe('determine-basal', () => {
     //it('should set lower high-temp when high and falling almost fast enough with low insulin activity', () => {
         //const glucose_status = {"delta":-6,"glucose":300,"long_avgdelta":-5,"short_avgdelta":-5};
         //const iob_data = {"iob":0.5,"activity":0.005,"bolussnooze":0};
-        //const output = determine_basal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
+        //const output = determineBasal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
         //console.error(output);
         //expect(output.rate).toBeGreaterThan(1);
         //expect(output.rate).toBeLessThan(2);
@@ -420,7 +420,7 @@ describe('determine-basal', () => {
         //const glucose_status = {"delta":-6,"glucose":300,"long_avgdelta":-5,"short_avgdelta":-5};
         //const iob_data = {"iob":0.5,"activity":0.005,"bolussnooze":0};
         //const currenttemp = {"duration":30,"rate":3.5,"temp":"absolute"};
-        //const output = determine_basal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
+        //const output = determineBasal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
         //console.error(output);
         //expect(output.rate).toBeGreaterThan(1);
         //expect(output.rate).toBeLessThan(2);
@@ -429,13 +429,13 @@ describe('determine-basal', () => {
     //});
 
     it('should profile.current_basal be undefined return error', () => {
-      const result = determine_basal(undefined as any, undefined as any, undefined as any, undefined as any);
+      const result = determineBasal(undefined as any, undefined as any, undefined as any, undefined as any);
       expect(result.error).toBe('Error: could not get current basal rate');
     });
 
     it('should let low-temp run when bg < 30 (Dexcom is in ???)', () => {
         const currenttemp = {"duration":30,"rate":0,"temp":"absolute"} as any;
-        const output = determine_basal({glucose:10} as any, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
+        const output = determineBasal({glucose:10} as any, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
         //console.log(output);
         expect(output.rate).toBeUndefined();
         expect(output.reason).toMatch(/CGM is calibrating/);
@@ -443,29 +443,29 @@ describe('determine-basal', () => {
 
     it('should cancel high-temp when bg < 30 (Dexcom is in ???)', () => {
         const currenttemp = {"duration":30,"rate":2,"temp":"absolute"} as any;
-        const output = determine_basal({glucose:10} as any, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
+        const output = determineBasal({glucose:10} as any, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
         expect(output.rate).toBeLessThan(1);
         expect(output.reason).toMatch(/Replacing high temp/);
     });
 
     it('profile should contain min_bg,max_bg', () => {
-      const result = determine_basal({glucose:100} as any, undefined as any, undefined as any, {"current_basal":0.0} as any, autosens, meal_data, tempBasalFunctions);
+      const result = determineBasal({glucose:100} as any, undefined as any, undefined as any, {"current_basal":0.0} as any, autosens, meal_data, tempBasalFunctions);
       expect(result.error).toBe('Error: could not determine target_bg. ');
     });
 
     it('iob_data should not be undefined', () => {
-      const result = determine_basal({glucose:100} as any, undefined as any, undefined as any, {"current_basal":0.0, "max_bg":100,"min_bg":1100} as any, autosens, meal_data, tempBasalFunctions);
+      const result = determineBasal({glucose:100} as any, undefined as any, undefined as any, {"current_basal":0.0, "max_bg":100,"min_bg":1100} as any, autosens, meal_data, tempBasalFunctions);
       expect(result.error).toBe('Error: iob_data undefined. ');
     });
 
     //it('iob_data should contain activity, iob, bolussnooze', () => {
-      //const result = determine_basal({glucose:100} as any, undefined as any, {"activity":0} as any, {"current_basal":0.0, "max_bg":100,"min_bg":110} as any, autosens, meal_data, tempBasalFunctions);
+      //const result = determineBasal({glucose:100} as any, undefined as any, {"activity":0} as any, {"current_basal":0.0, "max_bg":100,"min_bg":110} as any, autosens, meal_data, tempBasalFunctions);
       //expect(result.error).toBe('Error: iob_data missing some property. ');
     //});
 
 /*
     it('should return error eventualBG if something went wrong', () => {
-      const result = determine_basal({glucose:100} as any, undefined as any, {"activity":0, "iob":0,"bolussnooze":0} as any, {"current_basal":0.0, "sens":NaN} as any, autosens, meal_data, tempBasalFunctions);
+      const result = determineBasal({glucose:100} as any, undefined as any, {"activity":0, "iob":0,"bolussnooze":0} as any, {"current_basal":0.0, "sens":NaN} as any, autosens, meal_data, tempBasalFunctions);
       expect(result.error).toBe('Error: could not calculate eventualBG');
     });
 */
@@ -476,7 +476,7 @@ describe('determine-basal', () => {
         //const glucose_status = {"delta":1,"glucose":80,"long_avgdelta":1,"short_avgdelta":1};
         //const iob_data = {"iob":0.5,"activity":-0.01,"bolussnooze":1,"basaliob":-0.5};
         //const meal_data = {"carbs":20,"boluses":1, "mealCOB":20};
-        //const output = determine_basal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
+        //const output = determineBasal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
         //console.log(output);
         //expect(output.rate).toBe(0.9);
         //expect(output.duration).toBe(30);
@@ -488,7 +488,7 @@ describe('determine-basal', () => {
         const meal_data = {"carbs":65,"boluses":4, "mealCOB":65} as any;
         const currenttemp = {"duration":29,"rate":1.3,"temp":"absolute"} as any;
         const profile = {"max_iob":3,"type":"current","dia":3,"current_basal":1.3,"max_daily_basal":1.3,"max_basal":3.5,"min_bg":105,"max_bg ":105,"sens":40,"carb_ratio":10} as any;
-        const output = determine_basal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
+        const output = determineBasal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
         //console.log(output);
         expect(output.rate).toBeUndefined();
         expect(output.duration).toBeUndefined();
@@ -498,7 +498,7 @@ describe('determine-basal', () => {
         //const glucose_status = {"delta":-1,"glucose":80,"long_avgdelta":1,"short_avgdelta":1};
         //const iob_data = {"iob":0.5,"activity":-0.01,"bolussnooze":1,"basaliob":-0.5};
         //const currenttemp = {"duration":20,"rate":2,"temp":"absolute"};
-        //const output = determine_basal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
+        //const output = determineBasal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
         ////console.log(output);
         ////expect(output.rate).toBe(0);
         ////expect(output.duration).toBe(0);
@@ -510,7 +510,7 @@ describe('determine-basal', () => {
         //const glucose_status = {"delta":1,"glucose":80,"long_avgdelta":1,"short_avgdelta":1};
         //const iob_data = {"iob":0.5,"activity":-0.01,"bolussnooze":1,"basaliob":-0.5};
         //const currenttemp = {"duration":20,"rate":0,"temp":"absolute"};
-        //const output = determine_basal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
+        //const output = determineBasal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
         ////console.log(output);
         //expect(output.rate).toBe(0.9);
         //expect(output.duration).toBe(30);
@@ -524,7 +524,7 @@ describe('determine-basal', () => {
         var glucose_status = {"delta":10,"glucose":120,"avgdelta":10};
         var iob_data = {"iob":0.4,"activity":0,"bolussnooze":0.7,"basaliob":-0.3};
         var meal_data = {"carbs":20,"boluses":1, "mealCOB":20};
-        var output = determine_basal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
+        var output = determineBasal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
         console.log(output);
         output.rate.should.be.above(1.8);
         output.duration.should.equal(30);
@@ -536,7 +536,7 @@ describe('determine-basal', () => {
         var iob_data = {"iob":0.5,"activity":0.01,"bolussnooze":0.6,"basaliob":-0.1};
         var meal_data = {"carbs":20,"boluses":1, "mealCOB":20};
         var currenttemp = {"duration":10,"rate":2,"temp":"absolute"};
-        var output = determine_basal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
+        var output = determineBasal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
         console.log(output);
         output.rate.should.be.above(2.2);
         output.duration.should.equal(30);
@@ -548,7 +548,7 @@ describe('determine-basal', () => {
         var iob_data = {"iob":0.9,"activity":0.02,"bolussnooze":0.5,"basaliob":0.4};
         var meal_data = {"carbs":20,"boluses":1, "mealCOB":20};
         var currenttemp = {"duration":30,"rate":2.5,"temp":"absolute"};
-        var output = determine_basal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
+        var output = determineBasal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
         output.rate.should.be.below(1.5);
     });
 
@@ -557,7 +557,7 @@ describe('determine-basal', () => {
         var glucose_status = {"delta":4,"glucose":120,"avgdelta":4};
         var iob_data = {"iob":6,"activity":0,"bolussnooze":6,"basaliob":0,"hightempinsulin":0};
         var meal_data = {"carbs":120,"boluses":6, "mealCOB":120};
-        var output = determine_basal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
+        var output = determineBasal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
         console.log(output);
         output.rate.should.be.above(1);
         output.duration.should.equal(30);
@@ -568,7 +568,7 @@ describe('determine-basal', () => {
         var glucose_status = {"delta":4,"glucose":140,"avgdelta":4};
         var iob_data = {"iob":6.5,"activity":0.01,"bolussnooze":5.5,"basaliob":1,"hightempinsulin":1};
         var meal_data = {"carbs":120,"boluses":6, "mealCOB":100};
-        var output = determine_basal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
+        var output = determineBasal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
         console.log(output);
         output.rate.should.be.above(1);
         output.duration.should.equal(30);
@@ -579,7 +579,7 @@ describe('determine-basal', () => {
         var glucose_status = {"delta":4,"glucose":160,"avgdelta":4};
         var iob_data = {"iob":7.0,"activity":0.02,"bolussnooze":5.0,"basaliob":2,"hightempinsulin":2};
         var meal_data = {"carbs":120,"boluses":6, "mealCOB":80};
-        var output = determine_basal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
+        var output = determineBasal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
         console.log(output);
         output.rate.should.be.above(1);
         output.duration.should.equal(30);
@@ -590,7 +590,7 @@ describe('determine-basal', () => {
         var glucose_status = {"delta":1,"glucose":160,"avgdelta":1};
         var iob_data = {"iob":7.0,"activity":0.02,"bolussnooze":5.0,"basaliob":2};
         var meal_data = {"carbs":120,"boluses":6, "mealCOB":80};
-        var output = determine_basal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
+        var output = determineBasal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
         console.log(output);
         //should.not.exist(output.rate);
         //should.not.exist(output.duration);
@@ -604,7 +604,7 @@ describe('determine-basal', () => {
         var iob_data = {"iob":7.0,"activity":0.03,"bolussnooze":5.0,"basaliob":2};
         var meal_data = {"carbs":120,"boluses":6, "mealCOB":80};
         var currenttemp = {"duration":15,"rate":2.5,"temp":"absolute"};
-        var output = determine_basal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
+        var output = determineBasal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
         output.rate.should.equal(0.9);
         output.duration.should.equal(30);
         //output.rate.should.equal(0);
@@ -615,7 +615,7 @@ describe('determine-basal', () => {
         var glucose_status = {"delta":1,"glucose":160,"avgdelta":1};
         var iob_data = {"iob":7.0,"activity":0.02,"bolussnooze":4.0,"basaliob":3};
         var meal_data = {"carbs":120,"boluses":11, "mealCOB":80};
-        var output = determine_basal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
+        var output = determineBasal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
         console.log(output);
         output.rate.should.equal(0.9);
         output.duration.should.equal(30);
@@ -629,7 +629,7 @@ describe('determine-basal', () => {
         var currenttemp = {"duration":3,"rate":3.5,"temp":"absolute"}
         var iob_data = {"iob":2.701,"activity":0.0107,"bolussnooze":0.866,"basaliob":1.013,"netbasalinsulin":1.1,"hightempinsulin":1.8}
         var profile_data = {"max_iob":3,"type":"current","dia":3,"current_basal":0.9,"max_daily_basal":1.3,"max_basal":3.5,"min_bg":105,"max_bg":105,"sens":40,"carb_ratio":10}
-        var output = determine_basal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
+        var output = determineBasal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
         //console.log(output);
         //output.rate.should.equal(0.9);
         //output.duration.should.equal(30);
@@ -642,7 +642,7 @@ describe('determine-basal', () => {
         //const glucose_status = {"delta":1,"glucose":160,"avgdelta":1};
         const iob_data = [{"iob":0.5,"activity":0.001,"bolussnooze":0.0,"basaliob":0.5}] as any;
         const autosens_data = {"ratio":0.5} as any;
-        const output = determine_basal(glucose_status, currenttemp, iob_data, profile, autosens_data, meal_data, tempBasalFunctions);
+        const output = determineBasal(glucose_status, currenttemp, iob_data, profile, autosens_data, meal_data, tempBasalFunctions);
         //console.log(output);
         expect(output.rate).toBe(0);
         expect(output.duration).toBe(30);
@@ -652,7 +652,7 @@ describe('determine-basal', () => {
         const glucose_status = {"delta":5,"glucose":185,"long_avgdelta":5,"short_avgdelta":5} as any;
         const iob_data = [{"iob":0,"activity":-0.01,"bolussnooze":0}] as any;
         profile.current_basal_safety_multiplier = 1;
-        const output = determine_basal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
+        const output = determineBasal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
         expect(output.rate).toBe(0.9);
         expect(output.reason).toMatch(/.*, adj. req. rate:.* to maxSafeBasal:.*, no temp, setting/);
     });
@@ -662,7 +662,7 @@ describe('determine-basal', () => {
         const iob_data = [{"iob":0,"activity":-0.01,"bolussnooze":0}] as any;
         profile.current_basal_safety_multiplier = null;
         profile.max_daily_safety_multiplier = 1;
-        const output = determine_basal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
+        const output = determineBasal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
         expect(output.rate).toBe(1.3);
         expect(output.reason).toMatch(/.*, adj. req. rate:.* to maxSafeBasal:.*, no temp, setting/);
     });
@@ -673,7 +673,7 @@ describe('determine-basal', () => {
         profile.max_basal = 5;
         profile.current_basal_safety_multiplier = 10;
         profile.max_daily_safety_multiplier = 10;
-        const output = determine_basal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
+        const output = determineBasal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
         expect(output.rate).toBe(5);
         expect(output.reason).toMatch(/.*, adj. req. rate:.* to maxSafeBasal:.*, no temp, setting/);
     });
@@ -682,7 +682,7 @@ describe('determine-basal', () => {
         const glucose_status = {"delta":5,"glucose":185,"long_avgdelta":5,"short_avgdelta":5} as any;
         const profile2 = {"max_iob":2.5,"dia":3,"type":"current","current_basal":0.025,"max_daily_basal":1.3,"max_basal":.05,"max_bg":120,"min_bg":110,"sens":200,"model":"523"} as any;
         const currenttemp = {"duration":0,"rate":0,"temp":"absolute"} as any;
-        const output = determine_basal(glucose_status, currenttemp, iob_data, profile2, autosens, meal_data, tempBasalFunctions);
+        const output = determineBasal(glucose_status, currenttemp, iob_data, profile2, autosens, meal_data, tempBasalFunctions);
         expect(output.rate).toBe(0.05);
         expect(output.duration).toBe(30);
         expect(output.reason).toMatch(/.*, adj. req. rate:.* to maxSafeBasal: 0.05, no temp, setting 0.05/);
@@ -693,7 +693,7 @@ describe('determine-basal', () => {
         const currenttemp = {"duration":0,"rate":0,"temp":"absolute"} as any;
         profile.current_basal = 0.825;
         profile.model = "523";
-        const output = determine_basal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
+        const output = determineBasal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
         //expect(output.rate).toBe(0);
         //expect(output.duration).toBe(0);
         // Trio target change: BG 115 > min_bg 110, sets higher temp
@@ -706,7 +706,7 @@ describe('determine-basal', () => {
         const currenttemp = {"duration":0,"rate":0,"temp":"absolute"} as any;
         profile.current_basal = 0.875;
         profile.model = "522";
-        const output = determine_basal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
+        const output = determineBasal(glucose_status, currenttemp, iob_data, profile, autosens, meal_data, tempBasalFunctions);
         // Trio target change: BG 115 > min_bg 110, sets higher temp
         expect(output.rate).toBe(1.15);
         expect(output.duration).toBe(30);

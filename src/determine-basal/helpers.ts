@@ -128,7 +128,7 @@ export function checkStaleTempBasal(
 
 /**
  * Projects 30m deviation using minDelta/minAvgDelta/long_avgdelta, then calculates
- * naive_eventualBG and eventualBG based on net IOB and sensitivity.
+ * naiveEventualBG and eventualBG based on net IOB and sensitivity.
  */
 export function calculateDeviation(
     bg: number,
@@ -139,7 +139,7 @@ export function calculateDeviation(
     minAvgDelta: number,
     longAvgDelta: number,
     bgImpact: number,
-): { deviation: number; naive_eventualBG: number; eventualBG: number } {
+): { deviation: number; naiveEventualBG: number; eventualBG: number } {
     // project deviations for 30 minutes
     let deviation = round( TEMP_BASAL_DURATION_MINUTES / PRED_INTERVAL_MINUTES * ( minDelta - bgImpact ) );
     // don't overreact to a big negative delta: use minAvgDelta if deviation is negative
@@ -153,11 +153,11 @@ export function calculateDeviation(
 
     // calculate the naive (bolus calculator math) eventual BG based on net IOB and sensitivity
     // if IOB is negative, be more conservative and use the lower of adjustedSens, profile.sens
-    const naive_eventualBG = iobData.iob > 0
+    const naiveEventualBG = iobData.iob > 0
         ? round(bg - (iobData.iob * adjustedSens))
         : round(bg - (iobData.iob * Math.min(adjustedSens, sensitivity)));
     // and adjust it for the deviation above
-    const eventualBG = naive_eventualBG + deviation;
+    const eventualBG = naiveEventualBG + deviation;
 
-    return { deviation, naive_eventualBG, eventualBG };
+    return { deviation, naiveEventualBG, eventualBG };
 }

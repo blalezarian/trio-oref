@@ -11,7 +11,7 @@
   THE SOFTWARE.
 */
 
-// Define various functions used later on, in the main function determine_basal() below
+// Define various functions used later on, in the main function determineBasal() below
 
 import {
     PRED_INTERVAL_MINUTES,
@@ -47,26 +47,26 @@ import { generateBGPredictions } from './bg-predictions';
 import { calculateDosingDecision } from './dosing-decision';
 
 /** Main determine-basal entry point: calculates the recommended temp basal / SMB dosing action. */
-export function determine_basal(
-    glucose_status: GlucoseStatus,
+export function determineBasal(
+    glucoseStatus: GlucoseStatus,
     currenttemp: CurrentTemp,
-    iob_data: IOBData[],
+    iobData: IOBData[],
     profile: Profile,
-    autosens_data: AutosensData,
-    meal_data: MealData,
+    autosensData: AutosensData,
+    mealData: MealData,
     tempBasalFunctions: TempBasalFunctions,
     microBolusAllowed: boolean,
-    reservoir_data: number | undefined,
+    reservoirData: number | undefined,
     currentTime: Date | ISODateString | undefined,
-    _pumphistory: unknown[],
+    _pumpHistory: unknown[],
     preferences: Preferences,
-    _basalprofile: BasalEntry[] | undefined,
-    trio_custom_variables?: TrioCustomVariables,
+    _basalProfile: BasalEntry[] | undefined,
+    trioCustomVariables?: TrioCustomVariables,
     middleWare?: (arg: DetermineBasalResult) => DetermineBasalResult
 ): DetermineBasalResult {
 
-    if (!trio_custom_variables) {
-        trio_custom_variables = DEFAULT_TRIO_CUSTOM_VARIABLES;
+    if (!trioCustomVariables) {
+        trioCustomVariables = DEFAULT_TRIO_CUSTOM_VARIABLES;
     }
     if (!preferences) {
         preferences = {} as Preferences;
@@ -75,12 +75,12 @@ export function determine_basal(
         return { reason: '', error: 'Error: could not get current basal rate' } as DetermineBasalResult;
     }
 
-    const overrideTarget = trio_custom_variables.overrideTarget;
-    const profileTarget = resolveProfileTarget(profile.min_bg, overrideTarget, trio_custom_variables.useOverride, profile.temptargetSet);
-    const { overrideFactor, sensitivity, carbRatio } = resolveOverrides(profile, trio_custom_variables);
+    const overrideTarget = trioCustomVariables.overrideTarget;
+    const profileTarget = resolveProfileTarget(profile.min_bg, overrideTarget, trioCustomVariables.useOverride, profile.temptargetSet);
+    const { overrideFactor, sensitivity, carbRatio } = resolveOverrides(profile, trioCustomVariables);
 
     // tdd past 24 hour
-    let tdd = trio_custom_variables.currentTDD;
+    let tdd = trioCustomVariables.currentTDD;
     let dynISFenabled = preferences.useNewFormula;
 
     const insulinForManualBolus = 0;
@@ -88,33 +88,33 @@ export function determine_basal(
     const systemTime = currentTime ? new Date(currentTime) : new Date();
 
     const weightPercentage = Number(profile.weightPercentage);
-    const { weightedAverage, average_total_data } = trio_custom_variables;
+    const { weightedAverage, average_total_data } = trioCustomVariables;
 
-    const tdd_before = tdd;
+    const tddBefore = tdd;
     const dynResult = calculateDynamicISF(
-        glucose_status, profile, preferences, autosens_data,
+        glucoseStatus, profile, preferences, autosensData,
         sensitivity, profileTarget, dynISFenabled, tdd,
         weightedAverage, average_total_data, weightPercentage, middleWare
     );
     dynISFenabled = dynResult.dynISFenabled;
     tdd = dynResult.tdd;
-    const { tddReason, newRatio, insulinFactor, adjustmentFactor, enableSigmoid: enable_sigmoid, tdd24hTo14dRatio: tdd24h_14d_Ratio } = dynResult;
+    const { tddReason, newRatio, insulinFactor, adjustmentFactor, enableSigmoid, tdd24hTo14dRatio } = dynResult;
 
     const cgmValidation = validateCGMData(
-        glucose_status, profile, systemTime, overrideFactor,
-        currenttemp, trio_custom_variables.useOverride, trio_custom_variables.duration
+        glucoseStatus, profile, systemTime, overrideFactor,
+        currenttemp, trioCustomVariables.useOverride, trioCustomVariables.duration
     );
     if ('earlyReturn' in cgmValidation) return cgmValidation.earlyReturn;
-    const { bg, tick, minDelta, minAvgDelta, maxDelta, deliverAt, profileCurrentBasal: profile_current_basal } = cgmValidation;
+    const { bg, tick, minDelta, minAvgDelta, maxDelta, deliverAt, profileCurrentBasal } = cgmValidation;
 
     const sensTargets = configureSensitivityAndTargets(
-        glucose_status, profile, autosens_data, profileTarget, overrideTarget,
-        bg, dynISFenabled, newRatio, tdd24h_14d_Ratio, overrideFactor,
-        profile_current_basal, tdd_before, weightedAverage, average_total_data,
+        glucoseStatus, profile, autosensData, profileTarget, overrideTarget,
+        bg, dynISFenabled, newRatio, tdd24hTo14dRatio, overrideFactor,
+        profileCurrentBasal, tddBefore, weightedAverage, average_total_data,
         weightPercentage, sensitivity, carbRatio, cgmValidation.basal, cgmValidation.reason
     );
     if ('earlyReturn' in sensTargets) return sensTargets.earlyReturn;
-    const { maxIOB: max_iob, targetBG: target_bg, minBG: min_bg, maxBG: max_bg, highBG: high_bg, sensitivityRatio, adjustedSens, isfreason, targetLog } = sensTargets;
+    const { maxIOB, targetBG, minBG, maxBG, highBG, sensitivityRatio, adjustedSens, isfreason, targetLog } = sensTargets;
     let basal = sensTargets.basal;
     let threshold = sensTargets.threshold;
 
@@ -123,23 +123,23 @@ export function determine_basal(
         result.reason = cgmValidation.reason;
     }
 
-    const iobValidation = validateIOBAndTemps(iob_data, currenttemp, profile, systemTime, microBolusAllowed, tempBasalFunctions, result, deliverAt);
+    const iobValidation = validateIOBAndTemps(iobData, currenttemp, profile, systemTime, microBolusAllowed, tempBasalFunctions, result, deliverAt);
     if ('earlyReturn' in iobValidation) return iobValidation.earlyReturn;
-    const iob_datum = iobValidation.iob_data;
+    const iobDatum = iobValidation.iob_data;
     const iobArray = iobValidation.iobArray;
 
     //calculate BG impact: the amount BG "should" be rising or falling based on insulin activity alone
-    const bgImpact = round(( -iob_datum.activity * adjustedSens * PRED_INTERVAL_MINUTES ), 2);
+    const bgImpact = round(( -iobDatum.activity * adjustedSens * PRED_INTERVAL_MINUTES ), 2);
 
-    const deviationResult = calculateDeviation(bg, iob_datum, adjustedSens, sensitivity, minDelta, minAvgDelta, glucose_status.long_avgdelta, bgImpact);
-    const { deviation, naive_eventualBG } = deviationResult;
+    const deviationResult = calculateDeviation(bg, iobDatum, adjustedSens, sensitivity, minDelta, minAvgDelta, glucoseStatus.long_avgdelta, bgImpact);
+    const { deviation, naiveEventualBG } = deviationResult;
     let eventualBG = deviationResult.eventualBG;
 
     if (eventualBG === undefined || isNaN(eventualBG)) {
         result.error = `Error: could not calculate eventualBG. Sensitivity: ${adjustedSens} Deviation: ${deviation}`;
         return result;
     }
-    const expectedDelta = calculateExpectedDelta(target_bg, eventualBG, bgImpact);
+    const expectedDelta = calculateExpectedDelta(targetBG, eventualBG, bgImpact);
 
     // Initialize result (requestedTemp) object. Has to be done after eventualBG is calculated.
     result = {
@@ -149,11 +149,11 @@ export function determine_basal(
         tick,
         eventualBG,
         insulinReq: 0,
-        reservoir: reservoir_data,
+        reservoir: reservoirData,
         deliverAt,
         sensitivityRatio,
         CR: round(carbRatio, 1),
-        current_target: target_bg,
+        current_target: targetBG,
         insulinForManualBolus,
         manualBolusErrorString,
         minDelta,
@@ -166,17 +166,17 @@ export function determine_basal(
     let enableSMB = false;
 
     // If SMB is always off, don't bother checking if we should enable SMBs
-    if (trio_custom_variables.smbIsOff) {
+    if (trioCustomVariables.smbIsOff) {
         console.log("SMBs are always off.");
     } else {
         enableSMB = checkSMBEnabled(
             profile,
             microBolusAllowed,
-            meal_data,
+            mealData,
             bg,
-            target_bg,
-            high_bg,
-            trio_custom_variables,
+            targetBG,
+            highBG,
+            trioCustomVariables,
             systemTime
         );
     }
@@ -185,7 +185,7 @@ export function determine_basal(
 
     const carbAbsorption = calculateCarbAbsorption(
         minDelta, bgImpact, adjustedSens, carbRatio, sensitivity,
-        sensitivityRatio, meal_data, profile, systemTime
+        sensitivityRatio, mealData, profile, systemTime
     );
     const { carbImpact, carbImpactDuration, uamCarbImpact, carbSensFactor, remainingCATime, remainingCIpeak, slopeFromDeviations } = carbAbsorption;
 
@@ -193,8 +193,8 @@ export function determine_basal(
         iobArray, eventualBG, bg, adjustedSens,
         carbImpact, carbImpactDuration, uamCarbImpact,
         remainingCATime, remainingCIpeak, slopeFromDeviations,
-        dynISFenabled, enable_sigmoid, tdd, adjustmentFactor, insulinFactor,
-        enableUAM, target_bg, threshold, meal_data
+        dynISFenabled, enableSigmoid, tdd, adjustmentFactor, insulinFactor,
+        enableUAM, targetBG, threshold, mealData
     );
     eventualBG = bgPred.eventualBG;
     result.eventualBG = eventualBG;
@@ -204,10 +204,10 @@ export function determine_basal(
     const { lastIOBpredBG, lastCOBpredBG, lastUAMpredBG, minIOBPredBG, IOBpredBGs, COBpredBGs } = bgPred;
 
     return calculateDosingDecision({
-        result, iobData: iob_datum, mealData: meal_data, profile, glucoseStatus: glucose_status, currenttemp,
-        tempBasalFunctions, systemTime, trioCustomVariables: trio_custom_variables,
-        bg, eventualBG, naiveEventualBG: naive_eventualBG,
-        threshold, targetBG: target_bg, minBG: min_bg, maxBG: max_bg, maxIOB: max_iob,
+        result, iobData: iobDatum, mealData, profile, glucoseStatus, currenttemp,
+        tempBasalFunctions, systemTime, trioCustomVariables,
+        bg, eventualBG, naiveEventualBG,
+        threshold, targetBG, minBG, maxBG, maxIOB,
         basal, adjustedSens, carbRatio, overrideFactor,
         expectedDelta, minDelta, maxDelta, tick,
         bgImpact, deviation,
@@ -238,25 +238,25 @@ export function resolveProfileTarget(
     return minBG;
 }
 
-/** Resolves override factor, sensitivity, and carb ratio based on trio_custom_variables overrides. */
+/** Resolves override factor, sensitivity, and carb ratio based on trioCustomVariables overrides. */
 export function resolveOverrides(
     profile: Profile,
-    trio_custom_variables: TrioCustomVariables,
+    trioCustomVariables: TrioCustomVariables,
 ): { overrideFactor: number; sensitivity: number; carbRatio: number } {
-    if (!trio_custom_variables.useOverride) {
+    if (!trioCustomVariables.useOverride) {
         return { overrideFactor: 1, sensitivity: profile.sens, carbRatio: profile.carb_ratio };
     }
 
-    const overrideFactor = trio_custom_variables.overridePercentage / 100;
+    const overrideFactor = trioCustomVariables.overridePercentage / 100;
     let sensitivity = profile.sens;
     let carbRatio = profile.carb_ratio;
 
-    if (trio_custom_variables.isfAndCr) {
+    if (trioCustomVariables.isfAndCr) {
         sensitivity /= overrideFactor;
         carbRatio /= overrideFactor;
     } else {
-        if (trio_custom_variables.cr) { carbRatio /= overrideFactor; }
-        if (trio_custom_variables.isf) { sensitivity /= overrideFactor; }
+        if (trioCustomVariables.cr) { carbRatio /= overrideFactor; }
+        if (trioCustomVariables.isf) { sensitivity /= overrideFactor; }
     }
 
     return { overrideFactor, sensitivity, carbRatio };

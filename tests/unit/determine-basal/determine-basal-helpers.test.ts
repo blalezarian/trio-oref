@@ -386,26 +386,26 @@ describe('calculateDeviation', () => {
         expect(result.deviation).toBe(6);
     });
 
-    it('computes naive_eventualBG using adjustedSens for positive IOB', () => {
+    it('computes naiveEventualBG using adjustedSens for positive IOB', () => {
         // bg=150, iob=2.0 > 0, adjustedSens=50
-        // naive_eventualBG = round(150 - 2.0 * 50) = round(50) = 50
+        // naiveEventualBG = round(150 - 2.0 * 50) = round(50) = 50
         const result = calculateDeviation(150, makeIOBData({ iob: 2.0 }), 50, 40, 0, 0, 0, 0);
-        expect(result.naive_eventualBG).toBe(50);
+        expect(result.naiveEventualBG).toBe(50);
     });
 
     it('uses min(adjustedSens, sensitivity) for negative IOB', () => {
         // bg=150, iob=-1.0, adjustedSens=50, sensitivity=40
-        // naive_eventualBG = round(150 - (-1.0) * min(50, 40)) = round(150 + 40) = 190
+        // naiveEventualBG = round(150 - (-1.0) * min(50, 40)) = round(150 + 40) = 190
         const result = calculateDeviation(150, makeIOBData({ iob: -1.0 }), 50, 40, 0, 0, 0, 0);
-        expect(result.naive_eventualBG).toBe(190);
+        expect(result.naiveEventualBG).toBe(190);
     });
 
-    it('computes eventualBG = naive_eventualBG + deviation', () => {
-        // bg=150, iob=2.0, adjustedSens=50 → naive_eventualBG = 50
+    it('computes eventualBG = naiveEventualBG + deviation', () => {
+        // bg=150, iob=2.0, adjustedSens=50 → naiveEventualBG = 50
         // bgImpact = -2, minDelta = 5 → deviation = 42
         // eventualBG = 50 + 42 = 92
         const result = calculateDeviation(150, makeIOBData({ iob: 2.0 }), 50, 50, 5, 3, 1, -2);
-        expect(result.eventualBG).toBe(result.naive_eventualBG + result.deviation);
+        expect(result.eventualBG).toBe(result.naiveEventualBG + result.deviation);
     });
 
     it('returns zero deviation when minDelta equals bgImpact', () => {

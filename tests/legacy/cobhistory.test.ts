@@ -24,7 +24,7 @@ describe('cobhistory', () => {
         {"_type": "Bolus","created_at": "2016-06-19T12:59:36-04:00","amount": 4.4}
     ];
 
-   //function determine_basal(glucose_status, currenttemp, iob_data, profile)
+   //function determineBasal(glucoseStatus, currenttemp, iobData, profile)
 
     it('should dedupe entries', () => {
         const inputs = {

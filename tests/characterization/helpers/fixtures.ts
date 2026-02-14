@@ -1885,7 +1885,7 @@ export function generateAllFixtures(): FixtureSpec[] {
         sensitivity_raises_target: true,
         temptargetSet: false,
       },
-      // overrideTarget=100 => profileTarget becomes 100 (in determine_basal, profileTarget = overrideTarget)
+      // overrideTarget=100 => profileTarget becomes 100 (in determineBasal, profileTarget = overrideTarget)
       // Then sensitivity_raises_target with ratio<1 adjusts target_bg further
       // target_bg starts at 100, then new_target_bg = round((100-60)/ratio)+60
       // ratio=0.8 => round(50)+60 = 110 => target_bg=110
