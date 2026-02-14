@@ -29,16 +29,16 @@ import { round } from './helpers';
 
 /** Calculates dynamic ISF ratio and related TDD-based adjustments for insulin sensitivity. */
 export function calculateDynamicISF(
-    glucose_status: GlucoseStatus,
+    glucoseStatus: GlucoseStatus,
     profile: Profile,
     preferences: Preferences,
-    autosens_data: AutosensData,
+    autosensData: AutosensData,
     sensitivity: number,
     profileTarget: number,
     dynISFenabled: boolean,
     tdd: number,
     weightedAverage: number,
-    average_total_data: number,
+    averageTotalData: number,
     weightPercentage: number,
     middleWare: ((arg: DetermineBasalResult) => DetermineBasalResult) | undefined
 ): DynamicISFResult {
@@ -53,16 +53,16 @@ export function calculateDynamicISF(
     }
 
     // Dynamic ratios
-    const bg = glucose_status.glucose;
+    const bg = glucoseStatus.glucose;
     const adjustmentFactor = preferences.adjustmentFactor;
     const adjustmentFactorSigmoid = preferences.adjustmentFactorSigmoid;
     const enableSigmoid = preferences.sigmoid;
     const exerciseSetting = profile.high_temptarget_raises_sensitivity || profile.exercise_mode;
 
-    const rawTDDRatio = average_total_data > 0 ? weightedAverage / average_total_data : 1;
+    const rawTDDRatio = averageTotalData > 0 ? weightedAverage / averageTotalData : 1;
     // respect autosens_max/min for tdd24hTo14dRatio, used to adjust basal similarly as autosens
     const tdd24hTo14dRatio = clampTDDRatio(rawTDDRatio, profile.autosens_min, profile.autosens_max);
-    const basal_ratio_log = `, Basal ratio: ${tdd24hTo14dRatio}`;
+    const basalRatioLog = `, Basal ratio: ${tdd24hTo14dRatio}`;
 
     // Turn off Chris' formula when using a temp target >= 118 (6.5 mol/l) and if an exercise setting is enabled.
     let log = "";
@@ -81,11 +81,11 @@ export function calculateDynamicISF(
     const insulinFactor = configureInsulinCurve(preferences.curve, profile.insulinPeakTime, preferences.useCustomPeakTime);
 
     // Use weighted TDD average
-    const tdd_before: number = tdd;
+    const tddBefore: number = tdd;
 
     if (weightPercentage < 1 && weightedAverage > 1) {
         tdd = weightedAverage;
-        console.log(`Using weighted TDD average: ${round(tdd, 2)} U, instead of past 24 h (${round(tdd_before, 2)} U), weight: ${weightPercentage}`);
+        console.log(`Using weighted TDD average: ${round(tdd, 2)} U, instead of past 24 h (${round(tddBefore, 2)} U), weight: ${weightPercentage}`);
         weightLog = `, Weighted TDD: ${round(tdd, 2)} U`;
     }
 
@@ -120,9 +120,9 @@ export function calculateDynamicISF(
         const isf = sensitivity / Number(newRatio);
 
         // Set the new ratio
-        autosens_data.ratio = Number(newRatio);
+        autosensData.ratio = Number(newRatio);
 
-        sigmoidLog = `. Using Sigmoid function, the autosens ratio has been adjusted with sigmoid factor to: ${round(autosens_data.ratio, 2)}. New ISF = ${round(isf, 2)} mg/dl (${round(MGDL_TO_MMOL * isf, 2)} (mmol/l).`;
+        sigmoidLog = `. Using Sigmoid function, the autosens ratio has been adjusted with sigmoid factor to: ${round(autosensData.ratio, 2)}. New ISF = ${round(isf, 2)} mg/dl (${round(MGDL_TO_MMOL * isf, 2)} (mmol/l).`;
 
         if (!enableSigmoid) {
             log += `, Dynamic autosens.ratio set to ${round(Number(newRatio), 2)} with ISF: ${isf.toPrecision(3)} mg/dl/U (${(isf * MGDL_TO_MMOL).toPrecision(3)} mmol/l/U)`;
@@ -142,7 +142,7 @@ export function calculateDynamicISF(
         formula,
         limitLog,
         afLog,
-        basal_ratio_log,
+        basalRatioLog,
         profile.smb_delivery_ratio,
         middleWare,
     );
@@ -201,25 +201,25 @@ export function calculateLogarithmicRatio(
 export function calculateSigmoidRatio(
     bg: number,
     profileTarget: number,
-    tdd24h_14d_Ratio: number,
+    tdd24hTo14dRatio: number,
     adjustmentFactorSigmoid: number,
     minLimit: number,
     maxLimit: number,
 ): number {
-    const autosens_interval = maxLimit - minLimit;
+    const autosensInterval = maxLimit - minLimit;
     //Blood glucose deviation from set target (the lower BG target) converted to mmol/l to fit current formula.
-    const bg_dev = (bg - profileTarget) * MGDL_TO_MMOL;
+    const bgDev = (bg - profileTarget) * MGDL_TO_MMOL;
     // Account for TDD of insulin. Compare last 2 hours with total data (up to 14 days)
-    const tdd_factor = tdd24h_14d_Ratio; // weighted average TDD / total data average TDD
+    const tddFactor = tdd24hTo14dRatio; // weighted average TDD / total data average TDD
     // Avoid division by 0 when maxLimit == 1
-    const max_minus_one = maxLimit == 1 ? 0.01 : maxLimit - 1;
+    const maxMinusOne = maxLimit == 1 ? 0.01 : maxLimit - 1;
     //Makes sigmoid factor(y) = 1 when BG deviation(x) = 0.
-    const fix_offset = (Math.log10(1/max_minus_one-minLimit/max_minus_one) / Math.log10(Math.E));
+    const fixOffset = (Math.log10(1/maxMinusOne-minLimit/maxMinusOne) / Math.log10(Math.E));
     //Exponent used in sigmoid formula
-    const exponent = bg_dev * adjustmentFactorSigmoid * tdd_factor + fix_offset;
+    const exponent = bgDev * adjustmentFactorSigmoid * tddFactor + fixOffset;
     // The sigmoid function
-    const sigmoid_factor = autosens_interval / (1 + Math.exp(-exponent)) + minLimit;
-    return sigmoid_factor;
+    const sigmoidFactor = autosensInterval / (1 + Math.exp(-exponent)) + minLimit;
+    return sigmoidFactor;
 }
 
 /** Clamps newRatio to autosens min/max limits. Returns clamped ratio and log strings. */
@@ -257,7 +257,7 @@ export function buildTDDReasonString(
     formula: string,
     limitLog: string,
     afLog: string,
-    basal_ratio_log: string,
+    basalRatioLog: string,
     smb_delivery_ratio: number | undefined,
     middleWare: ((arg: DetermineBasalResult) => DetermineBasalResult) | undefined,
 ): string {
@@ -266,7 +266,7 @@ export function buildTDDReasonString(
     if (!dynISFenabled) {
         tddReason += "";
     } else if (dynISFenabled && tddAdjBasal) {
-        tddReason += dynamicISFLog + formula + limitLog + afLog + basal_ratio_log;
+        tddReason += dynamicISFLog + formula + limitLog + afLog + basalRatioLog;
     }
     else if (dynISFenabled && !tddAdjBasal) { tddReason += dynamicISFLog + formula + limitLog + afLog; }
 

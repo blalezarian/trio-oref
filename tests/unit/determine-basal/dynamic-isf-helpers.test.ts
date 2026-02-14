@@ -145,7 +145,7 @@ describe('calculateSigmoidRatio', () => {
         expect(Number.isFinite(result)).toBe(true);
     });
 
-    it('increases with higher tdd24h_14d_Ratio', () => {
+    it('increases with higher tdd24hTo14dRatio', () => {
         const low = calculateSigmoidRatio(150, 100, 0.8, 0.5, 0.7, 1.3);
         const high = calculateSigmoidRatio(150, 100, 1.2, 0.5, 0.7, 1.3);
         expect(high).toBeGreaterThan(low);
@@ -212,7 +212,7 @@ describe('buildTDDReasonString', () => {
         expect(result).toBe('');
     });
 
-    it('includes basal_ratio_log when tddAdjBasal is true', () => {
+    it('includes basalRatioLog when tddAdjBasal is true', () => {
         const result = buildTDDReasonString(
             true, true,
             ', Dynamic ISF: On', ', Log formula', ', limit', ', AF: 0.8', ', Basal ratio: 1.1',
@@ -223,7 +223,7 @@ describe('buildTDDReasonString', () => {
         expect(result).toContain('Log formula');
     });
 
-    it('omits basal_ratio_log when tddAdjBasal is false', () => {
+    it('omits basalRatioLog when tddAdjBasal is false', () => {
         const result = buildTDDReasonString(
             true, false,
             ', Dynamic ISF: On', ', Log formula', '', ', AF: 0.8', ', Basal ratio: 1.1',

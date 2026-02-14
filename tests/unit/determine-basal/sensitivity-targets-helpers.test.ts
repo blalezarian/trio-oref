@@ -71,7 +71,7 @@ describe('calculateTempTargetSensitivityRatio', () => {
 // ---------------------------------------------------------------------------
 
 describe('adjustBasalBySensitivity', () => {
-    // Signature: (basal, sensitivityRatio, overrideFactor, dynISFenabled, profile, profile_current_basal)
+    // Signature: (basal, sensitivityRatio, overrideFactor, dynISFenabled, profile, profileCurrentBasal)
     // Adjusts only when sensitivityRatio is truthy AND dynISFenabled is false.
     // Formula: profile.current_basal * overrideFactor * sensitivityRatio -> roundBasal
 
@@ -93,7 +93,7 @@ describe('adjustBasalBySensitivity', () => {
     });
 
     it('logs adjustment when basal changes', () => {
-        // 1.0 * 1.0 * 1.2 = 1.2, profile_current_basal=1.0 -> different -> logs "Adjusting"
+        // 1.0 * 1.0 * 1.2 = 1.2, profileCurrentBasal=1.0 -> different -> logs "Adjusting"
         adjustBasalBySensitivity(1.0, 1.2, 1.0, false, minProfile, 1.0);
         expect(console.log).toHaveBeenCalledWith(
             expect.stringContaining('Adjusting basal from'),
@@ -101,7 +101,7 @@ describe('adjustBasalBySensitivity', () => {
     });
 
     it('logs unchanged when basal stays the same', () => {
-        // 1.0 * 1.0 * 1.0 = 1.0, profile_current_basal=1.0 -> same -> logs "unchanged"
+        // 1.0 * 1.0 * 1.0 = 1.0, profileCurrentBasal=1.0 -> same -> logs "unchanged"
         adjustBasalBySensitivity(1.0, 1.0, 1.0, false, minProfile, 1.0);
         expect(console.log).toHaveBeenCalledWith(
             expect.stringContaining('Basal unchanged'),
@@ -114,9 +114,9 @@ describe('adjustBasalBySensitivity', () => {
 // ---------------------------------------------------------------------------
 
 describe('adjustBasalByTDD', () => {
-    // Signature: (basal, tdd24h_14d_Ratio, overrideFactor, profile, profile_current_basal,
-    //             tdd_before, weightedAverage, average_total_data, weightPercentage)
-    // Formula: profile.current_basal * tdd24h_14d_Ratio * overrideFactor -> roundBasal
+    // Signature: (basal, tdd24hTo14dRatio, overrideFactor, profile, profileCurrentBasal,
+    //             tddBefore, weightedAverage, averageTotalData, weightPercentage)
+    // Formula: profile.current_basal * tdd24hTo14dRatio * overrideFactor -> roundBasal
 
     it('returns basal adjusted by TDD ratio and override factor', () => {
         // 1.0 * 1.1 * 1.0 = 1.1, roundBasal(1.1) with mid-range scale=20 -> 1.1
@@ -144,42 +144,42 @@ describe('adjustBasalByTDD', () => {
 // ---------------------------------------------------------------------------
 
 describe('adjustTargetByAutosens', () => {
-    // Signature: (target_bg, min_bg, max_bg, profile, autosens_data)
+    // Signature: (targetBG, minBG, maxBG, profile, autosensData)
     // Uses TARGET_BG_PIVOT=60, MIN_BG_TARGET=80
-    // Only adjusts when !temptargetSet && autosens_data exists && (sensitivity_raises + ratio<1 || resistance_lowers + ratio>1)
+    // Only adjusts when !temptargetSet && autosensData exists && (sensitivity_raises + ratio<1 || resistance_lowers + ratio>1)
 
     it('adjusts target upward when ratio < 1 (more sensitive)', () => {
         // adj = round((100-60)/0.8) + 60 = round(50) + 60 = 110
         const result = adjustTargetByAutosens(100, 100, 100, autosensProfile, { ratio: 0.8 } as AutosensData);
-        expect(result.target_bg).toBe(110);
-        expect(result.min_bg).toBe(110);
-        expect(result.max_bg).toBe(110);
+        expect(result.targetBG).toBe(110);
+        expect(result.minBG).toBe(110);
+        expect(result.maxBG).toBe(110);
     });
 
     it('adjusts target downward when ratio > 1 (more resistant)', () => {
         // adj = round((100-60)/1.2) + 60 = round(33.33) + 60 = 93
         const result = adjustTargetByAutosens(100, 100, 100, autosensProfile, { ratio: 1.2 } as AutosensData);
-        expect(result.target_bg).toBe(93);
+        expect(result.targetBG).toBe(93);
     });
 
-    it('does not let target_bg go below 80', () => {
+    it('does not let targetBG go below 80', () => {
         // adj = round((85-60)/2.0) + 60 = round(12.5) + 60 = 73 -> max(80, 73) = 80
         const result = adjustTargetByAutosens(85, 85, 85, autosensProfile, { ratio: 2.0 } as AutosensData);
-        expect(result.target_bg).toBe(80);
+        expect(result.targetBG).toBe(80);
     });
 
     it('leaves target unchanged when ratio is 1', () => {
         // ratio=1.0 -> neither < 1 nor > 1 -> no adjustment
         const result = adjustTargetByAutosens(100, 100, 100, autosensProfile, { ratio: 1.0 } as AutosensData);
-        expect(result.target_bg).toBe(100);
-        expect(result.min_bg).toBe(100);
-        expect(result.max_bg).toBe(100);
+        expect(result.targetBG).toBe(100);
+        expect(result.minBG).toBe(100);
+        expect(result.maxBG).toBe(100);
     });
 
     it('skips adjustment when temptargetSet is true', () => {
         const tempProfile = { ...autosensProfile, temptargetSet: true } as unknown as Profile;
         const result = adjustTargetByAutosens(100, 100, 100, tempProfile, { ratio: 0.8 } as AutosensData);
-        expect(result.target_bg).toBe(100);
+        expect(result.targetBG).toBe(100);
     });
 });
 
@@ -188,40 +188,40 @@ describe('adjustTargetByAutosens', () => {
 // ---------------------------------------------------------------------------
 
 describe('adjustTargetsForNoisyCGM', () => {
-    // Signature: (min_bg, target_bg, max_bg, noise, profile)
+    // Signature: (minBG, targetBG, maxBG, noise, profile)
     // CGM_NOISE_LEVEL_NOISY=2, MAX_BG_TARGET=200
     // Only adjusts when noise >= 2
 
     it('raises targets by the multiplier', () => {
         // 100 * 1.3 = 130, round(min(200, 130)) = 130
         const result = adjustTargetsForNoisyCGM(100, 100, 100, 2, noisyProfile);
-        expect(result.min_bg).toBe(130);
-        expect(result.target_bg).toBe(130);
-        expect(result.max_bg).toBe(130);
+        expect(result.minBG).toBe(130);
+        expect(result.targetBG).toBe(130);
+        expect(result.maxBG).toBe(130);
         expect(result.adjusted).toBe(true);
     });
 
     it('caps at MAX_BG_TARGET (200)', () => {
         // 180 * 1.3 = 234, round(min(200, 234)) = 200
         const result = adjustTargetsForNoisyCGM(180, 180, 180, 2, noisyProfile);
-        expect(result.min_bg).toBe(200);
-        expect(result.target_bg).toBe(200);
-        expect(result.max_bg).toBe(200);
+        expect(result.minBG).toBe(200);
+        expect(result.targetBG).toBe(200);
+        expect(result.maxBG).toBe(200);
     });
 
     it('handles multiplier of 1.1 (minimum via MIN_NOISY_TARGET_MULTIPLIER)', () => {
         const lowMultiplierProfile = { ...minProfile, noisyCGMTargetMultiplier: 0.5, maxRaw: 250 } as Profile;
         // Math.max(1.1, 0.5) = 1.1; 100 * 1.1 = 110
         const result = adjustTargetsForNoisyCGM(100, 100, 100, 2, lowMultiplierProfile);
-        expect(result.min_bg).toBe(110);
-        expect(result.target_bg).toBe(110);
-        expect(result.max_bg).toBe(110);
+        expect(result.minBG).toBe(110);
+        expect(result.targetBG).toBe(110);
+        expect(result.maxBG).toBe(110);
     });
 
     it('returns unadjusted when noise < CGM_NOISE_LEVEL_NOISY', () => {
         const result = adjustTargetsForNoisyCGM(100, 100, 100, 1, noisyProfile);
         expect(result.adjusted).toBe(false);
-        expect(result.target_bg).toBe(100);
+        expect(result.targetBG).toBe(100);
     });
 });
 
@@ -230,21 +230,21 @@ describe('adjustTargetsForNoisyCGM', () => {
 // ---------------------------------------------------------------------------
 
 describe('calculateLowGlucoseThreshold', () => {
-    // Formula: threshold = min_bg - 0.5*(min_bg-40)
-    // Return: min(max(threshold_setting, threshold, 60), 120)
+    // Formula: threshold = minBG - 0.5*(minBG-40)
+    // Return: min(max(thresholdSetting, threshold, 60), 120)
 
-    it('returns 70 for min_bg=100 (formula: 100 - 0.5*(100-40) = 70)', () => {
+    it('returns 70 for minBG=100 (formula: 100 - 0.5*(100-40) = 70)', () => {
         const result = calculateLowGlucoseThreshold(100, 60);
         expect(result).toBe(70);
     });
 
-    it('returns 65 for min_bg=90 (formula: 90 - 0.5*(90-40) = 65)', () => {
+    it('returns 65 for minBG=90 (formula: 90 - 0.5*(90-40) = 65)', () => {
         const result = calculateLowGlucoseThreshold(90, 60);
         expect(result).toBe(65);
     });
 
-    it('uses threshold_setting when higher than formula', () => {
-        // formula: 100 - 0.5*(100-40) = 70, threshold_setting=75 -> max(75,70,60) = 75
+    it('uses thresholdSetting when higher than formula', () => {
+        // formula: 100 - 0.5*(100-40) = 70, thresholdSetting=75 -> max(75,70,60) = 75
         const result = calculateLowGlucoseThreshold(100, 75);
         expect(result).toBe(75);
     });
@@ -255,7 +255,7 @@ describe('calculateLowGlucoseThreshold', () => {
     });
 
     it('floors at MIN_THRESHOLD_BG (60)', () => {
-        // formula: 50 - 0.5*(50-40) = 45, threshold_setting=30 -> max(30,45,60) = 60
+        // formula: 50 - 0.5*(50-40) = 45, thresholdSetting=30 -> max(30,45,60) = 60
         const result = calculateLowGlucoseThreshold(50, 30);
         expect(result).toBe(60);
     });
@@ -266,8 +266,8 @@ describe('calculateLowGlucoseThreshold', () => {
 // ---------------------------------------------------------------------------
 
 describe('adjustISFBySensitivity', () => {
-    // Signature: (sensitivity, sensitivityRatio, profile, autosens_data)
-    // Only adjusts when autosens_data is defined and truthy
+    // Signature: (sensitivity, sensitivityRatio, profile, autosensData)
+    // Only adjusts when autosensData is defined and truthy
 
     it('divides sensitivity by ratio and rounds to 1 decimal', () => {
         // 50 / 1.2 = 41.666... -> round to 1 decimal = 41.7
