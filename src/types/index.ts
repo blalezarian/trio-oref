@@ -9,9 +9,9 @@
  * Every field matters. Every type must match the actual runtime behavior exactly.
  */
 
-// ---------------------------------------------------------------------------
-// Shared type aliases
-// ---------------------------------------------------------------------------
+// ===========================================================================
+// SHARED PRIMITIVES — type aliases and enums used across input/output types
+// ===========================================================================
 
 /** Insulin absorption curve model used across all modules */
 export type InsulinCurve = 'bilinear' | 'rapid-acting' | 'ultra-rapid';
@@ -80,6 +80,10 @@ export type EpochMillis = number;
 
 /** ISO 8601 date string (e.g. "2025-01-15T12:00:00.000Z") */
 export type ISODateString = string;
+
+// ===========================================================================
+// INPUTS — data provided by Trio to the algorithm
+// ===========================================================================
 
 // ---------------------------------------------------------------------------
 // Pump History Event — raw events from Medtronic pump or Nightscout
@@ -185,68 +189,7 @@ export interface GlucoseEntry {
 }
 
 // ---------------------------------------------------------------------------
-// Bucketed Glucose — time-bucketed glucose datum used by autosens/cob
-// ---------------------------------------------------------------------------
-
-/** Glucose data point bucketed into 5-minute intervals for autosens,
- *  COB, and categorize calculations */
-export interface BucketedGlucose {
-  /** Glucose value in mg/dL */
-  glucose?: number;
-  /** Epoch milliseconds timestamp */
-  date?: EpochMillis;
-  /** Display timestamp string */
-  display_time?: ISODateString;
-  /** ISO date string */
-  dateString?: ISODateString;
-}
-
-// ---------------------------------------------------------------------------
-// Carb Treatment — carb entry extracted from meal history
-// ---------------------------------------------------------------------------
-
-/** Carb/bolus entry extracted from pump history by meal/history.ts */
-export interface CarbTreatment {
-  /** ISO timestamp string */
-  timestamp: ISODateString;
-  /** Total carbs in grams */
-  carbs?: number;
-  /** Carbs entered via Nightscout Care Portal (g) */
-  nsCarbs?: number;
-  /** Carbs from Medtronic Bolus Wizard (g) */
-  bwCarbs?: number;
-  /** Carbs from journal/meal marker entries (g) */
-  journalCarbs?: number;
-  /** Bolus amount in Units */
-  bolus?: number;
-}
-
-// ---------------------------------------------------------------------------
-// Glucose Status — output of glucose-get-last.js
-// ---------------------------------------------------------------------------
-
-/** Current glucose reading with trend information, produced by glucose-get-last.js */
-export interface GlucoseStatus {
-  /** Current blood glucose in mg/dL (averaged with readings within 2.5m) */
-  glucose: number;
-  /** 5-minute BG change in mg/dL (average of readings 2.5–7.5m ago) */
-  delta: number;
-  /** ~15-minute average delta in mg/dL/5m (readings 2.5–17.5m ago) */
-  short_avgdelta: number;
-  /** ~30-minute average delta in mg/dL/5m (readings 17.5–42.5m ago) */
-  long_avgdelta: number;
-  /** CGM noise level (Dexcom noise estimate) */
-  noise?: number;
-  /** Timestamp of the glucose reading (epoch ms) */
-  date?: EpochMillis;
-  /** Calibration record index (0 = no recent calibration) */
-  last_cal?: number;
-  /** CGM device identifier string */
-  device?: string;
-}
-
-// ---------------------------------------------------------------------------
-// Current Temp Basal
+// Current Temp Basal — current pump temp basal state
 // ---------------------------------------------------------------------------
 
 /** Current temporary basal rate state from the pump */
@@ -260,106 +203,7 @@ export interface CurrentTemp {
 }
 
 // ---------------------------------------------------------------------------
-// IOB (Insulin On Board)
-// ---------------------------------------------------------------------------
-
-/** Single IOB calculation at a point in time, from iob/total.js */
-export interface IOBEntry {
-  /** Total insulin on board in Units */
-  iob: number;
-  /** Current insulin activity in U/min (how fast insulin is acting) */
-  activity: number;
-  /** IOB from basal adjustments only (treatments < 0.1U) */
-  basaliob: number;
-  /** IOB from boluses only (treatments >= 0.1U) */
-  bolusiob: number;
-  /** Net basal insulin delivered in Units */
-  netbasalinsulin: number;
-  /** Total bolus insulin delivered in Units */
-  bolusinsulin: number;
-  /** Time this IOB was calculated for */
-  time: Date;
-}
-
-/** IOB data as seen by determine-basal (first element of IOB array with extras) */
-export interface IOBData extends IOBEntry {
-  /** Projected IOB assuming continuous zero temp from now */
-  iobWithZeroTemp?: IOBEntry;
-  /** Epoch ms of the most recent bolus */
-  lastBolusTime?: EpochMillis;
-  /** Most recent temp basal treatment */
-  lastTemp?: {
-    rate: number;
-    duration: number;
-    date: EpochMillis;
-    started_at?: ISODateString;
-  };
-}
-
-/** Per-treatment insulin absorption contribution, from iob/calculate.js */
-export interface IOBContribution {
-  /** Units of insulin used in the previous minute */
-  activityContrib: number;
-  /** Units of insulin still remaining */
-  iobContrib: number;
-}
-
-/** Treatment record extracted from pump history, used by IOB calculations */
-export interface Treatment {
-  /** Insulin amount in Units (bolus or temp basal increment) */
-  insulin?: number;
-  /** Timestamp of treatment (epoch ms) */
-  date: EpochMillis;
-  /** ISO timestamp string of when treatment started */
-  started_at?: ISODateString;
-  /** ISO timestamp string */
-  timestamp?: ISODateString;
-  /** Temp basal rate in U/hr (present for temp basals) */
-  rate?: number;
-  /** Duration in minutes (present for temp basals) */
-  duration?: number;
-  /** Created-at ISO timestamp */
-  created_at?: ISODateString;
-}
-
-// ---------------------------------------------------------------------------
-// Meal Data
-// ---------------------------------------------------------------------------
-
-/** Meal/carb data, output of meal/total.js */
-export interface MealData {
-  /** Total active carbs in the meal absorption window (g) */
-  carbs: number;
-  /** Carbs entered via Nightscout Care Portal (g) */
-  nsCarbs: number;
-  /** Carbs from Medtronic Bolus Wizard (g) */
-  bwCarbs: number;
-  /** Carbs from journal/meal marker entries (g) */
-  journalCarbs: number;
-  /** Carbs on board — carbs not yet absorbed (g), capped by maxCOB */
-  mealCOB: number;
-  /** Current BG deviation from expected (mg/dL) */
-  currentDeviation: number | undefined;
-  /** Maximum deviation since meal start (mg/dL) */
-  maxDeviation: number;
-  /** Minimum deviation since meal start (mg/dL) */
-  minDeviation: number;
-  /** Rate of deviation change from peak (negative = absorbing) */
-  slopeFromMaxDeviation: number;
-  /** Rate of deviation change from trough (positive = recovering) */
-  slopeFromMinDeviation: number;
-  /** Array of rounded deviation values for the absorption period */
-  allDeviations: number[];
-  /** Epoch ms of last carb entry */
-  lastCarbTime?: EpochMillis;
-  /** True if Bolus Wizard was used in the last 6 hours */
-  bwFound: boolean;
-  /** Status reason string (e.g. "Could not parse clock data") */
-  reason?: string;
-}
-
-// ---------------------------------------------------------------------------
-// Profile
+// Profile — pump settings and algorithm configuration
 // ---------------------------------------------------------------------------
 
 /** Basal schedule entry */
@@ -554,7 +398,7 @@ export interface Profile {
 }
 
 // ---------------------------------------------------------------------------
-// Autosens Data
+// Autosens Data — auto-sensitivity detection result
 // ---------------------------------------------------------------------------
 
 /** Auto-sensitivity detection result */
@@ -606,7 +450,7 @@ export interface TrioCustomVariables {
 }
 
 // ---------------------------------------------------------------------------
-// Preferences — subset of profile fields used as algorithm preferences
+// Preferences — algorithm preferences passed separately to determine-basal
 // ---------------------------------------------------------------------------
 
 /** Algorithm preferences passed separately to determine-basal */
@@ -626,7 +470,160 @@ export interface Preferences {
 }
 
 // ---------------------------------------------------------------------------
-// Determine-Basal Output
+// Full determine-basal input bundle
+// ---------------------------------------------------------------------------
+
+/** Complete set of inputs for a single determine-basal invocation */
+export interface DetermineBasalInputs {
+  glucoseStatus: GlucoseStatus;
+  currenttemp: CurrentTemp;
+  iobData: IOBData;
+  profile: Profile;
+  autosensData: AutosensData;
+  mealData: MealData;
+  microBolusAllowed: boolean;
+  reservoirData?: number;
+  currentTime?: ISODateString;
+  pumphistory?: PumpHistoryEvent[];
+  preferences: Preferences;
+  basalprofile?: BasalEntry[];
+  trioCustomVariables: TrioCustomVariables;
+  middleWare?: unknown;
+}
+
+// ---------------------------------------------------------------------------
+// Meal module inputs
+// ---------------------------------------------------------------------------
+
+/** Inputs to meal/index.ts generate() — not imported by production code,
+ *  kept as a contract reference for the shape Trio sends */
+export interface MealInputs {
+  clock: ISODateString;
+  history: PumpHistoryEvent[];
+  carbs?: PumpHistoryEvent[];
+  glucose?: GlucoseEntry[];
+  profile: {
+    maxMealAbsorptionTime?: number;
+    maxCOB?: number;
+    min_5m_carbimpact?: number;
+    carb_ratio?: number;
+    sens?: number;
+    isfProfile?: { sensitivities: ISFEntry[] };
+  };
+  basalprofile?: BasalEntry[];
+}
+
+// ===========================================================================
+// OUTPUTS — data produced by the algorithm and returned to Trio
+// ===========================================================================
+
+// ---------------------------------------------------------------------------
+// Glucose Status — output of glucose/index.ts
+// ---------------------------------------------------------------------------
+
+/** Current glucose reading with trend information, produced by glucose/index.ts */
+export interface GlucoseStatus {
+  /** Current blood glucose in mg/dL (averaged with readings within 2.5m) */
+  glucose: number;
+  /** 5-minute BG change in mg/dL (average of readings 2.5–7.5m ago) */
+  delta: number;
+  /** ~15-minute average delta in mg/dL/5m (readings 2.5–17.5m ago) */
+  short_avgdelta: number;
+  /** ~30-minute average delta in mg/dL/5m (readings 17.5–42.5m ago) */
+  long_avgdelta: number;
+  /** CGM noise level (Dexcom noise estimate) */
+  noise?: number;
+  /** Timestamp of the glucose reading (epoch ms) */
+  date?: EpochMillis;
+  /** Calibration record index (0 = no recent calibration) */
+  last_cal?: number;
+  /** CGM device identifier string */
+  device?: string;
+}
+
+// ---------------------------------------------------------------------------
+// IOB (Insulin On Board) — output of iob/index.ts
+// ---------------------------------------------------------------------------
+
+/** Single IOB calculation at a point in time, from iob/total.ts */
+export interface IOBEntry {
+  /** Total insulin on board in Units */
+  iob: number;
+  /** Current insulin activity in U/min (how fast insulin is acting) */
+  activity: number;
+  /** IOB from basal adjustments only (treatments < 0.1U) */
+  basaliob: number;
+  /** IOB from boluses only (treatments >= 0.1U) */
+  bolusiob: number;
+  /** Net basal insulin delivered in Units */
+  netbasalinsulin: number;
+  /** Total bolus insulin delivered in Units */
+  bolusinsulin: number;
+  /** Time this IOB was calculated for */
+  time: Date;
+}
+
+/** IOB data as seen by determine-basal (first element of IOB array with extras) */
+export interface IOBData extends IOBEntry {
+  /** Projected IOB assuming continuous zero temp from now */
+  iobWithZeroTemp?: IOBEntry;
+  /** Epoch ms of the most recent bolus */
+  lastBolusTime?: EpochMillis;
+  /** Most recent temp basal treatment */
+  lastTemp?: {
+    rate: number;
+    duration: number;
+    date: EpochMillis;
+    started_at?: ISODateString;
+  };
+}
+
+/** Per-treatment insulin absorption contribution, from iob/calculate.ts */
+export interface IOBContribution {
+  /** Units of insulin used in the previous minute */
+  activityContrib: number;
+  /** Units of insulin still remaining */
+  iobContrib: number;
+}
+
+// ---------------------------------------------------------------------------
+// Meal Data — output of meal/index.ts
+// ---------------------------------------------------------------------------
+
+/** Meal/carb data, output of meal/total.ts */
+export interface MealData {
+  /** Total active carbs in the meal absorption window (g) */
+  carbs: number;
+  /** Carbs entered via Nightscout Care Portal (g) */
+  nsCarbs: number;
+  /** Carbs from Medtronic Bolus Wizard (g) */
+  bwCarbs: number;
+  /** Carbs from journal/meal marker entries (g) */
+  journalCarbs: number;
+  /** Carbs on board — carbs not yet absorbed (g), capped by maxCOB */
+  mealCOB: number;
+  /** Current BG deviation from expected (mg/dL) */
+  currentDeviation: number | undefined;
+  /** Maximum deviation since meal start (mg/dL) */
+  maxDeviation: number;
+  /** Minimum deviation since meal start (mg/dL) */
+  minDeviation: number;
+  /** Rate of deviation change from peak (negative = absorbing) */
+  slopeFromMaxDeviation: number;
+  /** Rate of deviation change from trough (positive = recovering) */
+  slopeFromMinDeviation: number;
+  /** Array of rounded deviation values for the absorption period */
+  allDeviations: number[];
+  /** Epoch ms of last carb entry */
+  lastCarbTime?: EpochMillis;
+  /** True if Bolus Wizard was used in the last 6 hours */
+  bwFound: boolean;
+  /** Status reason string (e.g. "Could not parse clock data") */
+  reason?: string;
+}
+
+// ---------------------------------------------------------------------------
+// Determine-Basal Output — the algorithm's insulin dosing decision
 // ---------------------------------------------------------------------------
 
 /** The complete output of determine-basal — the algorithm's insulin dosing decision */
@@ -705,10 +702,10 @@ export interface DetermineBasalResult {
 }
 
 // ---------------------------------------------------------------------------
-// Temp Basal Functions interface
+// Temp Basal Functions — basal-set-temp module interface
 // ---------------------------------------------------------------------------
 
-/** The tempBasalFunctions object from basal-set-temp.js */
+/** The tempBasalFunctions object from setTempBasal/index.ts */
 export interface TempBasalFunctions {
   getMaxSafeBasal: (profile: Profile) => number;
   setTempBasal: (
@@ -720,27 +717,72 @@ export interface TempBasalFunctions {
   ) => DetermineBasalResult;
 }
 
+// ===========================================================================
+// INTERNAL — intermediate types used between algorithm modules
+// ===========================================================================
+
 // ---------------------------------------------------------------------------
-// Full determine-basal input bundle (for fixture files)
+// Bucketed Glucose — time-bucketed glucose datum used by autosens/cob
 // ---------------------------------------------------------------------------
 
-/** Complete set of inputs for a single determine-basal invocation */
-export interface DetermineBasalInputs {
-  glucoseStatus: GlucoseStatus;
-  currenttemp: CurrentTemp;
-  iobData: IOBData;
-  profile: Profile;
-  autosensData: AutosensData;
-  mealData: MealData;
-  microBolusAllowed: boolean;
-  reservoirData?: number;
-  currentTime?: ISODateString;
-  pumphistory?: unknown[];
-  preferences: Preferences;
-  basalprofile?: BasalEntry[];
-  trioCustomVariables: TrioCustomVariables;
-  middleWare?: unknown;
+/** Glucose data point bucketed into 5-minute intervals for autosens,
+ *  COB, and categorize calculations */
+export interface BucketedGlucose {
+  /** Glucose value in mg/dL */
+  glucose?: number;
+  /** Epoch milliseconds timestamp */
+  date?: EpochMillis;
+  /** Display timestamp string */
+  display_time?: ISODateString;
+  /** ISO date string */
+  dateString?: ISODateString;
 }
+
+// ---------------------------------------------------------------------------
+// Carb Treatment — carb entry extracted from meal history
+// ---------------------------------------------------------------------------
+
+/** Carb/bolus entry extracted from pump history by meal/history.ts */
+export interface CarbTreatment {
+  /** ISO timestamp string */
+  timestamp: ISODateString;
+  /** Total carbs in grams */
+  carbs?: number;
+  /** Carbs entered via Nightscout Care Portal (g) */
+  nsCarbs?: number;
+  /** Carbs from Medtronic Bolus Wizard (g) */
+  bwCarbs?: number;
+  /** Carbs from journal/meal marker entries (g) */
+  journalCarbs?: number;
+  /** Bolus amount in Units */
+  bolus?: number;
+}
+
+// ---------------------------------------------------------------------------
+// Treatment — insulin treatment record used by IOB calculations
+// ---------------------------------------------------------------------------
+
+/** Treatment record extracted from pump history, used by IOB calculations */
+export interface Treatment {
+  /** Insulin amount in Units (bolus or temp basal increment) */
+  insulin?: number;
+  /** Timestamp of treatment (epoch ms) */
+  date: EpochMillis;
+  /** ISO timestamp string of when treatment started */
+  started_at?: ISODateString;
+  /** ISO timestamp string */
+  timestamp?: ISODateString;
+  /** Temp basal rate in U/hr (present for temp basals) */
+  rate?: number;
+  /** Duration in minutes (present for temp basals) */
+  duration?: number;
+  /** Created-at ISO timestamp */
+  created_at?: ISODateString;
+}
+
+// ===========================================================================
+// TEST FIXTURES — types used only by the characterization test suite
+// ===========================================================================
 
 /** A single characterization test fixture: input + expected output */
 export interface DetermineBasalFixture {
@@ -752,25 +794,4 @@ export interface DetermineBasalFixture {
   input: DetermineBasalInputs;
   /** The exact output produced by the JS algorithm */
   output: DetermineBasalResult;
-}
-
-// ---------------------------------------------------------------------------
-// IOB Module inputs/outputs (for sub-module fixtures)
-// ---------------------------------------------------------------------------
-
-/** Inputs to meal/index.js generate() */
-export interface MealInputs {
-  clock: ISODateString;
-  history: unknown[];
-  carbs?: unknown[];
-  glucose?: unknown[];
-  profile: {
-    maxMealAbsorptionTime?: number;
-    maxCOB?: number;
-    min_5m_carbimpact?: number;
-    carb_ratio?: number;
-    sens?: number;
-    isfProfile?: { sensitivities: ISFEntry[] };
-  };
-  basalprofile?: BasalEntry[];
 }
