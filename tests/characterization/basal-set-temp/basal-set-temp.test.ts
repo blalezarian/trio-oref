@@ -6,7 +6,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { tempBasalFunctions } from '../../../src/set-temp-basal/index';
+import { tempBasalFunctions } from '../../../src/setTempBasal/index';
 
 function makeProfile(overrides: Record<string, unknown> = {}) {
   return {

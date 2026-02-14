@@ -24,7 +24,7 @@ import {
 } from '../helpers/defaults';
 
 import { determineBasal } from '../../../src/determine-basal/determine-basal';
-import { tempBasalFunctions } from '../../../src/set-temp-basal/index';
+import { tempBasalFunctions } from '../../../src/setTempBasal/index';
 import type { TempBasalFunctions, DetermineBasalResult } from '../../../src/types/index';
 
 /**

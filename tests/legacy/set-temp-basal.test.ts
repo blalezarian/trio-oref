@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { tempBasalFunctions } from '../../src/set-temp-basal/index';
+import { tempBasalFunctions } from '../../src/setTempBasal/index';
 
 describe('tempBasalFunctions.setTempBasal', () => {
 
