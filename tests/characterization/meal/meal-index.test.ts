@@ -5,7 +5,7 @@
  * 1. Calls meal/history (findMealInputs) to extract treatments
  * 2. Calls meal/total (recentCarbs) with those treatments + other inputs
  *
- * Provides full inputs: { clock, history, carbs, profile, glucose, basalprofile }
+ * Provides full inputs: { clock, history, carbs, profile, glucose, basalProfile }
  */
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
@@ -73,7 +73,7 @@ function makeInputs(overrides: {
   carbs?: PumpHistoryEvent[];
   profile?: IobProfile & Record<string, unknown>;
   glucose?: GlucoseEntry[];
-  basalprofile?: HistoryBasalProfileEntry[];
+  basalProfile?: HistoryBasalProfileEntry[];
 } = {}) {
   return {
     clock: FIXED_TIME,
@@ -81,7 +81,7 @@ function makeInputs(overrides: {
     carbs: overrides.carbs ?? [],
     profile: overrides.profile ?? makeProfile(),
     glucose: overrides.glucose ?? defaultGlucose(),
-    basalprofile: overrides.basalprofile ?? BASAL_PROFILE,
+    basalProfile: overrides.basalProfile ?? BASAL_PROFILE,
   };
 }
 

@@ -73,16 +73,16 @@ function makeOpts(
   treatments: CarbTreatment[] | null,
   overrides: {
     profile?: Record<string, unknown>;
-    pumphistory?: Array<Record<string, unknown>>;
+    pumpHistory?: Array<Record<string, unknown>>;
     glucose?: GlucoseEntry[];
   } = {},
 ) {
   return {
     treatments,
     profile: makeProfile(overrides.profile || {}),
-    pumphistory: overrides.pumphistory || [],
+    pumpHistory: overrides.pumpHistory || [],
     glucose: overrides.glucose || defaultGlucose(),
-    basalprofile: BASAL_PROFILE,
+    basalProfile: BASAL_PROFILE,
   };
 }
 

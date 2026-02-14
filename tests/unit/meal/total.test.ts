@@ -57,9 +57,9 @@ function makeOpts(
     return {
         treatments,
         profile: makeProfile(profileOverrides),
-        pumphistory: [],
+        pumpHistory: [],
         glucose: [],
-        basalprofile: makeBasalProfile(),
+        basalProfile: makeBasalProfile(),
     };
 }
 

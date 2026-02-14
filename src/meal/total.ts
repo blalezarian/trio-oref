@@ -11,9 +11,9 @@ import { round, roundTo2dp, roundTo3dp } from '../utils/rounding';
 interface RecentCarbsOpts {
     treatments: CarbTreatment[] | null;
     profile: IobProfile;
-    pumphistory: PumpHistoryEvent[];
+    pumpHistory: PumpHistoryEvent[];
     glucose?: GlucoseEntry[];
-    basalprofile: HistoryBasalProfileEntry[];
+    basalProfile: HistoryBasalProfileEntry[];
 }
 
 interface COBInputs {
@@ -58,9 +58,9 @@ function recentCarbs(opts: RecentCarbsOpts, time: Date): RecentCarbsResult | Rec
         glucose_data: opts.glucose,
         iob_inputs: {
             profile: profileData,
-            history: opts.pumphistory,
+            history: opts.pumpHistory,
         },
-        basalprofile: opts.basalprofile,
+        basalprofile: opts.basalProfile,
         mealTime: time.getTime(),
     };
 
