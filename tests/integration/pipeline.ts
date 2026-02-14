@@ -16,6 +16,8 @@ import { generate as generateMeal } from '../../src/meal/index';
 import { determineBasal } from '../../src/determineBasal/determineBasal';
 import { tempBasalFunctions } from '../../src/setTempBasal/index';
 
+import { resetISFCache } from '../../src/profile/isf';
+
 import type { RawPipelineInputs } from './helpers/rawInputs';
 import type {
     GlucoseStatus,
@@ -51,6 +53,9 @@ export interface PipelineResult {
 
 export function runFullPipeline(rawInputs: RawPipelineInputs): PipelineResult {
     const clock = rawInputs.clock ?? FIXED_TIME;
+
+    // Reset ISF cache to avoid cross-test pollution from module-level state
+    resetISFCache();
 
     // 1. Generate profile from pump settings
     const profileResult = generateProfile(rawInputs.profileInputs);

@@ -11,6 +11,15 @@ import { uamScenarios } from './uam';
 import { cgmGapScenarios } from './cgmGaps';
 import { exerciseModeScenarios } from './exerciseMode';
 import { edgeCaseScenarios } from './edgeCases';
+import { autosensScenarios } from './autosens';
+import { tempTargetScenarios } from './tempTargets';
+import { trioOverrideScenarios } from './trioOverrides';
+import { dynamicIsfScenarios } from './dynamicIsf';
+import { maxIobScenarios } from './maxIob';
+import { bgTransitionScenarios } from './bgTransitions';
+import { stackedMealScenarios } from './stackedMeals';
+import { sensitiveProfileScenarios } from './sensitiveProfile';
+import { profileSettingsScenarios } from './profileSettings';
 import type { IntegrationScenario } from './types';
 
 export const allScenarios: IntegrationScenario[] = [
@@ -23,6 +32,15 @@ export const allScenarios: IntegrationScenario[] = [
     ...cgmGapScenarios,
     ...exerciseModeScenarios,
     ...edgeCaseScenarios,
+    ...autosensScenarios,
+    ...tempTargetScenarios,
+    ...trioOverrideScenarios,
+    ...dynamicIsfScenarios,
+    ...maxIobScenarios,
+    ...bgTransitionScenarios,
+    ...stackedMealScenarios,
+    ...sensitiveProfileScenarios,
+    ...profileSettingsScenarios,
 ];
 
 export type { IntegrationScenario } from './types';
