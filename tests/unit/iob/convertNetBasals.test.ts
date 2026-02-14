@@ -1,28 +1,12 @@
 import { describe, it, expect } from 'vitest';
 import { convertNetBasalsToTreatments } from '../../../src/iob/convertNetBasals';
-import type { TempEvent, IobProfile } from '../../../src/iob/types';
-
-const FIXED_TIME = '2025-01-15T12:00:00.000Z';
-const FIXED_DATE = new Date(FIXED_TIME).getTime();
-
-function makeProfile(overrides: Partial<IobProfile> = {}): IobProfile {
-    return {
-        dia: 6,
-        current_basal: 1.0,
-        basalprofile: [],
-        ...overrides,
-    };
-}
-
-function makeTempEvent(overrides: Partial<TempEvent> = {}): TempEvent {
-    return {
-        date: FIXED_DATE,
-        timestamp: FIXED_TIME,
-        rate: 2.0,
-        duration: 5,
-        ...overrides,
-    };
-}
+import type { TempEvent } from '../../../src/iob/types';
+import {
+    FIXED_MS,
+    MS_PER_MINUTE,
+    makeIobProfile,
+    makeTempEvent,
+} from '../helpers/factories';
 
 describe('convertNetBasalsToTreatments', () => {
 
@@ -31,7 +15,7 @@ describe('convertNetBasalsToTreatments', () => {
     // -----------------------------------------------------------------------
 
     it('returns empty array for empty splitHistory', () => {
-        const result = convertNetBasalsToTreatments([], makeProfile());
+        const result = convertNetBasalsToTreatments([], makeIobProfile());
         expect(result).toEqual([]);
     });
 
@@ -40,7 +24,7 @@ describe('convertNetBasalsToTreatments', () => {
             makeTempEvent({ duration: 0 }),
             makeTempEvent({ duration: -5 }),
         ];
-        const result = convertNetBasalsToTreatments(events, makeProfile());
+        const result = convertNetBasalsToTreatments(events, makeIobProfile());
         expect(result).toEqual([]);
     });
 
@@ -54,7 +38,7 @@ describe('convertNetBasalsToTreatments', () => {
         // tempBolusSize = 0.05 (positive)
         // tempBolusCount = round(0.08 / 0.05) = round(1.6) = 2
         const events: TempEvent[] = [makeTempEvent({ rate: 2.0, duration: 5 })];
-        const result = convertNetBasalsToTreatments(events, makeProfile({ current_basal: 1.0 }));
+        const result = convertNetBasalsToTreatments(events, makeIobProfile({ current_basal: 1.0 }));
 
         expect(result.length).toBe(2);
         for (const bolus of result) {
@@ -68,7 +52,7 @@ describe('convertNetBasalsToTreatments', () => {
         // tempBolusSize = -0.05 (negative)
         // tempBolusCount = round(-0.04 / -0.05) = round(0.8) = 1
         const events: TempEvent[] = [makeTempEvent({ rate: 0.5, duration: 5 })];
-        const result = convertNetBasalsToTreatments(events, makeProfile({ current_basal: 1.0 }));
+        const result = convertNetBasalsToTreatments(events, makeIobProfile({ current_basal: 1.0 }));
 
         expect(result.length).toBe(1);
         for (const bolus of result) {
@@ -86,7 +70,7 @@ describe('convertNetBasalsToTreatments', () => {
         // tempBolusSize = 0.05
         // tempBolusCount = round(1.0 / 0.05) = 20
         const events: TempEvent[] = [makeTempEvent({ rate: 3.0, duration: 30 })];
-        const result = convertNetBasalsToTreatments(events, makeProfile({ current_basal: 1.0 }));
+        const result = convertNetBasalsToTreatments(events, makeIobProfile({ current_basal: 1.0 }));
 
         expect(result.length).toBe(20);
     });
@@ -96,19 +80,18 @@ describe('convertNetBasalsToTreatments', () => {
         // tempBolusCount = 20 (from above)
         // tempBolusSpacing = 30 / 20 = 1.5 minutes
         const events: TempEvent[] = [makeTempEvent({ rate: 3.0, duration: 30 })];
-        const result = convertNetBasalsToTreatments(events, makeProfile({ current_basal: 1.0 }));
+        const result = convertNetBasalsToTreatments(events, makeIobProfile({ current_basal: 1.0 }));
 
-        const MS_PER_MINUTE = 60_000;
         const expectedSpacing = 1.5; // minutes
         for (let j = 0; j < result.length; j++) {
-            const expectedDate = FIXED_DATE + j * expectedSpacing * MS_PER_MINUTE;
+            const expectedDate = FIXED_MS + j * expectedSpacing * MS_PER_MINUTE;
             expect(result[j].date).toBe(expectedDate);
         }
     });
 
     it('sets created_at as a Date from the computed date', () => {
         const events: TempEvent[] = [makeTempEvent({ rate: 2.0, duration: 5 })];
-        const result = convertNetBasalsToTreatments(events, makeProfile({ current_basal: 1.0 }));
+        const result = convertNetBasalsToTreatments(events, makeIobProfile({ current_basal: 1.0 }));
 
         for (const bolus of result) {
             expect(bolus.created_at).toBeInstanceOf(Date);
@@ -124,7 +107,7 @@ describe('convertNetBasalsToTreatments', () => {
         // rate=1.0, current_basal=1.0 => netBasalRate = 0
         // netBasalAmount = 0, tempBolusCount = round(0 / 0.05) = 0
         const events: TempEvent[] = [makeTempEvent({ rate: 1.0, duration: 5 })];
-        const result = convertNetBasalsToTreatments(events, makeProfile({ current_basal: 1.0 }));
+        const result = convertNetBasalsToTreatments(events, makeIobProfile({ current_basal: 1.0 }));
 
         expect(result).toEqual([]);
     });
@@ -142,7 +125,7 @@ describe('convertNetBasalsToTreatments', () => {
         const events: TempEvent[] = [makeTempEvent({ rate: 2.0, duration: 5 })];
         const result = convertNetBasalsToTreatments(
             events,
-            makeProfile({ current_basal: 1.0 }),
+            makeIobProfile({ current_basal: 1.0 }),
             { ratio: 1.2 },
         );
 
@@ -159,7 +142,7 @@ describe('convertNetBasalsToTreatments', () => {
         const events: TempEvent[] = [makeTempEvent({ rate: 2.0, duration: 5 })];
         const result = convertNetBasalsToTreatments(
             events,
-            makeProfile({ current_basal: 1.0 }),
+            makeIobProfile({ current_basal: 1.0 }),
             { ratio: 0.5 },
         );
 
@@ -187,7 +170,7 @@ describe('convertNetBasalsToTreatments', () => {
         const events: TempEvent[] = [makeTempEvent({ rate: 2.0, duration: 5 })];
         const result = convertNetBasalsToTreatments(
             events,
-            makeProfile({
+            makeIobProfile({
                 current_basal: 1.0,
                 min_bg: 120,
                 max_bg: 120,
@@ -212,7 +195,7 @@ describe('convertNetBasalsToTreatments', () => {
         const events: TempEvent[] = [makeTempEvent({ rate: 2.0, duration: 5 })];
         const resultWithAutosens = convertNetBasalsToTreatments(
             events,
-            makeProfile({
+            makeIobProfile({
                 current_basal: 1.0,
                 min_bg: 120,
                 max_bg: 120,
@@ -237,7 +220,7 @@ describe('convertNetBasalsToTreatments', () => {
         const events: TempEvent[] = [makeTempEvent({ rate: 2.0, duration: 5 })];
         const result = convertNetBasalsToTreatments(
             events,
-            makeProfile({
+            makeIobProfile({
                 current_basal: 1.0,
                 min_bg: 100,
                 max_bg: 100,
@@ -263,7 +246,7 @@ describe('convertNetBasalsToTreatments', () => {
         const events: TempEvent[] = [makeTempEvent({ rate: 2.0, duration: 6 })];
         const result = convertNetBasalsToTreatments(
             events,
-            makeProfile({
+            makeIobProfile({
                 current_basal: 1.0,
                 min_bg: 120,
                 max_bg: 120,
@@ -282,10 +265,10 @@ describe('convertNetBasalsToTreatments', () => {
 
     it('processes multiple events and concatenates boluses', () => {
         const events: TempEvent[] = [
-            makeTempEvent({ rate: 2.0, duration: 5, date: FIXED_DATE }),
-            makeTempEvent({ rate: 3.0, duration: 30, date: FIXED_DATE + 5 * 60_000 }),
+            makeTempEvent({ rate: 2.0, duration: 5, date: FIXED_MS }),
+            makeTempEvent({ rate: 3.0, duration: 30, date: FIXED_MS + 5 * 60_000 }),
         ];
-        const result = convertNetBasalsToTreatments(events, makeProfile({ current_basal: 1.0 }));
+        const result = convertNetBasalsToTreatments(events, makeIobProfile({ current_basal: 1.0 }));
 
         // First event: tempBolusCount = 2 (from positive bolus test above)
         // Second event: tempBolusCount = 20 (from bolus count test above)

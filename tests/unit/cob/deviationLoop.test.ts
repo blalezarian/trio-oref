@@ -2,31 +2,29 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { analyzeAbsorption, resolveGlucoseDeltas } from '../../../src/cob/deviationLoop';
 import { resetISFCache } from '../../../src/profile/isf';
 import type { BucketedGlucose } from '../../../src/types/index';
-import type { IobProfile, HistoryBasalProfileEntry } from '../../../src/iob/types';
+import {
+    FIXED_TIME,
+    FIXED_MS,
+    MS_PER_5_MIN,
+    makeIobProfile,
+    makeBasalProfileEntry,
+} from '../helpers/factories';
 
-const FIXED_TIME = '2025-01-15T12:00:00.000Z';
-const NOW = new Date(FIXED_TIME).getTime();
-const MS_PER_5_MIN = 300_000;
+const NOW = FIXED_MS;
 
 // Mock get_iob to avoid full IOB calculation
 vi.mock('../../../src/iob/index', () => ({
     generate: () => [{ iob: 0.5, activity: 0.01 }],
 }));
 
-function makeBasalProfile(): HistoryBasalProfileEntry[] {
-    return [{ i: 0, start: '00:00:00', rate: 1.0, minutes: 0 }] as HistoryBasalProfileEntry[];
-}
-
-function makeProfile(): IobProfile {
-    return {
-        dia: 6,
-        current_basal: 1.0,
+function makeProfile() {
+    return makeIobProfile({
         isfProfile: {
             sensitivities: [{ offset: 0, sensitivity: 40 }],
         },
         min_5m_carbimpact: 8,
         carb_ratio: 10,
-    } as IobProfile;
+    });
 }
 
 /** Create bucketed glucose data going back in time from NOW */
@@ -61,7 +59,7 @@ describe('analyzeAbsorption', () => {
         const result = analyzeAbsorption(
             bucketedData,
             iobInputs,
-            makeBasalProfile(),
+            makeBasalProfileEntry(),
             makeProfile(),
             [],
             mealTime,
@@ -82,7 +80,7 @@ describe('analyzeAbsorption', () => {
         const result = analyzeAbsorption(
             bucketedData,
             { profile: makeProfile(), history: [], clock: FIXED_TIME },
-            makeBasalProfile(),
+            makeBasalProfileEntry(),
             makeProfile(),
             [],
             mealTime,
@@ -101,7 +99,7 @@ describe('analyzeAbsorption', () => {
         const result = analyzeAbsorption(
             bucketedData,
             { profile: makeProfile(), history: [], clock: FIXED_TIME },
-            makeBasalProfile(),
+            makeBasalProfileEntry(),
             makeProfile(),
             [],
             mealTime,

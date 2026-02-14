@@ -1,40 +1,18 @@
 import { describe, it, expect } from 'vitest';
 import { calcTempTreatments } from '../../../src/iob/extractTreatments';
 import type { PumpHistoryEvent } from '../../../src/types/index';
-import type { IobInputs, IobProfile, IobTreatment } from '../../../src/iob/types';
-
-const FIXED_TIME = '2025-01-15T12:00:00.000Z';
-const FIXED_DATE = new Date(FIXED_TIME).getTime();
-const MS_PER_MINUTE = 60_000;
+import type { IobTreatment } from '../../../src/iob/types';
+import {
+    FIXED_TIME,
+    FIXED_MS,
+    MS_PER_MINUTE,
+    makeIobProfile,
+    makeIobInputs,
+} from '../helpers/factories';
 
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
-
-function makeProfile(overrides: Partial<IobProfile> = {}): IobProfile {
-    return {
-        dia: 6,
-        current_basal: 1.0,
-        basalprofile: [
-            {
-                i: 0,
-                start: '00:00:00',
-                rate: 1.0,
-                minutes: 0,
-            },
-        ],
-        ...overrides,
-    };
-}
-
-function makeInputs(overrides: Partial<IobInputs> = {}): IobInputs {
-    return {
-        clock: FIXED_TIME,
-        history: [],
-        profile: makeProfile(),
-        ...overrides,
-    };
-}
 
 function makeBolusEvent(
     timestamp: string,
@@ -74,12 +52,12 @@ describe('calcTempTreatments', () => {
     // -----------------------------------------------------------------------
 
     it('returns empty array for empty history', () => {
-        const result = calcTempTreatments(makeInputs());
+        const result = calcTempTreatments(makeIobInputs());
         expect(result).toEqual([]);
     });
 
     it('returns empty array when history is empty and history24 is also empty', () => {
-        const result = calcTempTreatments(makeInputs({ history24: [] }));
+        const result = calcTempTreatments(makeIobInputs({ history24: [] }));
         expect(result).toEqual([]);
     });
 
@@ -89,7 +67,7 @@ describe('calcTempTreatments', () => {
 
     it('produces a bolus treatment from a single Bolus event', () => {
         const bolusTime = '2025-01-15T11:30:00.000Z';
-        const inputs = makeInputs({
+        const inputs = makeIobInputs({
             history: [makeBolusEvent(bolusTime, 2.5)],
         });
         const result = calcTempTreatments(inputs);
@@ -106,7 +84,7 @@ describe('calcTempTreatments', () => {
 
     it('produces treatments from a single temp basal event', () => {
         const tempTime = '2025-01-15T11:00:00.000Z';
-        const inputs = makeInputs({
+        const inputs = makeIobInputs({
             history: makeTempBasalPair(tempTime, 2.0, 30),
         });
         const result = calcTempTreatments(inputs);
@@ -124,9 +102,9 @@ describe('calcTempTreatments', () => {
         // With a 30min temp, net amount = round(1.0 * 30 * 10/6) / 100 = 0.5
         // tempBolusCount = round(0.5 / 0.05) = 10 micro-boluses of 0.05U
         const tempTime = '2025-01-15T11:00:00.000Z';
-        const inputs = makeInputs({
+        const inputs = makeIobInputs({
             history: makeTempBasalPair(tempTime, 2.0, 30),
-            profile: makeProfile({ current_basal: 1.0 }),
+            profile: makeIobProfile({ current_basal: 1.0 }),
         });
         const result = calcTempTreatments(inputs);
 
@@ -141,7 +119,7 @@ describe('calcTempTreatments', () => {
     it('merges history24 events with history', () => {
         const bolusTime1 = '2025-01-15T11:50:00.000Z';
         const bolusTime2 = '2025-01-15T11:40:00.000Z';
-        const inputs = makeInputs({
+        const inputs = makeIobInputs({
             history: [makeBolusEvent(bolusTime1, 1.0)],
             history24: [makeBolusEvent(bolusTime2, 2.0)],
         });
@@ -156,7 +134,7 @@ describe('calcTempTreatments', () => {
 
     it('does not merge history24 when it is undefined', () => {
         const bolusTime = '2025-01-15T11:30:00.000Z';
-        const inputs = makeInputs({
+        const inputs = makeIobInputs({
             history: [makeBolusEvent(bolusTime, 3.0)],
             // history24 intentionally omitted
         });
@@ -172,7 +150,7 @@ describe('calcTempTreatments', () => {
 
     it('passes zeroTempDuration to cancel temp creation', () => {
         const bolusTime = '2025-01-15T11:30:00.000Z';
-        const inputs = makeInputs({
+        const inputs = makeIobInputs({
             history: [makeBolusEvent(bolusTime, 1.0)],
         });
 
@@ -185,7 +163,7 @@ describe('calcTempTreatments', () => {
 
         // Without zeroTempDuration
         const withoutDuration = calcTempTreatments(
-            makeInputs({ history: [makeBolusEvent(bolusTime, 1.0)] }),
+            makeIobInputs({ history: [makeBolusEvent(bolusTime, 1.0)] }),
         );
         const cancelTemps0 = withoutDuration.filter(
             t => t.rate === 0 && t.duration === 0,
@@ -202,7 +180,7 @@ describe('calcTempTreatments', () => {
         // The first should be trimmed to 30 min duration
         const temp1Time = '2025-01-15T11:00:00.000Z';
         const temp2Time = '2025-01-15T11:30:00.000Z';
-        const inputs = makeInputs({
+        const inputs = makeIobInputs({
             history: [
                 // Events are listed newest-first (pump order)
                 ...makeTempBasalPair(temp2Time, 1.5, 30),
@@ -233,7 +211,7 @@ describe('calcTempTreatments', () => {
         // trim code (line 56-58) should splice it out of tempHistory.
         const temp1Time = '2025-01-15T11:00:00.000Z';
         const cancelTime = '2025-01-15T11:15:00.000Z';
-        const inputs = makeInputs({
+        const inputs = makeIobInputs({
             history: [
                 // AndroidAPS cancel TBR: eventType Temp Basal, null duration
                 // Must come first (newest) in pump-history order
@@ -273,7 +251,7 @@ describe('calcTempTreatments', () => {
     it('processes pump suspends when suspend_zeros_iob is true', () => {
         const suspendTime = '2025-01-15T11:00:00.000Z';
         const resumeTime = '2025-01-15T11:30:00.000Z';
-        const inputs = makeInputs({
+        const inputs = makeIobInputs({
             history: [
                 {
                     _type: 'PumpResume',
@@ -284,7 +262,7 @@ describe('calcTempTreatments', () => {
                     timestamp: suspendTime,
                 } as PumpHistoryEvent,
             ],
-            profile: makeProfile({ suspend_zeros_iob: true }),
+            profile: makeIobProfile({ suspend_zeros_iob: true }),
         });
         const result = calcTempTreatments(inputs);
 
@@ -300,7 +278,7 @@ describe('calcTempTreatments', () => {
     it('does not process suspends when suspend_zeros_iob is false', () => {
         const suspendTime = '2025-01-15T11:00:00.000Z';
         const resumeTime = '2025-01-15T11:30:00.000Z';
-        const inputs = makeInputs({
+        const inputs = makeIobInputs({
             history: [
                 {
                     _type: 'PumpResume',
@@ -311,7 +289,7 @@ describe('calcTempTreatments', () => {
                     timestamp: suspendTime,
                 } as PumpHistoryEvent,
             ],
-            profile: makeProfile({ suspend_zeros_iob: false }),
+            profile: makeIobProfile({ suspend_zeros_iob: false }),
         });
         const result = calcTempTreatments(inputs);
 
@@ -321,7 +299,7 @@ describe('calcTempTreatments', () => {
         // There should be no suspend-created zero-rate basals with substantial duration
         // (cancel temps have rate=0 but start in the future, 1 min after "now")
         const suspendZeroBasals = suspendBasals.filter(
-            t => t.date < FIXED_DATE,
+            t => t.date < FIXED_MS,
         );
         expect(suspendZeroBasals).toHaveLength(0);
     });
@@ -334,9 +312,9 @@ describe('calcTempTreatments', () => {
         // basalprofile has a boundary at 720 minutes (12:00)
         // A temp basal spanning 11:30 to 12:30 should be split at that boundary
         const tempTime = '2025-01-15T11:30:00.000Z';
-        const inputs = makeInputs({
+        const inputs = makeIobInputs({
             history: makeTempBasalPair(tempTime, 2.0, 60),
-            profile: makeProfile({
+            profile: makeIobProfile({
                 current_basal: 1.0,
                 basalprofile: [
                     {
@@ -375,7 +353,7 @@ describe('calcTempTreatments', () => {
     it('returns all treatments sorted by date', () => {
         const bolusTime = '2025-01-15T11:50:00.000Z';
         const tempTime = '2025-01-15T11:00:00.000Z';
-        const inputs = makeInputs({
+        const inputs = makeIobInputs({
             history: [
                 makeBolusEvent(bolusTime, 1.0),
                 ...makeTempBasalPair(tempTime, 2.0, 30),
@@ -399,17 +377,17 @@ describe('calcTempTreatments', () => {
         // With autosens ratio=1.5, profile basal is adjusted up:
         // effective basal = 1.0 * 1.5 = 1.5
         // net rate = 2.0 - 1.5 = 0.5 (less net insulin)
-        const inputsWithAutosens = makeInputs({
+        const inputsWithAutosens = makeIobInputs({
             history: makeTempBasalPair(tempTime, 2.0, 30),
-            profile: makeProfile({ current_basal: 1.0 }),
+            profile: makeIobProfile({ current_basal: 1.0 }),
             autosens: { ratio: 1.5 },
         });
         const withAutosens = calcTempTreatments(inputsWithAutosens);
 
         // Without autosens, net rate = 2.0 - 1.0 = 1.0 (more net insulin)
-        const inputsNoAutosens = makeInputs({
+        const inputsNoAutosens = makeIobInputs({
             history: makeTempBasalPair(tempTime, 2.0, 30),
-            profile: makeProfile({ current_basal: 1.0 }),
+            profile: makeIobProfile({ current_basal: 1.0 }),
         });
         const withoutAutosens = calcTempTreatments(inputsNoAutosens);
 
@@ -429,7 +407,7 @@ describe('calcTempTreatments', () => {
     it('includes both bolus treatments and net basal treatments in output', () => {
         const bolusTime = '2025-01-15T11:45:00.000Z';
         const tempTime = '2025-01-15T11:00:00.000Z';
-        const inputs = makeInputs({
+        const inputs = makeIobInputs({
             history: [
                 makeBolusEvent(bolusTime, 5.0),
                 ...makeTempBasalPair(tempTime, 2.0, 30),

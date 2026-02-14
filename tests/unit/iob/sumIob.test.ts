@@ -2,31 +2,17 @@ import { describe, it, expect, vi } from 'vitest';
 import { iobTotal } from '../../../src/iob/sumIob';
 import type { Treatment, IOBContribution, InsulinCurve } from '../../../src/types/index';
 import type { IobCalcProfile, IobTotalOpts, IobTotalResult } from '../../../src/iob/types';
+import {
+    FIXED_DATE,
+    FIXED_MS,
+    MS_PER_HOUR,
+    makeTreatment,
+    makeIobCalcProfile,
+} from '../helpers/factories';
 
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
-
-const FIXED_TIME = new Date('2025-01-15T12:00:00.000Z');
-const FIXED_MS = FIXED_TIME.getTime();
-const MS_PER_HOUR = 3_600_000;
-
-/** Create a minimal Treatment with sensible defaults */
-function makeTreatment(overrides: Partial<Treatment> = {}): Treatment {
-    return {
-        date: FIXED_MS - MS_PER_HOUR, // 1 hour ago by default
-        ...overrides,
-    };
-}
-
-/** Create a minimal IobCalcProfile */
-function makeProfile(overrides: Partial<IobCalcProfile> = {}): IobCalcProfile {
-    return {
-        dia: 6,
-        curve: 'rapid-acting',
-        ...overrides,
-    };
-}
 
 /** Build IobTotalOpts with a controllable mock calculate function */
 function makeOpts(
@@ -58,16 +44,16 @@ describe('iobTotal', () => {
 
     describe('when treatments is null', () => {
         it('returns an empty object', () => {
-            const opts = makeOpts(null, makeProfile());
-            const result = iobTotal(opts, FIXED_TIME);
+            const opts = makeOpts(null, makeIobCalcProfile());
+            const result = iobTotal(opts, FIXED_DATE);
 
             expect(result).toEqual({});
             expect(isResult(result)).toBe(false);
         });
 
         it('never calls calculate', () => {
-            const opts = makeOpts(null, makeProfile());
-            iobTotal(opts, FIXED_TIME);
+            const opts = makeOpts(null, makeIobCalcProfile());
+            iobTotal(opts, FIXED_DATE);
 
             expect(opts.calculate).not.toHaveBeenCalled();
         });
@@ -75,8 +61,8 @@ describe('iobTotal', () => {
 
     describe('when treatments is an empty array', () => {
         it('returns all-zero IOB fields', () => {
-            const opts = makeOpts([], makeProfile());
-            const result = iobTotal(opts, FIXED_TIME);
+            const opts = makeOpts([], makeIobCalcProfile());
+            const result = iobTotal(opts, FIXED_DATE);
 
             expect(isResult(result)).toBe(true);
             if (!isResult(result)) return;
@@ -87,7 +73,7 @@ describe('iobTotal', () => {
             expect(result.bolusiob).toBe(0);
             expect(result.netbasalinsulin).toBe(0);
             expect(result.bolusinsulin).toBe(0);
-            expect(result.time).toBe(FIXED_TIME);
+            expect(result.time).toBe(FIXED_DATE);
         });
     });
 
@@ -97,14 +83,14 @@ describe('iobTotal', () => {
 
     describe('when all treatments are past DIA', () => {
         it('returns zeros because calculate is never called for expired treatments', () => {
-            const profile = makeProfile({ dia: 6 });
+            const profile = makeIobCalcProfile({ dia: 6 });
             // Treatment 7 hours ago — beyond 6h DIA
             const treatment = makeTreatment({
                 insulin: 1,
                 date: FIXED_MS - 7 * MS_PER_HOUR,
             });
             const opts = makeOpts([treatment], profile, { iobContrib: 0.5, activityContrib: 0.1 });
-            const result = iobTotal(opts, FIXED_TIME);
+            const result = iobTotal(opts, FIXED_DATE);
 
             expect(isResult(result)).toBe(true);
             if (!isResult(result)) return;
@@ -123,13 +109,13 @@ describe('iobTotal', () => {
 
     describe('when treatment date is in the future', () => {
         it('skips the treatment entirely', () => {
-            const profile = makeProfile();
+            const profile = makeIobCalcProfile();
             const treatment = makeTreatment({
                 insulin: 1,
                 date: FIXED_MS + MS_PER_HOUR, // 1 hour in the future
             });
             const opts = makeOpts([treatment], profile, { iobContrib: 0.5, activityContrib: 0.1 });
-            const result = iobTotal(opts, FIXED_TIME);
+            const result = iobTotal(opts, FIXED_DATE);
 
             expect(isResult(result)).toBe(true);
             if (!isResult(result)) return;
@@ -145,7 +131,7 @@ describe('iobTotal', () => {
 
     describe('summing multiple treatments', () => {
         it('accumulates iob and activity from all active treatments', () => {
-            const profile = makeProfile();
+            const profile = makeIobCalcProfile();
             const t1 = makeTreatment({ insulin: 1.0, date: FIXED_MS - MS_PER_HOUR });
             const t2 = makeTreatment({ insulin: 2.0, date: FIXED_MS - 2 * MS_PER_HOUR });
             const t3 = makeTreatment({ insulin: 0.5, date: FIXED_MS - 3 * MS_PER_HOUR });
@@ -161,7 +147,7 @@ describe('iobTotal', () => {
                 calculate: calcMock,
             };
 
-            const result = iobTotal(opts, FIXED_TIME);
+            const result = iobTotal(opts, FIXED_DATE);
 
             expect(isResult(result)).toBe(true);
             if (!isResult(result)) return;
@@ -180,10 +166,10 @@ describe('iobTotal', () => {
 
     describe('basal/bolus IOB separation', () => {
         it('classifies treatment.insulin < 0.1 as basaliob', () => {
-            const profile = makeProfile();
+            const profile = makeIobCalcProfile();
             const treatment = makeTreatment({ insulin: 0.05, date: FIXED_MS - MS_PER_HOUR });
             const opts = makeOpts([treatment], profile, { iobContrib: 0.03, activityContrib: 0.001 });
-            const result = iobTotal(opts, FIXED_TIME);
+            const result = iobTotal(opts, FIXED_DATE);
 
             expect(isResult(result)).toBe(true);
             if (!isResult(result)) return;
@@ -195,10 +181,10 @@ describe('iobTotal', () => {
         });
 
         it('classifies treatment.insulin >= 0.1 as bolusiob', () => {
-            const profile = makeProfile();
+            const profile = makeIobCalcProfile();
             const treatment = makeTreatment({ insulin: 0.5, date: FIXED_MS - MS_PER_HOUR });
             const opts = makeOpts([treatment], profile, { iobContrib: 0.3, activityContrib: 0.01 });
-            const result = iobTotal(opts, FIXED_TIME);
+            const result = iobTotal(opts, FIXED_DATE);
 
             expect(isResult(result)).toBe(true);
             if (!isResult(result)) return;
@@ -210,10 +196,10 @@ describe('iobTotal', () => {
         });
 
         it('classifies treatment.insulin exactly 0.1 as bolusiob', () => {
-            const profile = makeProfile();
+            const profile = makeIobCalcProfile();
             const treatment = makeTreatment({ insulin: 0.1, date: FIXED_MS - MS_PER_HOUR });
             const opts = makeOpts([treatment], profile, { iobContrib: 0.08, activityContrib: 0.005 });
-            const result = iobTotal(opts, FIXED_TIME);
+            const result = iobTotal(opts, FIXED_DATE);
 
             expect(isResult(result)).toBe(true);
             if (!isResult(result)) return;
@@ -223,10 +209,10 @@ describe('iobTotal', () => {
         });
 
         it('classifies negative insulin (net negative basal) as basaliob', () => {
-            const profile = makeProfile();
+            const profile = makeIobCalcProfile();
             const treatment = makeTreatment({ insulin: -0.05, date: FIXED_MS - MS_PER_HOUR });
             const opts = makeOpts([treatment], profile, { iobContrib: -0.03, activityContrib: -0.001 });
-            const result = iobTotal(opts, FIXED_TIME);
+            const result = iobTotal(opts, FIXED_DATE);
 
             expect(isResult(result)).toBe(true);
             if (!isResult(result)) return;
@@ -237,7 +223,7 @@ describe('iobTotal', () => {
         });
 
         it('separates basal and bolus treatments in a mixed set', () => {
-            const profile = makeProfile();
+            const profile = makeIobCalcProfile();
             const basalTreatment = makeTreatment({ insulin: 0.05, date: FIXED_MS - MS_PER_HOUR });
             const bolusTreatment = makeTreatment({ insulin: 2.0, date: FIXED_MS - 2 * MS_PER_HOUR });
 
@@ -251,7 +237,7 @@ describe('iobTotal', () => {
                 calculate: calcMock,
             };
 
-            const result = iobTotal(opts, FIXED_TIME);
+            const result = iobTotal(opts, FIXED_DATE);
 
             expect(isResult(result)).toBe(true);
             if (!isResult(result)) return;
@@ -271,11 +257,11 @@ describe('iobTotal', () => {
 
     describe('treatment with no insulin field', () => {
         it('contributes to total iob but not basaliob or bolusiob', () => {
-            const profile = makeProfile();
+            const profile = makeIobCalcProfile();
             // No insulin field at all
             const treatment = makeTreatment({ date: FIXED_MS - MS_PER_HOUR });
             const opts = makeOpts([treatment], profile, { iobContrib: 0.5, activityContrib: 0.01 });
-            const result = iobTotal(opts, FIXED_TIME);
+            const result = iobTotal(opts, FIXED_DATE);
 
             expect(isResult(result)).toBe(true);
             if (!isResult(result)) return;
@@ -295,11 +281,11 @@ describe('iobTotal', () => {
 
     describe('rounding', () => {
         it('rounds iob to 3 decimal places', () => {
-            const profile = makeProfile();
+            const profile = makeIobCalcProfile();
             const treatment = makeTreatment({ insulin: 1.0, date: FIXED_MS - MS_PER_HOUR });
             // 0.12345 rounds to 0.123
             const opts = makeOpts([treatment], profile, { iobContrib: 0.12345, activityContrib: 0 });
-            const result = iobTotal(opts, FIXED_TIME);
+            const result = iobTotal(opts, FIXED_DATE);
 
             expect(isResult(result)).toBe(true);
             if (!isResult(result)) return;
@@ -308,11 +294,11 @@ describe('iobTotal', () => {
         });
 
         it('rounds activity to 4 decimal places', () => {
-            const profile = makeProfile();
+            const profile = makeIobCalcProfile();
             const treatment = makeTreatment({ insulin: 1.0, date: FIXED_MS - MS_PER_HOUR });
             // 0.123456 rounds to 0.1235
             const opts = makeOpts([treatment], profile, { iobContrib: 0, activityContrib: 0.123456 });
-            const result = iobTotal(opts, FIXED_TIME);
+            const result = iobTotal(opts, FIXED_DATE);
 
             expect(isResult(result)).toBe(true);
             if (!isResult(result)) return;
@@ -321,10 +307,10 @@ describe('iobTotal', () => {
         });
 
         it('rounds basaliob, bolusiob, netbasalinsulin, bolusinsulin to 3dp', () => {
-            const profile = makeProfile();
+            const profile = makeIobCalcProfile();
             const treatment = makeTreatment({ insulin: 0.05678, date: FIXED_MS - MS_PER_HOUR });
             const opts = makeOpts([treatment], profile, { iobContrib: 0.04567, activityContrib: 0 });
-            const result = iobTotal(opts, FIXED_TIME);
+            const result = iobTotal(opts, FIXED_DATE);
 
             expect(isResult(result)).toBe(true);
             if (!isResult(result)) return;
@@ -336,11 +322,11 @@ describe('iobTotal', () => {
         });
 
         it('uses Math.round semantics (0.5 rounds up)', () => {
-            const profile = makeProfile();
+            const profile = makeIobCalcProfile();
             const treatment = makeTreatment({ insulin: 1.0, date: FIXED_MS - MS_PER_HOUR });
             // 0.1115 * 1000 = 111.5 -> rounds to 112 -> 0.112
             const opts = makeOpts([treatment], profile, { iobContrib: 0.1115, activityContrib: 0 });
-            const result = iobTotal(opts, FIXED_TIME);
+            const result = iobTotal(opts, FIXED_DATE);
 
             expect(isResult(result)).toBe(true);
             if (!isResult(result)) return;
@@ -355,7 +341,7 @@ describe('iobTotal', () => {
 
     describe('minimum DIA enforcement', () => {
         it('forces minimum DIA of 3h for bilinear curve', () => {
-            const profile = makeProfile({ dia: 1, curve: 'bilinear' });
+            const profile = makeIobCalcProfile({ dia: 1, curve: 'bilinear' });
             // Treatment 2.5h ago — past 1h DIA but within 3h floor
             const treatment = makeTreatment({
                 insulin: 1.0,
@@ -368,7 +354,7 @@ describe('iobTotal', () => {
                 calculate: calcMock,
             };
 
-            const result = iobTotal(opts, FIXED_TIME);
+            const result = iobTotal(opts, FIXED_DATE);
 
             expect(isResult(result)).toBe(true);
             if (!isResult(result)) return;
@@ -380,7 +366,7 @@ describe('iobTotal', () => {
         });
 
         it('forces minimum DIA of 5h for rapid-acting curve', () => {
-            const profile = makeProfile({ dia: 4, curve: 'rapid-acting' });
+            const profile = makeIobCalcProfile({ dia: 4, curve: 'rapid-acting' });
             // Treatment 4.5h ago — past 4h DIA but within 5h floor
             const treatment = makeTreatment({
                 insulin: 1.0,
@@ -393,7 +379,7 @@ describe('iobTotal', () => {
                 calculate: calcMock,
             };
 
-            const result = iobTotal(opts, FIXED_TIME);
+            const result = iobTotal(opts, FIXED_DATE);
 
             expect(isResult(result)).toBe(true);
             if (!isResult(result)) return;
@@ -404,7 +390,7 @@ describe('iobTotal', () => {
         });
 
         it('forces minimum DIA of 5h for ultra-rapid curve', () => {
-            const profile = makeProfile({ dia: 4, curve: 'ultra-rapid' });
+            const profile = makeIobCalcProfile({ dia: 4, curve: 'ultra-rapid' });
             const treatment = makeTreatment({
                 insulin: 1.0,
                 date: FIXED_MS - 4.5 * MS_PER_HOUR,
@@ -416,7 +402,7 @@ describe('iobTotal', () => {
                 calculate: calcMock,
             };
 
-            const result = iobTotal(opts, FIXED_TIME);
+            const result = iobTotal(opts, FIXED_DATE);
 
             expect(isResult(result)).toBe(true);
             if (!isResult(result)) return;
@@ -426,7 +412,7 @@ describe('iobTotal', () => {
         });
 
         it('does not enforce 5h minimum for bilinear curve', () => {
-            const profile = makeProfile({ dia: 4, curve: 'bilinear' });
+            const profile = makeIobCalcProfile({ dia: 4, curve: 'bilinear' });
             const treatment = makeTreatment({
                 insulin: 1.0,
                 date: FIXED_MS - MS_PER_HOUR,
@@ -438,14 +424,14 @@ describe('iobTotal', () => {
                 calculate: calcMock,
             };
 
-            iobTotal(opts, FIXED_TIME);
+            iobTotal(opts, FIXED_DATE);
 
             // DIA stays at 4, not bumped to 5
             expect(calcMock.mock.calls[0][3]).toBe(4);
         });
 
         it('does not lower DIA when it exceeds the minimum', () => {
-            const profile = makeProfile({ dia: 8, curve: 'rapid-acting' });
+            const profile = makeIobCalcProfile({ dia: 8, curve: 'rapid-acting' });
             const treatment = makeTreatment({
                 insulin: 1.0,
                 date: FIXED_MS - MS_PER_HOUR,
@@ -457,7 +443,7 @@ describe('iobTotal', () => {
                 calculate: calcMock,
             };
 
-            iobTotal(opts, FIXED_TIME);
+            iobTotal(opts, FIXED_DATE);
 
             // DIA stays at 8
             expect(calcMock.mock.calls[0][3]).toBe(8);
@@ -472,7 +458,7 @@ describe('iobTotal', () => {
         it('defaults to rapid-acting and logs error', () => {
             const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
 
-            const profile = makeProfile({ dia: 6, curve: 'unknown-curve' as InsulinCurve });
+            const profile = makeIobCalcProfile({ dia: 6, curve: 'unknown-curve' as InsulinCurve });
             const treatment = makeTreatment({
                 insulin: 1.0,
                 date: FIXED_MS - MS_PER_HOUR,
@@ -484,7 +470,7 @@ describe('iobTotal', () => {
                 calculate: calcMock,
             };
 
-            iobTotal(opts, FIXED_TIME);
+            iobTotal(opts, FIXED_DATE);
 
             // Should log an error about the unsupported curve
             expect(consoleSpy).toHaveBeenCalledTimes(1);
@@ -500,7 +486,7 @@ describe('iobTotal', () => {
         it('enforces 5h minimum DIA after defaulting to rapid-acting', () => {
             const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
 
-            const profile = makeProfile({ dia: 4, curve: 'made-up' as InsulinCurve });
+            const profile = makeIobCalcProfile({ dia: 4, curve: 'made-up' as InsulinCurve });
             const treatment = makeTreatment({
                 insulin: 1.0,
                 date: FIXED_MS - 4.5 * MS_PER_HOUR,
@@ -512,7 +498,7 @@ describe('iobTotal', () => {
                 calculate: calcMock,
             };
 
-            const result = iobTotal(opts, FIXED_TIME);
+            const result = iobTotal(opts, FIXED_DATE);
 
             expect(isResult(result)).toBe(true);
             if (!isResult(result)) return;
@@ -531,7 +517,7 @@ describe('iobTotal', () => {
 
     describe('curve and peak selection', () => {
         it('passes rapid-acting peak (75) to calculate', () => {
-            const profile = makeProfile({ dia: 6, curve: 'rapid-acting' });
+            const profile = makeIobCalcProfile({ dia: 6, curve: 'rapid-acting' });
             const treatment = makeTreatment({ insulin: 1, date: FIXED_MS - MS_PER_HOUR });
             const calcMock = vi.fn().mockReturnValue({ iobContrib: 0.5, activityContrib: 0.01 });
             const opts: IobTotalOpts = {
@@ -540,14 +526,14 @@ describe('iobTotal', () => {
                 calculate: calcMock,
             };
 
-            iobTotal(opts, FIXED_TIME);
+            iobTotal(opts, FIXED_DATE);
 
             // peak is 5th argument (index 4)
             expect(calcMock.mock.calls[0][4]).toBe(75);
         });
 
         it('passes ultra-rapid peak (55) to calculate', () => {
-            const profile = makeProfile({ dia: 6, curve: 'ultra-rapid' });
+            const profile = makeIobCalcProfile({ dia: 6, curve: 'ultra-rapid' });
             const treatment = makeTreatment({ insulin: 1, date: FIXED_MS - MS_PER_HOUR });
             const calcMock = vi.fn().mockReturnValue({ iobContrib: 0.5, activityContrib: 0.01 });
             const opts: IobTotalOpts = {
@@ -556,13 +542,13 @@ describe('iobTotal', () => {
                 calculate: calcMock,
             };
 
-            iobTotal(opts, FIXED_TIME);
+            iobTotal(opts, FIXED_DATE);
 
             expect(calcMock.mock.calls[0][4]).toBe(55);
         });
 
         it('passes bilinear peak (75) to calculate', () => {
-            const profile = makeProfile({ dia: 6, curve: 'bilinear' });
+            const profile = makeIobCalcProfile({ dia: 6, curve: 'bilinear' });
             const treatment = makeTreatment({ insulin: 1, date: FIXED_MS - MS_PER_HOUR });
             const calcMock = vi.fn().mockReturnValue({ iobContrib: 0.5, activityContrib: 0.01 });
             const opts: IobTotalOpts = {
@@ -571,7 +557,7 @@ describe('iobTotal', () => {
                 calculate: calcMock,
             };
 
-            iobTotal(opts, FIXED_TIME);
+            iobTotal(opts, FIXED_DATE);
 
             // Bilinear also uses RAPID_ACTING_PEAK (75) as its default
             expect(calcMock.mock.calls[0][4]).toBe(75);
@@ -584,10 +570,10 @@ describe('iobTotal', () => {
 
     describe('when calculate returns empty object', () => {
         it('does not add to iob or activity', () => {
-            const profile = makeProfile();
+            const profile = makeIobCalcProfile();
             const treatment = makeTreatment({ insulin: 1.0, date: FIXED_MS - MS_PER_HOUR });
             const opts = makeOpts([treatment], profile, {} as IOBContribution);
-            const result = iobTotal(opts, FIXED_TIME);
+            const result = iobTotal(opts, FIXED_DATE);
 
             expect(isResult(result)).toBe(true);
             if (!isResult(result)) return;
@@ -605,13 +591,13 @@ describe('iobTotal', () => {
 
     describe('result time field', () => {
         it('includes the time argument in the result', () => {
-            const opts = makeOpts([], makeProfile());
-            const result = iobTotal(opts, FIXED_TIME);
+            const opts = makeOpts([], makeIobCalcProfile());
+            const result = iobTotal(opts, FIXED_DATE);
 
             expect(isResult(result)).toBe(true);
             if (!isResult(result)) return;
 
-            expect(result.time).toBe(FIXED_TIME);
+            expect(result.time).toBe(FIXED_DATE);
         });
     });
 
@@ -621,7 +607,7 @@ describe('iobTotal', () => {
 
     describe('curve name case handling', () => {
         it('lowercases the curve name from the profile', () => {
-            const profile = makeProfile({ dia: 6, curve: 'Rapid-Acting' as InsulinCurve });
+            const profile = makeIobCalcProfile({ dia: 6, curve: 'Rapid-Acting' as InsulinCurve });
             const treatment = makeTreatment({ insulin: 1, date: FIXED_MS - MS_PER_HOUR });
             const calcMock = vi.fn().mockReturnValue({ iobContrib: 0.5, activityContrib: 0.01 });
             const opts: IobTotalOpts = {
@@ -630,7 +616,7 @@ describe('iobTotal', () => {
                 calculate: calcMock,
             };
 
-            iobTotal(opts, FIXED_TIME);
+            iobTotal(opts, FIXED_DATE);
 
             // Should pass lowercased curve name
             expect(calcMock.mock.calls[0][2]).toBe('rapid-acting');
@@ -643,7 +629,7 @@ describe('iobTotal', () => {
 
     describe('when profile.curve is undefined', () => {
         it('defaults to bilinear', () => {
-            const profile = makeProfile({ dia: 6, curve: undefined });
+            const profile = makeIobCalcProfile({ dia: 6, curve: undefined });
             const treatment = makeTreatment({ insulin: 1, date: FIXED_MS - MS_PER_HOUR });
             const calcMock = vi.fn().mockReturnValue({ iobContrib: 0.5, activityContrib: 0.01 });
             const opts: IobTotalOpts = {
@@ -652,14 +638,14 @@ describe('iobTotal', () => {
                 calculate: calcMock,
             };
 
-            iobTotal(opts, FIXED_TIME);
+            iobTotal(opts, FIXED_DATE);
 
             // curve arg should be 'bilinear'
             expect(calcMock.mock.calls[0][2]).toBe('bilinear');
         });
 
         it('does not enforce 5h minimum for default bilinear curve', () => {
-            const profile = makeProfile({ dia: 4, curve: undefined });
+            const profile = makeIobCalcProfile({ dia: 4, curve: undefined });
             const treatment = makeTreatment({ insulin: 1, date: FIXED_MS - MS_PER_HOUR });
             const calcMock = vi.fn().mockReturnValue({ iobContrib: 0.5, activityContrib: 0.01 });
             const opts: IobTotalOpts = {
@@ -668,7 +654,7 @@ describe('iobTotal', () => {
                 calculate: calcMock,
             };
 
-            iobTotal(opts, FIXED_TIME);
+            iobTotal(opts, FIXED_DATE);
 
             // DIA stays at 4, not bumped to 5 (bilinear doesn't require long DIA)
             expect(calcMock.mock.calls[0][3]).toBe(4);
@@ -681,7 +667,7 @@ describe('iobTotal', () => {
 
     describe('profile forwarding', () => {
         it('passes the profile object to calculate as the 6th argument', () => {
-            const profile = makeProfile({ dia: 6, curve: 'rapid-acting' });
+            const profile = makeIobCalcProfile({ dia: 6, curve: 'rapid-acting' });
             const treatment = makeTreatment({ insulin: 1, date: FIXED_MS - MS_PER_HOUR });
             const calcMock = vi.fn().mockReturnValue({ iobContrib: 0.5, activityContrib: 0.01 });
             const opts: IobTotalOpts = {
@@ -690,7 +676,7 @@ describe('iobTotal', () => {
                 calculate: calcMock,
             };
 
-            iobTotal(opts, FIXED_TIME);
+            iobTotal(opts, FIXED_DATE);
 
             // profile_data is passed as the 6th arg (index 5)
             expect(calcMock.mock.calls[0][5]).toBe(profile);

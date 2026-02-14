@@ -2,42 +2,18 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 import { validateCGMData } from '../../../src/determineBasal/cgmValidation';
 
-import type {
-    GlucoseStatus,
-    CurrentTemp,
-    Profile,
-} from '../../../src/types/index';
+import type { CurrentTemp, Profile } from '../../../src/types/index';
 
-const FIXED_TIME = '2025-01-15T12:00:00.000Z';
+import {
+    makeGlucoseStatus,
+    makeProfile,
+    FIXED_TIME,
+} from '../../unit/helpers';
 
 beforeEach(() => {
     vi.restoreAllMocks();
     vi.spyOn(console, 'log').mockImplementation(() => {});
 });
-
-// ---------------------------------------------------------------------------
-// Shared test fixtures
-// ---------------------------------------------------------------------------
-
-function makeGlucoseStatus(overrides: Partial<GlucoseStatus> = {}): GlucoseStatus {
-    return {
-        glucose: 120,
-        delta: 2,
-        short_avgdelta: 1.5,
-        long_avgdelta: 1.0,
-        date: new Date(FIXED_TIME).getTime() - 60000, // 1 minute ago
-        ...overrides,
-    } as GlucoseStatus;
-}
-
-function makeProfile(overrides: Partial<Profile> = {}): Profile {
-    return {
-        current_basal: 1.0,
-        out_units: 'mg/dL',
-        sens: 50,
-        ...overrides,
-    } as Profile;
-}
 
 // ---------------------------------------------------------------------------
 // validateCGMData

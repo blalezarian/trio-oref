@@ -1,27 +1,18 @@
 import { describe, it, expect } from 'vitest';
 import { findLastBolusAndTemp } from '../../../src/iob/findLastBolusAndTemp';
 import type { IobTreatment } from '../../../src/iob/types';
-
-const BASE_TIME = new Date('2025-01-15T12:00:00Z').getTime();
-const MS_PER_MINUTE = 60_000;
+import {
+    FIXED_MS,
+    MS_PER_MINUTE,
+    makeIobTreatment,
+} from '../helpers/factories';
 
 function makeBolus(offsetMin: number, insulin: number): IobTreatment {
-    const date = BASE_TIME + offsetMin * MS_PER_MINUTE;
-    return {
-        insulin,
-        date,
-        started_at: new Date(date),
-    };
+    return makeIobTreatment(offsetMin, { insulin });
 }
 
 function makeTemp(offsetMin: number, rate: number, duration: number): IobTreatment {
-    const date = BASE_TIME + offsetMin * MS_PER_MINUTE;
-    return {
-        rate,
-        duration,
-        date,
-        started_at: new Date(date),
-    };
+    return makeIobTreatment(offsetMin, { rate, duration });
 }
 
 describe('findLastBolusAndTemp', () => {
@@ -39,7 +30,7 @@ describe('findLastBolusAndTemp', () => {
             makeBolus(10, 0.5),
         ];
         const result = findLastBolusAndTemp(treatments);
-        expect(result.lastBolusTime).toBe(BASE_TIME + 30 * MS_PER_MINUTE);
+        expect(result.lastBolusTime).toBe(FIXED_MS + 30 * MS_PER_MINUTE);
     });
 
     it('finds most recent temp basal', () => {
@@ -49,7 +40,7 @@ describe('findLastBolusAndTemp', () => {
             makeTemp(30, 1.0, 15),
         ];
         const result = findLastBolusAndTemp(treatments);
-        expect(result.lastTemp.date).toBe(BASE_TIME + 60 * MS_PER_MINUTE);
+        expect(result.lastTemp.date).toBe(FIXED_MS + 60 * MS_PER_MINUTE);
         expect(result.lastTemp.rate).toBe(0.8);
     });
 
@@ -69,13 +60,13 @@ describe('findLastBolusAndTemp', () => {
             makeTemp(40, 0.5, 15),
         ];
         const result = findLastBolusAndTemp(treatments);
-        expect(result.lastBolusTime).toBe(BASE_TIME + 10 * MS_PER_MINUTE);
-        expect(result.lastTemp.date).toBe(BASE_TIME + 40 * MS_PER_MINUTE);
+        expect(result.lastBolusTime).toBe(FIXED_MS + 10 * MS_PER_MINUTE);
+        expect(result.lastTemp.date).toBe(FIXED_MS + 40 * MS_PER_MINUTE);
     });
 
     it('ignores treatments with no insulin and no rate', () => {
         const treatments: IobTreatment[] = [
-            { date: BASE_TIME }, // no insulin, no rate
+            { date: FIXED_MS }, // no insulin, no rate
         ];
         const result = findLastBolusAndTemp(treatments);
         expect(result.lastBolusTime).toBe(new Date(0).getTime());

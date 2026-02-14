@@ -9,190 +9,16 @@ import {
     resolveSMBInterval,
 } from '../../../../src/determineBasal/dosingDecision/highTemp';
 
-import type { DosingContext } from '../../../../src/determineBasal/dosingDecision/types';
 import type {
     IOBData,
-    MealData,
     Profile,
     DetermineBasalResult,
-    GlucoseStatus,
     CurrentTemp,
-    TrioCustomVariables,
     TempBasalFunctions,
+    TrioCustomVariables,
 } from '../../../../src/types/index';
-import type { DosingDecisionInputs } from '../../../../src/determineBasal/types';
 
-// ---------------------------------------------------------------------------
-// Test helpers
-// ---------------------------------------------------------------------------
-
-function makeTestContext(overrides: {
-    inputs?: Partial<DosingDecisionInputs>;
-    result?: Partial<DetermineBasalResult>;
-    enableSMB?: boolean;
-    insulinReq?: number;
-    rate?: number;
-    insulinScheduled?: number;
-    bgUndershoot?: number;
-    minutesAboveMinBG?: number;
-    minutesAboveThreshold?: number;
-    carbsReq?: number;
-} = {}): DosingContext {
-    const {
-        inputs: inputOverrides = {},
-        result: resultOverrides = {},
-        ...ctxOverrides
-    } = overrides;
-
-    const defaultInputs: DosingDecisionInputs = {
-        basal: 1.0,
-        adjustedSens: 50,
-        threshold: 65,
-        targetBG: 100,
-        minBG: 80,
-        maxBG: 120,
-        maxIOB: 10,
-        eventualBG: 150,
-        minPredBG: 130,
-        minIOBPredBG: 120,
-        naiveEventualBG: 150,
-        overrideFactor: 1.0,
-        carbRatio: 10,
-        bg: 150,
-        iobData: {
-            iob: 2.0,
-            lastBolusTime: Date.now() - 600000,
-            activity: 0.05,
-            basaliob: 0.5,
-            bolusiob: 1.5,
-            netbasalinsulin: 0.5,
-            bolusinsulin: 3.0,
-            time: new Date('2025-01-15T12:00:00Z'),
-        } as IOBData,
-        mealData: {
-            mealCOB: 0,
-            carbs: 0,
-            nsCarbs: 0,
-            bwCarbs: 0,
-            journalCarbs: 0,
-            currentDeviation: 0,
-            maxDeviation: 0,
-            minDeviation: 0,
-            slopeFromMaxDeviation: 0,
-            slopeFromMinDeviation: 0,
-            allDeviations: [],
-            bwFound: false,
-        } as MealData,
-        profile: {
-            current_basal: 1.0,
-            out_units: 'mg/dL',
-            max_basal: 4.0,
-            maxSMBBasalMinutes: 30,
-            maxUAMSMBBasalMinutes: 30,
-            bolus_increment: 0.1,
-            smb_delivery_ratio: 0.5,
-            max_iob: 10,
-            max_daily_safety_multiplier: 3,
-            current_basal_safety_multiplier: 4,
-            autosens_max: 1.2,
-            autosens_min: 0.7,
-            dia: 5,
-            curve: 'rapid-acting',
-            useCustomPeakTime: false,
-            insulinPeakTime: 75,
-            max_daily_basal: 2.0,
-            min_bg: 80,
-            max_bg: 120,
-            sens: 50,
-            carb_ratio: 10,
-        } as Profile,
-        glucoseStatus: {
-            glucose: 150,
-            delta: 5,
-            short_avgdelta: 4,
-            long_avgdelta: 3,
-        } as GlucoseStatus,
-        currenttemp: {
-            rate: 0,
-            duration: 0,
-        } as CurrentTemp,
-        tempBasalFunctions: {
-            setTempBasal: vi.fn(
-                (
-                    _rate: number,
-                    _duration: number,
-                    _profile: Profile,
-                    result: DetermineBasalResult,
-                ) => result,
-            ),
-            getMaxSafeBasal: vi.fn(() => 4),
-        } as unknown as TempBasalFunctions,
-        systemTime: new Date('2025-01-15T12:00:00Z'),
-        trioCustomVariables: {
-            useOverride: false,
-            advancedSettings: false,
-            smbMinutes: 30,
-            uamMinutes: 30,
-            overridePercentage: 100,
-            overrideTarget: 0,
-            isfAndCr: false,
-            isf: false,
-            cr: false,
-            smbIsOff: false,
-            smbIsScheduledOff: false,
-            start: 0,
-            end: 0,
-            currentTDD: 0,
-            average_total_data: 0,
-            weightedAverage: 0,
-            duration: 0,
-        } as TrioCustomVariables,
-        microBolusAllowed: true,
-        result: { reason: '' } as DetermineBasalResult,
-        enableSMB: true,
-
-        // Remaining DosingDecisionInputs fields
-        expectedDelta: 0,
-        minDelta: 0,
-        maxDelta: 0,
-        tick: 0,
-        bgImpact: 0,
-        deviation: 0,
-        carbImpact: 0,
-        remainingCIpeak: 0,
-        carbSensFactor: 0,
-        minGuardBG: 130,
-        lastIOBpredBG: 120,
-        lastCOBpredBG: 130,
-        lastUAMpredBG: 130,
-        IOBpredBGs: [],
-        COBpredBGs: [],
-        isfreason: '',
-        targetLog: '',
-        tddReason: '',
-
-        ...inputOverrides,
-    };
-
-    const defaultResult: DetermineBasalResult = {
-        reason: '',
-        ...resultOverrides,
-    };
-
-    return {
-        inputs: defaultInputs,
-        result: defaultResult,
-        enableSMB: true,
-        insulinReq: 1.0,
-        rate: 3.0,
-        insulinScheduled: 0,
-        bgUndershoot: 0,
-        minutesAboveMinBG: 0,
-        minutesAboveThreshold: 0,
-        carbsReq: 0,
-        ...ctxOverrides,
-    };
-}
+import { makeDosingContext } from '../../helpers';
 
 // ---------------------------------------------------------------------------
 // Console mocking
@@ -210,7 +36,7 @@ beforeEach(() => {
 describe('checkIOBLimit', () => {
     it('returns { done: false } when IOB <= max_iob', () => {
         // iob=2.0, max_iob=10 → IOB not over limit → continue pipeline
-        const ctx = makeTestContext({
+        const ctx = makeDosingContext({
             inputs: {
                 eventualBG: 110,
                 maxBG: 120,
@@ -224,7 +50,7 @@ describe('checkIOBLimit', () => {
 
     it('appends reason when eventualBG >= max_bg', () => {
         // eventualBG=120 >= max_bg=120 → appends "Eventual BG ... >= ..."
-        const ctx = makeTestContext({
+        const ctx = makeDosingContext({
             inputs: {
                 eventualBG: 120,
                 maxBG: 120,
@@ -239,7 +65,7 @@ describe('checkIOBLimit', () => {
 
     it('returns { done: true } when IOB > max_iob (cancels to basal)', () => {
         // iob=11 > max_iob=10 → sets basal as temp and returns done
-        const ctx = makeTestContext({
+        const ctx = makeDosingContext({
             inputs: {
                 iobData: {
                     iob: 11,
@@ -275,7 +101,7 @@ describe('checkIOBLimit', () => {
 
     it('sets insulinForManualBolus when eventualBG > max_bg', () => {
         // eventualBG=150 > max_bg=120 → insulinForManualBolus = round((150-100)/50, 2) = 1.0
-        const ctx = makeTestContext({
+        const ctx = makeDosingContext({
             inputs: {
                 eventualBG: 150,
                 maxBG: 120,
@@ -297,7 +123,7 @@ describe('checkIOBLimit', () => {
 describe('calculateHighInsulinReq', () => {
     it('computes insulinReq = (min(minPredBG, eventualBG) - target_bg) / adjustedSens', () => {
         // min(130, 150) = 130; insulinReq = (130 - 100) / 50 = 0.6
-        const ctx = makeTestContext({
+        const ctx = makeDosingContext({
             inputs: {
                 minPredBG: 130,
                 eventualBG: 150,
@@ -314,7 +140,7 @@ describe('calculateHighInsulinReq', () => {
     it('caps insulinReq at max_iob - iob when insulinReq exceeds remaining IOB allowance', () => {
         // insulinReq = (min(190, 200) - 100) / 50 = 1.8
         // remaining = max_iob(3) - iob(2) = 1 → caps at 1
-        const ctx = makeTestContext({
+        const ctx = makeDosingContext({
             inputs: {
                 minPredBG: 190,
                 eventualBG: 200,
@@ -343,7 +169,7 @@ describe('calculateHighInsulinReq', () => {
     it('sets ctx.rate = basal + 2 * insulinReq (rounded to pump increment)', () => {
         // insulinReq = (130 - 100) / 50 = 0.6
         // rate = 1.0 + 2 * 0.6 = 2.2 → roundBasal(2.2, profile) = 2.2
-        const ctx = makeTestContext({
+        const ctx = makeDosingContext({
             inputs: {
                 minPredBG: 130,
                 eventualBG: 150,
@@ -361,7 +187,7 @@ describe('calculateHighInsulinReq', () => {
     });
 
     it('stores insulinReq on result', () => {
-        const ctx = makeTestContext({
+        const ctx = makeDosingContext({
             inputs: {
                 minPredBG: 130,
                 eventualBG: 150,
@@ -376,7 +202,7 @@ describe('calculateHighInsulinReq', () => {
     });
 
     it('always returns { done: false }', () => {
-        const ctx = makeTestContext();
+        const ctx = makeDosingContext();
 
         const outcome = calculateHighInsulinReq(ctx);
 
@@ -390,7 +216,7 @@ describe('calculateHighInsulinReq', () => {
 
 describe('handleSMB', () => {
     it('returns { done: false } when microBolusAllowed is false', () => {
-        const ctx = makeTestContext({
+        const ctx = makeDosingContext({
             inputs: {
                 microBolusAllowed: false,
             },
@@ -402,7 +228,7 @@ describe('handleSMB', () => {
     });
 
     it('returns { done: false } when enableSMB is false', () => {
-        const ctx = makeTestContext({
+        const ctx = makeDosingContext({
             enableSMB: false,
         });
 
@@ -412,7 +238,7 @@ describe('handleSMB', () => {
     });
 
     it('returns { done: false } when bg <= threshold', () => {
-        const ctx = makeTestContext({
+        const ctx = makeDosingContext({
             inputs: {
                 bg: 65,
                 threshold: 65,
@@ -430,7 +256,7 @@ describe('handleSMB', () => {
         // maxBolus = current_basal(1.0) * overrideFactor(1.0) * 30 / 60 = 0.5
         // microBolus = min(0.5, 0.5) = 0.5
         // floor(0.5 * 10) / 10 = 0.5
-        const ctx = makeTestContext({
+        const ctx = makeDosingContext({
             inputs: {
                 bg: 150,
                 threshold: 65,
@@ -460,7 +286,7 @@ describe('handleSMB', () => {
     it('uses default SMB/UAM minutes when profile values are undefined', () => {
         // When maxSMBBasalMinutes and maxUAMSMBBasalMinutes are undefined on the profile,
         // handleSMB should default both to DEFAULT_MAX_SMB_BASAL_MINUTES (30)
-        const ctx = makeTestContext({
+        const ctx = makeDosingContext({
             inputs: {
                 bg: 150,
                 threshold: 65,
@@ -525,7 +351,7 @@ describe('handleSMB', () => {
         // smbTarget > (naive_eventualBG + minIOBPredBG) / 2
         // 100 > (naive_eventualBG + minIOBPredBG) / 2
         // naive_eventualBG + minIOBPredBG < 200
-        const ctx = makeTestContext({
+        const ctx = makeDosingContext({
             inputs: {
                 bg: 150,
                 threshold: 65,
@@ -591,7 +417,7 @@ describe('handleSMB', () => {
 
 describe('applyFinalHighTemp', () => {
     it('caps rate at maxSafeBasal when rate exceeds it', () => {
-        const ctx = makeTestContext({
+        const ctx = makeDosingContext({
             rate: 5.0,
             inputs: {
                 tempBasalFunctions: {
@@ -623,7 +449,7 @@ describe('applyFinalHighTemp', () => {
         // currenttemp.duration=30, currenttemp.rate=5.0, basal=1.0
         // insulinScheduled = 30 * (5.0 - 1.0) / 60 = 2.0
         // insulinReq = 0.5 → 2 * 0.5 = 1.0 → 2.0 >= 1.0 → overshoot
-        const ctx = makeTestContext({
+        const ctx = makeDosingContext({
             rate: 2.0,
             insulinReq: 0.5,
             inputs: {
@@ -644,7 +470,7 @@ describe('applyFinalHighTemp', () => {
     });
 
     it('returns { done: true } when no current temp (duration === 0)', () => {
-        const ctx = makeTestContext({
+        const ctx = makeDosingContext({
             rate: 2.0,
             insulinReq: 1.0,
             inputs: {
@@ -669,7 +495,7 @@ describe('applyFinalHighTemp', () => {
         // currenttemp.rate=3.0 >= ctx.rate=2.0 → keeps existing
         // insulinScheduled = 20 * (3.0 - 1.0) / 60 = 0.667
         // 2 * insulinReq = 2 * 1.0 = 2.0 → 0.667 < 2.0 → no overshoot
-        const ctx = makeTestContext({
+        const ctx = makeDosingContext({
             rate: 2.0,
             insulinReq: 1.0,
             inputs: {

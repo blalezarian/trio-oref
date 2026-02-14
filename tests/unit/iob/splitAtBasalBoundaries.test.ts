@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { splitTimespanWithOneSplitter, splitTimespan } from '../../../src/iob/splitAtBasalBoundaries';
 import type { TempEvent, SplitterEvent } from '../../../src/iob/types';
+import { makeSplitter } from '../helpers/factories';
 
 /** Create an event starting at a specific local-time hour:minute */
 function makeEventAtLocalTime(hours: number, minutes: number, durationMin: number): TempEvent {
@@ -13,10 +14,6 @@ function makeEventAtLocalTime(hours: number, minutes: number, durationMin: numbe
         started_at: d,
         timestamp: d.toISOString(),
     };
-}
-
-function makeSplitter(minutes: number): SplitterEvent {
-    return { type: 'recurring', minutes };
 }
 
 describe('splitTimespanWithOneSplitter', () => {

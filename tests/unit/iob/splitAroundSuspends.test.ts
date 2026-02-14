@@ -1,12 +1,14 @@
 import { describe, it, expect } from 'vitest';
 import { splitAroundSuspends } from '../../../src/iob/splitAroundSuspends';
 import type { TempEvent, SuspendEvent } from '../../../src/iob/types';
-
-const BASE_TIME = new Date('2025-01-15T12:00:00Z').getTime();
-const MS_PER_MINUTE = 60_000;
+import {
+    FIXED_MS,
+    MS_PER_MINUTE,
+    makeSuspendEvent,
+} from '../helpers/factories';
 
 function makeEvent(offsetMin: number, durationMin: number): TempEvent {
-    const date = BASE_TIME + offsetMin * MS_PER_MINUTE;
+    const date = FIXED_MS + offsetMin * MS_PER_MINUTE;
     return {
         rate: 1.0,
         duration: durationMin,
@@ -16,28 +18,18 @@ function makeEvent(offsetMin: number, durationMin: number): TempEvent {
     };
 }
 
-function makeSuspend(offsetMin: number, durationMin: number): SuspendEvent {
-    const date = BASE_TIME + offsetMin * MS_PER_MINUTE;
-    return {
-        date,
-        duration: durationMin,
-        started_at: new Date(date),
-        timestamp: new Date(date).toISOString(),
-    };
-}
-
 describe('splitAroundSuspends', () => {
 
     const noSuspends: SuspendEvent[] = [];
-    const farFutureResume = new Date(BASE_TIME + 9999 * MS_PER_MINUTE).toISOString();
-    const farPastSuspend = new Date(BASE_TIME - 9999 * MS_PER_MINUTE).toISOString();
+    const farFutureResume = new Date(FIXED_MS + 9999 * MS_PER_MINUTE).toISOString();
+    const farPastSuspend = new Date(FIXED_MS - 9999 * MS_PER_MINUTE).toISOString();
 
     it('returns event unchanged when no suspends overlap', () => {
         const event = makeEvent(0, 30);
         // Suspend at +60 doesn't overlap event at 0-30
         const result = splitAroundSuspends(
             event,
-            [makeSuspend(60, 10)],
+            [makeSuspendEvent(60, 10)],
             farFutureResume,
             false,
             farPastSuspend,
@@ -52,7 +44,7 @@ describe('splitAroundSuspends', () => {
         const event = makeEvent(0, 60);
         const result = splitAroundSuspends(
             event,
-            [makeSuspend(20, 10)],
+            [makeSuspendEvent(20, 10)],
             farFutureResume,
             false,
             farPastSuspend,
@@ -65,7 +57,7 @@ describe('splitAroundSuspends', () => {
     });
 
     it('truncates event that starts before first resume when suspendedPrior', () => {
-        const resumeTime = new Date(BASE_TIME + 15 * MS_PER_MINUTE).toISOString();
+        const resumeTime = new Date(FIXED_MS + 15 * MS_PER_MINUTE).toISOString();
         const event = makeEvent(0, 30);
         const result = splitAroundSuspends(
             event,
@@ -81,7 +73,7 @@ describe('splitAroundSuspends', () => {
     });
 
     it('zeros event entirely before first resume when suspendedPrior', () => {
-        const resumeTime = new Date(BASE_TIME + 60 * MS_PER_MINUTE).toISOString();
+        const resumeTime = new Date(FIXED_MS + 60 * MS_PER_MINUTE).toISOString();
         const event = makeEvent(0, 30);
         const result = splitAroundSuspends(
             event,
@@ -101,13 +93,13 @@ describe('splitAroundSuspends', () => {
         const event: TempEvent = {
             rate: 1.0,
             duration: 60,
-            date: BASE_TIME,
+            date: FIXED_MS,
             // started_at intentionally omitted
-            timestamp: new Date(BASE_TIME).toISOString(),
+            timestamp: new Date(FIXED_MS).toISOString(),
         };
         const result = splitAroundSuspends(
             event,
-            [makeSuspend(20, 10)],
+            [makeSuspendEvent(20, 10)],
             farFutureResume,
             false,
             farPastSuspend,
@@ -125,18 +117,18 @@ describe('splitAroundSuspends', () => {
     it('clones event with created_at when splitting around a mid-event suspend', () => {
         // Event with created_at: exercises the truthy branch of
         // cloneTempEvent line 111 (created_at defined)
-        const createdDate = new Date(BASE_TIME - 5 * MS_PER_MINUTE);
+        const createdDate = new Date(FIXED_MS - 5 * MS_PER_MINUTE);
         const event: TempEvent = {
             rate: 1.0,
             duration: 60,
-            date: BASE_TIME,
-            started_at: new Date(BASE_TIME),
+            date: FIXED_MS,
+            started_at: new Date(FIXED_MS),
             created_at: createdDate,
-            timestamp: new Date(BASE_TIME).toISOString(),
+            timestamp: new Date(FIXED_MS).toISOString(),
         };
         const result = splitAroundSuspends(
             event,
-            [makeSuspend(20, 10)],
+            [makeSuspendEvent(20, 10)],
             farFutureResume,
             false,
             farPastSuspend,
@@ -154,7 +146,7 @@ describe('splitAroundSuspends', () => {
     });
 
     it('truncates event that extends past lastSuspend when currentlySuspended', () => {
-        const lastSuspend = new Date(BASE_TIME + 20 * MS_PER_MINUTE).toISOString();
+        const lastSuspend = new Date(FIXED_MS + 20 * MS_PER_MINUTE).toISOString();
         const event = makeEvent(0, 30);
         const result = splitAroundSuspends(
             event,

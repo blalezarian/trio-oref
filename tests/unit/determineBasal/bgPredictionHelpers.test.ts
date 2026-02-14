@@ -16,6 +16,8 @@ import type {
 } from '../../../src/determineBasal/types';
 import type { IOBData, IOBEntry } from '../../../src/types/index';
 
+import { makeIobData } from '../../unit/helpers';
+
 // Constants from the source for reference in assertions:
 // MIN_VALID_GLUCOSE_MGDL = 39
 // MAX_VALID_GLUCOSE_MGDL = 400  (clipped to 401)
@@ -65,14 +67,13 @@ describe('calculateDynISFBGImpact', () => {
 });
 
 // ---------------------------------------------------------------------------
-// predictIOBandZT
+// Local helpers (unique to this file)
 // ---------------------------------------------------------------------------
 
 /** Minimal IOBData tick for testing prediction helpers. */
 function makeIOBTick(overrides: Partial<IOBData> = {}): IOBData {
-    return {
+    return makeIobData({
         iob: 2,
-        activity: 0.05,
         basaliob: 1,
         bolusiob: 1,
         netbasalinsulin: 0,
@@ -80,7 +81,7 @@ function makeIOBTick(overrides: Partial<IOBData> = {}): IOBData {
         time: new Date(),
         iobWithZeroTemp: { iob: 0, activity: 0.02 } as IOBEntry,
         ...overrides,
-    } as IOBData;
+    });
 }
 
 describe('predictIOBandZT', () => {

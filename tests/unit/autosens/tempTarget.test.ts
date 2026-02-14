@@ -1,7 +1,8 @@
 import { describe, it, expect } from 'vitest';
 import { tempTargetRunning } from '../../../src/autosens/tempTarget';
+import { FIXED_DATE } from '../helpers/factories';
 
-const NOW = new Date('2025-01-15T12:00:00.000Z');
+const NOW = FIXED_DATE;
 
 function makeTarget(
     hoursAgo: number,

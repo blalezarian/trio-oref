@@ -5,7 +5,9 @@ import {
     resolveOverrides,
 } from '../../../src/determineBasal/determineBasal';
 
-import type { Profile, TrioCustomVariables } from '../../../src/types/index';
+import type { Profile } from '../../../src/types/index';
+
+import { makeTrioCustomVariables } from '../../unit/helpers';
 
 // OVERRIDE_TARGET_SENTINEL = 6
 
@@ -39,38 +41,11 @@ describe('resolveProfileTarget', () => {
     });
 });
 
-// ---------------------------------------------------------------------------
-// resolveOverrides
-// ---------------------------------------------------------------------------
-
-function makeTrioVars(overrides: Partial<TrioCustomVariables> = {}): TrioCustomVariables {
-    return {
-        useOverride: false,
-        overridePercentage: 100,
-        overrideTarget: 0,
-        advancedSettings: false,
-        isfAndCr: false,
-        isf: false,
-        cr: false,
-        smbIsOff: false,
-        smbIsScheduledOff: false,
-        start: 0,
-        end: 0,
-        smbMinutes: 30,
-        uamMinutes: 30,
-        currentTDD: 0,
-        average_total_data: 0,
-        weightedAverage: 0,
-        duration: 0,
-        ...overrides,
-    };
-}
-
 describe('resolveOverrides', () => {
     const profile = { sens: 50, carb_ratio: 10 } as Profile;
 
     it('returns defaults when useOverride is false', () => {
-        const trio = makeTrioVars({ useOverride: false });
+        const trio = makeTrioCustomVariables({ useOverride: false });
         const result = resolveOverrides(profile, trio);
 
         expect(result.overrideFactor).toBe(1);
@@ -79,7 +54,7 @@ describe('resolveOverrides', () => {
     });
 
     it('applies override factor to both ISF and CR when isfAndCr is true', () => {
-        const trio = makeTrioVars({ useOverride: true, overridePercentage: 80, isfAndCr: true });
+        const trio = makeTrioCustomVariables({ useOverride: true, overridePercentage: 80, isfAndCr: true });
         const result = resolveOverrides(profile, trio);
 
         expect(result.overrideFactor).toBe(0.8);
@@ -90,7 +65,7 @@ describe('resolveOverrides', () => {
     });
 
     it('applies override factor to ISF only when isf=true, cr=false', () => {
-        const trio = makeTrioVars({ useOverride: true, overridePercentage: 80, isfAndCr: false, isf: true, cr: false });
+        const trio = makeTrioCustomVariables({ useOverride: true, overridePercentage: 80, isfAndCr: false, isf: true, cr: false });
         const result = resolveOverrides(profile, trio);
 
         expect(result.sensitivity).toBe(62.5);
@@ -98,7 +73,7 @@ describe('resolveOverrides', () => {
     });
 
     it('applies override factor to CR only when cr=true, isf=false', () => {
-        const trio = makeTrioVars({ useOverride: true, overridePercentage: 80, isfAndCr: false, isf: false, cr: true });
+        const trio = makeTrioCustomVariables({ useOverride: true, overridePercentage: 80, isfAndCr: false, isf: false, cr: true });
         const result = resolveOverrides(profile, trio);
 
         expect(result.sensitivity).toBe(50); // unchanged
@@ -106,7 +81,7 @@ describe('resolveOverrides', () => {
     });
 
     it('does not modify sensitivity or CR when override is active but isf/cr/isfAndCr are all false', () => {
-        const trio = makeTrioVars({ useOverride: true, overridePercentage: 120, isfAndCr: false, isf: false, cr: false });
+        const trio = makeTrioCustomVariables({ useOverride: true, overridePercentage: 120, isfAndCr: false, isf: false, cr: false });
         const result = resolveOverrides(profile, trio);
 
         expect(result.overrideFactor).toBe(1.2);

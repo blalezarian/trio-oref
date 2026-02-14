@@ -1,8 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { findMealInputs, hasDuplicateEntry } from '../../../src/meal/history';
 import type { PumpHistoryEvent, CarbTreatment } from '../../../src/types/index';
-
-const FIXED_TIME = '2025-01-15T12:00:00.000Z';
+import { FIXED_TIME } from '../helpers/factories';
 
 function makeHistory(overrides: Partial<PumpHistoryEvent> = {}): PumpHistoryEvent {
     return { timestamp: FIXED_TIME, ...overrides };

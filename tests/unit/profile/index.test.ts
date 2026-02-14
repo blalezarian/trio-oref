@@ -2,8 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { generate } from '../../../src/profile/index';
 import { resetISFCache } from '../../../src/profile/isf';
 import type { ProfileInputs } from '../../../src/profile/types';
-
-const FIXED_TIME = '2025-01-15T12:00:00.000Z';
+import { FIXED_TIME } from '../helpers/factories';
 
 /** Build minimal valid ProfileInputs */
 function makeInputs(overrides: Record<string, unknown> = {}): ProfileInputs {

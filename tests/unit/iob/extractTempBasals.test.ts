@@ -1,9 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { extractTempBasalsAndBoluses } from '../../../src/iob/extractTempBasals';
 import type { PumpHistoryEvent } from '../../../src/types/index';
-
-const FIXED_TIME = '2025-01-15T12:00:00.000Z';
-const NOW = new Date(FIXED_TIME);
+import { FIXED_DATE } from '../helpers/factories';
 
 function makeBolusEvent(timestamp: string, amount: number): PumpHistoryEvent {
     return {
@@ -32,21 +30,21 @@ function makeTempBasalEvent(timestamp: string, rate: number, durationMin: number
 describe('extractTempBasalsAndBoluses', () => {
 
     it('returns empty arrays for empty pump history', () => {
-        const result = extractTempBasalsAndBoluses([], NOW);
+        const result = extractTempBasalsAndBoluses([], FIXED_DATE);
         expect(result.tempHistory).toEqual([]);
         expect(result.tempBoluses).toEqual([]);
     });
 
     it('extracts a Bolus event into tempBoluses', () => {
         const events = [makeBolusEvent('2025-01-15T11:30:00.000Z', 2.5)];
-        const result = extractTempBasalsAndBoluses(events, NOW);
+        const result = extractTempBasalsAndBoluses(events, FIXED_DATE);
         expect(result.tempBoluses).toHaveLength(1);
         expect(result.tempBoluses[0].insulin).toBe(2.5);
     });
 
     it('extracts a TempBasal+TempBasalDuration pair into tempHistory', () => {
         const events = makeTempBasalEvent('2025-01-15T11:00:00.000Z', 1.5, 30);
-        const result = extractTempBasalsAndBoluses(events, NOW);
+        const result = extractTempBasalsAndBoluses(events, FIXED_DATE);
         // tempHistory includes the event + a cancel temp for each history entry
         const tempBasals = result.tempHistory.filter(t => t.rate !== 0 || t.duration !== 0);
         expect(tempBasals.length).toBeGreaterThanOrEqual(1);
@@ -61,7 +59,7 @@ describe('extractTempBasalsAndBoluses', () => {
             rate: 50,
             temp: 'percent',
         } as PumpHistoryEvent];
-        const result = extractTempBasalsAndBoluses(events, NOW);
+        const result = extractTempBasalsAndBoluses(events, FIXED_DATE);
         // Should only have cancel temps, no real temp basals
         const nonCancel = result.tempHistory.filter(t => t.rate !== 0 || t.duration !== 0);
         expect(nonCancel).toHaveLength(0);
@@ -69,14 +67,14 @@ describe('extractTempBasalsAndBoluses', () => {
 
     it('adds cancel temp with zeroTempDuration when provided', () => {
         const events = [makeBolusEvent('2025-01-15T11:30:00.000Z', 1.0)];
-        const result = extractTempBasalsAndBoluses(events, NOW, 240);
+        const result = extractTempBasalsAndBoluses(events, FIXED_DATE, 240);
         const cancelTemps = result.tempHistory.filter(t => t.rate === 0 && t.duration === 240);
         expect(cancelTemps.length).toBeGreaterThanOrEqual(1);
     });
 
     it('adds cancel temp with duration=0 when zeroTempDuration not provided', () => {
         const events = [makeBolusEvent('2025-01-15T11:30:00.000Z', 1.0)];
-        const result = extractTempBasalsAndBoluses(events, NOW);
+        const result = extractTempBasalsAndBoluses(events, FIXED_DATE);
         const cancelTemps = result.tempHistory.filter(t => t.rate === 0 && t.duration === 0);
         expect(cancelTemps.length).toBeGreaterThanOrEqual(1);
     });
@@ -87,7 +85,7 @@ describe('extractTempBasalsAndBoluses', () => {
             created_at: '2025-01-15T11:00:00.000Z',
             insulin: 3.0,
         } as PumpHistoryEvent];
-        const result = extractTempBasalsAndBoluses(events, NOW);
+        const result = extractTempBasalsAndBoluses(events, FIXED_DATE);
         expect(result.tempBoluses).toHaveLength(1);
         expect(result.tempBoluses[0].insulin).toBe(3.0);
     });
@@ -98,7 +96,7 @@ describe('extractTempBasalsAndBoluses', () => {
             makeBolusEvent('2025-01-15T11:00:00.000Z', 1.0),
             makeBolusEvent('2025-01-15T11:30:00.000Z', 2.0), // out of order (later)
         ];
-        const result = extractTempBasalsAndBoluses(events, NOW);
+        const result = extractTempBasalsAndBoluses(events, FIXED_DATE);
         // Only the first bolus should be extracted
         expect(result.tempBoluses).toHaveLength(1);
         expect(result.tempBoluses[0].insulin).toBe(1.0);

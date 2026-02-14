@@ -13,6 +13,15 @@ import type {
     DetermineBasalResult,
 } from '../../../../src/types/index';
 
+import {
+    makeDosingInputs,
+    makeProfile,
+    makeGlucoseStatus,
+    makeCurrentTemp,
+    makeTempBasalFunctions,
+    makeDetermineBasalResult,
+} from '../../helpers';
+
 // Relevant constants from the source (for reference in test design):
 // TEMP_BASAL_DURATION_MINUTES       = 30
 // MAX_TEMP_BASAL_DURATION_MINUTES   = 120
@@ -34,7 +43,7 @@ beforeEach(() => {
 });
 
 // ---------------------------------------------------------------------------
-// Factory
+// Factory — thin wrapper over shared factories with lowTemp-specific defaults
 // ---------------------------------------------------------------------------
 
 /** Build a minimal DosingContext with sane defaults, applying overrides. */
@@ -43,68 +52,40 @@ function makeTestContext(overrides: {
     ctx?: Partial<Omit<DosingContext, 'inputs' | 'result'>>;
     result?: Partial<DetermineBasalResult>;
 } = {}): DosingContext {
-    const profile = {
+    // Build nested objects by merging overrides on top of minimal defaults
+    const profile = makeProfile({
         current_basal: 1.0,
         out_units: 'mg/dL',
         max_basal: 4.0,
-        ...overrides.inputs?.profile,
-    } as Profile;
+        ...(overrides.inputs?.profile as Partial<Profile> | undefined),
+    });
 
-    const glucoseStatus = {
+    const glucoseStatus = makeGlucoseStatus({
         delta: 0,
-        ...overrides.inputs?.glucoseStatus,
-    } as GlucoseStatus;
+        ...(overrides.inputs?.glucoseStatus as Partial<GlucoseStatus> | undefined),
+    });
 
-    const currenttemp = {
-        rate: 0,
-        duration: 0,
+    const currenttemp = makeCurrentTemp({
         ...overrides.inputs?.currenttemp,
-    };
+    });
 
-    const tempBasalFunctions = {
-        setTempBasal: vi.fn(
-            (
-                _r: number,
-                _d: number,
-                _p: Profile,
-                result: DetermineBasalResult,
-            ) => result,
-        ),
-        getMaxSafeBasal: vi.fn(() => 4),
-        ...overrides.inputs?.tempBasalFunctions,
-    };
+    const tempBasalFunctions = overrides.inputs?.tempBasalFunctions ?? makeTempBasalFunctions();
 
-    const inputs = {
-        basal: 1.0,
-        adjustedSens: 50,
-        threshold: 65,
-        targetBG: 100,
-        minBG: 80,
-        maxBG: 120,
+    const inputs = makeDosingInputs({
         eventualBG: 120,
         naiveEventualBG: 120,
         minPredBG: 100,
-        minDelta: 0,
-        expectedDelta: 0,
-        overrideFactor: 1,
-        tick: 0,
-        profile,
-        currenttemp,
-        glucoseStatus,
-        tempBasalFunctions,
         microBolusAllowed: false,
+        enableSMB: false,
         ...overrides.inputs,
         // Re-apply nested objects so partial overrides merge correctly
-        ...(overrides.inputs?.profile ? { profile } : {}),
-        ...(overrides.inputs?.glucoseStatus ? { glucoseStatus } : {}),
-        ...(overrides.inputs?.currenttemp ? { currenttemp } : {}),
-        ...(overrides.inputs?.tempBasalFunctions ? { tempBasalFunctions } : {}),
-    } as DosingContext['inputs'];
+        profile,
+        glucoseStatus,
+        currenttemp,
+        tempBasalFunctions,
+    });
 
-    const result: DetermineBasalResult = {
-        reason: '',
-        ...overrides.result,
-    };
+    const result = makeDetermineBasalResult(overrides.result);
 
     return {
         inputs,

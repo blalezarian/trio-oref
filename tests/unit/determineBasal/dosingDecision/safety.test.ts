@@ -6,9 +6,15 @@ import {
     checkTopOfHourCancel,
 } from '../../../../src/determineBasal/dosingDecision/safety';
 
-import type { Profile, DetermineBasalResult } from '../../../../src/types/index';
 import type { DosingContext } from '../../../../src/determineBasal/dosingDecision/types';
-import type { DosingDecisionInputs } from '../../../../src/determineBasal/types';
+
+import {
+    makeDosingContext,
+    makeIobData,
+    makeProfile,
+    makeGlucoseStatus,
+    makeTempBasalFunctions,
+} from '../../helpers';
 
 // ---------------------------------------------------------------------------
 // Constants from the source (for reference in assertions)
@@ -34,142 +40,68 @@ beforeEach(() => {
 });
 
 // ---------------------------------------------------------------------------
-// Factory
+// Factory — thin wrapper over shared makeDosingContext with file-specific defaults.
+// The safety tests use Partial<DosingContext> overrides at the top level, so we
+// build the base context from the shared factory and spread overrides on top.
 // ---------------------------------------------------------------------------
 
-const mockTempBasalFunctions = {
-    setTempBasal: vi.fn((
-        _rate: number,
-        _duration: number,
-        _profile: unknown,
-        result: DetermineBasalResult,
-    ) => result),
-    getMaxSafeBasal: vi.fn(() => 4),
-};
+const mockTempBasalFunctions = makeTempBasalFunctions();
 
 function makeTestContext(overrides: Partial<DosingContext> = {}): DosingContext {
-    const inputs: DosingDecisionInputs = {
-        result: { reason: '' } as DetermineBasalResult,
-        iobData: {
-            iob: 1.5,
-            activity: 0.02,
-            basaliob: 0.5,
-            bolusiob: 1.0,
-            netbasalinsulin: 0.3,
-            bolusinsulin: 2.0,
-            time: new Date('2025-01-15T12:00:00Z'),
+    const base = makeDosingContext({
+        inputs: {
+            iobData: makeIobData({
+                iob: 1.5,
+                activity: 0.02,
+                basaliob: 0.5,
+                bolusiob: 1.0,
+                netbasalinsulin: 0.3,
+                bolusinsulin: 2.0,
+            }),
+            profile: makeProfile({
+                min_bg: 100,
+                max_bg: 100,
+            }),
+            glucoseStatus: makeGlucoseStatus({
+                glucose: 120,
+                delta: 2,
+                short_avgdelta: 2,
+                long_avgdelta: 1,
+            }),
+            tempBasalFunctions: mockTempBasalFunctions,
+            bg: 120,
+            eventualBG: 100,
+            naiveEventualBG: 100,
+            threshold: 80,
+            targetBG: 100,
+            minBG: 100,
+            maxBG: 100,
+            expectedDelta: -1,
+            minDelta: 1,
+            maxDelta: 3,
+            tick: '+2',
+            bgImpact: -2,
+            deviation: 5,
+            carbSensFactor: 1,
+            minPredBG: 90,
+            minGuardBG: 90,
+            lastIOBpredBG: 95,
+            lastCOBpredBG: 100,
+            lastUAMpredBG: 100,
+            minIOBPredBG: 85,
+            IOBpredBGs: [120, 110, 100, 90],
+            COBpredBGs: [120, 115, 110, 105],
+            microBolusAllowed: true,
+            enableSMB: true,
         },
-        mealData: {
-            carbs: 0,
-            nsCarbs: 0,
-            bwCarbs: 0,
-            journalCarbs: 0,
-            mealCOB: 0,
-            currentDeviation: 0,
-            maxDeviation: 0,
-            minDeviation: 0,
-            slopeFromMaxDeviation: 0,
-            slopeFromMinDeviation: 0,
-            allDeviations: [],
-            bwFound: false,
-        },
-        profile: {
-            max_iob: 10,
-            max_daily_safety_multiplier: 3,
-            current_basal_safety_multiplier: 4,
-            autosens_max: 1.2,
-            autosens_min: 0.7,
-            dia: 5,
-            curve: 'rapid-acting',
-            useCustomPeakTime: false,
-            insulinPeakTime: 75,
-            current_basal: 1.0,
-            max_daily_basal: 2.0,
-            max_basal: 4.0,
-            min_bg: 100,
-            max_bg: 100,
-            sens: 50,
-            carb_ratio: 10,
-            out_units: 'mg/dL',
-        } as unknown as Profile,
-        glucoseStatus: {
-            glucose: 120,
-            delta: 2,
-            short_avgdelta: 2,
-            long_avgdelta: 1,
-        },
-        currenttemp: {
-            duration: 0,
-            rate: 0,
-        },
-        tempBasalFunctions: mockTempBasalFunctions,
-        systemTime: new Date('2025-01-15T12:00:00Z'),
-        trioCustomVariables: {
-            useOverride: false,
-            overridePercentage: 100,
-            overrideTarget: 0,
-            advancedSettings: false,
-            isfAndCr: false,
-            isf: false,
-            cr: false,
-            smbIsOff: false,
-            smbIsScheduledOff: false,
-            start: 0,
-            end: 0,
-            smbMinutes: 30,
-            uamMinutes: 30,
-            currentTDD: 0,
-            average_total_data: 0,
-            weightedAverage: 0,
-            duration: 0,
-        },
-        bg: 120,
-        eventualBG: 100,
-        naiveEventualBG: 100,
-        threshold: 80,
-        targetBG: 100,
-        minBG: 100,
-        maxBG: 100,
-        maxIOB: 10,
-        basal: 1.0,
-        adjustedSens: 50,
-        carbRatio: 10,
-        overrideFactor: 1.0,
-        expectedDelta: -1,
-        minDelta: 1,
-        maxDelta: 3,
-        tick: '+2',
-        bgImpact: -2,
-        deviation: 5,
-        carbImpact: 0,
-        remainingCIpeak: 0,
-        carbSensFactor: 1,
-        minPredBG: 90,
-        minGuardBG: 90,
-        lastIOBpredBG: 95,
-        lastCOBpredBG: 100,
-        lastUAMpredBG: 100,
-        minIOBPredBG: 85,
-        IOBpredBGs: [120, 110, 100, 90],
-        COBpredBGs: [120, 115, 110, 105],
+        result: { reason: '' },
         enableSMB: true,
-        microBolusAllowed: true,
-        isfreason: '',
-        targetLog: '',
-        tddReason: '',
-    };
-
-    return {
-        inputs,
-        result: { reason: '' } as DetermineBasalResult,
-        enableSMB: true,
-        bgUndershoot: 0,
-        minutesAboveMinBG: 0,
-        minutesAboveThreshold: 0,
-        carbsReq: 0,
         insulinReq: 0,
         rate: 0,
-        insulinScheduled: 0,
+    });
+
+    return {
+        ...base,
         ...overrides,
     } as unknown as DosingContext;
 }

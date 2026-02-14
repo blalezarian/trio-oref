@@ -9,10 +9,14 @@ import {
 import type {
     IOBData,
     CurrentTemp,
-    Profile,
-    TempBasalFunctions,
     DetermineBasalResult,
 } from '../../../src/types/index';
+
+import {
+    makeProfile,
+    makeIobData,
+    makeTempBasalFunctions,
+} from '../../unit/helpers';
 
 // ---------------------------------------------------------------------------
 // Console mocking
@@ -24,48 +28,12 @@ beforeEach(() => {
 });
 
 // ---------------------------------------------------------------------------
-// Shared test fixtures
+// Local helpers (unique to this file)
 // ---------------------------------------------------------------------------
 
-function makeProfile(): Profile {
-    return {
-        current_basal: 1.0,
-        out_units: 'mg/dL',
-        sens: 50,
-    } as Profile;
-}
-
-function makeIOBData(overrides: Partial<IOBData> = {}): IOBData {
-    return {
-        iob: 2.0,
-        activity: 0.05,
-        basaliob: 0.5,
-        bolusiob: 1.5,
-        netbasalinsulin: 0.5,
-        bolusinsulin: 3.0,
-        time: new Date('2025-01-15T12:00:00Z'),
-        lastBolusTime: Date.now() - 600000,
-        ...overrides,
-    } as IOBData;
-}
-
 function makeIOBArray(...overrides: Partial<IOBData>[]): IOBData[] {
-    if (overrides.length === 0) return [makeIOBData()];
-    return overrides.map(o => makeIOBData(o));
-}
-
-function makeTempBasalFunctions(): TempBasalFunctions {
-    return {
-        setTempBasal: vi.fn(
-            (
-                _rate: number,
-                _duration: number,
-                _profile: Profile,
-                result: DetermineBasalResult,
-            ) => result,
-        ),
-        getMaxSafeBasal: vi.fn(() => 4),
-    } as unknown as TempBasalFunctions;
+    if (overrides.length === 0) return [makeIobData()];
+    return overrides.map(o => makeIobData(o));
 }
 
 // ---------------------------------------------------------------------------
@@ -94,7 +62,7 @@ describe('validateIOBAndTemps', () => {
 
     it('returns earlyReturn when iob_data.activity is undefined', () => {
         const result = { reason: '' } as DetermineBasalResult;
-        const iob = makeIOBData();
+        const iob = makeIobData();
         (iob as unknown as Record<string, unknown>).activity = undefined;
 
         const outcome = validateIOBAndTemps(
@@ -232,7 +200,7 @@ describe('validateIOBAndTemps', () => {
 describe('checkStaleTempBasal', () => {
     it('returns null when nothing is stale', () => {
         const result = { reason: '' } as DetermineBasalResult;
-        const iob = makeIOBData({
+        const iob = makeIobData({
             lastTemp: { rate: 1.0, duration: 30, date: Date.now() - 5 * 60 * 1000 },
         } as Partial<IOBData>);
 
@@ -252,7 +220,7 @@ describe('checkStaleTempBasal', () => {
     it('cancels when rate mismatch, stale, and microBolus allowed', () => {
         const result = { reason: '' } as DetermineBasalResult;
         const tempFns = makeTempBasalFunctions();
-        const iob = makeIOBData({
+        const iob = makeIobData({
             lastTemp: { rate: 1.0, duration: 30, date: Date.now() - 15 * 60 * 1000 },
         } as Partial<IOBData>);
 
@@ -273,7 +241,7 @@ describe('checkStaleTempBasal', () => {
 
     it('does not cancel rate mismatch when microBolusAllowed is false', () => {
         const result = { reason: '' } as DetermineBasalResult;
-        const iob = makeIOBData({
+        const iob = makeIobData({
             lastTemp: { rate: 1.0, duration: 30, date: Date.now() - 15 * 60 * 1000 },
         } as Partial<IOBData>);
 
@@ -294,7 +262,7 @@ describe('checkStaleTempBasal', () => {
         const result = { reason: '' } as DetermineBasalResult;
         const tempFns = makeTempBasalFunctions();
         // lastTemp 20 min ago, duration 5 → ended 15 min ago (> TEMP_END_GAP_MINUTES=5)
-        const iob = makeIOBData({
+        const iob = makeIobData({
             lastTemp: { rate: 1.0, duration: 5, date: Date.now() - 20 * 60 * 1000 },
         } as Partial<IOBData>);
 
@@ -314,7 +282,7 @@ describe('checkStaleTempBasal', () => {
 
     it('returns null when lastTemp is undefined', () => {
         const result = { reason: '' } as DetermineBasalResult;
-        const iob = makeIOBData(); // no lastTemp
+        const iob = makeIobData(); // no lastTemp
 
         const outcome = checkStaleTempBasal(
             { rate: 2.0, duration: 20 } as CurrentTemp,
@@ -331,7 +299,7 @@ describe('checkStaleTempBasal', () => {
 
     it('returns null when currenttemp duration is 0 (no active temp)', () => {
         const result = { reason: '' } as DetermineBasalResult;
-        const iob = makeIOBData({
+        const iob = makeIobData({
             lastTemp: { rate: 1.0, duration: 5, date: Date.now() - 20 * 60 * 1000 },
         } as Partial<IOBData>);
 
@@ -354,7 +322,7 @@ describe('checkStaleTempBasal', () => {
 // ---------------------------------------------------------------------------
 
 describe('projectEventualBG', () => {
-    const iob = makeIOBData({ iob: 2.0 });
+    const iob = makeIobData({ iob: 2.0 });
 
     it('computes positive deviation from positive minDelta', () => {
         // bgImpact = -2 (BG falling), minDelta = 5 (BG actually rising)
@@ -389,14 +357,14 @@ describe('projectEventualBG', () => {
     it('computes naiveEventualBG using adjustedSens for positive IOB', () => {
         // bg=150, iob=2.0 > 0, adjustedSens=50
         // naiveEventualBG = round(150 - 2.0 * 50) = round(50) = 50
-        const result = projectEventualBG(150, makeIOBData({ iob: 2.0 }), 50, 40, 0, 0, 0, 0);
+        const result = projectEventualBG(150, makeIobData({ iob: 2.0 }), 50, 40, 0, 0, 0, 0);
         expect(result.naiveEventualBG).toBe(50);
     });
 
     it('uses min(adjustedSens, sensitivity) for negative IOB', () => {
         // bg=150, iob=-1.0, adjustedSens=50, sensitivity=40
         // naiveEventualBG = round(150 - (-1.0) * min(50, 40)) = round(150 + 40) = 190
-        const result = projectEventualBG(150, makeIOBData({ iob: -1.0 }), 50, 40, 0, 0, 0, 0);
+        const result = projectEventualBG(150, makeIobData({ iob: -1.0 }), 50, 40, 0, 0, 0, 0);
         expect(result.naiveEventualBG).toBe(190);
     });
 
@@ -404,7 +372,7 @@ describe('projectEventualBG', () => {
         // bg=150, iob=2.0, adjustedSens=50 → naiveEventualBG = 50
         // bgImpact = -2, minDelta = 5 → deviation = 42
         // eventualBG = 50 + 42 = 92
-        const result = projectEventualBG(150, makeIOBData({ iob: 2.0 }), 50, 50, 5, 3, 1, -2);
+        const result = projectEventualBG(150, makeIobData({ iob: 2.0 }), 50, 50, 5, 3, 1, -2);
         expect(result.eventualBG).toBe(result.naiveEventualBG + result.deviation);
     });
 

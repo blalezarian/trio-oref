@@ -1,6 +1,12 @@
 import { describe, it, beforeEach, expect, vi } from 'vitest';
 import type { CarbTreatment } from '../../../src/types/index';
-import type { IobProfile, HistoryBasalProfileEntry } from '../../../src/iob/types';
+import type { IobProfile } from '../../../src/iob/types';
+import {
+    FIXED_TIME,
+    FIXED_DATE,
+    makeIobProfile,
+    makeBasalProfileEntry,
+} from '../helpers/factories';
 
 // Mock detectCarbAbsorption before importing the module under test
 vi.mock('../../../src/cob/index', () => ({
@@ -18,27 +24,19 @@ import { recentCarbs,
 } from '../../../src/meal/total';
 import { detectCarbAbsorption } from '../../../src/cob/index';
 
-const FIXED_TIME = '2025-01-15T12:00:00.000Z';
-const FIXED_DATE = new Date(FIXED_TIME);
-
 const mockedCalcMealCOB = vi.mocked(detectCarbAbsorption);
 
 function makeProfile(overrides: Partial<IobProfile> = {}): IobProfile {
-    return {
+    return makeIobProfile({
         dia: 5,
         basalprofile: [],
-        current_basal: 1.0,
         maxMealAbsorptionTime: 6,
         maxCOB: 120,
         sens: 50,
         carb_ratio: 10,
         min_5m_carbimpact: 8,
         ...overrides,
-    };
-}
-
-function makeBasalProfile(): HistoryBasalProfileEntry[] {
-    return [{ i: 0, start: '00:00:00', rate: 1.0, minutes: 0 }];
+    });
 }
 
 function makeTreatment(overrides: Partial<CarbTreatment> = {}): CarbTreatment {
@@ -59,7 +57,7 @@ function makeOpts(
         profile: makeProfile(profileOverrides),
         pumpHistory: [],
         glucose: [],
-        basalProfile: makeBasalProfile(),
+        basalProfile: makeBasalProfileEntry(),
     };
 }
 

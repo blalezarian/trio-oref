@@ -1,10 +1,13 @@
 import { describe, it, expect, vi, beforeEach, type Mock } from 'vitest';
-import type {
-    IobInputs,
-    IobProfile,
-    IobTreatment,
-    IobIndexEntry,
-} from '../../../src/iob/types';
+import type { IobTreatment } from '../../../src/iob/types';
+import {
+    FIXED_TIME,
+    FIXED_MS,
+    MS_PER_MINUTE,
+    MS_PER_HOUR,
+    makeIobProfile,
+    makeIobInputs,
+} from '../helpers/factories';
 
 // ---------------------------------------------------------------------------
 // Module mocks — must be declared before the module under test is imported
@@ -42,43 +45,6 @@ import { calcTempTreatments } from '../../../src/iob/extractTreatments';
 import { iobTotal } from '../../../src/iob/sumIob';
 import { findLastBolusAndTemp } from '../../../src/iob/findLastBolusAndTemp';
 
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
-
-const FIXED_TIME = '2025-01-15T12:00:00.000Z';
-const FIXED_MS = new Date(FIXED_TIME).getTime();
-const MS_PER_MINUTE = 60_000;
-const MS_PER_HOUR = 3_600_000;
-
-/** Build a minimal IobProfile with sensible defaults */
-function makeProfile(overrides: Partial<IobProfile> = {}): IobProfile {
-    return {
-        dia: 6,
-        current_basal: 1.0,
-        basalprofile: [
-            {
-                i: 0,
-                start: '00:00:00',
-                rate: 1.0,
-                minutes: 0,
-            },
-        ],
-        curve: 'rapid-acting',
-        ...overrides,
-    };
-}
-
-/** Build a minimal IobInputs bundle */
-function makeInputs(overrides: Partial<IobInputs> = {}): IobInputs {
-    return {
-        clock: FIXED_TIME,
-        history: [],
-        profile: makeProfile(),
-        ...overrides,
-    };
-}
-
 /** Reset all mocks to their default implementations */
 function resetMocksToDefaults(): void {
     (calcTempTreatments as Mock).mockReset().mockReturnValue([]);
@@ -113,7 +79,7 @@ describe('generate (calculate-iob-timeline)', () => {
 
     describe('with empty history', () => {
         it('returns an IOB array with expected structure', () => {
-            const inputs = makeInputs();
+            const inputs = makeIobInputs();
             const result = generate(inputs);
 
             expect(Array.isArray(result)).toBe(true);
@@ -137,14 +103,14 @@ describe('generate (calculate-iob-timeline)', () => {
 
     describe('entry count', () => {
         it('returns exactly 1 entry when currentIOBOnly is true', () => {
-            const inputs = makeInputs();
+            const inputs = makeIobInputs();
             const result = generate(inputs, true);
 
             expect(result).toHaveLength(1);
         });
 
         it('returns 48 entries when currentIOBOnly is false (default)', () => {
-            const inputs = makeInputs();
+            const inputs = makeIobInputs();
             const result = generate(inputs);
 
             // 0 to 235 at 5-min intervals: 240/5 = 48
@@ -152,7 +118,7 @@ describe('generate (calculate-iob-timeline)', () => {
         });
 
         it('returns 48 entries when currentIOBOnly is explicitly false', () => {
-            const inputs = makeInputs();
+            const inputs = makeIobInputs();
             const result = generate(inputs, false);
 
             expect(result).toHaveLength(48);
@@ -165,7 +131,7 @@ describe('generate (calculate-iob-timeline)', () => {
 
     describe('time offsets', () => {
         it('spaces entries at 5-minute intervals from clock time', () => {
-            const inputs = makeInputs();
+            const inputs = makeIobInputs();
             const result = generate(inputs);
 
             const clockMs = new Date(FIXED_TIME).getTime();
@@ -177,7 +143,7 @@ describe('generate (calculate-iob-timeline)', () => {
         });
 
         it('first entry uses the clock time exactly', () => {
-            const inputs = makeInputs();
+            const inputs = makeIobInputs();
             const result = generate(inputs, true);
 
             const clockMs = new Date(FIXED_TIME).getTime();
@@ -191,7 +157,7 @@ describe('generate (calculate-iob-timeline)', () => {
 
     describe('pre-computed treatments', () => {
         it('uses provided treatments directly and does not call calcTempTreatments', () => {
-            const inputs = makeInputs();
+            const inputs = makeIobInputs();
             const treatments: IobTreatment[] = [
                 {
                     insulin: 1.0,
@@ -205,7 +171,7 @@ describe('generate (calculate-iob-timeline)', () => {
         });
 
         it('calls calcTempTreatments twice when no treatments provided', () => {
-            const inputs = makeInputs();
+            const inputs = makeIobInputs();
 
             generate(inputs, true);
 
@@ -216,7 +182,7 @@ describe('generate (calculate-iob-timeline)', () => {
         });
 
         it('sets treatmentsWithZeroTemp to empty array when treatments are provided', () => {
-            const inputs = makeInputs();
+            const inputs = makeIobInputs();
             const treatments: IobTreatment[] = [
                 {
                     insulin: 1.0,
@@ -242,7 +208,7 @@ describe('generate (calculate-iob-timeline)', () => {
 
     describe('entry fields', () => {
         it('each entry has iob, activity, basaliob, bolusiob, netbasalinsulin, bolusinsulin, time, iobWithZeroTemp', () => {
-            const inputs = makeInputs();
+            const inputs = makeIobInputs();
             const result = generate(inputs);
 
             for (const entry of result) {
@@ -277,7 +243,7 @@ describe('generate (calculate-iob-timeline)', () => {
                 lastTemp,
             });
 
-            const inputs = makeInputs();
+            const inputs = makeIobInputs();
             const result = generate(inputs);
 
             expect(result[0].lastBolusTime).toBe(bolusTime);
@@ -294,7 +260,7 @@ describe('generate (calculate-iob-timeline)', () => {
                 },
             });
 
-            const inputs = makeInputs();
+            const inputs = makeIobInputs();
             const result = generate(inputs);
 
             // Second entry onward should not have these annotations
@@ -313,7 +279,7 @@ describe('generate (calculate-iob-timeline)', () => {
     describe('autosens passthrough', () => {
         it('passes autosens to opts when provided in inputs', () => {
             const autosens = { ratio: 1.1 };
-            const inputs = makeInputs({ autosens });
+            const inputs = makeIobInputs({ autosens });
 
             generate(inputs, true);
 
@@ -325,7 +291,7 @@ describe('generate (calculate-iob-timeline)', () => {
         });
 
         it('does not include autosens in opts when not provided in inputs', () => {
-            const inputs = makeInputs();
+            const inputs = makeIobInputs();
 
             generate(inputs, true);
 
@@ -336,7 +302,7 @@ describe('generate (calculate-iob-timeline)', () => {
 
         it('does not attach autosens to the zero-temp opts', () => {
             const autosens = { ratio: 0.9 };
-            const inputs = makeInputs({ autosens });
+            const inputs = makeIobInputs({ autosens });
 
             generate(inputs, true);
 
@@ -372,7 +338,7 @@ describe('generate (calculate-iob-timeline)', () => {
                 time,
             }));
 
-            const inputs = makeInputs();
+            const inputs = makeIobInputs();
             const result = generate(inputs, true, treatments);
 
             expect(result[0].iob).toBe(1.5);
@@ -389,7 +355,7 @@ describe('generate (calculate-iob-timeline)', () => {
     describe('clock timezone validation', () => {
         it('does not log a warning for zoned clock (Z suffix)', () => {
             const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
-            const inputs = makeInputs({ clock: '2025-01-15T12:00:00.000Z' });
+            const inputs = makeIobInputs({ clock: '2025-01-15T12:00:00.000Z' });
 
             generate(inputs, true);
 
@@ -399,7 +365,7 @@ describe('generate (calculate-iob-timeline)', () => {
 
         it('does not log a warning for clock with offset timezone', () => {
             const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
-            const inputs = makeInputs({ clock: '2025-01-15T12:00:00.000-05:00' });
+            const inputs = makeIobInputs({ clock: '2025-01-15T12:00:00.000-05:00' });
 
             generate(inputs, true);
 
@@ -409,7 +375,7 @@ describe('generate (calculate-iob-timeline)', () => {
 
         it('logs a warning for unzoned clock', () => {
             const consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
-            const inputs = makeInputs({ clock: '2025-01-15T12:00:00.000' });
+            const inputs = makeIobInputs({ clock: '2025-01-15T12:00:00.000' });
 
             generate(inputs, true);
 
@@ -425,7 +391,7 @@ describe('generate (calculate-iob-timeline)', () => {
 
     describe('iobTotal call count', () => {
         it('calls iobTotal twice per time point (main + zero-temp)', () => {
-            const inputs = makeInputs();
+            const inputs = makeIobInputs();
 
             generate(inputs, true);
 
@@ -434,7 +400,7 @@ describe('generate (calculate-iob-timeline)', () => {
         });
 
         it('calls iobTotal 96 times for full 48-entry timeline', () => {
-            const inputs = makeInputs();
+            const inputs = makeIobInputs();
 
             generate(inputs);
 
@@ -456,7 +422,7 @@ describe('generate (calculate-iob-timeline)', () => {
                     started_at: new Date(FIXED_MS - MS_PER_HOUR),
                 },
             ];
-            const inputs = makeInputs();
+            const inputs = makeIobInputs();
 
             generate(inputs, true, treatments);
 
@@ -473,7 +439,7 @@ describe('generate (calculate-iob-timeline)', () => {
             ];
             (calcTempTreatments as Mock).mockReturnValue(computedTreatments);
 
-            const inputs = makeInputs();
+            const inputs = makeIobInputs();
 
             generate(inputs, true);
 
@@ -487,8 +453,8 @@ describe('generate (calculate-iob-timeline)', () => {
 
     describe('profile passthrough', () => {
         it('passes the profile from inputs to iobTotal opts', () => {
-            const profile = makeProfile({ dia: 8 });
-            const inputs = makeInputs({ profile });
+            const profile = makeIobProfile({ dia: 8 });
+            const inputs = makeIobInputs({ profile });
 
             generate(inputs, true);
 

@@ -2,9 +2,9 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { bucketGlucoseWithInterpolation, interpolateMissingPoints } from '../../../src/cob/bucketGlucose';
 import { resolveGlucoseDeltas } from '../../../src/cob/deviationLoop';
 import type { GlucoseEntry, BucketedGlucose } from '../../../src/types/index';
+import { FIXED_TIME, FIXED_MS } from '../helpers/factories';
 
-const FIXED_TIME = '2025-01-15T12:00:00.000Z';
-const NOW = new Date(FIXED_TIME).getTime();
+const NOW = FIXED_MS;
 
 function makeGlucoseEntry(
     minutesAgo: number,

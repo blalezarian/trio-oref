@@ -9,18 +9,9 @@ import {
 
 import { findMinutesAbove } from '../../../../src/determineBasal/dosingDecision/initialize';
 
-import type { DosingContext } from '../../../../src/determineBasal/dosingDecision/types';
-import type {
-    Profile,
-    DetermineBasalResult,
-    CurrentTemp,
-    TempBasalFunctions,
-    IOBData,
-    MealData,
-    GlucoseStatus,
-    TrioCustomVariables,
-} from '../../../../src/types/index';
-import type { DosingDecisionInputs } from '../../../../src/determineBasal/types';
+import type { CurrentTemp } from '../../../../src/types/index';
+
+import { makeDosingContext } from '../../helpers';
 
 // ---------------------------------------------------------------------------
 // Console mocking
@@ -32,137 +23,12 @@ beforeEach(() => {
 });
 
 // ---------------------------------------------------------------------------
-// Test helper: make a DosingContext
-// ---------------------------------------------------------------------------
-
-function makeTestContext(overrides: {
-    inputs?: Partial<DosingDecisionInputs>;
-    result?: Partial<DetermineBasalResult>;
-    enableSMB?: boolean;
-    insulinReq?: number;
-    rate?: number;
-} = {}): DosingContext {
-    const {
-        inputs: inputOverrides = {},
-        result: resultOverrides = {},
-        ...ctxOverrides
-    } = overrides;
-
-    const defaultInputs: DosingDecisionInputs = {
-        basal: 1.0,
-        adjustedSens: 50,
-        threshold: 65,
-        targetBG: 100,
-        minBG: 80,
-        maxBG: 120,
-        maxIOB: 10,
-        eventualBG: 150,
-        minPredBG: 130,
-        minIOBPredBG: 120,
-        naiveEventualBG: 150,
-        overrideFactor: 1.0,
-        carbRatio: 10,
-        bg: 150,
-        iobData: {
-            iob: 2.0,
-            lastBolusTime: Date.now() - 600000,
-            activity: 0.05,
-            basaliob: 0.5,
-            bolusiob: 1.5,
-            netbasalinsulin: 0.5,
-            bolusinsulin: 3.0,
-            time: new Date('2025-01-15T12:00:00Z'),
-        } as IOBData,
-        mealData: {
-            mealCOB: 0,
-            carbs: 0,
-        } as MealData,
-        profile: {
-            current_basal: 1.0,
-            out_units: 'mg/dL',
-            max_basal: 4.0,
-            bolus_increment: 0.1,
-            smb_delivery_ratio: 0.5,
-        } as Profile,
-        glucoseStatus: {
-            glucose: 150,
-            delta: 5,
-            short_avgdelta: 4,
-            long_avgdelta: 3,
-        } as GlucoseStatus,
-        currenttemp: {
-            rate: 0,
-            duration: 0,
-        } as CurrentTemp,
-        tempBasalFunctions: {
-            setTempBasal: vi.fn(
-                (
-                    _rate: number,
-                    _duration: number,
-                    _profile: Profile,
-                    result: DetermineBasalResult,
-                ) => result,
-            ),
-            getMaxSafeBasal: vi.fn(() => 4),
-        } as unknown as TempBasalFunctions,
-        systemTime: new Date('2025-01-15T12:00:00Z'),
-        trioCustomVariables: {
-            useOverride: false,
-            advancedSettings: false,
-            smbMinutes: 30,
-            uamMinutes: 30,
-        } as TrioCustomVariables,
-        microBolusAllowed: true,
-        result: { reason: '' } as DetermineBasalResult,
-        enableSMB: true,
-        expectedDelta: 0,
-        minDelta: 0,
-        maxDelta: 0,
-        tick: 0,
-        bgImpact: 0,
-        deviation: 0,
-        carbImpact: 0,
-        remainingCIpeak: 0,
-        carbSensFactor: 0,
-        minGuardBG: 130,
-        lastIOBpredBG: 120,
-        lastCOBpredBG: 130,
-        lastUAMpredBG: 130,
-        IOBpredBGs: [],
-        COBpredBGs: [],
-        isfreason: '',
-        targetLog: '',
-        tddReason: '',
-        ...inputOverrides,
-    };
-
-    const defaultResult: DetermineBasalResult = {
-        reason: '',
-        ...resultOverrides,
-    };
-
-    return {
-        inputs: defaultInputs,
-        result: defaultResult,
-        enableSMB: true,
-        insulinReq: 1.0,
-        rate: 3.0,
-        insulinScheduled: 0,
-        bgUndershoot: 0,
-        minutesAboveMinBG: 0,
-        minutesAboveThreshold: 0,
-        carbsReq: 0,
-        ...ctxOverrides,
-    };
-}
-
-// ---------------------------------------------------------------------------
 // keepOrSetBasalTemp
 // ---------------------------------------------------------------------------
 
 describe('keepOrSetBasalTemp', () => {
     it('keeps existing temp when duration > 15 and rate matches basal', () => {
-        const ctx = makeTestContext({
+        const ctx = makeDosingContext({
             inputs: {
                 basal: 1.0,
                 currenttemp: { rate: 1.0, duration: 20 } as CurrentTemp,
@@ -178,7 +44,7 @@ describe('keepOrSetBasalTemp', () => {
     });
 
     it('sets new basal temp when duration <= 15', () => {
-        const ctx = makeTestContext({
+        const ctx = makeDosingContext({
             inputs: {
                 basal: 1.0,
                 currenttemp: { rate: 1.0, duration: 10 } as CurrentTemp,
@@ -194,7 +60,7 @@ describe('keepOrSetBasalTemp', () => {
     });
 
     it('sets new basal temp when rate does not match basal', () => {
-        const ctx = makeTestContext({
+        const ctx = makeDosingContext({
             inputs: {
                 basal: 1.0,
                 currenttemp: { rate: 2.0, duration: 20 } as CurrentTemp,

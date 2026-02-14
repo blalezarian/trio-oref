@@ -7,113 +7,53 @@ import {
 } from '../../../../src/determineBasal/dosingDecision/initialize';
 
 import type { DosingContext } from '../../../../src/determineBasal/dosingDecision/types';
-import type {
-    DetermineBasalResult,
-    Profile,
-    IOBData,
-    MealData,
-    GlucoseStatus,
-    CurrentTemp,
-    TempBasalFunctions,
-    TrioCustomVariables,
-} from '../../../../src/types/index';
+import type { MealData, Profile } from '../../../../src/types/index';
 import type { DosingDecisionInputs } from '../../../../src/determineBasal/types';
 
+import {
+    makeDosingInputs,
+    makeIobData,
+    makeMealData,
+    makeTempBasalFunctions,
+    makeDetermineBasalResult,
+} from '../../helpers';
+
 // ---------------------------------------------------------------------------
-// Factory
+// Factory — thin wrapper over shared makeDosingInputs with file-specific defaults
 // ---------------------------------------------------------------------------
 
 function makeTestContext(overrides: Partial<DosingDecisionInputs> = {}): DosingContext {
-    const defaultProfile = {
-        out_units: 'mg/dL',
-        current_basal: 1.0,
-        carbsReqThreshold: 1,
-    } as unknown as Profile;
-
-    const defaultIobData = {
-        iob: 1.5,
-        activity: 0.01,
-        basaliob: 0.5,
-        bolusiob: 1.0,
-        netbasalinsulin: 0.3,
-        bolusinsulin: 1.0,
-        time: new Date('2025-01-15T12:00:00.000Z'),
-    } as unknown as IOBData;
-
-    const defaultMealData: MealData = {
-        carbs: 50,
-        nsCarbs: 0,
-        bwCarbs: 0,
-        journalCarbs: 0,
-        mealCOB: 20,
-        currentDeviation: 10,
-        maxDeviation: 15,
-        minDeviation: -5,
-        slopeFromMaxDeviation: -0.5,
-        slopeFromMinDeviation: 0.5,
-        allDeviations: [10, 12, 8],
-        bwFound: false,
-    };
-
-    const defaultGlucoseStatus: GlucoseStatus = {
-        glucose: 120,
-        delta: 5,
-        short_avgdelta: 4,
-        long_avgdelta: 3,
-    };
-
-    const defaultCurrentTemp: CurrentTemp = {
-        duration: 0,
-        rate: 0,
-    };
-
-    const defaultTempBasalFunctions = {
-        getMaxSafeBasal: vi.fn(() => 5),
-        setTempBasal: vi.fn(),
-    } as unknown as TempBasalFunctions;
-
-    const defaultTrioCustomVariables: TrioCustomVariables = {
-        useOverride: false,
-        overridePercentage: 100,
-        overrideTarget: 0,
-        advancedSettings: false,
-        isfAndCr: false,
-        isf: false,
-        cr: false,
-        smbIsOff: false,
-        smbIsScheduledOff: false,
-        start: 0,
-        end: 0,
-        smbMinutes: 30,
-        uamMinutes: 30,
-        currentTDD: 0,
-        average_total_data: 0,
-        weightedAverage: 0,
-        duration: 0,
-    };
-
-    const inputs: DosingDecisionInputs = {
-        result: {} as DetermineBasalResult,
-        iobData: defaultIobData,
-        mealData: defaultMealData,
-        profile: defaultProfile,
-        glucoseStatus: defaultGlucoseStatus,
-        currenttemp: defaultCurrentTemp,
-        tempBasalFunctions: defaultTempBasalFunctions,
-        systemTime: new Date('2025-01-15T12:00:00.000Z'),
-        trioCustomVariables: defaultTrioCustomVariables,
+    const inputs = makeDosingInputs({
+        result: makeDetermineBasalResult(),
+        iobData: makeIobData({
+            iob: 1.5,
+            activity: 0.01,
+            basaliob: 0.5,
+            bolusiob: 1.0,
+            netbasalinsulin: 0.3,
+            bolusinsulin: 1.0,
+        }),
+        mealData: makeMealData({
+            carbs: 50,
+            mealCOB: 20,
+            currentDeviation: 10,
+            maxDeviation: 15,
+            minDeviation: -5,
+            slopeFromMaxDeviation: -0.5,
+            slopeFromMinDeviation: 0.5,
+            allDeviations: [10, 12, 8],
+        }),
+        profile: {
+            out_units: 'mg/dL',
+            current_basal: 1.0,
+            carbsReqThreshold: 1,
+        } as unknown as Profile,
+        tempBasalFunctions: makeTempBasalFunctions(),
         bg: 120,
         eventualBG: 110,
         naiveEventualBG: 110,
-        threshold: 65,
-        targetBG: 100,
         minBG: 90,
-        maxBG: 120,
         maxIOB: 8,
-        basal: 1.0,
-        adjustedSens: 50,
-        carbRatio: 10,
-        overrideFactor: 1.0,
         expectedDelta: -2,
         minDelta: 3,
         maxDelta: 7,
@@ -135,9 +75,8 @@ function makeTestContext(overrides: Partial<DosingDecisionInputs> = {}): DosingC
         microBolusAllowed: true,
         isfreason: 'ISF reason test',
         targetLog: 100,
-        tddReason: '',
         ...overrides,
-    };
+    });
 
     return {
         inputs,

@@ -2,31 +2,29 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { analyzeDeviations } from '../../../src/autosens/deviationLoop';
 import { resetISFCache } from '../../../src/profile/isf';
 import type { GlucoseEntry, CarbTreatment } from '../../../src/types/index';
-import type { IobProfile, HistoryBasalProfileEntry } from '../../../src/iob/types';
+import {
+    FIXED_TIME,
+    FIXED_MS,
+    MS_PER_5_MIN,
+    makeIobProfile,
+    makeBasalProfileEntry,
+} from '../helpers/factories';
 
-const FIXED_TIME = '2025-01-15T12:00:00.000Z';
-const NOW = new Date(FIXED_TIME).getTime();
-const MS_PER_5_MIN = 300_000;
+const NOW = FIXED_MS;
 
 // Mock get_iob to avoid full IOB calculation
 vi.mock('../../../src/iob/index', () => ({
     generate: () => [{ iob: 0.5, activity: 0.01 }],
 }));
 
-function makeBasalProfile(): HistoryBasalProfileEntry[] {
-    return [{ i: 0, start: '00:00:00', rate: 1.0, minutes: 0 }] as HistoryBasalProfileEntry[];
-}
-
-function makeProfile(): IobProfile {
-    return {
-        dia: 6,
-        current_basal: 1.0,
+function makeProfile() {
+    return makeIobProfile({
         isfProfile: {
             sensitivities: [{ offset: 0, sensitivity: 40 }],
         },
         min_5m_carbimpact: 8,
         carb_ratio: 10,
-    } as IobProfile;
+    });
 }
 
 /** Create bucketed glucose data at 5-min intervals going backward from NOW */
@@ -64,7 +62,7 @@ describe('analyzeDeviations', () => {
             bucketedData,
             meals,
             iobInputs,
-            makeBasalProfile(),
+            makeBasalProfileEntry(),
             makeProfile(),
             [],
             undefined,
@@ -84,7 +82,7 @@ describe('analyzeDeviations', () => {
             bucketedData,
             [],
             { profile: makeProfile(), history: [], clock: FIXED_TIME },
-            makeBasalProfile(),
+            makeBasalProfileEntry(),
             makeProfile(),
             [],
             undefined,
@@ -104,7 +102,7 @@ describe('analyzeDeviations', () => {
             bucketedData,
             [],
             { profile: makeProfile(), history: [], clock: FIXED_TIME },
-            makeBasalProfile(),
+            makeBasalProfileEntry(),
             makeProfile(),
             [],
             undefined,
@@ -132,7 +130,7 @@ describe('analyzeDeviations', () => {
             bucketedData,
             [],
             { profile: makeProfile(), history: [], clock: FIXED_TIME },
-            makeBasalProfile(),
+            makeBasalProfileEntry(),
             profile,
             [],
             tempTargets,
