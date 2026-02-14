@@ -3,6 +3,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import {
     validateIOBAndTemps,
     calculateDeviation,
+    checkStaleTempBasal,
 } from '../../../src/determine-basal/helpers';
 
 import type {
@@ -221,6 +222,130 @@ describe('validateIOBAndTemps', () => {
             expect(outcome.iob_data).toBeDefined();
             expect(outcome.iobArray).toBeDefined();
         }
+    });
+});
+
+// ---------------------------------------------------------------------------
+// checkStaleTempBasal
+// ---------------------------------------------------------------------------
+
+describe('checkStaleTempBasal', () => {
+    it('returns null when nothing is stale', () => {
+        const result = { reason: '' } as DetermineBasalResult;
+        const iob = makeIOBData({
+            lastTemp: { rate: 1.0, duration: 30, date: Date.now() - 5 * 60 * 1000 },
+        } as Partial<IOBData>);
+
+        const outcome = checkStaleTempBasal(
+            { rate: 1.0, duration: 20 } as CurrentTemp,
+            iob,
+            5, // lastTempAge = 5m, under TEMP_AGE_STALE_MINUTES (10)
+            true,
+            makeTempBasalFunctions(),
+            makeProfile(),
+            result,
+        );
+
+        expect(outcome).toBeNull();
+    });
+
+    it('cancels when rate mismatch, stale, and microBolus allowed', () => {
+        const result = { reason: '' } as DetermineBasalResult;
+        const tempFns = makeTempBasalFunctions();
+        const iob = makeIOBData({
+            lastTemp: { rate: 1.0, duration: 30, date: Date.now() - 15 * 60 * 1000 },
+        } as Partial<IOBData>);
+
+        const outcome = checkStaleTempBasal(
+            { rate: 2.0, duration: 20 } as CurrentTemp,
+            iob,
+            15, // stale (> 10)
+            true,
+            tempFns,
+            makeProfile(),
+            result,
+        );
+
+        expect(outcome).not.toBeNull();
+        expect(result.reason).toContain('canceling temp');
+        expect(tempFns.setTempBasal).toHaveBeenCalledWith(0, 0, expect.anything(), expect.anything(), expect.anything());
+    });
+
+    it('does not cancel rate mismatch when microBolusAllowed is false', () => {
+        const result = { reason: '' } as DetermineBasalResult;
+        const iob = makeIOBData({
+            lastTemp: { rate: 1.0, duration: 30, date: Date.now() - 15 * 60 * 1000 },
+        } as Partial<IOBData>);
+
+        const outcome = checkStaleTempBasal(
+            { rate: 2.0, duration: 20 } as CurrentTemp,
+            iob,
+            15,
+            false, // microBolus NOT allowed
+            makeTempBasalFunctions(),
+            makeProfile(),
+            result,
+        );
+
+        expect(outcome).toBeNull();
+    });
+
+    it('cancels when lastTemp ended too long ago', () => {
+        const result = { reason: '' } as DetermineBasalResult;
+        const tempFns = makeTempBasalFunctions();
+        // lastTemp 20 min ago, duration 5 → ended 15 min ago (> TEMP_END_GAP_MINUTES=5)
+        const iob = makeIOBData({
+            lastTemp: { rate: 1.0, duration: 5, date: Date.now() - 20 * 60 * 1000 },
+        } as Partial<IOBData>);
+
+        const outcome = checkStaleTempBasal(
+            { rate: 1.0, duration: 10 } as CurrentTemp, // rates match, so first check passes
+            iob,
+            20, // stale (> 10)
+            false,
+            tempFns,
+            makeProfile(),
+            result,
+        );
+
+        expect(outcome).not.toBeNull();
+        expect(result.reason).toContain('lastTemp from pumphistory ended');
+    });
+
+    it('returns null when lastTemp is undefined', () => {
+        const result = { reason: '' } as DetermineBasalResult;
+        const iob = makeIOBData(); // no lastTemp
+
+        const outcome = checkStaleTempBasal(
+            { rate: 2.0, duration: 20 } as CurrentTemp,
+            iob,
+            15,
+            true,
+            makeTempBasalFunctions(),
+            makeProfile(),
+            result,
+        );
+
+        expect(outcome).toBeNull();
+    });
+
+    it('returns null when currenttemp duration is 0 (no active temp)', () => {
+        const result = { reason: '' } as DetermineBasalResult;
+        const iob = makeIOBData({
+            lastTemp: { rate: 1.0, duration: 5, date: Date.now() - 20 * 60 * 1000 },
+        } as Partial<IOBData>);
+
+        const outcome = checkStaleTempBasal(
+            { rate: 1.0, duration: 0 } as CurrentTemp, // no active temp
+            iob,
+            20,
+            false,
+            makeTempBasalFunctions(),
+            makeProfile(),
+            result,
+        );
+
+        expect(outcome).toBeNull();
     });
 });
 

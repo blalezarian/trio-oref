@@ -101,7 +101,7 @@ export function validateIOBAndTemps(
  * Checks whether the current temp basal is stale or mismatched with pump history,
  * and cancels it if so. Returns the cancellation result, or null if no action needed.
  */
-function checkStaleTempBasal(
+export function checkStaleTempBasal(
     currenttemp: CurrentTemp,
     iob_datum: IOBData,
     lastTempAge: number,
