@@ -1,6 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import {
     calculateDynISFBGImpact,
+    predictIOBandZT,
+    predictCOB,
+    predictUAM,
     clipAndTrimPredictions,
     calculateMinAndGuardBGs,
     calculateAvgPredBG,
@@ -11,6 +14,7 @@ import type {
     ClipAndTrimInputs,
     MinGuardBGInputs,
 } from '../../../src/determine-basal/types';
+import type { IOBData, IOBEntry } from '../../../src/types/index';
 
 // Constants from the source for reference in assertions:
 // MIN_VALID_GLUCOSE_MGDL = 39
@@ -57,6 +61,183 @@ describe('calculateDynISFBGImpact', () => {
     it('returns positive impact for negative activity (insulin wearing off)', () => {
         const result = calculateDynISFBGImpact(-0.03, 100, 50, 0.8, 75);
         expect(result).toBeGreaterThan(0);
+    });
+});
+
+// ---------------------------------------------------------------------------
+// predictIOBandZT
+// ---------------------------------------------------------------------------
+
+/** Minimal IOBData tick for testing prediction helpers. */
+function makeIOBTick(overrides: Partial<IOBData> = {}): IOBData {
+    return {
+        iob: 2,
+        activity: 0.05,
+        basaliob: 1,
+        bolusiob: 1,
+        netbasalinsulin: 0,
+        bolusinsulin: 0,
+        time: new Date(),
+        iobWithZeroTemp: { iob: 0, activity: 0.02 } as IOBEntry,
+        ...overrides,
+    } as IOBData;
+}
+
+describe('predictIOBandZT', () => {
+    it('computes IOB and ZT predictions using standard formula (no dynamic ISF)', () => {
+        const IOBpredBGs = [120];
+        const ZTpredBGs = [120];
+        const iobTick = makeIOBTick({ activity: 0.05, iobWithZeroTemp: { iob: 0, activity: 0.02 } as IOBEntry });
+
+        const result = predictIOBandZT(
+            iobTick, IOBpredBGs, ZTpredBGs, 40, 3,
+            false, 0, 0, 0,
+        );
+
+        // predBGI = round(-0.05 * 40 * 5, 2) = -10
+        expect(result.predBGI).toBe(-10);
+        // predDev = 3 * (1 - min(1, 1/12)) = 3 * (1 - 0.0833) ≈ 2.75
+        expect(result.predDev).toBeCloseTo(2.75, 1);
+        // IOBpredBG = 120 + (-10) + 2.75 = 112.75
+        expect(result.IOBpredBG).toBeCloseTo(112.75, 1);
+        // ZTpredBG = 120 + round(-0.02 * 40 * 5, 2) = 120 + (-4) = 116
+        expect(result.ZTpredBG).toBe(116);
+    });
+
+    it('uses dynamic ISF logarithmic formula when useDynISFLog is true', () => {
+        const IOBpredBGs = [120];
+        const ZTpredBGs = [120];
+        const iobTick = makeIOBTick({ activity: 0.05, iobWithZeroTemp: { iob: 0, activity: 0.02 } as IOBEntry });
+
+        const result = predictIOBandZT(
+            iobTick, IOBpredBGs, ZTpredBGs, 40, 3,
+            true, 50, 0.8, 75,
+        );
+
+        // Dynamic ISF path: uses calculateDynISFBGImpact instead of predBGI
+        // dynIOBBGI = calculateDynISFBGImpact(0.05, 120, 50, 0.8, 75) = -11.77
+        expect(result.IOBpredBG).toBeCloseTo(120 + (-11.77) + result.predDev, 0);
+        // Still returns predBGI for downstream use
+        expect(result.predBGI).toBe(-10);
+    });
+
+    it('decays predDev toward zero as IOBpredBGs grows', () => {
+        const IOBpredBGs = Array(12).fill(100); // 12 entries = 60m worth
+        const ZTpredBGs = [100];
+        const iobTick = makeIOBTick();
+
+        const result = predictIOBandZT(
+            iobTick, IOBpredBGs, ZTpredBGs, 40, 3,
+            false, 0, 0, 0,
+        );
+
+        // At 12 entries: 12 / (60/5) = 12/12 = 1.0, min(1,1) = 1, predDev = 3 * 0 = 0
+        expect(result.predDev).toBe(0);
+    });
+});
+
+// ---------------------------------------------------------------------------
+// predictCOB
+// ---------------------------------------------------------------------------
+
+describe('predictCOB', () => {
+    it('computes COB prediction with linear decay carb impact', () => {
+        const COBpredBGs = [120];
+        const result = predictCOB(COBpredBGs, 5, 10, 2, 3, -10, 2);
+
+        // predCI = max(0, max(0, 5) * (1 - 1 / max(10*2, 1))) = 5 * (1 - 1/20) = 5 * 0.95 = 4.75
+        expect(result.predCI).toBeCloseTo(4.75, 2);
+        // COBpredBG = 120 + (-10) + min(0, 2) + predCI + remainingCI
+        // min(0, 2) = 0, so COBpredBG = 120 - 10 + 0 + predCI + remainingCI
+        expect(result.COBpredBG).toBeDefined();
+    });
+
+    it('returns zero predCI when carbImpact is zero', () => {
+        const COBpredBGs = [120];
+        const result = predictCOB(COBpredBGs, 0, 10, 2, 3, -10, 0);
+        expect(result.predCI).toBe(0);
+    });
+
+    it('decays predCI to zero as COBpredBGs length approaches carbImpactDuration * 2', () => {
+        const COBpredBGs = Array(20).fill(100); // 20 = carbImpactDuration(10) * LINEAR_DECAY_FACTOR(2)
+        const result = predictCOB(COBpredBGs, 5, 10, 2, 3, -10, 0);
+        expect(result.predCI).toBe(0);
+    });
+
+    it('only uses negative predDev for COB predictions', () => {
+        const COBpredBGs = [120];
+        const positiveResult = predictCOB(COBpredBGs, 5, 10, 2, 3, -10, 5);
+        const negativeResult = predictCOB(COBpredBGs, 5, 10, 2, 3, -10, -3);
+
+        // Positive predDev → min(0, 5) = 0, no effect
+        // Negative predDev → min(0, -3) = -3, adds negative impact
+        expect(negativeResult.COBpredBG).toBeLessThan(positiveResult.COBpredBG);
+    });
+});
+
+// ---------------------------------------------------------------------------
+// predictUAM
+// ---------------------------------------------------------------------------
+
+describe('predictUAM', () => {
+    it('computes UAM prediction using slope-based carb impact', () => {
+        const UAMpredBGs = [120];
+        const iobTick = makeIOBTick({ activity: 0.05 });
+
+        const result = predictUAM(
+            iobTick, UAMpredBGs, 5, -0.1,
+            -10, 2, false, 0, 0, 0,
+        );
+
+        // predUCIslope = max(0, 5 + 1 * (-0.1)) = max(0, 4.9) = 4.9
+        // predUCImax = max(0, 5 * (1 - 1 / max(3*60/5, 1))) = 5 * (1 - 1/36) ≈ 4.86
+        // predUCI = min(4.9, 4.86) ≈ 4.86
+        expect(result.predUCI).toBeCloseTo(4.86, 1);
+        // UAMpredBG = 120 + (-10) + min(0, 2) + predUCI = 120 - 10 + 0 + 4.86 ≈ 114.86
+        expect(result.UAMpredBG).toBeCloseTo(114.86, 0);
+    });
+
+    it('returns zero predUCI when uamCarbImpact is zero and slope is negative', () => {
+        const UAMpredBGs = [120];
+        const iobTick = makeIOBTick();
+
+        const result = predictUAM(
+            iobTick, UAMpredBGs, 0, -0.1,
+            -10, 0, false, 0, 0, 0,
+        );
+
+        expect(result.predUCI).toBe(0);
+    });
+
+    it('decays predUCImax to zero as UAMpredBGs length approaches 3h', () => {
+        const UAMpredBGs = Array(36).fill(100); // 36 = 3h * 60m / 5m
+        const iobTick = makeIOBTick();
+
+        const result = predictUAM(
+            iobTick, UAMpredBGs, 5, 0,
+            -10, 0, false, 0, 0, 0,
+        );
+
+        expect(result.predUCI).toBe(0);
+    });
+
+    it('uses dynamic ISF formula when useDynISFLog is true', () => {
+        const UAMpredBGs = [120];
+        const iobTick = makeIOBTick({ activity: 0.05 });
+
+        const standard = predictUAM(
+            iobTick, UAMpredBGs, 5, -0.1,
+            -10, 2, false, 0, 0, 0,
+        );
+        const dynamic = predictUAM(
+            iobTick, UAMpredBGs, 5, -0.1,
+            -10, 2, true, 50, 0.8, 75,
+        );
+
+        // Dynamic ISF uses different BGI calculation, results should differ
+        expect(dynamic.UAMpredBG).not.toBe(standard.UAMpredBG);
+        // predUCI should be the same (doesn't depend on ISF formula)
+        expect(dynamic.predUCI).toBeCloseTo(standard.predUCI, 2);
     });
 });
 

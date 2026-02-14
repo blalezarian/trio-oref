@@ -42,7 +42,6 @@ import { round } from './helpers';
 export function generateBGPredictions(
     iobArray: IOBData[],
     eventualBG: number,
-    naive_eventualBG: number,
     bg: number,
     adjustedSens: number,
     carbImpact: number,
@@ -97,77 +96,53 @@ export function generateBGPredictions(
 
     try {
         iobArray.forEach((iobTick: IOBData) => {
-            const predBGI = round(( -iobTick.activity * adjustedSens * PRED_INTERVAL_MINUTES ), 2);
-            const predZTBGI = round(( -(iobTick.iobWithZeroTemp as IOBEntry).activity * adjustedSens * PRED_INTERVAL_MINUTES ), 2);
-            let ZTpredBG = naive_eventualBG;
-            // for IOBpredBGs, predicted deviation impact drops linearly from current deviation down to zero
-            // over 60 minutes (data points every 5m)
-            const predDev = carbImpact * ( 1 - Math.min(1,IOBpredBGs.length/(MINUTES_PER_HOUR/PRED_INTERVAL_MINUTES)) );
+            // --- IOB + ZT prediction step ---
+            const iobZT = predictIOBandZT(
+                iobTick, IOBpredBGs, ZTpredBGs, adjustedSens, carbImpact,
+                useDynISFLog, tdd, adjustmentFactor, insulinFactor,
+            );
+            IOBpredBG = iobZT.IOBpredBG;
+            const ZTpredBG = iobZT.ZTpredBG;
+            const predBGI = iobZT.predBGI;
+            const predDev = iobZT.predDev;
 
-            // Adding dynamic ISF in predictions for ZT and IOB. Modification from Tim Street's AAPS but with default as off:
-            if (useDynISFLog) {
-                const dynIOBBGI = calculateDynISFBGImpact(iobTick.activity, IOBpredBGs[IOBpredBGs.length-1], tdd, adjustmentFactor, insulinFactor);
-                const dynZTBGI = calculateDynISFBGImpact((iobTick.iobWithZeroTemp as IOBEntry).activity, ZTpredBGs[ZTpredBGs.length-1], tdd, adjustmentFactor, insulinFactor);
-                IOBpredBG = IOBpredBGs[IOBpredBGs.length-1] + dynIOBBGI + predDev;
-                ZTpredBG = ZTpredBGs[ZTpredBGs.length-1] + dynZTBGI;
-                console.log(`Dynamic ISF (Logarithmic Formula) adjusted predictions for IOB and ZT: IOBpredBG: ${round(IOBpredBG, 2)} , ZTpredBG: ${round(ZTpredBG, 2)}`);
-            } else {
-                IOBpredBG = IOBpredBGs[IOBpredBGs.length-1] + predBGI + predDev;
-                // calculate predBGs with long zero temp without deviations
-                ZTpredBG = ZTpredBGs[ZTpredBGs.length-1] + predZTBGI;
+            // --- COB prediction step ---
+            const cob = predictCOB(
+                COBpredBGs, carbImpact, carbImpactDuration, remainingCATime, remainingCIpeak, predBGI, predDev,
+            );
+            COBpredBG = cob.COBpredBG;
+            remainingCItotal += cob.predCI + cob.remainingCI;
+            remainingCIs.push(round(cob.remainingCI, 0));
+            predCIs.push(round(cob.predCI, 0));
+
+            // --- UAM prediction step ---
+            const uam = predictUAM(
+                iobTick, UAMpredBGs, uamCarbImpact, slopeFromDeviations,
+                predBGI, predDev, useDynISFLog, tdd, adjustmentFactor, insulinFactor,
+            );
+            UAMpredBG = uam.UAMpredBG;
+            if (uam.predUCI > 0) {
+                UAMduration = round((UAMpredBGs.length + 1) * PRED_INTERVAL_MINUTES / MINUTES_PER_HOUR, 1);
             }
 
-            // for COBpredBGs, predicted carb impact drops linearly from current carb impact down to zero
-            // eventually accounting for all carbs (if they can be absorbed over DIA)
-            const predCI = Math.max(0, Math.max(0,carbImpact) * ( 1 - COBpredBGs.length/Math.max(carbImpactDuration*LINEAR_DECAY_FACTOR,1) ) );
-            // if any carbs aren't absorbed after remainingCATime hours, assume they'll absorb in a /\ shaped
-            // bilinear curve peaking at remainingCIpeak at remainingCATime/2 hours (remainingCATime/2*12 * 5m)
-            // and ending at remainingCATime h (remainingCATime*12 * 5m intervals)
-            const intervals = Math.min( COBpredBGs.length, (remainingCATime*(MINUTES_PER_HOUR/PRED_INTERVAL_MINUTES))-COBpredBGs.length );
-            const remainingCI = Math.max(0, intervals / (remainingCATime/LINEAR_DECAY_FACTOR*(MINUTES_PER_HOUR/PRED_INTERVAL_MINUTES)) * remainingCIpeak );
-            remainingCItotal += predCI+remainingCI;
-            remainingCIs.push(round(remainingCI,0));
-            predCIs.push(round(predCI,0));
-            COBpredBG = COBpredBGs[COBpredBGs.length-1] + predBGI + Math.min(0,predDev) + predCI + remainingCI;
-            // for UAMpredBGs, predicted carb impact drops at slopeFromDeviations
-            // calculate predicted CI from UAM based on slopeFromDeviations
-            const predUCIslope = Math.max(0, uamCarbImpact + ( UAMpredBGs.length*slopeFromDeviations ) );
-            // if slopeFromDeviations is too flat, predicted deviation impact drops linearly from
-            // current deviation down to zero over 3h (data points every 5m)
-            const predUCImax = Math.max(0, uamCarbImpact * ( 1 - UAMpredBGs.length/Math.max(UAM_DECAY_HOURS*MINUTES_PER_HOUR/PRED_INTERVAL_MINUTES,1) ) );
-            // predicted CI from UAM is the lesser of CI based on deviationSlope or DIA
-            const predUCI = Math.min(predUCIslope, predUCImax);
-            if(predUCI>0) {
-                UAMduration=round((UAMpredBGs.length+1)*PRED_INTERVAL_MINUTES/MINUTES_PER_HOUR,1);
-            }
+            // --- Push to arrays (truncate at 4 hours) ---
+            if (IOBpredBGs.length < PRED_BG_MAX_LENGTH) { IOBpredBGs.push(IOBpredBG); }
+            if (COBpredBGs.length < PRED_BG_MAX_LENGTH) { COBpredBGs.push(COBpredBG); }
+            if (UAMpredBGs.length < PRED_BG_MAX_LENGTH) { UAMpredBGs.push(UAMpredBG); }
+            if (ZTpredBGs.length < PRED_BG_MAX_LENGTH) { ZTpredBGs.push(ZTpredBG); }
 
-            // Adding dynamic ISF in predictions for UAM. Modification from Tim Street's AAPS but with default as off:
-            if (useDynISFLog) {
-                const dynUAMBGI = calculateDynISFBGImpact(iobTick.activity, UAMpredBGs[UAMpredBGs.length-1], tdd, adjustmentFactor, insulinFactor);
-                UAMpredBG = UAMpredBGs[UAMpredBGs.length-1] + dynUAMBGI + Math.min(0, predDev) + predUCI;
-                console.log(`Dynamic ISF (Logarithmic Formula) adjusted prediction for UAM: UAMpredBG: ${round(Number(UAMpredBG), 2)}`);
-            } else {
-                UAMpredBG = UAMpredBGs[UAMpredBGs.length-1] + predBGI + Math.min(0, predDev) + predUCI;
-            }
-            // truncate all BG predictions at 4 hours
-            if ( IOBpredBGs.length < PRED_BG_MAX_LENGTH ) { IOBpredBGs.push(IOBpredBG); }
-            if ( COBpredBGs.length < PRED_BG_MAX_LENGTH ) { COBpredBGs.push(COBpredBG); }
-            if ( UAMpredBGs.length < PRED_BG_MAX_LENGTH ) { UAMpredBGs.push(UAMpredBG); }
-            if ( ZTpredBGs.length < PRED_BG_MAX_LENGTH ) { ZTpredBGs.push(ZTpredBG); }
-            // calculate minGuardBGs without a wait from COB, UAM, IOB predBGs
-            if ( COBpredBG < minCOBGuardBG ) { minCOBGuardBG = round(COBpredBG); }
-            if ( UAMpredBG < minUAMGuardBG ) { minUAMGuardBG = round(UAMpredBG); }
-            if ( IOBpredBG < minIOBGuardBG ) { minIOBGuardBG = round(IOBpredBG); }
-            if ( ZTpredBG < minZTGuardBG ) { minZTGuardBG = round(ZTpredBG); }
+            // --- Update guard BGs (no wait — tracks minimum from the start) ---
+            if (COBpredBG < minCOBGuardBG) { minCOBGuardBG = round(COBpredBG); }
+            if (UAMpredBG < minUAMGuardBG) { minUAMGuardBG = round(UAMpredBG); }
+            if (IOBpredBG < minIOBGuardBG) { minIOBGuardBG = round(IOBpredBG); }
+            if (ZTpredBG < minZTGuardBG) { minZTGuardBG = round(ZTpredBG); }
 
-            // set minPredBGs starting when currently-dosed insulin activity will peak
-            // wait 90m (insulinPeak5m intervals) before setting minIOBPredBG
-            if ( IOBpredBGs.length > insulinPeak5m && (IOBpredBG < minIOBPredBG) ) { minIOBPredBG = round(IOBpredBG); }
-            if ( IOBpredBG > maxIOBPredBG ) { maxIOBPredBG = IOBpredBG; }
-            // wait 85-105m before setting COB and 60m for UAM minPredBGs
-            if ( (carbImpactDuration || remainingCIpeak > 0) && COBpredBGs.length > insulinPeak5m && (COBpredBG < minCOBPredBG) ) { minCOBPredBG = round(COBpredBG); }
-            if ( (carbImpactDuration || remainingCIpeak > 0) && COBpredBG > maxIOBPredBG ) { maxCOBPredBG = COBpredBG; }
-            if ( enableUAM && UAMpredBGs.length > MIN_PRED_TRIM_POINTS && (UAMpredBG < minUAMPredBG) ) { minUAMPredBG = round(UAMpredBG); }
+            // --- Update min/max pred BGs (after insulin peak wait) ---
+            if (IOBpredBGs.length > insulinPeak5m && (IOBpredBG < minIOBPredBG)) { minIOBPredBG = round(IOBpredBG); }
+            if (IOBpredBG > maxIOBPredBG) { maxIOBPredBG = IOBpredBG; }
+            if ((carbImpactDuration || remainingCIpeak > 0) && COBpredBGs.length > insulinPeak5m && (COBpredBG < minCOBPredBG)) { minCOBPredBG = round(COBpredBG); }
+            if ((carbImpactDuration || remainingCIpeak > 0) && COBpredBG > maxIOBPredBG) { maxCOBPredBG = COBpredBG; }
+            if (enableUAM && UAMpredBGs.length > MIN_PRED_TRIM_POINTS && (UAMpredBG < minUAMPredBG)) { minUAMPredBG = round(UAMpredBG); }
         });
         // set eventualBG to include effect of carbs
     } catch (e) {
@@ -245,6 +220,100 @@ export function calculateDynISFBGImpact(
         tdd * adjustmentFactor * Math.log(Math.max(lastPredBG, MIN_VALID_GLUCOSE_MGDL) / insulinFactor + 1)
     );
     return round(-activity * dynamicSens * PRED_INTERVAL_MINUTES, 2);
+}
+
+// ---------------------------------------------------------------------------
+// Per-tick prediction helpers (called once per iobArray element)
+// ---------------------------------------------------------------------------
+
+/** Computes IOB and ZT predicted BG for a single tick, using either dynamic-ISF or standard formula. */
+export function predictIOBandZT(
+    iobTick: IOBData,
+    IOBpredBGs: number[],
+    ZTpredBGs: number[],
+    adjustedSens: number,
+    carbImpact: number,
+    useDynISFLog: boolean,
+    tdd: number,
+    adjustmentFactor: number,
+    insulinFactor: number,
+): { IOBpredBG: number; ZTpredBG: number; predBGI: number; predDev: number } {
+    const predBGI = round(-iobTick.activity * adjustedSens * PRED_INTERVAL_MINUTES, 2);
+    const predZTBGI = round(-(iobTick.iobWithZeroTemp as IOBEntry).activity * adjustedSens * PRED_INTERVAL_MINUTES, 2);
+    // predicted deviation impact drops linearly from current deviation down to zero over 60 minutes
+    const predDev = carbImpact * (1 - Math.min(1, IOBpredBGs.length / (MINUTES_PER_HOUR / PRED_INTERVAL_MINUTES)));
+
+    let IOBpredBG: number;
+    let ZTpredBG: number;
+
+    if (useDynISFLog) {
+        const dynIOBBGI = calculateDynISFBGImpact(iobTick.activity, IOBpredBGs[IOBpredBGs.length - 1], tdd, adjustmentFactor, insulinFactor);
+        const dynZTBGI = calculateDynISFBGImpact((iobTick.iobWithZeroTemp as IOBEntry).activity, ZTpredBGs[ZTpredBGs.length - 1], tdd, adjustmentFactor, insulinFactor);
+        IOBpredBG = IOBpredBGs[IOBpredBGs.length - 1] + dynIOBBGI + predDev;
+        ZTpredBG = ZTpredBGs[ZTpredBGs.length - 1] + dynZTBGI;
+        console.log(`Dynamic ISF (Logarithmic Formula) adjusted predictions for IOB and ZT: IOBpredBG: ${round(IOBpredBG, 2)} , ZTpredBG: ${round(ZTpredBG, 2)}`);
+    } else {
+        IOBpredBG = IOBpredBGs[IOBpredBGs.length - 1] + predBGI + predDev;
+        ZTpredBG = ZTpredBGs[ZTpredBGs.length - 1] + predZTBGI;
+    }
+
+    return { IOBpredBG, ZTpredBG, predBGI, predDev };
+}
+
+/** Computes COB predicted BG for a single tick, including linear-decay carb impact and remaining-CI bilinear curve. */
+export function predictCOB(
+    COBpredBGs: number[],
+    carbImpact: number,
+    carbImpactDuration: number,
+    remainingCATime: number,
+    remainingCIpeak: number,
+    predBGI: number,
+    predDev: number,
+): { COBpredBG: number; predCI: number; remainingCI: number } {
+    // predicted carb impact drops linearly from current carb impact down to zero
+    // eventually accounting for all carbs (if they can be absorbed over DIA)
+    const predCI = Math.max(0, Math.max(0, carbImpact) * (1 - COBpredBGs.length / Math.max(carbImpactDuration * LINEAR_DECAY_FACTOR, 1)));
+    // if any carbs aren't absorbed after remainingCATime hours, assume they'll absorb in a /\ shaped
+    // bilinear curve peaking at remainingCIpeak at remainingCATime/2 hours
+    // and ending at remainingCATime h
+    const intervals = Math.min(COBpredBGs.length, (remainingCATime * (MINUTES_PER_HOUR / PRED_INTERVAL_MINUTES)) - COBpredBGs.length);
+    const remainingCI = Math.max(0, intervals / (remainingCATime / LINEAR_DECAY_FACTOR * (MINUTES_PER_HOUR / PRED_INTERVAL_MINUTES)) * remainingCIpeak);
+    const COBpredBG = COBpredBGs[COBpredBGs.length - 1] + predBGI + Math.min(0, predDev) + predCI + remainingCI;
+
+    return { COBpredBG, predCI, remainingCI };
+}
+
+/** Computes UAM predicted BG for a single tick, using slope-based or linear-decay carb impact. */
+export function predictUAM(
+    iobTick: IOBData,
+    UAMpredBGs: number[],
+    uamCarbImpact: number,
+    slopeFromDeviations: number,
+    predBGI: number,
+    predDev: number,
+    useDynISFLog: boolean,
+    tdd: number,
+    adjustmentFactor: number,
+    insulinFactor: number,
+): { UAMpredBG: number; predUCI: number } {
+    // predicted CI from UAM based on slopeFromDeviations
+    const predUCIslope = Math.max(0, uamCarbImpact + (UAMpredBGs.length * slopeFromDeviations));
+    // if slopeFromDeviations is too flat, predicted deviation impact drops linearly from
+    // current deviation down to zero over 3h
+    const predUCImax = Math.max(0, uamCarbImpact * (1 - UAMpredBGs.length / Math.max(UAM_DECAY_HOURS * MINUTES_PER_HOUR / PRED_INTERVAL_MINUTES, 1)));
+    // predicted CI from UAM is the lesser of CI based on deviationSlope or DIA
+    const predUCI = Math.min(predUCIslope, predUCImax);
+
+    let UAMpredBG: number;
+    if (useDynISFLog) {
+        const dynUAMBGI = calculateDynISFBGImpact(iobTick.activity, UAMpredBGs[UAMpredBGs.length - 1], tdd, adjustmentFactor, insulinFactor);
+        UAMpredBG = UAMpredBGs[UAMpredBGs.length - 1] + dynUAMBGI + Math.min(0, predDev) + predUCI;
+        console.log(`Dynamic ISF (Logarithmic Formula) adjusted prediction for UAM: UAMpredBG: ${round(Number(UAMpredBG), 2)}`);
+    } else {
+        UAMpredBG = UAMpredBGs[UAMpredBGs.length - 1] + predBGI + Math.min(0, predDev) + predUCI;
+    }
+
+    return { UAMpredBG, predUCI };
 }
 
 /** Clips prediction arrays to valid BG range, trims flat tails, and builds the PredBGs result object. */

@@ -215,7 +215,7 @@ export function determine_basal(
     const { carbImpact, carbImpactDuration, uamCarbImpact, carbSensFactor, remainingCATime, remainingCIpeak, slopeFromDeviations } = carbAbsorption;
 
     const bgPred = generateBGPredictions(
-        iobArray, eventualBG, naive_eventualBG, bg, adjustedSens,
+        iobArray, eventualBG, bg, adjustedSens,
         carbImpact, carbImpactDuration, uamCarbImpact,
         remainingCATime, remainingCIpeak, slopeFromDeviations,
         dynISFenabled, enable_sigmoid, tdd, adjustmentFactor, insulinFactor,
