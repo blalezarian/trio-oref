@@ -1,4 +1,4 @@
-import { calcTempTreatments as find_insulin } from '../iob/extract-treatments';
+import { calcTempTreatments as findInsulin } from '../iob/extract-treatments';
 import { normalizeGlucoseData } from '../utils/glucose-math';
 import { bucketGlucoseWithInterpolation } from './bucket-glucose';
 import { analyzeAbsorption } from './deviation-loop';
@@ -36,7 +36,7 @@ export function detectCarbAbsorption(inputs: CarbAbsorptionInputs): CarbAbsorpti
     const carbImpactTime = new Date(inputs.carbImpactTime as string | number);
 
     // Extract treatments from pump history once (not every get_iob call)
-    const treatments = find_insulin(inputs.iob_inputs as IobInputs);
+    const treatments = findInsulin(inputs.iob_inputs as IobInputs);
 
     const bucketedData = bucketGlucoseWithInterpolation(
         glucoseData,

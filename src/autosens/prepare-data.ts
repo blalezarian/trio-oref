@@ -1,5 +1,5 @@
-import { calcTempTreatments as find_insulin } from '../iob/extract-treatments';
-import { findMealInputs as find_meals } from '../meal/history';
+import { calcTempTreatments as findInsulin } from '../iob/extract-treatments';
+import { findMealInputs as findMeals } from '../meal/history';
 import { normalizeGlucoseData } from '../utils/glucose-math';
 import { resolveGlucoseTime } from '../utils/time';
 import type { PumpHistoryEvent, GlucoseEntry, CarbTreatment, ISODateString } from '../types/index';
@@ -129,7 +129,7 @@ export function prepareAutosensData(inputs: AutosensInputs): PreparedAutosensDat
     );
 
     // Extract treatments from pump history once (not every get_iob call)
-    const treatments = find_insulin(iobInputs as IobInputs);
+    const treatments = findInsulin(iobInputs as IobInputs);
 
     const mealInputs = {
         history: iobInputs.history,
@@ -137,7 +137,7 @@ export function prepareAutosensData(inputs: AutosensInputs): PreparedAutosensDat
         carbs: inputs.carbs,
         glucose: inputs.glucose_data,
     };
-    const meals = find_meals(mealInputs);
+    const meals = findMeals(mealInputs);
     meals.sort((a: CarbTreatment, b: CarbTreatment) => {
         return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime();
     });

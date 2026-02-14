@@ -1,7 +1,7 @@
 import { getCurrentBasalRate } from '../profile/basal';
 import { generate as getIOB } from '../iob/index';
 import { isfLookup as ISFLookup } from '../profile/isf';
-import { calcTempTreatments as find_insulin } from '../iob/extract-treatments';
+import { calcTempTreatments as findInsulin } from '../iob/extract-treatments';
 import type { IobInputs } from '../iob/types';
 import { insulinDosed as dosed } from './dosed';
 import type { DosedOpts } from './dosed';
@@ -454,11 +454,12 @@ function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
     }
 
     IOBInputs = {
-        clock: ''
-    ,   history: opts.pumpHistory
-    ,   profile: profileData
+        clock: '',
+        history: opts.pumpHistory,
+        profile: profileData
     };
-    const dosedTreatments = find_insulin(IOBInputs as IobInputs);
+    
+    const dosedTreatments = findInsulin(IOBInputs as IobInputs);
     CRData.forEach((crEntry: CRDatum) => {
         const dosedOpts: DosedOpts = {
             treatments: dosedTreatments
@@ -530,7 +531,7 @@ function trimOldTreatments(
 
 /** Redistribute UAM data across basal/ISF categories based on count heuristics */
 function mergeUAMData(
-    categorize_uam_as_basal: boolean | undefined,
+    categorizeUAMAsBasal: boolean | undefined,
     CSFGlucoseData: CategorizeGlucoseDatum[],
     ISFGlucoseData: CategorizeGlucoseDatum[],
     basalGlucoseData: CategorizeGlucoseDatum[],
@@ -545,7 +546,7 @@ function mergeUAMData(
     const UAMLength = UAMGlucoseData.length;
     let basalLength = basalGlucoseData.length;
 
-    if (categorize_uam_as_basal) {
+    if (categorizeUAMAsBasal) {
         console.log("--categorize-uam-as-basal=true set: categorizing all UAM data as basal.");
         basalGlucoseData = basalGlucoseData.concat(UAMGlucoseData);
     } else if (CSFLength > MIN_CSF_FOR_CONFIRMED_MEALS) {

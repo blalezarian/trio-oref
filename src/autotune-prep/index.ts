@@ -1,7 +1,7 @@
 // NOTE: This module is not used by the current version of Trio.
 // Prep step before autotune.js can run; pulls in meal (carb) data and calls categorize.js
 
-import { findMealInputs as find_meals } from '../meal/history';
+import { findMealInputs as findMeals } from '../meal/history';
 import { categorizeBGDatums as categorize } from './categorize';
 import type { CategorizeResult, CategorizeGlucoseDatum } from './categorize';
 import type { PumpHistoryEvent, InsulinCurve } from '../types/index';
@@ -82,7 +82,7 @@ interface AutotunePrepResult extends CategorizeResult {
 /** Prepare glucose data for autotune by finding meals and categorizing BG deviations */
 function generate(inputs: AutotunePrepInputs): AutotunePrepResult {
 
-  const treatments = find_meals(inputs);
+  const treatments = findMeals(inputs);
 
   const opts: Parameters<typeof categorize>[0] = {
     treatments: treatments
