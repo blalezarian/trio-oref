@@ -1,3 +1,6 @@
+// NOTE: This module is not used by the current version of Trio.
+// It is not in the webpack bundle and not imported by any production code.
+
 import type { PumpHistoryEvent, PumpHistoryEventType } from '../types/index';
 import { MS_PER_MINUTE } from '../shared/constants';
 

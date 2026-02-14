@@ -1,3 +1,4 @@
+// NOTE: This module is not used by the current version of Trio.
 // Prep step before autotune.js can run; pulls in meal (carb) data and calls categorize.js
 
 import { findMealInputs as find_meals } from '../meal/history';

@@ -1,3 +1,5 @@
+// NOTE: This module is not used by the current version of Trio.
+
 import type {
     AutotuneInputs,
     AutotunePreviousProfile,
