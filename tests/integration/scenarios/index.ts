@@ -27,6 +27,7 @@ import { nightscoutEventScenarios } from './nightscoutEvents';
 import { mmolUnitScenarios } from './mmolUnits';
 import { middlewareScenarios } from './middleware';
 import { safetyBoundsScenarios } from './safetyBounds';
+import { dangerousInputScenarios } from './dangerousInputs';
 import type { IntegrationScenario } from './types';
 
 export const allScenarios: IntegrationScenario[] = [
@@ -55,6 +56,7 @@ export const allScenarios: IntegrationScenario[] = [
     ...mmolUnitScenarios,
     ...middlewareScenarios,
     ...safetyBoundsScenarios,
+    ...dangerousInputScenarios,
 ];
 
 export type { IntegrationScenario } from './types';
