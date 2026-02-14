@@ -19301,7 +19301,7 @@ exports[`determine-basal characterization tests > tdd-weighted > TDD = 0 — dyn
   "eventualBG": 150,
   "expectedDelta": -1.7,
   "insulinForManualBolus": 1,
-  "insulinReq": NaN,
+  "insulinReq": 1,
   "manualBolusErrorString": 0,
   "minDelta": 0,
   "minGuardBG": undefined,
@@ -19309,15 +19309,15 @@ exports[`determine-basal characterization tests > tdd-weighted > TDD = 0 — dyn
   "predBGs": {
     "IOB": [
       150,
-      NaN,
+      150,
     ],
     "ZT": [
       150,
-      NaN,
+      150,
     ],
   },
-  "rate": NaN,
-  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG NaN, minGuardBG 999, IOBpredBG NaN, Logarithmic formula, AF: 0.8; Eventual BG 150 >= 110, no temp, setting NaNU/hr. ",
+  "rate": 2.9,
+  "reason": "Autosens ratio: 1, ISF: 40→40, COB: 0, Dev: 0, BGI: 0, CR: 10, Target: 110, minPredBG 150, minGuardBG 150, IOBpredBG 150; Eventual BG 150 >= 110, no temp, setting 2.9U/hr. ",
   "reservoir": 100,
   "sensitivityRatio": 1,
   "target_bg": 110,

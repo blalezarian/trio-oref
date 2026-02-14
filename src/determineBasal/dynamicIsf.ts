@@ -95,6 +95,14 @@ export function calculateDynamicISF(
     let sigmoidLog = "";
     let newRatio: number | undefined;
 
+    // Guard: TDD=0 means no dosing history (new user, data gap). The logarithmic
+    // and sigmoid formulas divide by TDD, producing NaN/Infinity. Fall back to
+    // static ISF to ensure safe, finite output.
+    if (dynISFenabled && tdd <= 0) {
+        dynISFenabled = false;
+        console.log(startLog + "Dynamic Settings disabled (TDD=0)");
+    }
+
     if (dynISFenabled) {
         if (!enableSigmoid) {
             newRatio = calculateLogarithmicRatio(sensitivity, adjustmentFactor, tdd, bg, insulinFactor);
