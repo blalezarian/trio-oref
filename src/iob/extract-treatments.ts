@@ -32,7 +32,7 @@ export function calcTempTreatments (
 ): IobTreatment[] {
     let pumpHistory: PumpHistoryEvent[] = inputs.history;
     const profileData = inputs.profile;
-    const autosens_data = inputs.autosens;
+    const autosensData = inputs.autosens;
     const now = new Date(inputs.clock);
 
     if(inputs.history24) {
@@ -78,15 +78,15 @@ export function calcTempTreatments (
 
     tempHistory = [...tempHistory].sort((a, b) => a.date - b.date);
 
-    let suspend_zeros_iob: boolean = false;
+    let suspendZerosIOB: boolean = false;
 
     if (profileData.suspend_zeros_iob !== undefined) {
-        suspend_zeros_iob = profileData.suspend_zeros_iob;
+        suspendZerosIOB = profileData.suspend_zeros_iob;
     }
 
     let splitHistory: TempEvent[];
 
-    if (suspend_zeros_iob) {
+    if (suspendZerosIOB) {
         // iterate through the events and adjust their
         // times as required to account for pump suspends
         splitHistory = [];
@@ -113,7 +113,7 @@ export function calcTempTreatments (
         // Add temp suspend basal for maximum DIA (8) up to the resume time
         // if there is no matching suspend in the history before the first
         // resume
-        const max_dia_ago = now.getTime() - MAX_DIA_FOR_SUSPEND_HOURS*MS_PER_HOUR;
+        const maxDIAAgo = now.getTime() - MAX_DIA_FOR_SUSPEND_HOURS*MS_PER_HOUR;
         const firstResumeStarted = new Date(firstResumeTime);
         const firstResumeDate = firstResumeStarted.getTime()
 
@@ -122,9 +122,9 @@ export function calcTempTreatments (
         // otherwise, first resume date can be ignored. Whatever
         // insulin is present prior to resume will be aged
         // out due to DIA.
-        if (suspendedPrior && (max_dia_ago < firstResumeDate)) {
+        if (suspendedPrior && (maxDIAAgo < firstResumeDate)) {
 
-            const suspendStart = new Date(max_dia_ago);
+            const suspendStart = new Date(maxDIAAgo);
             const suspendStartDate = suspendStart.getTime()
             const started_at = new Date(suspendStart.getTime());
 
@@ -133,7 +133,7 @@ export function calcTempTreatments (
                // anywhere.
                 _type: 'SuspendBasal',
                 rate: 0,
-                duration: (firstResumeDate - max_dia_ago)/MS_PER_MINUTE,
+                duration: (firstResumeDate - maxDIAAgo)/MS_PER_MINUTE,
                 date: suspendStartDate,
                 started_at: started_at
             });
@@ -167,10 +167,10 @@ export function calcTempTreatments (
     splitHistory = [...splitHistory].sort((a, b) => a.date - b.date);
 
     // Convert net basals to treatment boluses
-    const netBasalBoluses = convertNetBasalsToTreatments(splitHistory, profileData, autosens_data);
+    const netBasalBoluses = convertNetBasalsToTreatments(splitHistory, profileData, autosensData);
 
-    const all_data: TempEvent[] = [...tempBoluses, ...netBasalBoluses, ...tempHistory];
+    const allData: TempEvent[] = [...tempBoluses, ...netBasalBoluses, ...tempHistory];
     // mutates input, matching original behavior
-    all_data.sort((a, b) => a.date - b.date);
-    return all_data;
+    allData.sort((a, b) => a.date - b.date);
+    return allData;
 }

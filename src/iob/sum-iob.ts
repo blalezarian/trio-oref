@@ -87,8 +87,8 @@ export function iobTotal(opts: IobTotalOpts, time: Date): IobTotalResult | Recor
 
     treatments.forEach((treatment) => {
         if( treatment.date <= now ) {
-            const dia_ago = now - dia*MS_PER_HOUR;
-            if( treatment.date > dia_ago ) {
+            const diaAgo = now - dia*MS_PER_HOUR;
+            if( treatment.date > diaAgo ) {
                 // tIOB = total IOB
                 const tIOB = iobCalc(treatment, time, curve, dia, peak, profileData);
                 if (tIOB && tIOB.iobContrib) { iob += tIOB.iobContrib; }

@@ -30,10 +30,10 @@ const EXERCISE_ACTIVATION_OFFSET = 5;
 export function convertNetBasalsToTreatments(
     splitHistory: TempEvent[],
     profileData: IobProfile,
-    autosens_data?: { ratio: number },
+    autosensData?: { ratio: number },
 ): TempEvent[] {
     const tempBoluses: TempEvent[] = [];
-    let target_bg: number | undefined;
+    let targetBG: number | undefined;
 
     for (let splitIdx = 0; splitIdx < splitHistory.length; splitIdx++) {
 
@@ -47,7 +47,7 @@ export function convertNetBasalsToTreatments(
             }
 
             if (profileData.min_bg !== undefined && profileData.max_bg !== undefined) {
-                target_bg = (profileData.min_bg + profileData.max_bg) / 2;
+                targetBG = (profileData.min_bg + profileData.max_bg) / 2;
             }
             let sensitivityRatio: number | undefined;
             const normalTarget = EXERCISE_NORMAL_TARGET; // evaluate high/low temptarget against 100, not scheduled basal (which might change)
@@ -57,13 +57,13 @@ export function convertNetBasalsToTreatments(
             } else {
                 halfBasalTarget = EXERCISE_HALF_BASAL_TARGET; // when temptarget is 160 mg/dL, run 50% basal (120 = 75%; 140 = 60%)
             }
-            if ( profileData.exercise_mode && profileData.temptargetSet && Number(target_bg) >= normalTarget + EXERCISE_ACTIVATION_OFFSET ) {
+            if ( profileData.exercise_mode && profileData.temptargetSet && Number(targetBG) >= normalTarget + EXERCISE_ACTIVATION_OFFSET ) {
                 // w/ target 100, temp target 110 = .89, 120 = 0.8, 140 = 0.67, 160 = .57, and 200 = .44
                 // e.g.: Sensitivity ratio set to 0.8 based on temp target of 120; Adjusting basal from 1.65 to 1.35; ISF from 58.9 to 73.6
                 const c = halfBasalTarget - normalTarget;
-                sensitivityRatio = c/(c+Number(target_bg)-normalTarget);
-            } else if (autosens_data !== undefined ) {
-                sensitivityRatio = autosens_data.ratio;
+                sensitivityRatio = c/(c+Number(targetBG)-normalTarget);
+            } else if (autosensData !== undefined ) {
+                sensitivityRatio = autosensData.ratio;
             }
             if ( sensitivityRatio ) {
                 currentRate = currentRate * sensitivityRatio;
