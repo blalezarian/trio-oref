@@ -5,6 +5,8 @@ import {
     calculateHighInsulinReq,
     handleSMB,
     applyFinalHighTemp,
+    resolveSMBMinuteSettings,
+    resolveSMBInterval,
 } from '../../../../src/determine-basal/dosing-decision/high-temp';
 
 import type { DosingContext } from '../../../../src/determine-basal/dosing-decision/types';
@@ -686,5 +688,82 @@ describe('applyFinalHighTemp', () => {
         // setTempBasal should NOT be called — existing temp is kept
         const setTempBasal = ctx.inputs.tempBasalFunctions.setTempBasal as ReturnType<typeof vi.fn>;
         expect(setTempBasal).not.toHaveBeenCalled();
+    });
+});
+
+// ---------------------------------------------------------------------------
+// resolveSMBMinuteSettings
+// ---------------------------------------------------------------------------
+
+describe('resolveSMBMinuteSettings', () => {
+    it('uses profile values when no override', () => {
+        const profile = { maxSMBBasalMinutes: 45, maxUAMSMBBasalMinutes: 60 } as Profile;
+        const trio = { useOverride: false, advancedSettings: false, smbMinutes: 30, uamMinutes: 30 } as TrioCustomVariables;
+
+        const result = resolveSMBMinuteSettings(profile, trio);
+
+        expect(result.smbMinutesSetting).toBe(45);
+        expect(result.uamMinutesSetting).toBe(60);
+    });
+
+    it('defaults to DEFAULT_MAX_SMB_BASAL_MINUTES (30) when profile values are undefined', () => {
+        const profile = {} as Profile;
+        const trio = { useOverride: false, advancedSettings: false, smbMinutes: 30, uamMinutes: 30 } as TrioCustomVariables;
+
+        const result = resolveSMBMinuteSettings(profile, trio);
+
+        expect(result.smbMinutesSetting).toBe(30);
+        expect(result.uamMinutesSetting).toBe(30);
+    });
+
+    it('applies override when useOverride and advancedSettings are true and values differ', () => {
+        const profile = { maxSMBBasalMinutes: 30, maxUAMSMBBasalMinutes: 30 } as Profile;
+        const trio = { useOverride: true, advancedSettings: true, smbMinutes: 60, uamMinutes: 90 } as TrioCustomVariables;
+
+        const result = resolveSMBMinuteSettings(profile, trio);
+
+        expect(result.smbMinutesSetting).toBe(60);
+        expect(result.uamMinutesSetting).toBe(90);
+    });
+
+    it('does not apply override when advancedSettings is false', () => {
+        const profile = { maxSMBBasalMinutes: 30, maxUAMSMBBasalMinutes: 30 } as Profile;
+        const trio = { useOverride: true, advancedSettings: false, smbMinutes: 60, uamMinutes: 90 } as TrioCustomVariables;
+
+        const result = resolveSMBMinuteSettings(profile, trio);
+
+        expect(result.smbMinutesSetting).toBe(30);
+        expect(result.uamMinutesSetting).toBe(30);
+    });
+});
+
+// ---------------------------------------------------------------------------
+// resolveSMBInterval
+// ---------------------------------------------------------------------------
+
+describe('resolveSMBInterval', () => {
+    it('returns DEFAULT_SMB_INTERVAL_MINUTES (3) when profile.SMBInterval is undefined', () => {
+        const profile = {} as Profile;
+        expect(resolveSMBInterval(profile)).toBe(3);
+    });
+
+    it('returns DEFAULT_SMB_INTERVAL_MINUTES (3) when profile.SMBInterval is 0 (falsy)', () => {
+        const profile = { SMBInterval: 0 } as Profile;
+        expect(resolveSMBInterval(profile)).toBe(3);
+    });
+
+    it('returns profile.SMBInterval when within bounds [1, 10]', () => {
+        const profile = { SMBInterval: 5 } as Profile;
+        expect(resolveSMBInterval(profile)).toBe(5);
+    });
+
+    it('clamps to MIN_SMB_INTERVAL_MINUTES (1) when below', () => {
+        const profile = { SMBInterval: 0.5 } as Profile;
+        expect(resolveSMBInterval(profile)).toBe(1);
+    });
+
+    it('clamps to MAX_SMB_INTERVAL_MINUTES (10) when above', () => {
+        const profile = { SMBInterval: 15 } as Profile;
+        expect(resolveSMBInterval(profile)).toBe(10);
     });
 });
