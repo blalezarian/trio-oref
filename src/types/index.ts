@@ -488,7 +488,7 @@ export interface DetermineBasalInputs {
   preferences: Preferences;
   basalprofile?: BasalEntry[];
   trioCustomVariables: TrioCustomVariables;
-  middleWare?: unknown;
+  middleWare?: ((arg: DetermineBasalResult) => DetermineBasalResult) | string;
 }
 
 // ---------------------------------------------------------------------------

@@ -6,7 +6,7 @@
  * it easy to understand what each test covers when reviewing diffs.
  */
 
-import type { DetermineBasalInputs } from '../../types/index';
+import type { DetermineBasalInputs, DetermineBasalResult } from '../../types/index';
 import {
   defaultGlucoseStatus,
   defaultCurrentTemp,
@@ -77,7 +77,7 @@ function fixture(
     preferences?: Parameters<typeof defaultPreferences>[0];
     microBolusAllowed?: boolean;
     currentTime?: string;
-    middleWare?: unknown;
+    middleWare?: ((arg: DetermineBasalResult) => DetermineBasalResult) | string;
     reservoirData?: number;
     // When set, iobData is passed as a raw array (for full iobArray coverage)
     rawIobData?: unknown;
