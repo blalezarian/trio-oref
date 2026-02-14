@@ -322,7 +322,7 @@ export interface MealData {
   /** Carbs on board — carbs not yet absorbed (g), capped by maxCOB */
   mealCOB: number;
   /** Current BG deviation from expected (mg/dL) */
-  currentDeviation: number;
+  currentDeviation: number | undefined;
   /** Maximum deviation since meal start (mg/dL) */
   maxDeviation: number;
   /** Minimum deviation since meal start (mg/dL) */

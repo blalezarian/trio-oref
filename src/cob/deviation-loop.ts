@@ -17,7 +17,7 @@ import { resolveGlucoseTime } from '../utils/time';
 
 export interface CarbAbsorptionResult {
     carbsAbsorbed: number;
-    currentDeviation: number;
+    currentDeviation: number | undefined;
     maxDeviation: number;
     minDeviation: number;
     slopeFromMaxDeviation: number;
@@ -74,7 +74,7 @@ export function analyzeAbsorption(
         if (glucoseDeltas === 'skip') continue;
         const { bg, delta, avgDelta } = glucoseDeltas;
         iob_inputs.clock = bgTime.toISOString();
-        iob_inputs.profile.current_basal = getCurrentBasalRate(basalprofile, bgTime) as number;
+        iob_inputs.profile.current_basal = Number(getCurrentBasalRate(basalprofile, bgTime));
         const iob = get_iob(iob_inputs as IobInputs, true, treatments)[0];
 
         const bgImpact = calculateBGImpact(iob.activity, sens);
@@ -89,7 +89,7 @@ export function analyzeAbsorption(
         } else if (carbImpactTime > bgTime) {
             // Subsequent entries within CI window: track deviation slope
             const avgDeviation = roundTo3dp(avgDelta - bgImpact);
-            const deviationSlope = (avgDeviation - (currentDeviation as number)) / (bgTime.getTime() - carbImpactTime.getTime()) * MS_PER_5_MIN;
+            const deviationSlope = (avgDeviation - Number(currentDeviation)) / (bgTime.getTime() - carbImpactTime.getTime()) * MS_PER_5_MIN;
 
             if (avgDeviation > maxDeviation) {
                 slopeFromMaxDeviation = Math.min(0, deviationSlope);
@@ -105,15 +105,15 @@ export function analyzeAbsorption(
 
         // After meal: estimate carb absorption from deviations
         if (bgTime > mealTime) {
-            const carbImpact = Math.max(deviation, (currentDeviation as number) / CURRENT_DEVIATION_DIVISOR, profile.min_5m_carbimpact as number);
-            const absorbed = carbImpact * (profile.carb_ratio as number) / sens;
+            const carbImpact = Math.max(deviation, Number(currentDeviation) / CURRENT_DEVIATION_DIVISOR, Number(profile.min_5m_carbimpact));
+            const absorbed = carbImpact * Number(profile.carb_ratio) / sens;
             carbsAbsorbed += absorbed;
         }
     }
 
     return {
         carbsAbsorbed,
-        currentDeviation: currentDeviation as number,
+        currentDeviation,
         maxDeviation,
         minDeviation,
         slopeFromMaxDeviation,
@@ -146,7 +146,7 @@ export function resolveGlucoseDeltas(
         return { bg: NaN, delta: NaN, avgDelta: NaN };
     }
 
-    const bg = bucketed_data[bucketIdx].glucose as number;
+    const bg = Number(bucketed_data[bucketIdx].glucose);
     const trailingBg = bucketed_data[bucketIdx + TRAILING_BUCKETS_REQUIRED].glucose ?? 0;
 
     if (bg < MIN_VALID_GLUCOSE_MGDL || trailingBg < MIN_VALID_GLUCOSE_MGDL) {

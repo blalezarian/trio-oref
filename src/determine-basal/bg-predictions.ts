@@ -145,7 +145,7 @@ export function generateBGPredictions(
             if (useDynISFLog) {
                 const dynUAMBGI = calculateDynISFBGImpact(iobTick.activity, UAMpredBGs[UAMpredBGs.length-1], tdd, adjustmentFactor, insulinFactor);
                 UAMpredBG = UAMpredBGs[UAMpredBGs.length-1] + dynUAMBGI + Math.min(0, predDev) + predUCI;
-                console.log(`Dynamic ISF (Logarithmic Formula) adjusted prediction for UAM: UAMpredBG: ${round(UAMpredBG as number, 2)}`);
+                console.log(`Dynamic ISF (Logarithmic Formula) adjusted prediction for UAM: UAMpredBG: ${round(Number(UAMpredBG), 2)}`);
             } else {
                 UAMpredBG = UAMpredBGs[UAMpredBGs.length-1] + predBGI + Math.min(0, predDev) + predUCI;
             }
@@ -219,8 +219,8 @@ export function generateBGPredictions(
         minPredBG: minGuardResult.minPredBG,
         minGuardBG: minGuardResult.minGuardBG,
         lastIOBpredBG: clipResult.lastIOBpredBG,
-        lastCOBpredBG: clipResult.lastCOBpredBG as number,
-        lastUAMpredBG: clipResult.lastUAMpredBG as number,
+        lastCOBpredBG: Number(clipResult.lastCOBpredBG),
+        lastUAMpredBG: Number(clipResult.lastUAMpredBG),
         maxCOBPredBG,
         minIOBPredBG: minGuardResult.minIOBPredBG,
         IOBpredBGs,
@@ -422,13 +422,13 @@ export function calculateAvgPredBG(
     let avgPredBG: number;
     if ( minUAMPredBG < PRED_BG_SENTINEL && minCOBPredBG < PRED_BG_SENTINEL ) {
         // weight COBpredBG vs. UAMpredBG based on how many carbs remain as COB
-        avgPredBG = round( (1-fractionCarbsLeft)*(UAMpredBG as number) + fractionCarbsLeft*(COBpredBG as number) );
+        avgPredBG = round( (1-fractionCarbsLeft)*Number(UAMpredBG) + fractionCarbsLeft*Number(COBpredBG) );
         // if UAM is disabled, average IOB and COB
     } else if ( minCOBPredBG < PRED_BG_SENTINEL ) {
-        avgPredBG = round( (IOBpredBG + (COBpredBG as number))/2 );
+        avgPredBG = round( (IOBpredBG + Number(COBpredBG))/2 );
         // if we have UAM but no COB, average IOB and UAM
     } else if ( minUAMPredBG < PRED_BG_SENTINEL ) {
-        avgPredBG = round( (IOBpredBG + (UAMpredBG as number))/2 );
+        avgPredBG = round( (IOBpredBG + Number(UAMpredBG))/2 );
     } else {
         avgPredBG = round( IOBpredBG );
     }

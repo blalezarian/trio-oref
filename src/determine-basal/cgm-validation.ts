@@ -49,7 +49,7 @@ export function validateCGMData(
 
     logOverrideStatus(useOverride, overrideFactor, overrideDuration);
 
-    const bgTime = new Date(glucose_status.date as number);
+    const bgTime = new Date(Number(glucose_status.date));
     const minAgo = round( (systemTime.getTime() - bgTime.getTime()) / MS_PER_MINUTE ,1);
 
     const bg = glucose_status.glucose;
@@ -106,7 +106,7 @@ function classifyCGMErrorReason(
 ): void {
     // 38 is an xDrip error state that usually indicates sensor failure
     // all other BG values between 11 and 37 mg/dL reflect non-error-code BG values, so we should zero temp for those
-    if (bg <= BG_ERROR_CEILING || bg === XDRIP_ERROR_CODE || (noise as number) >= CGM_NOISE_LEVEL_MEDIUM) {
+    if (bg <= BG_ERROR_CEILING || bg === XDRIP_ERROR_CODE || Number(noise) >= CGM_NOISE_LEVEL_MEDIUM) {
         basalResult.reason = "CGM is calibrating, in ??? state, or noise is high";
     }
     if (bg > BG_UNCHANGED_FLOOR && glucose_status.delta == 0 && glucose_status.short_avgdelta > -DELTA_UNCHANGED_THRESHOLD && glucose_status.short_avgdelta < DELTA_UNCHANGED_THRESHOLD && glucose_status.long_avgdelta > -DELTA_UNCHANGED_THRESHOLD && glucose_status.long_avgdelta < DELTA_UNCHANGED_THRESHOLD) {
@@ -131,7 +131,7 @@ function classifyCGMErrorReason(
 function isCGMError(bg: number, noise: number | undefined, minAgo: number): boolean {
     return bg <= BG_ERROR_CEILING
         || bg === XDRIP_ERROR_CODE
-        || (noise as number) >= CGM_NOISE_LEVEL_MEDIUM
+        || Number(noise) >= CGM_NOISE_LEVEL_MEDIUM
         || minAgo > MAX_BG_DATA_AGE_MINUTES
         || minAgo < -MAX_BG_FUTURE_MINUTES;
 }

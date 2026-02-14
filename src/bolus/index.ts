@@ -137,10 +137,10 @@ export function finalizeBolusGroup(accumulator: BolusAccumulator): BolusResult {
 
     // --- Compute total insulin ---
     const squareAmount = accumulator.square
-        ? (accumulator.square.amount as number)
+        ? Number(accumulator.square.amount)
         : 0;
     const bolusAmount = accumulator.bolus
-        ? (accumulator.bolus.amount as number)
+        ? Number(accumulator.bolus.amount)
         : 0;
     const totalInsulin = squareAmount + bolusAmount;
 
@@ -182,15 +182,15 @@ export function finalizeBolusGroup(accumulator: BolusAccumulator): BolusResult {
     if (accumulator.bolus) {
         addNote('Programmed bolus', accumulator.bolus.programmed);
         addNote('Delivered bolus', accumulator.bolus.amount);
-        const bolusPercent = (accumulator.bolus.amount as number)
-            / (accumulator.bolus.programmed as number) * PERCENT_MULTIPLIER;
+        const bolusPercent = Number(accumulator.bolus.amount)
+            / Number(accumulator.bolus.programmed) * PERCENT_MULTIPLIER;
         addNote('Percent delivered: ', bolusPercent.toString() + '%');
     }
     if (accumulator.square) {
         addNote('Programmed square', accumulator.square.programmed);
         addNote('Delivered square', accumulator.square.amount);
-        const squarePercent = (accumulator.square.amount as number)
-            / (accumulator.square.programmed as number) * PERCENT_MULTIPLIER;
+        const squarePercent = Number(accumulator.square.amount)
+            / Number(accumulator.square.programmed) * PERCENT_MULTIPLIER;
         addNote('Success: ', squarePercent.toString() + '%');
     }
 
@@ -202,7 +202,7 @@ export function finalizeBolusGroup(accumulator: BolusAccumulator): BolusResult {
         addNote('Bolus estimate', accumulator.wizard.bolus_estimate);
         addNote('Target low', accumulator.wizard.bg_target_low);
         addNote('Target high', accumulator.wizard.bg_target_high);
-        const hypotheticalDelta = (accumulator.wizard.sensitivity as number) * totalInsulin * -1;
+        const hypotheticalDelta = Number(accumulator.wizard.sensitivity) * totalInsulin * -1;
         addNote('Hypothetical glucose delta', hypotheticalDelta);
         if (accumulator.bg && Number(accumulator.bg) > 0) {
             addNote('Glucose was:', accumulator.bg);
@@ -247,8 +247,8 @@ export function processBolusGroup(
         }
 
         if (event._type === 'BolusWizard') {
-            accumulator.carbs = (event.carb_input as number).toString();
-            accumulator.ratio = (event.carb_ratio as number).toString();
+            accumulator.carbs = Number(event.carb_input).toString();
+            accumulator.ratio = Number(event.carb_ratio).toString();
             if (event.bg) {
                 accumulator.bg = event.bg.toString();
                 accumulator.glucose = event.bg.toString();
@@ -260,14 +260,14 @@ export function processBolusGroup(
         }
 
         if (event._type === 'Bolus') {
-            accumulator.duration = (event.duration as number).toString();
+            accumulator.duration = Number(event.duration).toString();
             if (event.duration && event.duration > 0) {
                 accumulator.square = event;
             } else {
                 if (accumulator.bolus) {
                     // Mutates input event, matching original behavior
-                    accumulator.bolus.amount = (accumulator.bolus.amount as number)
-                        + (event.amount as number);
+                    accumulator.bolus.amount = Number(accumulator.bolus.amount)
+                        + Number(event.amount);
                 } else {
                     accumulator.bolus = event;
                 }

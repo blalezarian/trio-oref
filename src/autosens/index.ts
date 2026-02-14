@@ -43,10 +43,10 @@ export function detectSensitivity(inputs: AutosensInputs): AutosensResult {
         pSensitive,
         pResistant,
         {
-            sens: profile.sens as number,
-            max_daily_basal: profile.max_daily_basal as number,
-            autosens_min: profile.autosens_min as number,
-            autosens_max: profile.autosens_max as number,
+            sens: Number(profile.sens),
+            max_daily_basal: Number(profile.max_daily_basal),
+            autosens_min: Number(profile.autosens_min),
+            autosens_max: Number(profile.autosens_max),
         },
     );
 }

@@ -65,7 +65,7 @@ export function iobCalcExponential(treatment: Treatment, minsAgo: number, dia: n
         const a = 2 * tau / end;                                     // rise time factor
         const S = 1 / (1 - a + (1 + a) * Math.exp(-end / tau));      // auxiliary scale factor
 
-        const insulin = treatment.insulin as number;
+        const insulin = Number(treatment.insulin);
         activityContrib = insulin * (S / Math.pow(tau, 2)) * minsAgo * (1 - minsAgo / end) * Math.exp(-minsAgo / tau);
         iobContrib = insulin * (1 - S * (1 - a) * ((Math.pow(minsAgo, 2) / (tau * end * (1 - a)) - minsAgo / tau - 1) * Math.exp(-minsAgo / tau) + 1));
     }

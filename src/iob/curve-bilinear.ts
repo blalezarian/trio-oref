@@ -56,7 +56,7 @@ export function iobCalcBilinear(treatment: Treatment, minsAgo: number, dia: numb
     const slopeUp = activityPeak / peak;
     const slopeDown = -activityPeak / (end - peak);
 
-    const insulin = treatment.insulin as number;
+    const insulin = Number(treatment.insulin);
 
     if (scaledMinsAgo < peak) {
         activityContrib = insulin * (slopeUp * scaledMinsAgo);

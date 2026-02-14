@@ -75,30 +75,30 @@ export function configureSensitivityAndTargets(
     }
 
     // Adjust BG target based on autosens ratio if no temp target is running
-    const targetAdjustment = adjustTargetByAutosens(target_bg as number, min_bg as number, max_bg as number, profile, autosens_data);
+    const targetAdjustment = adjustTargetByAutosens(Number(target_bg), Number(min_bg), Number(max_bg), profile, autosens_data);
     target_bg = targetAdjustment.target_bg;
     min_bg = targetAdjustment.min_bg;
     max_bg = targetAdjustment.max_bg;
 
-    const targetLog = formatTargetLog(target_bg as number, profileTarget, overrideTarget, profile);
+    const targetLog = formatTargetLog(Number(target_bg), profileTarget, overrideTarget, profile);
 
     // Raise target for noisy / raw CGM data.
-    const noisyTargets = adjustTargetsForNoisyCGM(min_bg as number, target_bg as number, max_bg as number, glucose_status.noise as number, profile);
+    const noisyTargets = adjustTargetsForNoisyCGM(Number(min_bg), Number(target_bg), Number(max_bg), Number(glucose_status.noise), profile);
     if (noisyTargets.adjusted) {
-        console.log(`Raising target_bg for noisy / raw CGM data, from ${convert_bg(targetAdjustment.new_target_bg as number, profile)} to ${convert_bg(noisyTargets.target_bg, profile)}; `);
+        console.log(`Raising target_bg for noisy / raw CGM data, from ${convert_bg(Number(targetAdjustment.new_target_bg), profile)} to ${convert_bg(noisyTargets.target_bg, profile)}; `);
         min_bg = noisyTargets.min_bg;
         target_bg = noisyTargets.target_bg;
         max_bg = noisyTargets.max_bg;
     }
 
-    const thresholdFinal = calculateLowGlucoseThreshold(min_bg as number, profile.threshold_setting as number);
+    const thresholdFinal = calculateLowGlucoseThreshold(Number(min_bg), Number(profile.threshold_setting));
     console.log(`Threshold set to ${convert_bg(thresholdFinal, profile)}`);
 
     // Adjust ISF based on sensitivityRatio
-    const { adjustedSens, isfreason } = adjustISFBySensitivity(sensitivity, sensitivityRatio as number, profile, autosens_data);
+    const { adjustedSens, isfreason } = adjustISFBySensitivity(sensitivity, Number(sensitivityRatio), profile, autosens_data);
     console.log(`CR:${carbRatio}`);
 
-    return { max_iob, target_bg: target_bg as number, min_bg: min_bg as number, max_bg: max_bg as number, high_bg: high_bg as number, sensitivityRatio: sensitivityRatio as number, basal, threshold: thresholdFinal, adjustedSens, isfreason, targetLog };
+    return { max_iob, target_bg: Number(target_bg), min_bg: Number(min_bg), max_bg: Number(max_bg), high_bg: Number(high_bg), sensitivityRatio, basal, threshold: thresholdFinal, adjustedSens, isfreason, targetLog };
 }
 
 // ---------------------------------------------------------------------------
@@ -140,7 +140,7 @@ function resolveSensitivityRatio(
 ): { sensitivityRatio: number | undefined; target_bg: number } {
     const high_temptarget_raises_sensitivity = profile.exercise_mode || profile.high_temptarget_raises_sensitivity;
     const normalTarget = EXERCISE_NORMAL_TARGET;
-    const halfBasalTarget = profile.half_basal_exercise_target as number;
+    const halfBasalTarget = Number(profile.half_basal_exercise_target);
 
     let sensitivityRatio: number | undefined;
 
@@ -181,7 +181,7 @@ function maybeBoostDynamicRatio(
     if (!profile.temptargetSet || target_bg >= normalTarget || !dynISFenabled || bg < target_bg) {
         return { sensitivityRatio, target_bg };
     }
-    if ((sensitivityRatio as number) >= newRatio) {
+    if (Number(sensitivityRatio) >= newRatio) {
         return { sensitivityRatio, target_bg };
     }
     autosens_data.ratio = newRatio * (normalTarget / target_bg);
@@ -307,9 +307,9 @@ export function adjustTargetByAutosens(
             // don't allow target_bg below 80
             new_target_bg = Math.max(MIN_BG_TARGET, new_target_bg);
             if (target_bg === new_target_bg) {
-                console.log(`target_bg unchanged: ${convert_bg(new_target_bg as number, profile)}; `);
+                console.log(`target_bg unchanged: ${convert_bg(Number(new_target_bg), profile)}; `);
             } else {
-                console.log(`target_bg from ${convert_bg(new_target_bg as number, profile)} to ${convert_bg(new_target_bg as number, profile)}; `);
+                console.log(`target_bg from ${convert_bg(Number(new_target_bg), profile)} to ${convert_bg(Number(new_target_bg), profile)}; `);
             }
             target_bg = new_target_bg;
         }
@@ -332,9 +332,9 @@ export function adjustTargetsForNoisyCGM(
 } {
     if (noise >= CGM_NOISE_LEVEL_NOISY) {
         // increase target at least 10% (default 30%) for raw / noisy data
-        const noisyCGMTargetMultiplier = Math.max( MIN_NOISY_TARGET_MULTIPLIER, profile.noisyCGMTargetMultiplier as number );
+        const noisyCGMTargetMultiplier = Math.max( MIN_NOISY_TARGET_MULTIPLIER, Number(profile.noisyCGMTargetMultiplier) );
         // don't allow maxRaw above 250
-        const maxRaw = Math.min( MAX_RAW_BG, profile.maxRaw as number );
+        const maxRaw = Math.min( MAX_RAW_BG, Number(profile.maxRaw) );
         const adjustedMinBG = round(Math.min(MAX_BG_TARGET, min_bg * noisyCGMTargetMultiplier ));
         const adjustedTargetBG = round(Math.min(MAX_BG_TARGET, target_bg * noisyCGMTargetMultiplier ));
         const adjustedMaxBG = round(Math.min(MAX_BG_TARGET, max_bg * noisyCGMTargetMultiplier ));

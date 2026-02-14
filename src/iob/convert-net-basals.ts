@@ -39,11 +39,11 @@ export function convertNetBasalsToTreatments(
 
         const currentItem = splitHistory[splitIdx];
 
-        if ((currentItem.duration as number) > 0) {
+        if ((Number(currentItem.duration)) > 0) {
 
             let currentRate: number = profileData.current_basal;
             if (profileData.basalprofile && profileData.basalprofile.length > 0) {
-                currentRate = getCurrentBasalRate(profileData.basalprofile, new Date(currentItem.timestamp as string)) as number;
+                currentRate = Number(getCurrentBasalRate(profileData.basalprofile, new Date(String(currentItem.timestamp))));
             }
 
             if (profileData.min_bg !== undefined && profileData.max_bg !== undefined) {
@@ -57,11 +57,11 @@ export function convertNetBasalsToTreatments(
             } else {
                 halfBasalTarget = EXERCISE_HALF_BASAL_TARGET; // when temptarget is 160 mg/dL, run 50% basal (120 = 75%; 140 = 60%)
             }
-            if ( profileData.exercise_mode && profileData.temptargetSet && (target_bg as number) >= normalTarget + EXERCISE_ACTIVATION_OFFSET ) {
+            if ( profileData.exercise_mode && profileData.temptargetSet && Number(target_bg) >= normalTarget + EXERCISE_ACTIVATION_OFFSET ) {
                 // w/ target 100, temp target 110 = .89, 120 = 0.8, 140 = 0.67, 160 = .57, and 200 = .44
                 // e.g.: Sensitivity ratio set to 0.8 based on temp target of 120; Adjusting basal from 1.65 to 1.35; ISF from 58.9 to 73.6
                 const c = halfBasalTarget - normalTarget;
-                sensitivityRatio = c/(c+(target_bg as number)-normalTarget);
+                sensitivityRatio = c/(c+Number(target_bg)-normalTarget);
             } else if (autosens_data !== undefined ) {
                 sensitivityRatio = autosens_data.ratio;
             }
@@ -69,11 +69,11 @@ export function convertNetBasalsToTreatments(
                 currentRate = currentRate * sensitivityRatio;
             }
 
-            const netBasalRate = (currentItem.rate as number) - currentRate;
+            const netBasalRate = Number(currentItem.rate) - currentRate;
             const tempBolusSize = netBasalRate < 0 ? -NET_BASAL_BOLUS_SIZE : NET_BASAL_BOLUS_SIZE;
-            const netBasalAmount = Math.round(netBasalRate*(currentItem.duration as number)*10/6)/100
+            const netBasalAmount = Math.round(netBasalRate*(Number(currentItem.duration))*10/6)/100
             const tempBolusCount = Math.round(netBasalAmount / tempBolusSize);
-            const tempBolusSpacing = (currentItem.duration as number) / tempBolusCount;
+            const tempBolusSpacing = (Number(currentItem.duration)) / tempBolusCount;
             for (let bolusIdx = 0; bolusIdx < tempBolusCount; bolusIdx++) {
                 const bolusDate = currentItem.date + bolusIdx * tempBolusSpacing*MS_PER_MINUTE;
                 const tempBolus: TempEvent = {

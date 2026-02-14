@@ -37,7 +37,7 @@ export function enforceSMBSafetyGuards(ctx: DosingContext): PhaseOutcome {
         console.log(`minGuardBG ${convert_bg(minGuardBG, profile)} projected below ${convert_bg(threshold, profile)} - disabling SMB`);
         result.manualBolusErrorString = BOLUS_ERR_GUARD_BELOW_THRESHOLD;
         result.minGuardBG = minGuardBG;
-        result.insulinForManualBolus = round(((result.eventualBG as number) - (result.target_bg as number)) / adjustedSens, 2);
+        result.insulinForManualBolus = round((Number(result.eventualBG) - Number(result.target_bg)) / adjustedSens, 2);
 
         ctx.enableSMB = false;
     }

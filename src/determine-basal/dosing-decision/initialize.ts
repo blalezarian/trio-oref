@@ -135,7 +135,7 @@ export function calculateCarbsRequired(ctx: DosingContext): PhaseOutcome {
         return { done: false };
     }
 
-    if (ctx.carbsReq >= (profile.carbsReqThreshold as number) && ctx.minutesAboveThreshold <= CARBS_REQ_WINDOW_MINUTES) {
+    if (ctx.carbsReq >= Number(profile.carbsReqThreshold) && ctx.minutesAboveThreshold <= CARBS_REQ_WINDOW_MINUTES) {
         result.carbsReq = ctx.carbsReq;
         result.reason += `${ctx.carbsReq} add'l carbs req w/in ${ctx.minutesAboveThreshold}m; `;
     }

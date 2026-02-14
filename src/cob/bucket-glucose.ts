@@ -87,7 +87,7 @@ export function bucketGlucoseWithInterpolation(
         // --- Case 1: Large gap (> 8 min) → interpolate missing data points ---
         if (Math.abs(elapsed_minutes) > BUCKETING_GAP_THRESHOLD_MIN) {
             const gapResult = interpolateMissingPoints(
-                bucketed_data, bucketIndex, lastBgTime as Date,
+                bucketed_data, bucketIndex, lastBgTime ?? new Date(NaN),
                 glucose_data[lastValidIndex].glucose ?? 0,
                 glucose_data[glucoseIdx].glucose ?? 0,
                 elapsed_minutes,
@@ -99,7 +99,7 @@ export function bucketGlucoseWithInterpolation(
         else if (Math.abs(elapsed_minutes) > BUCKETING_MERGE_THRESHOLD_MIN) {
             bucketIndex++;
             bucketed_data[bucketIndex] = glucose_data[glucoseIdx];
-            bucketed_data[bucketIndex].date = (bgTime as Date).getTime();
+            bucketed_data[bucketIndex].date = Number(bgTime);
         }
         // --- Case 3: Small gap (≤ 2 min) → merge into current bucket ---
         else {

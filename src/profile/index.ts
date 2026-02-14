@@ -63,7 +63,7 @@ function generate(inputs: ProfileInputs, opts?: ProfileOpts): ProfileDefaults | 
     console.log(`max_daily_basal of ${profile.max_daily_basal} is not supported`);
     return -1;
   }
-  if ((profile.max_basal as number) < MIN_SUPPORTED_MAX_BASAL) {
+  if (Number(profile.max_basal) < MIN_SUPPORTED_MAX_BASAL) {
     console.log(`max_basal of ${profile.max_basal} is not supported`);
     return -1;
   }
@@ -71,15 +71,15 @@ function generate(inputs: ProfileInputs, opts?: ProfileOpts): ProfileDefaults | 
   // --- BG targets ---
   const range = getCurrentBGTarget(inputs as TargetsInputs, profile);
   profile.out_units = inputs.targets.user_preferred_units;
-  profile.min_bg = Math.round(range.min_bg as number);
-  profile.max_bg = Math.round(range.max_bg as number);
+  profile.min_bg = Math.round(Number(range.min_bg));
+  profile.max_bg = Math.round(Number(range.max_bg));
   profile.bg_targets = inputs.targets;
 
   profile.bg_targets.targets.forEach((bgEntry) => {
     bgEntry.high = Math.round(bgEntry.high);
     bgEntry.low = Math.round(bgEntry.low);
-    bgEntry.min_bg = Math.round(bgEntry.min_bg as number);
-    bgEntry.max_bg = Math.round(bgEntry.max_bg as number);
+    bgEntry.min_bg = Math.round(Number(bgEntry.min_bg));
+    bgEntry.max_bg = Math.round(Number(bgEntry.max_bg));
   });
 
   delete profile.bg_targets.raw;
@@ -88,7 +88,7 @@ function generate(inputs: ProfileInputs, opts?: ProfileOpts): ProfileDefaults | 
   profile.temptargetSet = range.temptargetSet;
   profile.sens = isfLookup(inputs.isf);
   profile.isfProfile = inputs.isf;
-  if ((profile.sens as number) < MIN_SUPPORTED_ISF) {
+  if (Number(profile.sens) < MIN_SUPPORTED_ISF) {
     console.log(`ISF of ${profile.sens} is not supported`);
     return -1;
   }

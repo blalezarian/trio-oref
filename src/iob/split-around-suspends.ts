@@ -31,17 +31,17 @@ export function splitAroundSuspends (
     const lastSuspendDate = lastSuspendStarted.getTime();
 
     if (suspendedPrior && (currentEvent.date < firstResumeDate)) {
-        if ((currentEvent.date+(currentEvent.duration as number)*MS_PER_MINUTE) < firstResumeDate) {
+        if ((currentEvent.date+(Number(currentEvent.duration))*MS_PER_MINUTE) < firstResumeDate) {
             currentEvent.duration = 0;
         } else {
-            currentEvent.duration = ((currentEvent.date+(currentEvent.duration as number)*MS_PER_MINUTE)-firstResumeDate)/MS_PER_MINUTE;
+            currentEvent.duration = ((currentEvent.date+(Number(currentEvent.duration))*MS_PER_MINUTE)-firstResumeDate)/MS_PER_MINUTE;
 
             currentEvent.started_at = new Date(firstResumeTime);
             currentEvent.date = firstResumeDate
         }
     }
 
-    if (currentlySuspended && ((currentEvent.date+(currentEvent.duration as number)*MS_PER_MINUTE) > lastSuspendDate)) {
+    if (currentlySuspended && ((currentEvent.date+(Number(currentEvent.duration))*MS_PER_MINUTE) > lastSuspendDate)) {
         if (currentEvent.date > lastSuspendDate) {
             currentEvent.duration = 0;
         } else {
@@ -61,37 +61,37 @@ export function splitAroundSuspends (
 
         for (let eventIdx = 0; eventIdx < events.length; eventIdx++) {
 
-            if ((events[eventIdx].date <= suspend.date) && (events[eventIdx].date+(events[eventIdx].duration as number)*MS_PER_MINUTE) > suspend.date) {
+            if ((events[eventIdx].date <= suspend.date) && (events[eventIdx].date+(Number(events[eventIdx].duration))*MS_PER_MINUTE) > suspend.date) {
                 // event started before the suspend, but finished after the suspend started
 
-                if ((events[eventIdx].date+(events[eventIdx].duration as number)*MS_PER_MINUTE) > (suspend.date+(suspend.duration as number)*MS_PER_MINUTE)) {
+                if ((events[eventIdx].date+(Number(events[eventIdx].duration))*MS_PER_MINUTE) > (suspend.date+(Number(suspend.duration))*MS_PER_MINUTE)) {
                     const event2 = cloneTempEvent(events[eventIdx]);
 
-                    const event2StartMs = (suspend.started_at as Date).getTime() + (suspend.duration as number)*MS_PER_MINUTE;
+                    const event2StartMs = Number(suspend.started_at) + (Number(suspend.duration))*MS_PER_MINUTE;
                     const event2StartDate = new Date(event2StartMs);
 
                     event2.timestamp = event2StartDate.toISOString();
                     event2.started_at = new Date(event2.timestamp);
-                    event2.date = suspend.date+(suspend.duration as number)*MS_PER_MINUTE;
+                    event2.date = suspend.date+(Number(suspend.duration))*MS_PER_MINUTE;
 
-                    event2.duration = ((events[eventIdx].date+(events[eventIdx].duration as number)*MS_PER_MINUTE) - (suspend.date+(suspend.duration as number)*MS_PER_MINUTE))/MS_PER_MINUTE;
+                    event2.duration = ((events[eventIdx].date+(Number(events[eventIdx].duration))*MS_PER_MINUTE) - (suspend.date+(Number(suspend.duration))*MS_PER_MINUTE))/MS_PER_MINUTE;
 
                     events.push(event2);
                 }
 
                 events[eventIdx].duration = (suspend.date-events[eventIdx].date)/MS_PER_MINUTE;
 
-            } else if ((suspend.date <= events[eventIdx].date) && (suspend.date+(suspend.duration as number)*MS_PER_MINUTE > events[eventIdx].date)) {
+            } else if ((suspend.date <= events[eventIdx].date) && (suspend.date+(Number(suspend.duration))*MS_PER_MINUTE > events[eventIdx].date)) {
                 // suspend started before the event, but finished after the event started
 
-                events[eventIdx].duration = ((events[eventIdx].date+(events[eventIdx].duration as number)*MS_PER_MINUTE) - (suspend.date+(suspend.duration as number)*MS_PER_MINUTE))/MS_PER_MINUTE;
+                events[eventIdx].duration = ((events[eventIdx].date+(Number(events[eventIdx].duration))*MS_PER_MINUTE) - (suspend.date+(Number(suspend.duration))*MS_PER_MINUTE))/MS_PER_MINUTE;
 
-                const eventStartMs = (suspend.started_at as Date).getTime() + (suspend.duration as number)*MS_PER_MINUTE;
+                const eventStartMs = Number(suspend.started_at) + (Number(suspend.duration))*MS_PER_MINUTE;
                 const eventStartDate = new Date(eventStartMs);
 
                 events[eventIdx].timestamp = eventStartDate.toISOString();
-                events[eventIdx].started_at = new Date(events[eventIdx].timestamp as string);
-                events[eventIdx].date = suspend.date + (suspend.duration as number)*MS_PER_MINUTE;
+                events[eventIdx].started_at = new Date(String(events[eventIdx].timestamp));
+                events[eventIdx].date = suspend.date + (Number(suspend.duration))*MS_PER_MINUTE;
             }
         }
     }

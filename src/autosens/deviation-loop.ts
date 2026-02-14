@@ -107,9 +107,9 @@ export function analyzeDeviations(
         let delta: number;
 
         if (bucketed_data[bucketIdx].glucose !== undefined) {
-            bg = bucketed_data[bucketIdx].glucose as number;
-            last_bg = bucketed_data[bucketIdx - 1].glucose as number;
-            old_bg = bucketed_data[bucketIdx - TRAILING_BUCKETS].glucose as number;
+            bg = Number(bucketed_data[bucketIdx].glucose);
+            last_bg = Number(bucketed_data[bucketIdx - 1].glucose);
+            old_bg = Number(bucketed_data[bucketIdx - TRAILING_BUCKETS].glucose);
 
             if (isNaN(bg) || !bg || bg < AUTOSENS_MIN_VALID_BG
                 || isNaN(old_bg) || !old_bg || old_bg < AUTOSENS_MIN_VALID_BG
@@ -130,7 +130,7 @@ export function analyzeDeviations(
         // -----------------------------------------------------------------
         avgDelta = parseFloat(avgDelta.toFixed(2));
         iob_inputs.clock = bgTime.toISOString();
-        iob_inputs.profile.current_basal = getCurrentBasalRate(basalprofile, bgTime) as number;
+        iob_inputs.profile.current_basal = Number(getCurrentBasalRate(basalprofile, bgTime));
         iob_inputs.profile.temptargetSet = false;
         const iob = get_iob(iob_inputs as IobInputs, true, treatments)[0];
 
@@ -146,7 +146,7 @@ export function analyzeDeviations(
         // Phase 3: Track meal COB from treatment history
         // -----------------------------------------------------------------
         glucoseDatum = bucketed_data[bucketIdx];
-        BGDate = new Date(glucoseDatum.date as number);
+        BGDate = new Date(Number(glucoseDatum.date));
         BGTime = BGDate.getTime();
 
         treatment = meals[meals.length - 1];
@@ -168,8 +168,8 @@ export function analyzeDeviations(
         // Phase 4: Calculate carb absorption for this 5m interval
         // -----------------------------------------------------------------
         if (mealCOB > 0) {
-            const carbImpact = Math.max(deviation, profile.min_5m_carbimpact as number);
-            const absorbed = carbImpact * (profile.carb_ratio as number) / sens;
+            const carbImpact = Math.max(deviation, Number(profile.min_5m_carbimpact));
+            const absorbed = carbImpact * Number(profile.carb_ratio) / sens;
             if (absorbed) {
                 mealCOB = Math.max(0, mealCOB - absorbed);
             } else {
@@ -250,9 +250,9 @@ export function analyzeDeviations(
         // Phase 7: Exercise mode temp target adjustments
         // -----------------------------------------------------------------
         if (profile.high_temptarget_raises_sensitivity === true || profile.exercise_mode === true) {
-            const tempTarget = tempTargetRunning(temptargets, bgTime as Date);
+            const tempTarget = tempTargetRunning(temptargets, bgTime ?? new Date(NaN));
             if ((tempTarget ?? 0) > EXERCISE_NORMAL_TARGET) {
-                const tempDeviation = -((tempTarget as number) - EXERCISE_NORMAL_TARGET) / TEMP_TARGET_DEVIATION_DIVISOR;
+                const tempDeviation = -(Number(tempTarget) - EXERCISE_NORMAL_TARGET) / TEMP_TARGET_DEVIATION_DIVISOR;
                 logLine += "-";
                 deviations.push(tempDeviation);
             }
@@ -261,8 +261,8 @@ export function analyzeDeviations(
         // -----------------------------------------------------------------
         // Phase 8: Hourly markers and lookback window
         // -----------------------------------------------------------------
-        const minutes = (bgTime as Date).getMinutes();
-        const hours = (bgTime as Date).getHours();
+        const minutes = (bgTime ?? new Date(NaN)).getMinutes();
+        const hours = (bgTime ?? new Date(NaN)).getHours();
         if (minutes >= 0 && minutes < HOURLY_MARKER_MINUTES) {
             logLine += `${hours}h`;
             // Add one neutral deviation every 2h to help decay over long exclusion periods

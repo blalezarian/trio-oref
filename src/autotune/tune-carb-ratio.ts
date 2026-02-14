@@ -20,9 +20,9 @@ export function tuneCarbRatio(
     let fullNewCR = totalCR === 0 ? currentCarbRatio : totalCR;
 
     // Compute bounds: pump CR * autosens range, capped by absolute min/max
-    let maxCR = (pumpCarbRatio as number) * bounds.autotuneMax;
+    let maxCR = (Number(pumpCarbRatio)) * bounds.autotuneMax;
     if (maxCR > MAX_CARB_RATIO) { maxCR = MAX_CARB_RATIO; }
-    let minCR = (pumpCarbRatio as number) * bounds.autotuneMin;
+    let minCR = (Number(pumpCarbRatio)) * bounds.autotuneMin;
     if (minCR < MIN_CARB_RATIO) { minCR = MIN_CARB_RATIO; }
 
     // Safety cap fullNewCR before blending

@@ -131,20 +131,20 @@ export function calculateDynamicISF(
         dynamicISFLog = ", Dynamic ISF: On";
 
         // Respect autosens.max and autosens.min limits
-        const limits = enforceAutosensLimits(newRatio as number, minLimitChris, maxLimitChris);
+        const limits = enforceAutosensLimits(Number(newRatio), minLimitChris, maxLimitChris);
         newRatio = limits.clampedRatio;
         log = limits.log;
         limitLog = limits.limitLog;
 
-        const isf = sensitivity / (newRatio as number);
+        const isf = sensitivity / Number(newRatio);
 
          // Set the new ratio
-         autosens_data.ratio = newRatio as number;
+         autosens_data.ratio = Number(newRatio);
 
         sigmoidLog = `. Using Sigmoid function, the autosens ratio has been adjusted with sigmoid factor to: ${round(autosens_data.ratio, 2)}. New ISF = ${round(isf, 2)} mg/dl (${round(MGDL_TO_MMOL * isf, 2)} (mmol/l).`;
 
         if (!enable_sigmoid) {
-            log += `, Dynamic autosens.ratio set to ${round(newRatio as number, 2)} with ISF: ${isf.toPrecision(3)} mg/dl/U (${(isf * MGDL_TO_MMOL).toPrecision(3)} mmol/l/U)`;
+            log += `, Dynamic autosens.ratio set to ${round(Number(newRatio), 2)} with ISF: ${isf.toPrecision(3)} mg/dl/U (${(isf * MGDL_TO_MMOL).toPrecision(3)} mmol/l/U)`;
         } else { log += sigmoidLog; }
 
         logOutPut += startLog + bgLog + afLog + formula + log + dynamicISFLog + weightLog;
@@ -165,7 +165,7 @@ export function calculateDynamicISF(
         middleWare,
     );
 
-    return { dynISFenabled, tdd, tddReason, newRatio: newRatio as number, insulinFactor, adjustmentFactor, enable_sigmoid, tdd24h_14d_Ratio };
+    return { dynISFenabled, tdd, tddReason, newRatio: Number(newRatio), insulinFactor, adjustmentFactor, enable_sigmoid, tdd24h_14d_Ratio };
 }
 
 // ---------------------------------------------------------------------------
@@ -302,7 +302,7 @@ export function buildTDDReasonString(
     else if (dynISFenabled && !tddAdjBasal) { tddReason += dynamicISFLog + formula + limitLog + afLog; }
 
     if (DEFAULT_SMB_DELIVERY_RATIO !== smb_delivery_ratio) {
-        tddReason += `, SMB Ratio: ${Math.min(smb_delivery_ratio as number, 1)}`;
+        tddReason += `, SMB Ratio: ${Math.min(Number(smb_delivery_ratio), 1)}`;
     }
 
     // Not confident but something like this in iAPS v3.0.3

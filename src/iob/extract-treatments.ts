@@ -50,7 +50,7 @@ export function calcTempTreatments (
     let tempHistory = [...rawTempHistory].sort((a, b) => a.date - b.date);
 
     for (let overlapIdx = 0; overlapIdx + 1 < tempHistory.length; overlapIdx++) {
-        if (tempHistory[overlapIdx].date + (tempHistory[overlapIdx].duration as number)*MS_PER_MINUTE > tempHistory[overlapIdx+1].date) {
+        if (tempHistory[overlapIdx].date + (Number(tempHistory[overlapIdx].duration))*MS_PER_MINUTE > tempHistory[overlapIdx+1].date) {
             tempHistory[overlapIdx].duration = (tempHistory[overlapIdx+1].date - tempHistory[overlapIdx].date)/MS_PER_MINUTE;
             // Delete AndroidAPS "Cancel TBR records" in which duration is not populated
             if (tempHistory[overlapIdx+1].duration === null) {

@@ -161,7 +161,7 @@ function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
 
             if (!glucoseEntry.dateString)
             {
-                glucoseEntry.dateString = new Date(glucoseEntry.date as number).toISOString();
+                glucoseEntry.dateString = new Date(Number(glucoseEntry.date)).toISOString();
             }
             return glucoseEntry;
         }).filter((glucoseEntry: CategorizeGlucoseEntry) => {
@@ -170,7 +170,7 @@ function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
             return (glucoseEntry.date && glucoseEntry.glucose && glucoseEntry.glucose >=MIN_VALID_GLUCOSE_MGDL);
         }).sort((a: CategorizeGlucoseEntry, b: CategorizeGlucoseEntry) => {
             // sort the collection in order
-            return (b.date as number) - (a.date as number);
+            return Number(b.date) - Number(a.date);
         });
     }
     if (!treatments) return {} as CategorizeResult;
@@ -199,8 +199,8 @@ function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
     let BGDate: Date;
     //for loop to validate and bucket the data
     for (let entryIdx=1; entryIdx < glucoseData.length; ++entryIdx) {
-        BGTime = glucoseData[entryIdx].date as number;
-        const lastBGTime = glucoseData[bucketStartIdx].date as number;
+        BGTime = Number(glucoseData[entryIdx].date);
+        const lastBGTime = Number(glucoseData[bucketStartIdx].date);
         const elapsedMinutes = (BGTime - lastBGTime)/MS_PER_MINUTE;
 
         if(Math.abs(elapsedMinutes) >= BUCKETING_MERGE_THRESHOLD_MIN) {
@@ -210,7 +210,7 @@ function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
         } else {
             // average all readings within time deadband
             const glucoseTotal = glucoseData.slice(bucketStartIdx, entryIdx+1).reduce((total: number, glucoseEntry: CategorizeGlucoseEntry) => {
-                return total + (glucoseEntry.glucose as number);
+                return total + Number(glucoseEntry.glucose);
             }, 0);
             bucketedData[bucketIdx].glucose = glucoseTotal / (entryIdx-bucketStartIdx+1);
         }
@@ -231,7 +231,7 @@ function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
     const fullHistory = IOBInputs.history;
     for (let entryIdx=bucketedData.length-BUCKETING_END_PADDING; entryIdx > 0; --entryIdx) {
         glucoseDatum = bucketedData[entryIdx];
-        BGDate = new Date(glucoseDatum.date as number);
+        BGDate = new Date(Number(glucoseDatum.date));
         BGTime = BGDate.getTime();
         // As we're processing each data point, go through the treatment.carbs and see if any of them are older than
         // the current BG data point.  If so, add those carbs to COB.
@@ -257,17 +257,17 @@ function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
         // TODO: re-implement interpolation to avoid issues here with gaps
         // calculate avgDelta as last 4 datapoints to better catch more rises after COB hits zero
         if (bucketedData[entryIdx].glucose !== undefined && bucketedData[entryIdx+AVG_DELTA_LOOKBACK].glucose !== undefined) {
-            BG = bucketedData[entryIdx].glucose as number;
-            if ( BG < AUTOSENS_MIN_VALID_BG || (bucketedData[entryIdx+AVG_DELTA_LOOKBACK].glucose as number) < AUTOSENS_MIN_VALID_BG) {
+            BG = Number(bucketedData[entryIdx].glucose);
+            if ( BG < AUTOSENS_MIN_VALID_BG || Number(bucketedData[entryIdx+AVG_DELTA_LOOKBACK].glucose) < AUTOSENS_MIN_VALID_BG) {
                 continue;
             }
-            delta = (BG - (bucketedData[entryIdx+1].glucose as number));
-            avgDelta = (BG - (bucketedData[entryIdx+AVG_DELTA_LOOKBACK].glucose as number))/AVG_DELTA_LOOKBACK;
+            delta = (BG - Number(bucketedData[entryIdx+1].glucose));
+            avgDelta = (BG - Number(bucketedData[entryIdx+AVG_DELTA_LOOKBACK].glucose))/AVG_DELTA_LOOKBACK;
         } else {
             console.log("Could not find glucose data");
         }
 
-        avgDelta = parseFloat((avgDelta as number).toFixed(2));
+        avgDelta = parseFloat(Number(avgDelta).toFixed(2));
         glucoseDatum.avgDelta = avgDelta;
 
         const sens = ISFLookup(IOBInputs.profile.isfProfile,BGDate);
@@ -275,7 +275,7 @@ function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
         // trim down IOBInputs.history to just the data for 6h prior to BGDate
         const newHistory: PumpHistoryEvent[] = [];
         for (let historyIdx=0; historyIdx<fullHistory.length; historyIdx++) {
-            const historyDate: Date = new Date(fullHistory[historyIdx].created_at as string)
+            const historyDate: Date = new Date(String(fullHistory[historyIdx].created_at))
             if (BGDate.getTime()-historyDate.getTime() < IOB_LOOKBACK_HOURS*MS_PER_HOUR && BGDate.getTime()-historyDate.getTime() > 0) {
                 newHistory.push(fullHistory[historyIdx]);
             }
@@ -292,11 +292,11 @@ function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
         const basal1hAgo = getCurrentBasalRate(opts.pumpbasalprofile, BGDate1hAgo);
         const basal2hAgo = getCurrentBasalRate(opts.pumpbasalprofile, BGDate2hAgo);
         const basal3hAgo = getCurrentBasalRate(opts.pumpbasalprofile, BGDate3hAgo);
-        const sum = [currentPumpBasal,basal1hAgo,basal2hAgo,basal3hAgo].reduce((acc, rate) => (acc as number) + (rate as number)) as number;
+        const sum = [currentPumpBasal,basal1hAgo,basal2hAgo,basal3hAgo].reduce<number>((acc, rate) => acc + Number(rate), 0);
         IOBInputs.profile.currentBasal = roundTo3dp(sum/BASAL_LOOKBACK_HOURS);
 
         // this is the current autotuned basal, used for everything else besides IOB calculations
-        const currentBasal = getCurrentBasalRate(opts.basalprofile, BGDate) as number;
+        const currentBasal = Number(getCurrentBasalRate(opts.basalprofile, BGDate));
 
         // basalBGI is BGI of basal insulin activity.
         const basalBGI = roundTo2dp( currentBasal * sens / MINUTES_PER_HOUR * PRED_INTERVAL_MINUTES ); // U/hr * mg/dL/U * 1 hr / 60 minutes * 5 = mg/dL/5m
@@ -309,10 +309,10 @@ function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
         glucoseDatum.BGI = bgImpact;
         // calculating deviation
         let deviation = avgDelta-bgImpact;
-        let dev5m = (delta as number)-bgImpact;
+        let dev5m = Number(delta)-bgImpact;
 
         // set positive deviations to zero if BG is below 80
-        if ( (BG as number) < MIN_BG_TARGET && deviation > 0 ) {
+        if ( Number(BG) < MIN_BG_TARGET && deviation > 0 ) {
             deviation = 0;
         }
 
@@ -343,8 +343,8 @@ function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
             CRCarbs += myCarbs;
             if (!calculatingCR) {
                 CRInitialIOB = iob.iob;
-                CRInitialBG = glucoseDatum.glucose as number;
-                CRInitialCarbTime = new Date(glucoseDatum.date as number);
+                CRInitialBG = Number(glucoseDatum.glucose);
+                CRInitialCarbTime = new Date(Number(glucoseDatum.date));
                 console.log(`CRInitialIOB: ${CRInitialIOB} CRInitialBG: ${CRInitialBG} CRInitialCarbTime: ${CRInitialCarbTime}`);
             }
             // keep calculatingCR as long as we have COB or enough IOB
@@ -355,20 +355,20 @@ function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
             // when COB=0 and IOB drops low enough, record end values and be done calculatingCR
             } else {
                 const CREndIOB = iob.iob;
-                const CREndBG = glucoseDatum.glucose as number;
-                const CREndTime: Date = new Date(glucoseDatum.date as number);
+                const CREndBG = Number(glucoseDatum.glucose);
+                const CREndTime: Date = new Date(Number(glucoseDatum.date));
                 console.log(`CREndIOB: ${CREndIOB} CREndBG: ${CREndBG} CREndTime: ${CREndTime}`);
                 const crDatum: CRDatum = {
-                    CRInitialIOB: CRInitialIOB as number
-                ,   CRInitialBG: CRInitialBG as number
-                ,   CRInitialCarbTime: CRInitialCarbTime as Date
+                    CRInitialIOB: Number(CRInitialIOB)
+                ,   CRInitialBG: Number(CRInitialBG)
+                ,   CRInitialCarbTime: CRInitialCarbTime ?? new Date(NaN)
                 ,   CREndIOB: CREndIOB
                 ,   CREndBG: CREndBG
                 ,   CREndTime: CREndTime
                 ,   CRCarbs: CRCarbs
                 };
 
-                const CRElapsedMinutes = Math.round((CREndTime.getTime() - (CRInitialCarbTime as Date).getTime()) / MS_PER_MINUTE);
+                const CRElapsedMinutes = Math.round((CREndTime.getTime() - (CRInitialCarbTime ?? new Date(NaN)).getTime()) / MS_PER_MINUTE);
                 if ( CRElapsedMinutes < MIN_CR_ELAPSED_MINUTES || ( entryIdx===1 && mealCOB > 0 ) ) {
                     console.log(`Ignoring ${CRElapsedMinutes}m CR period.`);
                 } else {
@@ -519,7 +519,7 @@ function trimOldTreatments(
             const treatmentTime = new Date(treatment.timestamp).getTime();
             const lastBucket = bucketedData[bucketedData.length - 1];
             if (lastBucket) {
-                const bgTime = new Date(lastBucket.date as number).getTime();
+                const bgTime = new Date(Number(lastBucket.date)).getTime();
                 if (treatmentTime < bgTime) {
                     treatments.splice(treatmentIdx, 1);
                 }

@@ -71,7 +71,7 @@ function handleLowBGRisingFast(ctx: DosingContext): PhaseOutcome {
         return { done: true, result: tempBasalFunctions.setTempBasal(0, TEMP_BASAL_DURATION_MINUTES, profile, result, currenttemp) };
     }
     if (glucose_status.delta > minDelta) {
-        result.reason += `, but Delta ${convert_bg(tick as number, profile)} > expectedDelta ${convert_bg(expectedDelta, profile)}`;
+        result.reason += `, but Delta ${convert_bg(Number(tick), profile)} > expectedDelta ${convert_bg(expectedDelta, profile)}`;
     } else {
         result.reason += `, but Min. Delta ${minDelta.toFixed(2)} > Exp. Delta ${convert_bg(expectedDelta, profile)}`;
     }
@@ -188,7 +188,7 @@ export function handleFallingDelta(ctx: DosingContext): PhaseOutcome {
         // if in SMB mode, don't cancel SMB zero temp
         if (!(microBolusAllowed && ctx.enableSMB)) {
             if (glucose_status.delta < minDelta) {
-                result.reason += `Eventual BG ${convert_bg(eventualBG, profile)} > ${convert_bg(min_bg, profile)} but Delta ${convert_bg(tick as number, profile)} < Exp. Delta ${convert_bg(expectedDelta, profile)}`;
+                result.reason += `Eventual BG ${convert_bg(eventualBG, profile)} > ${convert_bg(min_bg, profile)} but Delta ${convert_bg(Number(tick), profile)} < Exp. Delta ${convert_bg(expectedDelta, profile)}`;
             } else {
                 result.reason += `Eventual BG ${convert_bg(eventualBG, profile)} > ${convert_bg(min_bg, profile)} but Min. Delta ${minDelta.toFixed(2)} < Exp. Delta ${convert_bg(expectedDelta, profile)}`;
             }
@@ -214,7 +214,7 @@ function describeDeltaBehavior(
     if (bolusErrorString !== undefined) {
         result.manualBolusErrorString = bolusErrorString;
     }
-    result.insulinForManualBolus = round(((result.eventualBG as number) - (result.target_bg as number)) / adjustedSens, 2);
+    result.insulinForManualBolus = round(((Number(result.eventualBG)) - (Number(result.target_bg))) / adjustedSens, 2);
 }
 
 /** Returns the bolus error classification for the current delta behavior, or undefined if delta is not significant. */
@@ -249,7 +249,7 @@ export function handleInRange(ctx: DosingContext): PhaseOutcome {
     if (Math.min(eventualBG, minPredBG) < max_bg) {
         if (minPredBG < min_bg && eventualBG > min_bg) {
             result.manualBolusErrorString = BOLUS_ERR_MIN_PRED_BELOW_MIN;
-            result.insulinForManualBolus = round(((result.eventualBG as number) - (result.target_bg as number)) / adjustedSens, 2);
+            result.insulinForManualBolus = round(((Number(result.eventualBG)) - (Number(result.target_bg))) / adjustedSens, 2);
         }
 
         // Moving this out of the if condition in L1429, so that minPredBG is becomes always available in result object (aka Trio's determination)

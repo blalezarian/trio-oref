@@ -33,7 +33,7 @@ interface RecentCarbsResult {
     bwCarbs: number;
     journalCarbs: number;
     mealCOB: number;
-    currentDeviation: number;
+    currentDeviation: number | undefined;
     maxDeviation: number;
     minDeviation: number;
     slopeFromMaxDeviation: number;
@@ -147,7 +147,7 @@ function recentCarbs(opts: RecentCarbsOpts, time: Date): RecentCarbsResult | Rec
         bwCarbs: roundTo3dp(totals.bwCarbs),
         journalCarbs: roundTo3dp(totals.journalCarbs),
         mealCOB: Math.round(mealCOB),
-        currentDeviation: roundTo2dp(deviationResult.currentDeviation),
+        currentDeviation: roundTo2dp(Number(deviationResult.currentDeviation)),
         maxDeviation: roundTo2dp(deviationResult.maxDeviation),
         minDeviation: roundTo2dp(deviationResult.minDeviation),
         slopeFromMaxDeviation: roundTo3dp(deviationResult.slopeFromMaxDeviation),
@@ -216,7 +216,7 @@ function resetRemovalTotals(
 /** Zero mealCOB when deviation data is null/undefined (zombie-carb safety) */
 function applyZombieCarbSafety(
     mealCOB: number,
-    currentDeviation: number,
+    currentDeviation: number | undefined,
     maxDeviation: number,
 ): number {
     if (currentDeviation === undefined || currentDeviation === null) {

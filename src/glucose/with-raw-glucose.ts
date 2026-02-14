@@ -60,8 +60,8 @@ function withRawGlucose(
 
     const egv = entry.glucose || entry.sgv || 0;
 
-    const unfilteredVal = parseInt(entry.unfiltered as string) || 0;
-    const filteredVal = parseInt(entry.filtered as string) || 0;
+    const unfilteredVal = parseInt(String(entry.unfiltered)) || 0;
+    const filteredVal = parseInt(String(entry.filtered)) || 0;
     entry.unfiltered = unfilteredVal;
     entry.filtered = filteredVal;
 
@@ -101,9 +101,9 @@ function withRawGlucose(
 
 /** Parse and validate a calibration record into numeric fields */
 function cleanCal(cal: RawGlucoseCal): CleanCal {
-    const scale = parseFloat(cal.scale as string) || 0;
-    const intercept = parseFloat(cal.intercept as string) || 0;
-    const slope = parseFloat(cal.slope as string) || 0;
+    const scale = parseFloat(String(cal.scale)) || 0;
+    const intercept = parseFloat(String(cal.intercept)) || 0;
+    const slope = parseFloat(String(cal.slope)) || 0;
 
     return {
         scale,

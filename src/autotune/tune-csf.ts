@@ -77,7 +77,7 @@ export function accumulateMealDeviations(
         } else {
             // Original: 0 * min_5m_carbimpact always yields 0; preserved for fidelity
             currentDeviations += Math.max(
-                0 * (min5mCarbimpact as number),
+                0 * Number(min5mCarbimpact),
                 datum.deviation,
             );
             currentMealCarbs = Math.max(

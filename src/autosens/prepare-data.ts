@@ -55,7 +55,7 @@ export function determineSiteChangeTime(
     // Default: 24h lookback from first glucose reading (retrospective) or now
     let lastSiteChange: Date;
     if (retrospective) {
-        lastSiteChange = new Date(new Date(glucose_data[0].date as number).getTime() - HOURS_PER_DAY * MS_PER_HOUR);
+        lastSiteChange = new Date(new Date(Number(glucose_data[0].date)).getTime() - HOURS_PER_DAY * MS_PER_HOUR);
     } else {
         lastSiteChange = new Date(Date.now() - HOURS_PER_DAY * MS_PER_HOUR);
     }
@@ -70,7 +70,7 @@ export function determineSiteChangeTime(
             continue;
         }
         if (history[historyIdx].timestamp) {
-            lastSiteChange = new Date(history[historyIdx].timestamp as string);
+            lastSiteChange = new Date(String(history[historyIdx].timestamp));
             console.log(`Setting lastSiteChange to ${lastSiteChange} using timestamp ${history[historyIdx].timestamp}`);
             break;
         }
@@ -175,8 +175,8 @@ export function prepareAutosensData(inputs: AutosensInputs): PreparedAutosensDat
         }
 
         // Skip invalid glucose values (as number preserves undefined→NaN passthrough)
-        if ((glucose_data[glucoseIdx].glucose as number) < MIN_VALID_GLUCOSE_MGDL
-            || (glucose_data[glucoseIdx - 1].glucose as number) < MIN_VALID_GLUCOSE_MGDL) {
+        if ((Number(glucose_data[glucoseIdx].glucose)) < MIN_VALID_GLUCOSE_MGDL
+            || Number(glucose_data[glucoseIdx - 1].glucose) < MIN_VALID_GLUCOSE_MGDL) {
             continue;
         }
 
@@ -197,7 +197,7 @@ export function prepareAutosensData(inputs: AutosensInputs): PreparedAutosensDat
             bucketed_data[bucketIndex].date = bgTime ? bgTime.getTime() : NaN;
         } else {
             bucketed_data[bucketIndex].glucose =
-                ((bucketed_data[bucketIndex].glucose as number) + (glucose_data[glucoseIdx].glucose as number)) / 2;
+                (Number(bucketed_data[bucketIndex].glucose) + (Number(glucose_data[glucoseIdx].glucose))) / 2;
         }
     }
 

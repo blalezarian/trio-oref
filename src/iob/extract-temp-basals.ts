@@ -41,7 +41,7 @@ export function extractTempBasalsAndBoluses(
         if (current.created_at) {
             current.timestamp = current.created_at;
         }
-        const currentRecordTime = new Date(current.timestamp as string);
+        const currentRecordTime = new Date(String(current.timestamp));
         // ignore duplicate or out-of-order records (due to 1h and 24h overlap, or timezone changes)
         if (currentRecordTime > lastRecordTime) {
             continue;
@@ -49,7 +49,7 @@ export function extractTempBasalsAndBoluses(
             lastRecordTime = currentRecordTime;
         }
         if (current._type === "Bolus") {
-            const started_at = new Date(current.timestamp as string);
+            const started_at = new Date(String(current.timestamp));
             if (started_at > now) {
                 console.log(` ${current.amount}U @ ${started_at}`);
             } else {
@@ -63,7 +63,7 @@ export function extractTempBasalsAndBoluses(
         } else if (current.eventType === "Meal Bolus" || current.eventType === "Correction Bolus" || current.eventType === "Snack Bolus" || current.eventType === "Bolus Wizard") {
             // imports treatments entered through Nightscout Care Portal
             // "Bolus Wizard" refers to the Nightscout Bolus Wizard, not the Medtronic Bolus Wizard
-            const started_at = new Date(current.created_at as string);
+            const started_at = new Date(String(current.created_at));
             tempBoluses.push({
                 date: started_at.getTime(),
                 timestamp: current.created_at,
@@ -71,7 +71,7 @@ export function extractTempBasalsAndBoluses(
                 insulin: current.insulin,
             });
         } else if (current.enteredBy === "xdrip") {
-            const started_at = new Date(current.timestamp as string);
+            const started_at = new Date(String(current.timestamp));
             tempBoluses.push({
                 date: started_at.getTime(),
                 timestamp: current.timestamp,
@@ -79,7 +79,7 @@ export function extractTempBasalsAndBoluses(
                 insulin: current.insulin,
             });
         } else if (current.enteredBy ==="HAPP_App" && current.insulin) {
-            const started_at = new Date(current.created_at as string);
+            const started_at = new Date(String(current.created_at));
             tempBoluses.push({
                 date: started_at.getTime(),
                 timestamp: current.created_at,
@@ -87,7 +87,7 @@ export function extractTempBasalsAndBoluses(
                 insulin: current.insulin,
             });
         } else if (current.eventType === "Temp Basal" && (current.enteredBy === "HAPP_App" || current.enteredBy === "openaps://AndroidAPS")) {
-            const started_at = new Date(current.created_at as string);
+            const started_at = new Date(String(current.created_at));
             tempHistory.push({
                 date: started_at.getTime(),
                 rate: current.absolute,
@@ -100,9 +100,9 @@ export function extractTempBasalsAndBoluses(
             // Loop reports the amount of insulin actually delivered while the temp basal was running
             // use that to calculate the effective temp basal rate
             if (current.amount !== undefined) {
-                rate = current.amount / (current.duration as number) * MINUTES_PER_HOUR;
+                rate = current.amount / (Number(current.duration)) * MINUTES_PER_HOUR;
             }
-            const started_at = new Date(current.timestamp as string);
+            const started_at = new Date(String(current.timestamp));
             tempHistory.push({
                 date: started_at.getTime(),
                 rate,
@@ -118,11 +118,11 @@ export function extractTempBasalsAndBoluses(
             const timestamp = current.timestamp;
             let duration: number | undefined;
             if (histIdx > 0 && pumpHistory[histIdx-1].timestamp === timestamp && pumpHistory[histIdx-1]._type === "TempBasalDuration") {
-                duration = pumpHistory[histIdx-1]['duration (min)'] as number;
+                duration = Number(pumpHistory[histIdx-1]['duration (min)']);
             } else {
                 for (let searchIdx = 0; searchIdx < pumpHistory.length; searchIdx++) {
                     if (pumpHistory[searchIdx].timestamp === timestamp && pumpHistory[searchIdx]._type === "TempBasalDuration") {
-                            duration = pumpHistory[searchIdx]['duration (min)'] as number;
+                            duration = Number(pumpHistory[searchIdx]['duration (min)']);
                             break;
                     }
                 }
@@ -131,7 +131,7 @@ export function extractTempBasalsAndBoluses(
                     console.log(`No duration found for ${rate} U/hr basal ${timestamp}`, pumpHistory[histIdx - 1], current, pumpHistory[histIdx + 1]);
                 }
             }
-            const started_at = new Date(timestamp as string);
+            const started_at = new Date(String(timestamp));
             tempHistory.push({
                 date: started_at.getTime(),
                 rate,

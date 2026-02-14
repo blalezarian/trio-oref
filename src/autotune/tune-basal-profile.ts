@@ -129,13 +129,13 @@ export function convertToHourlyProfile(
 /** Parse hour-of-day from a glucose datum, trying date -> displayTime -> dateString */
 export function parseHourFromDatum(datum: AutotuneGlucoseDatum): number | undefined {
     if (datum.date) {
-        return new Date(datum.date as number).getHours();
+        return new Date(Number(datum.date)).getHours();
     }
     if (datum.displayTime) {
-        return new Date((datum.displayTime as string).replace('T', ' ')).getHours();
+        return new Date(String(datum.displayTime).replace('T', ' ')).getHours();
     }
     if (datum.dateString) {
-        return new Date(datum.dateString as string).getHours();
+        return new Date(String(datum.dateString)).getHours();
     }
     console.log("Could not determine BG time: no date, displayTime, or dateString — skipping datum");
     return undefined;
@@ -240,7 +240,7 @@ export function smoothUntunedHours(
             ) / BASAL_SCALE;
 
             if (newProfile[hour].untuned) {
-                (newProfile[hour].untuned as number)++;
+                newProfile[hour].untuned = Number(newProfile[hour].untuned) + 1;
             } else {
                 newProfile[hour].untuned = 1;
             }

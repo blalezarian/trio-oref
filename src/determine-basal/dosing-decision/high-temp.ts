@@ -134,7 +134,7 @@ export function handleSMB(ctx: DosingContext): PhaseOutcome {
     const { advancedSettings, smbMinutes, uamMinutes } = trio_custom_variables;
 
     // minutes since last bolus
-    const lastBolusAge = round((systemTime.getTime() - (iob_data.lastBolusTime as number)) / MS_PER_MINUTE, 1);
+    const lastBolusAge = round((systemTime.getTime() - Number(iob_data.lastBolusTime)) / MS_PER_MINUTE, 1);
 
     // only allow microboluses with COB or low temp targets, or within DIA hours of a bolus
     if (microBolusAllowed && ctx.enableSMB && bg > threshold) {
@@ -169,10 +169,10 @@ export function handleSMB(ctx: DosingContext): PhaseOutcome {
             uamMinutesSetting,
         );
         // bolus 1/2 the insulinReq, up to maxBolus, rounding down to nearest bolus increment
-        const bolusIncrement = profile.bolus_increment as number;
+        const bolusIncrement = Number(profile.bolus_increment);
         const roundSMBTo = 1 / bolusIncrement;
 
-        const smb_ratio = Math.min(profile.smb_delivery_ratio as number, 1);
+        const smb_ratio = Math.min(Number(profile.smb_delivery_ratio), 1);
 
         if (smb_ratio != DEFAULT_SMB_DELIVERY_RATIO) {
             console.log(`SMB Delivery Ratio changed from default 0.5 to ${round(smb_ratio, 2)}`);

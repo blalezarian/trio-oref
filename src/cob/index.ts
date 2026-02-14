@@ -42,7 +42,7 @@ export function detectCarbAbsorption(inputs: CarbAbsorptionInputs): CarbAbsorpti
         glucose_data,
         mealTime,
         carbImpactTime,
-        profile.maxMealAbsorptionTime as number,
+        Number(profile.maxMealAbsorptionTime),
     );
 
     return analyzeAbsorption(

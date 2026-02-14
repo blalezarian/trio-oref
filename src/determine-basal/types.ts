@@ -41,7 +41,7 @@ export interface SensitivityAndTargetsResult {
     min_bg: number;
     max_bg: number;
     high_bg: number;
-    sensitivityRatio: number;
+    sensitivityRatio: number | undefined;
     basal: number;
     threshold: number;
     adjustedSens: number;

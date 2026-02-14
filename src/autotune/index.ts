@@ -46,9 +46,9 @@ export function autotuneProfile(
 
     // --- Extract pump baseline values ---
     const { pumpISF, pumpCarbRatio, pumpCSF } = extractPumpBaselines(pumpProfile);
-    if (!carbRatio) { carbRatio = pumpCarbRatio as number; }
-    if (!CSF) { CSF = pumpCSF as number; }
-    if (!ISF) { ISF = pumpISF as number; }
+    if (!carbRatio) { carbRatio = Number(pumpCarbRatio); }
+    if (!CSF) { CSF = Number(pumpCSF); }
+    if (!ISF) { ISF = Number(pumpISF); }
 
     // --- Destructure prepped glucose data ---
     const {
@@ -149,7 +149,7 @@ export function extractPumpBaselines(
     }
     const pumpISF = isfProfile.sensitivities[0].sensitivity;
     const pumpCarbRatio = pumpProfile.carb_ratio;
-    const pumpCSF = pumpISF / (pumpCarbRatio as number);
+    const pumpCSF = pumpISF / Number(pumpCarbRatio);
     return { pumpISF, pumpCarbRatio, pumpCSF };
 }
 

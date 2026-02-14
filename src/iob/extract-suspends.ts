@@ -28,14 +28,14 @@ export function extractSuspendResumeData(
         const current: PumpHistoryEvent = pumpHistory[eventIdx];
 
         if (current._type === "PumpSuspend") {
-            const started_at = new Date(current.timestamp as string);
+            const started_at = new Date(String(current.timestamp));
             pumpSuspends.push({
                 timestamp: current.timestamp,
                 started_at,
                 date: started_at.getTime(),
             });
         } else if (current._type === "PumpResume") {
-            const started_at = new Date(current.timestamp as string);
+            const started_at = new Date(String(current.timestamp));
             pumpResumes.push({
                 timestamp: current.timestamp,
                 started_at,
@@ -49,7 +49,7 @@ export function extractSuspendResumeData(
     pumpResumes.sort((a, b) => a.date - b.date);
 
     if (pumpResumes.length > 0) {
-        firstResumeTime = pumpResumes[0].timestamp as string;
+        firstResumeTime = String(pumpResumes[0].timestamp);
 
         // Check to see if our first resume was prior to our first suspend
         // indicating suspend was prior to our first event.
@@ -77,7 +77,7 @@ export function extractSuspendResumeData(
             // through the last record beginning at the last suspend
             // since we don't have a matching resume.
             currentlySuspended = 1;
-            lastSuspendTime = pumpSuspends[suspendIdx].timestamp as string;
+            lastSuspendTime = String(pumpSuspends[suspendIdx].timestamp);
 
             break;
         }
@@ -107,8 +107,8 @@ export function extractSuspendResumeData(
     return {
         pumpSuspends,
         suspendedPrior,
-        firstResumeTime: firstResumeTime as string,
-        lastSuspendTime: lastSuspendTime as string,
+        firstResumeTime: String(firstResumeTime),
+        lastSuspendTime: String(lastSuspendTime),
         currentlySuspended,
     };
 }
