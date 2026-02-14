@@ -6,17 +6,17 @@
 #
 # modify permission by typing chmod a+x webpack-cp.sh
 #
-# perform webpack on the nine .js files:
+# perform webpack on the nine .ts entry points:
 #
-# ./lib/iob/index.js
-# ./lib/meal/index.js
-# ./lib/determine-basal/determine-basal.js
-# ./lib/glucose-get-last.js
-# ./lib/basal-set-temp.js
-# ./lib/determine-basal/autosens.js
-# ./lib/profile/index.js
-# ./lib/autotune-prep/index.js
-# ./lib/autotune/index.js
+# ./src/iob/index.ts
+# ./src/meal/index.ts
+# ./src/determineBasal/index.ts
+# ./src/glucose/index.ts
+# ./src/setTempBasal/index.ts
+# ./src/autosens/index.ts
+# ./src/profile/index.ts
+# ./src/autotunePrep/index.ts
+# ./src/autotune/index.ts
 
 npx webpack
 
@@ -33,11 +33,11 @@ bundleDIR=$apsDIR/Trio/Resources/javascript/bundle
 cp -p -v $oref0DIR/dist/bundle/*.js $bundleDIR/
 
 echo ""
-echo "copying /lib/ source files to Trio/trio-oref"
+echo "copying /src/ source files to Trio/trio-oref"
 echo ""
 echo ""
 
-cp -p -R $oref0DIR/lib $apsDIR/trio-oref/
+cp -p -R $oref0DIR/src $apsDIR/trio-oref/
 echo "These source files are copied from https://github.com/nightscout/trio-oref, and are for information purposes only." > $apsDIR/trio-oref/oref_source_file_info.txt
 echo "The algorithm is run based on minimised files in Trio/Resources/javascript/bundle." >> $apsDIR/trio-oref/oref_source_file_info.txt
 

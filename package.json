@@ -1,7 +1,7 @@
 {
-  "name": "oref0",
+  "name": "trio-oref-ts",
   "version": "0.7.1",
-  "description": "openaps oref0 reference implementation of the reference design",
+  "description": "TypeScript port of the Trio/OpenAPS oref0 insulin dosing algorithm",
   "scripts": {
     "test": "vitest run",
     "test:char": "vitest run tests/characterization",
@@ -16,17 +16,22 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/openaps/oref0.git"
+    "url": "https://github.com/blalezarian/trio-oref.git"
   },
   "keywords": [
     "openaps"
   ],
-  "author": "Scott Leibrand, Dana Lewis, OpenAPS contributors",
+  "author": "Bryan Lalezarian",
+  "contributors": [
+    "Scott Leibrand",
+    "Dana Lewis",
+    "OpenAPS contributors"
+  ],
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/openaps/oref0/issues"
+    "url": "https://github.com/blalezarian/trio-oref/issues"
   },
-  "homepage": "https://github.com/openaps/oref0",
+  "homepage": "https://github.com/blalezarian/trio-oref",
   "devDependencies": {
     "@types/node": "^25.2.3",
     "@vitest/coverage-v8": "^4.0.18",
@@ -36,8 +41,8 @@
     "tsx": "^4.21.0",
     "typescript": "^5.9.3",
     "vitest": "^4.0.18",
-    "webpack": "^5.74.0",
-    "webpack-cli": "^4.10.0"
+    "webpack": "^5.105.2",
+    "webpack-cli": "^6.0.1"
   },
   "config": {}
 }
