@@ -8,7 +8,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { withRawGlucose } from '../../../src/glucose/with-raw-glucose';
+import { withRawGlucose } from '../../../src/glucose/withRawGlucose';
 
 /** Create a standard calibration object */
 function makeCal(overrides: Record<string, unknown> = {}) {
