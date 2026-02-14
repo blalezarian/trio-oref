@@ -213,18 +213,18 @@ export function handleSMB(ctx: DosingContext): PhaseOutcome {
 /** Resolves effective SMB and UAM minute settings from profile + override. */
 export function resolveSMBMinuteSettings(
     profile: DosingContext['inputs']['profile'],
-    trio_custom_variables: DosingContext['inputs']['trioCustomVariables'],
+    trioCustomVariables: DosingContext['inputs']['trioCustomVariables'],
 ): { smbMinutesSetting: number; uamMinutesSetting: number } {
-    const { advancedSettings, smbMinutes, uamMinutes } = trio_custom_variables;
+    const { advancedSettings, smbMinutes, uamMinutes } = trioCustomVariables;
 
     let smbMinutesSetting = profile.maxSMBBasalMinutes ?? DEFAULT_MAX_SMB_BASAL_MINUTES;
     let uamMinutesSetting = profile.maxUAMSMBBasalMinutes ?? DEFAULT_MAX_SMB_BASAL_MINUTES;
 
-    if (trio_custom_variables.useOverride && advancedSettings && smbMinutes !== smbMinutesSetting) {
+    if (trioCustomVariables.useOverride && advancedSettings && smbMinutes !== smbMinutesSetting) {
         console.log(`SMB Max Minutes - setting overriden from ${smbMinutesSetting} to ${smbMinutes}`);
         smbMinutesSetting = smbMinutes;
     }
-    if (trio_custom_variables.useOverride && advancedSettings && uamMinutes !== uamMinutesSetting) {
+    if (trioCustomVariables.useOverride && advancedSettings && uamMinutes !== uamMinutesSetting) {
         console.log(`UAM Max Minutes - setting overriden from ${uamMinutesSetting} to ${uamMinutes}`);
         uamMinutesSetting = uamMinutes;
     }

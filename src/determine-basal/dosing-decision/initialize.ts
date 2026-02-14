@@ -151,7 +151,7 @@ export function calculateCarbsRequired(ctx: DosingContext): PhaseOutcome {
 function calculateZeroTempEffectAndCarbsReq(
     minutesAboveThreshold: number,
     bgUndershoot: number,
-    current_basal: number,
+    currentBasal: number,
     overrideFactor: number,
     adjustedSens: number,
     carbSensFactor: number,
@@ -162,10 +162,10 @@ function calculateZeroTempEffectAndCarbsReq(
     // always include at least 30m worth of zero temp (carbs to 80, low temp up to target)
     const zeroTempDuration = minutesAboveThreshold;
     // BG undershoot, minus effect of zero temps until hitting min_bg, converted to grams, minus COB
-    const rawZeroTempEffect = current_basal * overrideFactor * adjustedSens * zeroTempDuration / MINUTES_PER_HOUR;
+    const rawZeroTempEffect = currentBasal * overrideFactor * adjustedSens * zeroTempDuration / MINUTES_PER_HOUR;
     // don't count the last 25% of COB against carbsReq
-    const COBforCarbsReq = Math.max(0, mealCOB - COB_DISCOUNT_FRACTION * carbs);
-    const rawCarbsReq = (bgUndershoot - rawZeroTempEffect) / carbSensFactor - COBforCarbsReq;
+    const cobForCarbsReq = Math.max(0, mealCOB - COB_DISCOUNT_FRACTION * carbs);
+    const rawCarbsReq = (bgUndershoot - rawZeroTempEffect) / carbSensFactor - cobForCarbsReq;
     return { zeroTempEffect: round(rawZeroTempEffect), carbsReq: round(rawCarbsReq) };
 }
 

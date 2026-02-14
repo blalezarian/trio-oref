@@ -41,12 +41,12 @@ export function keepOrSetBasalTemp(ctx: DosingContext): PhaseOutcome {
 export function calculateZeroTempDuration(
     bgUndershoot: number,
     adjustedSens: number,
-    current_basal: number,
+    currentBasal: number,
     overrideFactor: number,
     minDuration: number = 0,
 ): number {
     const worstCaseInsulinReq = bgUndershoot / adjustedSens;
-    let durationReq = round(MINUTES_PER_HOUR * worstCaseInsulinReq / current_basal * overrideFactor);
+    let durationReq = round(MINUTES_PER_HOUR * worstCaseInsulinReq / currentBasal * overrideFactor);
     if (durationReq < 0) {
         return minDuration;
     }
@@ -111,11 +111,11 @@ export function calculateSMBZeroTemp(
     microBolus: number,
     bolusIncrement: number,
     worstCaseInsulinReq: number,
-    current_basal: number,
+    currentBasal: number,
     overrideFactor: number,
     basal: number,
 ): SMBZeroTempResult {
-    let durationReq = round(MINUTES_PER_HOUR * worstCaseInsulinReq / current_basal * overrideFactor);
+    let durationReq = round(MINUTES_PER_HOUR * worstCaseInsulinReq / currentBasal * overrideFactor);
 
     // if insulinReq > 0 but not enough for a microBolus, don't set an SMB zero temp
     if (insulinReq > 0 && microBolus < bolusIncrement) {
