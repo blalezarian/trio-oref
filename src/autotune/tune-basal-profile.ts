@@ -127,7 +127,7 @@ export function convertToHourlyProfile(
 }
 
 /** Parse hour-of-day from a glucose datum, trying date -> displayTime -> dateString */
-export function parseHourFromDatum(datum: AutotuneGlucoseDatum): number {
+export function parseHourFromDatum(datum: AutotuneGlucoseDatum): number | undefined {
     if (datum.date) {
         return new Date(datum.date as number).getHours();
     }
@@ -137,9 +137,8 @@ export function parseHourFromDatum(datum: AutotuneGlucoseDatum): number {
     if (datum.dateString) {
         return new Date(datum.dateString as string).getHours();
     }
-    console.log("Could not determine last BG time");
-    // Original crashes here with BGTime!.getHours() on undefined -- preserve behavior
-    return (undefined as unknown as Date).getHours();
+    console.log("Could not determine BG time: no date, displayTime, or dateString — skipping datum");
+    return undefined;
 }
 
 /** Sum deviations per hour from basalGlucose data */
@@ -150,6 +149,7 @@ export function sumDeviationsByHour(
 
     for (const datum of basalGlucose) {
         const hour = parseHourFromDatum(datum);
+        if (hour == null) continue;
         hourlyDeviations[hour] += datum.deviation;
     }
 

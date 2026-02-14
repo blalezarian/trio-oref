@@ -187,13 +187,13 @@ describe('parseHourFromDatum', () => {
         expect(parseHourFromDatum(datum)).toBe(hourFromDate);
     });
 
-    it('crashes when no time field is present (preserves original behavior)', () => {
+    it('returns undefined when no time field is present', () => {
         const datum = makeGlucoseDatum({
             date: undefined,
             displayTime: undefined,
             dateString: undefined,
         });
-        expect(() => parseHourFromDatum(datum)).toThrow();
+        expect(parseHourFromDatum(datum)).toBeUndefined();
     });
 });
 

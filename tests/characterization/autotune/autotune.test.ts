@@ -710,10 +710,8 @@ describe('autotune/index (tuneAllTheThings) characterization tests', () => {
       expect(normalizeOutput(result)).toMatchSnapshot();
     });
 
-    it('logs error when no time field is present (lines 225-226)', () => {
-      // No date, displayTime, or dateString — triggers the error log.
-      // The code continues with BGTime undefined, which will cause
-      // BGTime.getHours() to fail, but we characterize whatever happens.
+    it('skips datum when no time field is present and continues tuning', () => {
+      // No date, displayTime, or dateString — datum is skipped with a warning log.
       const basalGlucoseData = [
         {
           glucose: 120,
@@ -730,13 +728,8 @@ describe('autotune/index (tuneAllTheThings) characterization tests', () => {
           basalGlucoseData,
         },
       });
-      // This may throw since BGTime will be undefined when no time field exists
-      try {
-        const result = tuneAllTheThings(inputs);
-        expect(normalizeOutput(result)).toMatchSnapshot();
-      } catch (e: any) {
-        expect(e.message).toMatchSnapshot();
-      }
+      const result = tuneAllTheThings(inputs);
+      expect(normalizeOutput(result)).toMatchSnapshot();
     });
   });
 
