@@ -51,14 +51,14 @@ export function generateBGPredictions(
     remainingCIpeak: number,
     slopeFromDeviations: number,
     dynISFenabled: boolean,
-    enable_sigmoid: boolean,
+    enableSigmoid: boolean,
     tdd: number,
     adjustmentFactor: number,
     insulinFactor: number,
     enableUAM: boolean | undefined,
-    target_bg: number,
+    targetBG: number,
     threshold: number,
-    meal_data: MealData,
+    mealData: MealData,
 ): BGPredictionResult {
     // Prediction arrays (seeded with current BG)
     const IOBpredBGs: number[] = [bg];
@@ -87,7 +87,7 @@ export function generateBGPredictions(
     const remainingCIs: number[] = [];
 
     // Loop-invariant: dynamic ISF logarithmic path flag
-    const useDynISFLog = dynISFenabled && !enable_sigmoid;
+    const useDynISFLog = dynISFenabled && !enableSigmoid;
 
     // Loop-invariant: insulin peak timing for minPredBG calculations
     // look ahead 60m (regardless of insulin type) so as to be less aggressive on slower insulins
@@ -155,8 +155,8 @@ export function generateBGPredictions(
         COBpredBGs,
         UAMpredBGs,
         eventualBG,
-        targetBG: target_bg,
-        mealCOB: meal_data.mealCOB,
+        targetBG,
+        mealCOB: mealData.mealCOB,
         carbImpact,
         remainingCIpeak,
         enableUAM,
@@ -179,9 +179,9 @@ export function generateBGPredictions(
         bg,
         maxCOBPredBG,
         threshold,
-        targetBG: target_bg,
-        mealCOB: meal_data.mealCOB,
-        carbs: meal_data.carbs,
+        targetBG,
+        mealCOB: mealData.mealCOB,
+        carbs: mealData.carbs,
         carbImpactDuration,
         remainingCIpeak,
         enableUAM,
@@ -395,10 +395,10 @@ function clipAndTrimFlatTail(arr: number[], min: number, max: number, minPoints:
 }
 
 /** Trims tail values from ZT predictions that are rising and above target. */
-function trimRisingAboveTarget(arr: number[], target_bg: number, minPoints: number): void {
+function trimRisingAboveTarget(arr: number[], targetBG: number, minPoints: number): void {
     for (let idx = arr.length - 1; idx > minPoints; idx--) {
         // stop displaying ZTpredBGs once they're rising and above target
-        if (arr[idx - 1] >= arr[idx] || arr[idx] <= target_bg) break;
+        if (arr[idx - 1] >= arr[idx] || arr[idx] <= targetBG) break;
         arr.pop();
     }
 }
@@ -520,7 +520,7 @@ export function blendMinGuardBG(
     remainingCIpeak: number,
     enableUAM: boolean | undefined,
     threshold: number,
-    target_bg: number,
+    targetBG: number,
 ): { minGuardBG: number; minZTUAMPredBG: number } {
     // if we have both minCOBGuardBG and minUAMGuardBG, blend according to fractionCarbsLeft
     let minGuardBG: number;
@@ -542,9 +542,9 @@ export function blendMinGuardBG(
     if ( minZTGuardBG < threshold ) {
         minZTUAMPredBG = (minUAMPredBG + minZTGuardBG) / 2;
     // if minZTGuardBG is between threshold and target, blend in the averaging
-    } else if ( minZTGuardBG < target_bg ) {
+    } else if ( minZTGuardBG < targetBG ) {
         // target 100, threshold 70, minZTGuardBG 85 gives 50%: (85-70) / (100-70)
-        const blendPct = (minZTGuardBG-threshold) / (target_bg-threshold);
+        const blendPct = (minZTGuardBG-threshold) / (targetBG-threshold);
         const blendedMinZTGuardBG = minUAMPredBG*blendPct + minZTGuardBG*(1-blendPct);
         minZTUAMPredBG = (minUAMPredBG + blendedMinZTGuardBG) / 2;
     // if minUAMPredBG is below minZTGuardBG, bring minUAMPredBG up by averaging
