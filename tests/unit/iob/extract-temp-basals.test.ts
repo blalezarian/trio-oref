@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { extractTempBasalsAndBoluses } from '../../../src/iob/extract-temp-basals';
+import { extractTempBasalsAndBoluses } from '../../../src/iob/extractTempBasals';
 import type { PumpHistoryEvent } from '../../../src/types/index';
 
 const FIXED_TIME = '2025-01-15T12:00:00.000Z';

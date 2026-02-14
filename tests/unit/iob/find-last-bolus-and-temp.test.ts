@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { findLastBolusAndTemp } from '../../../src/iob/find-last-bolus-and-temp';
+import { findLastBolusAndTemp } from '../../../src/iob/findLastBolusAndTemp';
 import type { IobTreatment } from '../../../src/iob/types';
 
 const BASE_TIME = new Date('2025-01-15T12:00:00Z').getTime();

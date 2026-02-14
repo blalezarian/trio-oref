@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { extractSuspendResumeData } from '../../../src/iob/extract-suspends';
+import { extractSuspendResumeData } from '../../../src/iob/extractSuspends';
 import type { PumpHistoryEvent } from '../../../src/types/index';
 import type { SuspendResumeData } from '../../../src/iob/types';
 

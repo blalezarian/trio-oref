@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { splitTimespanWithOneSplitter, splitTimespan } from '../../../src/iob/split-at-basal-boundaries';
+import { splitTimespanWithOneSplitter, splitTimespan } from '../../../src/iob/splitAtBasalBoundaries';
 import type { TempEvent, SplitterEvent } from '../../../src/iob/types';
 
 /** Create an event starting at a specific local-time hour:minute */

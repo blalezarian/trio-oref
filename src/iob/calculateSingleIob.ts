@@ -1,8 +1,8 @@
 import { Treatment, IOBContribution, InsulinCurve } from '../types/index';
 import type { IobCalcProfile } from './types';
 import { MS_PER_MINUTE } from '../shared/constants';
-import { iobCalcBilinear } from './curve-bilinear';
-import { iobCalcExponential } from './curve-exponential';
+import { iobCalcBilinear } from './curveBilinear';
+import { iobCalcExponential } from './curveExponential';
 
 /**
  * Calculate the IOB and activity contribution of a single treatment at a given

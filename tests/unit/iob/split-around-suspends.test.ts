@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { splitAroundSuspends } from '../../../src/iob/split-around-suspends';
+import { splitAroundSuspends } from '../../../src/iob/splitAroundSuspends';
 import type { TempEvent, SuspendEvent } from '../../../src/iob/types';
 
 const BASE_TIME = new Date('2025-01-15T12:00:00Z').getTime();

@@ -6,7 +6,7 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { iobCalc } from '../../../src/iob/calculate-single-iob';
+import { iobCalc } from '../../../src/iob/calculateSingleIob';
 import type { InsulinCurve } from '../../../src/types/index';
 
 const baseProfile = {

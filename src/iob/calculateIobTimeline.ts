@@ -1,7 +1,7 @@
-import { calcTempTreatments } from './extract-treatments';
-import { iobCalc } from './calculate-single-iob';
-import { iobTotal } from './sum-iob';
-import { findLastBolusAndTemp } from './find-last-bolus-and-temp';
+import { calcTempTreatments } from './extractTreatments';
+import { iobCalc } from './calculateSingleIob';
+import { iobTotal } from './sumIob';
+import { findLastBolusAndTemp } from './findLastBolusAndTemp';
 
 import type {
     IobInputs,

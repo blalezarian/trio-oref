@@ -153,7 +153,7 @@ export interface IobIndexEntry {
 export interface IobGenerateOpts {
     treatments: IobTreatment[];
     profile: IobProfile;
-    calculate: typeof import('./calculate-single-iob').iobCalc;
+    calculate: typeof import('./calculateSingleIob').iobCalc;
     autosens?: { ratio: number };
 }
 

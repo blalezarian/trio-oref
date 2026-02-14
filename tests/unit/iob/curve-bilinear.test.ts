@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { iobCalcBilinear } from '../../../src/iob/curve-bilinear';
+import { iobCalcBilinear } from '../../../src/iob/curveBilinear';
 import type { Treatment } from '../../../src/types/index';
 
 function makeTreatment(insulin: number, dateMs: number = 0): Treatment {

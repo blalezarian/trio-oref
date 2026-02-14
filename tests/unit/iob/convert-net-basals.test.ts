@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { convertNetBasalsToTreatments } from '../../../src/iob/convert-net-basals';
+import { convertNetBasalsToTreatments } from '../../../src/iob/convertNetBasals';
 import type { TempEvent, IobProfile } from '../../../src/iob/types';
 
 const FIXED_TIME = '2025-01-15T12:00:00.000Z';

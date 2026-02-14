@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { calcTempTreatments } from '../../../src/iob/extract-treatments';
+import { calcTempTreatments } from '../../../src/iob/extractTreatments';
 import type { PumpHistoryEvent } from '../../../src/types/index';
 import type { IobInputs, IobProfile, IobTreatment } from '../../../src/iob/types';
 

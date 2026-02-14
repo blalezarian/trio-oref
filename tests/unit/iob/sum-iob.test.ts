@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { iobTotal } from '../../../src/iob/sum-iob';
+import { iobTotal } from '../../../src/iob/sumIob';
 import type { Treatment, IOBContribution, InsulinCurve } from '../../../src/types/index';
 import type { IobCalcProfile, IobTotalOpts, IobTotalResult } from '../../../src/iob/types';
 

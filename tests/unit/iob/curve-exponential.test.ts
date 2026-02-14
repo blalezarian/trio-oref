@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { iobCalcExponential } from '../../../src/iob/curve-exponential';
+import { iobCalcExponential } from '../../../src/iob/curveExponential';
 import type { Treatment } from '../../../src/types/index';
 import type { IobCalcProfile } from '../../../src/iob/types';
 

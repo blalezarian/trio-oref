@@ -1,7 +1,7 @@
 import { getCurrentBasalRate } from '../profile/basal';
 import { generate as getIOB } from '../iob/index';
 import { isfLookup as ISFLookup } from '../profile/isf';
-import { calcTempTreatments as findInsulin } from '../iob/extract-treatments';
+import { calcTempTreatments as findInsulin } from '../iob/extractTreatments';
 import type { IobInputs } from '../iob/types';
 import { insulinDosed as dosed } from './dosed';
 import type { DosedOpts } from './dosed';

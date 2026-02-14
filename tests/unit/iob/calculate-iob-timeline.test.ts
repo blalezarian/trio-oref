@@ -10,11 +10,11 @@ import type {
 // Module mocks — must be declared before the module under test is imported
 // ---------------------------------------------------------------------------
 
-vi.mock('../../../src/iob/extract-treatments', () => ({
+vi.mock('../../../src/iob/extractTreatments', () => ({
     calcTempTreatments: vi.fn().mockReturnValue([]),
 }));
 
-vi.mock('../../../src/iob/sum-iob', () => ({
+vi.mock('../../../src/iob/sumIob', () => ({
     iobTotal: vi.fn().mockImplementation((_opts: unknown, time: Date) => ({
         iob: 0,
         activity: 0,
@@ -26,21 +26,21 @@ vi.mock('../../../src/iob/sum-iob', () => ({
     })),
 }));
 
-vi.mock('../../../src/iob/find-last-bolus-and-temp', () => ({
+vi.mock('../../../src/iob/findLastBolusAndTemp', () => ({
     findLastBolusAndTemp: vi.fn().mockReturnValue({
         lastBolusTime: 0,
         lastTemp: { date: 0 },
     }),
 }));
 
-vi.mock('../../../src/iob/calculate-single-iob', () => ({
+vi.mock('../../../src/iob/calculateSingleIob', () => ({
     iobCalc: vi.fn(),
 }));
 
-import { generate, isZonedClock, warnIfUnzonedClock } from '../../../src/iob/calculate-iob-timeline';
-import { calcTempTreatments } from '../../../src/iob/extract-treatments';
-import { iobTotal } from '../../../src/iob/sum-iob';
-import { findLastBolusAndTemp } from '../../../src/iob/find-last-bolus-and-temp';
+import { generate, isZonedClock, warnIfUnzonedClock } from '../../../src/iob/calculateIobTimeline';
+import { calcTempTreatments } from '../../../src/iob/extractTreatments';
+import { iobTotal } from '../../../src/iob/sumIob';
+import { findLastBolusAndTemp } from '../../../src/iob/findLastBolusAndTemp';
 
 // ---------------------------------------------------------------------------
 // Helpers

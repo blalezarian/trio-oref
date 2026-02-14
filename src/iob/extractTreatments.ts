@@ -10,11 +10,11 @@ import {
     MS_PER_HOUR,
     MAX_DIA_FOR_SUSPEND_HOURS,
 } from '../shared/constants';
-import { splitTimespan } from './split-at-basal-boundaries';
-import { splitAroundSuspends } from './split-around-suspends';
-import { extractSuspendResumeData } from './extract-suspends';
-import { extractTempBasalsAndBoluses } from './extract-temp-basals';
-import { convertNetBasalsToTreatments } from './convert-net-basals';
+import { splitTimespan } from './splitAtBasalBoundaries';
+import { splitAroundSuspends } from './splitAroundSuspends';
+import { extractSuspendResumeData } from './extractSuspends';
+import { extractTempBasalsAndBoluses } from './extractTempBasals';
+import { convertNetBasalsToTreatments } from './convertNetBasals';
 
 // ---------------------------------------------------------------------------
 // Main function

@@ -1,4 +1,4 @@
-import { calcTempTreatments as findInsulin } from '../iob/extract-treatments';
+import { calcTempTreatments as findInsulin } from '../iob/extractTreatments';
 import { findMealInputs as findMeals } from '../meal/history';
 import { normalizeGlucoseData } from '../utils/glucoseMath';
 import { resolveGlucoseTime } from '../utils/time';
