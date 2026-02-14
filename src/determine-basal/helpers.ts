@@ -77,32 +77,53 @@ export function validateIOBAndTemps(
         return { earlyReturn: result };
     }
 
-// Compare currenttemp to iob_data.lastTemp and cancel temp if they don't match, as a safety check
-// This should occur after checking that we're not in one of the CGM-data-related error conditions handled above,
-// and before returning (doing nothing) below if eventualBG is undefined.
-    let lastTempAge;
-    if (iob_datum.lastTemp !== undefined) {
-        lastTempAge = round(( systemTime.getTime() - iob_datum.lastTemp.date ) / MS_PER_MINUTE); // in minutes
-    } else {
-        lastTempAge = 0;
-    }
+    // Compare currenttemp to iob_data.lastTemp and cancel temp if they don't match, as a safety check
+    // This should occur after checking that we're not in one of the CGM-data-related error conditions,
+    // and before returning (doing nothing) below if eventualBG is undefined.
+    const lastTempAge = iob_datum.lastTemp !== undefined
+        ? round((systemTime.getTime() - iob_datum.lastTemp.date) / MS_PER_MINUTE)
+        : 0;
     const tempModulus = (lastTempAge + currenttemp.duration) % TEMP_BASAL_DURATION_MINUTES;
     console.log(`currenttemp:${currenttemp.rate} lastTempAge:${lastTempAge}m, tempModulus:${tempModulus}m`);
     result.temp = 'absolute';
     result.deliverAt = deliverAt;
-    if ( microBolusAllowed && currenttemp && iob_datum.lastTemp && currenttemp.rate !== iob_datum.lastTemp.rate && lastTempAge > TEMP_AGE_STALE_MINUTES && currenttemp.duration ) {
-        result.reason = `Warning: currenttemp rate ${currenttemp.rate} != lastTemp rate ${iob_datum.lastTemp.rate} from pumphistory; canceling temp`; // reason.conclusion started
-        return { earlyReturn: tempBasalFunctions.setTempBasal(0, 0, profile, result, currenttemp) };
-    }
-    if ( currenttemp && iob_datum.lastTemp && currenttemp.duration > 0 ) {
-        const lastTempEnded = lastTempAge - iob_datum.lastTemp.duration;
-        if ( lastTempEnded > TEMP_END_GAP_MINUTES && lastTempAge > TEMP_AGE_STALE_MINUTES ) {
-            result.reason = `Warning: currenttemp running but lastTemp from pumphistory ended ${lastTempEnded}m ago; canceling temp`; // reason.conclusion started
-            return { earlyReturn: tempBasalFunctions.setTempBasal(0, 0, profile, result, currenttemp) };
-        }
-    }
+
+    const staleTempResult = checkStaleTempBasal(
+        currenttemp, iob_datum, lastTempAge,
+        microBolusAllowed, tempBasalFunctions, profile, result,
+    );
+    if (staleTempResult) return { earlyReturn: staleTempResult };
 
     return { iob_data: iob_datum, iobArray };
+}
+
+/**
+ * Checks whether the current temp basal is stale or mismatched with pump history,
+ * and cancels it if so. Returns the cancellation result, or null if no action needed.
+ */
+function checkStaleTempBasal(
+    currenttemp: CurrentTemp,
+    iob_datum: IOBData,
+    lastTempAge: number,
+    microBolusAllowed: boolean,
+    tempBasalFunctions: TempBasalFunctions,
+    profile: Profile,
+    result: DetermineBasalResult,
+): DetermineBasalResult | null {
+    // Cancel if currenttemp rate doesn't match lastTemp rate from pump history
+    if (microBolusAllowed && currenttemp && iob_datum.lastTemp && currenttemp.rate !== iob_datum.lastTemp.rate && lastTempAge > TEMP_AGE_STALE_MINUTES && currenttemp.duration) {
+        result.reason = `Warning: currenttemp rate ${currenttemp.rate} != lastTemp rate ${iob_datum.lastTemp.rate} from pumphistory; canceling temp`;
+        return tempBasalFunctions.setTempBasal(0, 0, profile, result, currenttemp);
+    }
+    // Cancel if lastTemp from pump history ended too long ago
+    if (currenttemp && iob_datum.lastTemp && currenttemp.duration > 0) {
+        const lastTempEnded = lastTempAge - iob_datum.lastTemp.duration;
+        if (lastTempEnded > TEMP_END_GAP_MINUTES && lastTempAge > TEMP_AGE_STALE_MINUTES) {
+            result.reason = `Warning: currenttemp running but lastTemp from pumphistory ended ${lastTempEnded}m ago; canceling temp`;
+            return tempBasalFunctions.setTempBasal(0, 0, profile, result, currenttemp);
+        }
+    }
+    return null;
 }
 
 /**
@@ -131,12 +152,10 @@ export function calculateDeviation(
     }
 
     // calculate the naive (bolus calculator math) eventual BG based on net IOB and sensitivity
-    let naive_eventualBG = bg;
-    if (iob_data.iob > 0) {
-        naive_eventualBG = round( bg - (iob_data.iob * adjustedSens) );
-    } else { // if IOB is negative, be more conservative and use the lower of adjustedSens, profile.sens
-        naive_eventualBG = round( bg - (iob_data.iob * Math.min(adjustedSens, sensitivity) ) );
-    }
+    // if IOB is negative, be more conservative and use the lower of adjustedSens, profile.sens
+    const naive_eventualBG = iob_data.iob > 0
+        ? round(bg - (iob_data.iob * adjustedSens))
+        : round(bg - (iob_data.iob * Math.min(adjustedSens, sensitivity)));
     // and adjust it for the deviation above
     const eventualBG = naive_eventualBG + deviation;
 
