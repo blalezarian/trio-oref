@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { tempTargetRunning } from '../../../src/autosens/temp-target';
+import { tempTargetRunning } from '../../../src/autosens/tempTarget';
 
 const NOW = new Date('2025-01-15T12:00:00.000Z');
 

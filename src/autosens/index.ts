@@ -1,8 +1,8 @@
-import { prepareAutosensData } from './prepare-data';
-import { analyzeDeviations } from './deviation-loop';
-import { padDeviations, analyzePercentiles, calculateAutosensRatio } from './calculate-ratio';
-import type { AutosensInputs } from './prepare-data';
-import type { AutosensResult } from './calculate-ratio';
+import { prepareAutosensData } from './prepareData';
+import { analyzeDeviations } from './deviationLoop';
+import { padDeviations, analyzePercentiles, calculateAutosensRatio } from './calculateRatio';
+import type { AutosensInputs } from './prepareData';
+import type { AutosensResult } from './calculateRatio';
 import { DEFAULT_AUTOSENS_LOOKBACK } from '../shared/constants';
 
 /** Maximum zero-deviation padding count (90m / 5m = 18) */

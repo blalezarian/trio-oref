@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import {
     determineSiteChangeTime,
     resolveLastBgTime,
-} from '../../../src/autosens/prepare-data';
+} from '../../../src/autosens/prepareData';
 import type { GlucoseEntry } from '../../../src/types/index';
 
 const FIXED_TIME = '2025-01-15T12:00:00.000Z';

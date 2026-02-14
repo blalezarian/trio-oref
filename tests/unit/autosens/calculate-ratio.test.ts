@@ -3,7 +3,7 @@ import {
     padDeviations,
     analyzePercentiles,
     calculateAutosensRatio,
-} from '../../../src/autosens/calculate-ratio';
+} from '../../../src/autosens/calculateRatio';
 
 beforeEach(() => {
     vi.spyOn(console, 'log').mockImplementation(() => {});

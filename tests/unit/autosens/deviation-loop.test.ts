@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { analyzeDeviations } from '../../../src/autosens/deviation-loop';
+import { analyzeDeviations } from '../../../src/autosens/deviationLoop';
 import { resetISFCache } from '../../../src/profile/isf';
 import type { GlucoseEntry, CarbTreatment } from '../../../src/types/index';
 import type { IobProfile, HistoryBasalProfileEntry } from '../../../src/iob/types';
