@@ -1,7 +1,7 @@
 import { getCurrentBasalRate } from '../profile/basal';
 import { generate as get_iob } from '../iob/index';
 import { isfLookup } from '../profile/isf';
-import { calculateBGImpact, calculateDeviation } from '../utils/glucose-math';
+import { calculateBGImpact, calculateDeviation } from '../utils/glucoseMath';
 import type { BucketedGlucose, ISODateString } from '../types/index';
 import type { IobProfile, HistoryBasalProfileEntry, IobInputs, IobTreatment } from '../iob/types';
 import {

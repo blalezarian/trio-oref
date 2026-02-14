@@ -1,6 +1,6 @@
 import { calcTempTreatments as findInsulin } from '../iob/extract-treatments';
 import { findMealInputs as findMeals } from '../meal/history';
-import { normalizeGlucoseData } from '../utils/glucose-math';
+import { normalizeGlucoseData } from '../utils/glucoseMath';
 import { resolveGlucoseTime } from '../utils/time';
 import type { PumpHistoryEvent, GlucoseEntry, CarbTreatment, ISODateString } from '../types/index';
 import type { IobProfile, HistoryBasalProfileEntry, IobInputs, IobTreatment } from '../iob/types';

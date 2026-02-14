@@ -1,5 +1,5 @@
 import { calcTempTreatments as findInsulin } from '../iob/extract-treatments';
-import { normalizeGlucoseData } from '../utils/glucose-math';
+import { normalizeGlucoseData } from '../utils/glucoseMath';
 import { bucketGlucoseWithInterpolation } from './bucket-glucose';
 import { analyzeAbsorption } from './deviation-loop';
 import type { GlucoseEntry, PumpHistoryEvent, ISODateString, EpochMillis } from '../types/index';
