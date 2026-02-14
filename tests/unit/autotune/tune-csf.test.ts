@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import {
     accumulateMealDeviations,
     tuneCSF,
-} from '../../../src/autotune/tune-csf';
+} from '../../../src/autotune/tuneCsf';
 import type {
     AutotuneGlucoseDatum,
     AutotuneBounds,

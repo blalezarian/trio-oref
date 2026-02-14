@@ -7,7 +7,7 @@ import {
     capBasalRates,
     smoothUntunedHours,
     tuneBasalProfile,
-} from '../../../src/autotune/tune-basal-profile';
+} from '../../../src/autotune/tuneBasalProfile';
 import type {
     AutotuneBasalProfileEntry,
     AutotuneGlucoseDatum,

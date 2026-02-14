@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { calculateTotalCarbRatio } from '../../../src/autotune/calculate-total-carb-ratio';
+import { calculateTotalCarbRatio } from '../../../src/autotune/calculateTotalCarbRatio';
 import type { AutotuneCRDatum } from '../../../src/autotune/types';
 
 function makeCRDatum(overrides: Partial<AutotuneCRDatum> = {}): AutotuneCRDatum {

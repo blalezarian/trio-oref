@@ -10,13 +10,13 @@ import {
     ULTRA_RAPID_PEAK,
     RAPID_ACTING_PEAK,
 } from '../shared/constants';
-import { tuneDIA } from './tune-dia';
-import { tunePeakTime } from './tune-peak';
-import { calculateTotalCarbRatio } from './calculate-total-carb-ratio';
-import { tuneBasalProfile } from './tune-basal-profile';
-import { tuneCSF } from './tune-csf';
-import { tuneCarbRatio } from './tune-carb-ratio';
-import { tuneISF } from './tune-isf';
+import { tuneDIA } from './tuneDia';
+import { tunePeakTime } from './tunePeak';
+import { calculateTotalCarbRatio } from './calculateTotalCarbRatio';
+import { tuneBasalProfile } from './tuneBasalProfile';
+import { tuneCSF } from './tuneCsf';
+import { tuneCarbRatio } from './tuneCarbRatio';
+import { tuneISF } from './tuneIsf';
 
 // ---------------------------------------------------------------------------
 // Types

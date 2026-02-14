@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { tuneDIA } from '../../../src/autotune/tune-dia';
+import { tuneDIA } from '../../../src/autotune/tuneDia';
 import type { AutotuneDiaDeviation } from '../../../src/autotune/types';
 
 function makeDiaDeviations(overrides: Partial<AutotuneDiaDeviation>[] = []): AutotuneDiaDeviation[] {

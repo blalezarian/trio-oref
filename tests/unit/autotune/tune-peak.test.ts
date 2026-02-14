@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { tunePeakTime } from '../../../src/autotune/tune-peak';
+import { tunePeakTime } from '../../../src/autotune/tunePeak';
 import type { AutotunePeakDeviation } from '../../../src/autotune/types';
 
 function makePeakDeviations(overrides: Partial<AutotunePeakDeviation>[] = []): AutotunePeakDeviation[] {

@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { tuneCarbRatio } from '../../../src/autotune/tune-carb-ratio';
+import { tuneCarbRatio } from '../../../src/autotune/tuneCarbRatio';
 import type { AutotuneBounds } from '../../../src/autotune/types';
 
 // ---------------------------------------------------------------------------
