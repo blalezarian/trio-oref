@@ -85,9 +85,9 @@ function makeBasalDatum(
     glucose: 120,
     date: d.getTime(),
     dateString: d.toISOString(),
-    deviation: String(deviation),
+    deviation: deviation,
     BGI: -1.0,
-    avgDelta: '0.00',
+    avgDelta: 0,
     ...overrides,
   };
 }
@@ -106,9 +106,9 @@ function makeISFDatum(
     glucose: 180,
     date: d.getTime(),
     dateString: d.toISOString(),
-    deviation: String(deviation),
+    deviation: deviation,
     BGI: BGI,
-    avgDelta: String(deviation + BGI),
+    avgDelta: deviation + BGI,
     ...overrides,
   };
 }
@@ -128,9 +128,9 @@ function makeCSFDatum(
     glucose: 140,
     date: d.getTime(),
     dateString: d.toISOString(),
-    deviation: String(deviation),
+    deviation: deviation,
     BGI: -0.5,
-    avgDelta: String(deviation - 0.5),
+    avgDelta: deviation - 0.5,
     mealCarbs: mealCarbs,
     ...(mealAbsorption ? { mealAbsorption } : {}),
     ...overrides,
@@ -657,16 +657,16 @@ describe('autotune/index (tuneAllTheThings) characterization tests', () => {
         {
           glucose: 120,
           displayTime: '2025-01-15T10:00:00.000Z',
-          deviation: '5',
+          deviation: 5,
           BGI: -1.0,
-          avgDelta: '0.00',
+          avgDelta: 0,
         },
         {
           glucose: 120,
           displayTime: '2025-01-15T10:05:00.000Z',
-          deviation: '3',
+          deviation: 3,
           BGI: -1.0,
-          avgDelta: '0.00',
+          avgDelta: 0,
         },
       ];
       const inputs = makeInputs({
@@ -686,16 +686,16 @@ describe('autotune/index (tuneAllTheThings) characterization tests', () => {
         {
           glucose: 120,
           dateString: '2025-01-15T14:00:00.000Z',
-          deviation: '4',
+          deviation: 4,
           BGI: -1.0,
-          avgDelta: '0.00',
+          avgDelta: 0,
         },
         {
           glucose: 120,
           dateString: '2025-01-15T14:05:00.000Z',
-          deviation: '6',
+          deviation: 6,
           BGI: -1.0,
-          avgDelta: '0.00',
+          avgDelta: 0,
         },
       ];
       const inputs = makeInputs({
@@ -717,9 +717,9 @@ describe('autotune/index (tuneAllTheThings) characterization tests', () => {
       const basalGlucoseData = [
         {
           glucose: 120,
-          deviation: '2',
+          deviation: 2,
           BGI: -1.0,
-          avgDelta: '0.00',
+          avgDelta: 0,
         },
       ];
       const inputs = makeInputs({

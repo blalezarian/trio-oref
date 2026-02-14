@@ -48,9 +48,9 @@ interface CategorizeGlucoseEntry {
   displayTime?: string;
   dateString?: string;
   // Fields added during processing in the main loop:
-  avgDelta?: string;
+  avgDelta?: number;
   BGI?: number;
-  deviation?: string;
+  deviation?: number;
   mealAbsorption?: MealAbsorptionPhase;
   mealCarbs?: number;
   uamAbsorption?: 'start';
@@ -102,9 +102,9 @@ interface CategorizeGlucoseDatum {
   date: number;
   dateString: string;
   displayTime?: string;
-  avgDelta: string;
+  avgDelta: number;
   BGI: number;
-  deviation: string;
+  deviation: number;
   mealAbsorption?: MealAbsorptionPhase;
   mealCarbs?: number;
   uamAbsorption?: 'start';
@@ -268,7 +268,7 @@ function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
         }
 
         avgDelta = parseFloat((avgDelta as number).toFixed(2));
-        glucoseDatum.avgDelta = avgDelta.toFixed(2);
+        glucoseDatum.avgDelta = avgDelta;
 
         const sens = ISFLookup(IOBInputs.profile.isfProfile,BGDate);
         IOBInputs.clock=BGDate.toISOString();
@@ -319,7 +319,7 @@ function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
         // rounding and storing deviation
         deviation = parseFloat(deviation.toFixed(2));
         const dev5mStr = dev5m.toFixed(2);
-        glucoseDatum.deviation = deviation.toFixed(2);
+        glucoseDatum.deviation = deviation;
 
 
         // Then, calculate carb absorption for that 5m interval using the deviation.
@@ -557,7 +557,7 @@ function mergeUAMData(
             console.log(`Adding ${UAMLength} UAM deviations to ${basalLength} basal ones`);
             basalGlucoseData = basalGlucoseData.concat(UAMGlucoseData);
             // if too much data is excluded as UAM, add in the UAM deviations to basal, but then discard the highest 50%
-            basalGlucoseData.sort((a, b) => parseFloat(a.deviation) - parseFloat(b.deviation));
+            basalGlucoseData.sort((a, b) => a.deviation - b.deviation);
             basalGlucoseData = basalGlucoseData.slice(0,basalGlucoseData.length/2);
             console.log(`and selecting the lowest 50%, leaving ${basalGlucoseData.length} basal+UAM ones`);
         }
@@ -566,7 +566,7 @@ function mergeUAMData(
             console.log(`Adding ${UAMLength} UAM deviations to ${ISFLength} ISF ones`);
             ISFGlucoseData = ISFGlucoseData.concat(UAMGlucoseData);
             // if too much data is excluded as UAM, add in the UAM deviations to ISF, but then discard the highest 50%
-            ISFGlucoseData.sort((a, b) => parseFloat(a.deviation) - parseFloat(b.deviation));
+            ISFGlucoseData.sort((a, b) => a.deviation - b.deviation);
             ISFGlucoseData = ISFGlucoseData.slice(0,ISFGlucoseData.length/2);
             console.log(`and selecting the lowest 50%, leaving ${ISFGlucoseData.length} ISF+UAM ones`);
         }

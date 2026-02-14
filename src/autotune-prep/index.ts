@@ -146,9 +146,9 @@ function generate(inputs: AutotunePrepInputs): AutotunePrepResult {
 
             const entryHour = (BGTime as Date).getHours();
             if (hourIdx === entryHour) {
-              sqrtDeviations += Math.pow(parseFloat(String(Math.abs(Number(basalGlucose[glucoseIdx].deviation)))), 0.5);
-              deviations += Math.abs(parseFloat(basalGlucose[glucoseIdx].deviation));
-              deviationsSq += Math.pow(parseFloat(basalGlucose[glucoseIdx].deviation), 2);
+              sqrtDeviations += Math.pow(Math.abs(basalGlucose[glucoseIdx].deviation), 0.5);
+              deviations += Math.abs(basalGlucose[glucoseIdx].deviation);
+              deviationsSq += Math.pow(basalGlucose[glucoseIdx].deviation, 2);
             }
           }
         }
@@ -211,9 +211,9 @@ function generate(inputs: AutotunePrepInputs): AutotunePrepResult {
 
             const entryHour = (BGTime as Date).getHours();
             if (hourIdx === entryHour) {
-              sqrtDeviations += Math.pow(parseFloat(String(Math.abs(Number(basalGlucose[glucoseIdx].deviation)))), 0.5);
-              deviations += Math.abs(parseFloat(basalGlucose[glucoseIdx].deviation));
-              deviationsSq += Math.pow(parseFloat(basalGlucose[glucoseIdx].deviation), 2);
+              sqrtDeviations += Math.pow(Math.abs(basalGlucose[glucoseIdx].deviation), 0.5);
+              deviations += Math.abs(basalGlucose[glucoseIdx].deviation);
+              deviationsSq += Math.pow(basalGlucose[glucoseIdx].deviation, 2);
             }
           }
         }

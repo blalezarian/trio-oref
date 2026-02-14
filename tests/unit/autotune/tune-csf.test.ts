@@ -15,9 +15,9 @@ import type { MealAbsorptionPhase } from '../../../src/types/index';
 
 function makeDatum(overrides: Partial<AutotuneGlucoseDatum> = {}): AutotuneGlucoseDatum {
     return {
-        deviation: '5',
+        deviation: 5,
         BGI: -1.5,
-        avgDelta: '-2',
+        avgDelta: -2,
         ...overrides,
     };
 }
@@ -37,10 +37,10 @@ describe('accumulateMealDeviations', () => {
 
     it('accumulates a single complete meal (start → data → end)', () => {
         const data: AutotuneGlucoseDatum[] = [
-            makeDatum({ mealAbsorption: 'start' as MealAbsorptionPhase, mealCarbs: 45, deviation: '0' }),
-            makeDatum({ mealAbsorption: undefined, mealCarbs: 45, deviation: '10' }),
-            makeDatum({ mealAbsorption: undefined, mealCarbs: 45, deviation: '8' }),
-            makeDatum({ mealAbsorption: 'end' as MealAbsorptionPhase, mealCarbs: 45, deviation: '3' }),
+            makeDatum({ mealAbsorption: 'start' as MealAbsorptionPhase, mealCarbs: 45, deviation: 0 }),
+            makeDatum({ mealAbsorption: undefined, mealCarbs: 45, deviation: 10 }),
+            makeDatum({ mealAbsorption: undefined, mealCarbs: 45, deviation: 8 }),
+            makeDatum({ mealAbsorption: 'end' as MealAbsorptionPhase, mealCarbs: 45, deviation: 3 }),
         ];
         const result = accumulateMealDeviations(data, 8);
         // start: deviations=0, mealCarbs=45
@@ -52,8 +52,8 @@ describe('accumulateMealDeviations', () => {
 
     it('handles incomplete meal at midnight (no end marker)', () => {
         const data: AutotuneGlucoseDatum[] = [
-            makeDatum({ mealAbsorption: 'start' as MealAbsorptionPhase, mealCarbs: 30, deviation: '0' }),
-            makeDatum({ mealAbsorption: undefined, mealCarbs: 30, deviation: '5' }),
+            makeDatum({ mealAbsorption: 'start' as MealAbsorptionPhase, mealCarbs: 30, deviation: 0 }),
+            makeDatum({ mealAbsorption: undefined, mealCarbs: 30, deviation: 5 }),
         ];
         const result = accumulateMealDeviations(data, 8);
         // No end marker, totalMealCarbs stays 0, so midnight fallback adds currentMealCarbs
@@ -63,9 +63,9 @@ describe('accumulateMealDeviations', () => {
 
     it('clamps negative deviations to zero in non-start/end entries', () => {
         const data: AutotuneGlucoseDatum[] = [
-            makeDatum({ mealAbsorption: 'start' as MealAbsorptionPhase, mealCarbs: 20, deviation: '0' }),
-            makeDatum({ mealAbsorption: undefined, mealCarbs: 20, deviation: '-5' }),
-            makeDatum({ mealAbsorption: 'end' as MealAbsorptionPhase, mealCarbs: 20, deviation: '2' }),
+            makeDatum({ mealAbsorption: 'start' as MealAbsorptionPhase, mealCarbs: 20, deviation: 0 }),
+            makeDatum({ mealAbsorption: undefined, mealCarbs: 20, deviation: -5 }),
+            makeDatum({ mealAbsorption: 'end' as MealAbsorptionPhase, mealCarbs: 20, deviation: 2 }),
         ];
         const result = accumulateMealDeviations(data, 8);
         // data: max(0, -5) = 0, so deviations stays 0
@@ -75,10 +75,10 @@ describe('accumulateMealDeviations', () => {
 
     it('accumulates multiple meals', () => {
         const data: AutotuneGlucoseDatum[] = [
-            makeDatum({ mealAbsorption: 'start' as MealAbsorptionPhase, mealCarbs: 20, deviation: '0' }),
-            makeDatum({ mealAbsorption: 'end' as MealAbsorptionPhase, mealCarbs: 20, deviation: '10' }),
-            makeDatum({ mealAbsorption: 'start' as MealAbsorptionPhase, mealCarbs: 40, deviation: '0' }),
-            makeDatum({ mealAbsorption: 'end' as MealAbsorptionPhase, mealCarbs: 40, deviation: '15' }),
+            makeDatum({ mealAbsorption: 'start' as MealAbsorptionPhase, mealCarbs: 20, deviation: 0 }),
+            makeDatum({ mealAbsorption: 'end' as MealAbsorptionPhase, mealCarbs: 20, deviation: 10 }),
+            makeDatum({ mealAbsorption: 'start' as MealAbsorptionPhase, mealCarbs: 40, deviation: 0 }),
+            makeDatum({ mealAbsorption: 'end' as MealAbsorptionPhase, mealCarbs: 40, deviation: 15 }),
         ];
         const result = accumulateMealDeviations(data, 8);
         expect(result.totalMealCarbs).toBe(60);
@@ -103,8 +103,8 @@ describe('tuneCSF', () => {
 
     it('adjusts CSF based on meal deviations', () => {
         const data: AutotuneGlucoseDatum[] = [
-            makeDatum({ mealAbsorption: 'start' as MealAbsorptionPhase, mealCarbs: 50, deviation: '0' }),
-            makeDatum({ mealAbsorption: 'end' as MealAbsorptionPhase, mealCarbs: 50, deviation: '100' }),
+            makeDatum({ mealAbsorption: 'start' as MealAbsorptionPhase, mealCarbs: 50, deviation: 0 }),
+            makeDatum({ mealAbsorption: 'end' as MealAbsorptionPhase, mealCarbs: 50, deviation: 100 }),
         ];
         // totalMealCarbs=50, totalDeviations=100
         // fullNewCSF = round(100/50 * 100)/100 = 2.0
@@ -115,8 +115,8 @@ describe('tuneCSF', () => {
 
     it('caps CSF at autotuneMax * pumpCSF', () => {
         const data: AutotuneGlucoseDatum[] = [
-            makeDatum({ mealAbsorption: 'start' as MealAbsorptionPhase, mealCarbs: 10, deviation: '0' }),
-            makeDatum({ mealAbsorption: 'end' as MealAbsorptionPhase, mealCarbs: 10, deviation: '500' }),
+            makeDatum({ mealAbsorption: 'start' as MealAbsorptionPhase, mealCarbs: 10, deviation: 0 }),
+            makeDatum({ mealAbsorption: 'end' as MealAbsorptionPhase, mealCarbs: 10, deviation: 500 }),
         ];
         // Would produce very high CSF, but capped at pumpCSF * autotuneMax = 5 * 1.2 = 6
         const result = tuneCSF(data, 5, 8, 5, DEFAULT_BOUNDS);
@@ -128,8 +128,8 @@ describe('tuneCSF', () => {
 
     it('caps CSF at autotuneMin * pumpCSF', () => {
         const data: AutotuneGlucoseDatum[] = [
-            makeDatum({ mealAbsorption: 'start' as MealAbsorptionPhase, mealCarbs: 100, deviation: '0' }),
-            makeDatum({ mealAbsorption: 'end' as MealAbsorptionPhase, mealCarbs: 100, deviation: '1' }),
+            makeDatum({ mealAbsorption: 'start' as MealAbsorptionPhase, mealCarbs: 100, deviation: 0 }),
+            makeDatum({ mealAbsorption: 'end' as MealAbsorptionPhase, mealCarbs: 100, deviation: 1 }),
         ];
         // fullNewCSF = round(1/100 * 100)/100 = 0.01 → very low
         // newCSF = 0.8*10 + 0.2*0.01 = 8.002 → below pumpCSF * autotuneMin = 10 * 0.7 = 7

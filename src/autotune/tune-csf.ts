@@ -71,14 +71,14 @@ export function accumulateMealDeviations(
             currentDeviations = 0;
             currentMealCarbs = parseInt(String(datum.mealCarbs));
         } else if (datum.mealAbsorption === 'end') {
-            currentDeviations += parseFloat(datum.deviation);
+            currentDeviations += datum.deviation;
             totalMealCarbs += currentMealCarbs;
             totalDeviations += currentDeviations;
         } else {
             // Original: 0 * min_5m_carbimpact always yields 0; preserved for fidelity
             currentDeviations += Math.max(
                 0 * (min5mCarbimpact as number),
-                parseFloat(datum.deviation),
+                datum.deviation,
             );
             currentMealCarbs = Math.max(
                 currentMealCarbs,

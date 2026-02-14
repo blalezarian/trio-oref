@@ -150,7 +150,7 @@ export function sumDeviationsByHour(
 
     for (const datum of basalGlucose) {
         const hour = parseHourFromDatum(datum);
-        hourlyDeviations[hour] += parseFloat(datum.deviation);
+        hourlyDeviations[hour] += datum.deviation;
     }
 
     for (let hour = 0; hour < HOURS_PER_DAY; hour++) {

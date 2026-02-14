@@ -41,9 +41,9 @@ function makeHourlyProfile(rate = 1.0): AutotuneBasalProfileEntry[] {
 
 function makeGlucoseDatum(overrides: Partial<AutotuneGlucoseDatum> = {}): AutotuneGlucoseDatum {
     return {
-        deviation: '0',
+        deviation: 0,
         BGI: -1.5,
-        avgDelta: '-2',
+        avgDelta: -2,
         date: new Date('2025-01-15T08:00:00.000Z').getTime(),
         ...overrides,
     };
@@ -212,8 +212,8 @@ describe('sumDeviationsByHour', () => {
         // Two data points at the same hour
         const hour = new Date('2025-01-15T10:00:00.000Z').getHours();
         const data = [
-            makeGlucoseDatum({ date: new Date('2025-01-15T10:05:00.000Z').getTime(), deviation: '5.5' }),
-            makeGlucoseDatum({ date: new Date('2025-01-15T10:10:00.000Z').getTime(), deviation: '3.2' }),
+            makeGlucoseDatum({ date: new Date('2025-01-15T10:05:00.000Z').getTime(), deviation: 5.5 }),
+            makeGlucoseDatum({ date: new Date('2025-01-15T10:10:00.000Z').getTime(), deviation: 3.2 }),
         ];
         const result = sumDeviationsByHour(data);
         expect(result[hour]).toBe(8.7);
@@ -222,8 +222,8 @@ describe('sumDeviationsByHour', () => {
     it('rounds to 3 decimal places', () => {
         const hour = new Date('2025-01-15T10:00:00.000Z').getHours();
         const data = [
-            makeGlucoseDatum({ date: new Date('2025-01-15T10:00:00.000Z').getTime(), deviation: '1.1111' }),
-            makeGlucoseDatum({ date: new Date('2025-01-15T10:05:00.000Z').getTime(), deviation: '2.2222' }),
+            makeGlucoseDatum({ date: new Date('2025-01-15T10:00:00.000Z').getTime(), deviation: 1.1111 }),
+            makeGlucoseDatum({ date: new Date('2025-01-15T10:05:00.000Z').getTime(), deviation: 2.2222 }),
         ];
         const result = sumDeviationsByHour(data);
         expect(result[hour]).toBe(3.333);
@@ -461,7 +461,7 @@ describe('tuneBasalProfile', () => {
         const glucoseData = [
             makeGlucoseDatum({
                 date: new Date('2025-01-15T06:30:00.000Z').getTime(),
-                deviation: '60',
+                deviation: 60,
             }),
         ];
         const result = tuneBasalProfile(basalProfile, pumpProfile, glucoseData, 40, pump);

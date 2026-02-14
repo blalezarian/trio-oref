@@ -14,9 +14,9 @@ import type {
 
 function makeGlucoseDatum(overrides: Partial<AutotuneGlucoseDatum> = {}): AutotuneGlucoseDatum {
     return {
-        deviation: '2',
+        deviation: 2,
         BGI: -4,
-        avgDelta: '-2',
+        avgDelta: -2,
         date: new Date('2025-01-15T08:00:00.000Z').getTime(),
         ...overrides,
     };
@@ -60,7 +60,7 @@ function makePumpProfile(overrides: Partial<AutotunePumpProfile> = {}): Autotune
 function makePreppedGlucose(overrides: Partial<AutotunePreppedGlucose> = {}): AutotunePreppedGlucose {
     // At least 10 ISF data points needed for ISF tuning
     const isfData = Array.from({ length: 12 }, () =>
-        makeGlucoseDatum({ deviation: '2', BGI: -4, avgDelta: '-2' }),
+        makeGlucoseDatum({ deviation: 2, BGI: -4, avgDelta: -2 }),
     );
     return {
         CRData: [],
@@ -119,7 +119,7 @@ describe('autotuneProfile', () => {
         // Line 89: if (newCSF) { CSF = newCSF; }
         // CSF tuning produces a result when CSFGlucoseData has enough data
         const csfData = Array.from({ length: 15 }, () =>
-            makeGlucoseDatum({ deviation: '5', BGI: -3, avgDelta: '-1' }),
+            makeGlucoseDatum({ deviation: 5, BGI: -3, avgDelta: -1 }),
         );
         const inputs = makeInputs({
             preppedGlucose: makePreppedGlucose({

@@ -14,9 +14,9 @@ import type {
 
 function makeDatum(overrides: Partial<AutotuneGlucoseDatum> = {}): AutotuneGlucoseDatum {
     return {
-        deviation: '5',
+        deviation: 5,
         BGI: -2,
-        avgDelta: '-3',
+        avgDelta: -3,
         ...overrides,
     };
 }
@@ -38,9 +38,9 @@ describe('collectISFStatistics', () => {
 
     it('collects and sorts deviations, BGIs, avgDeltas, ratios', () => {
         const data = [
-            makeDatum({ deviation: '10', BGI: -5, avgDelta: '-1' }),
-            makeDatum({ deviation: '2', BGI: -10, avgDelta: '-4' }),
-            makeDatum({ deviation: '6', BGI: -2, avgDelta: '-2' }),
+            makeDatum({ deviation: 10, BGI: -5, avgDelta: -1 }),
+            makeDatum({ deviation: 2, BGI: -10, avgDelta: -4 }),
+            makeDatum({ deviation: 6, BGI: -2, avgDelta: -2 }),
         ];
         const result = collectISFStatistics(data);
         // All arrays should be sorted ascending
@@ -52,7 +52,7 @@ describe('collectISFStatistics', () => {
     });
 
     it('computes ratio as 1 + deviation / BGI', () => {
-        const data = [makeDatum({ deviation: '4', BGI: -2 })];
+        const data = [makeDatum({ deviation: 4, BGI: -2 })];
         const result = collectISFStatistics(data);
         // ratio = 1 + 4 / -2 = -1
         expect(result.ratios).toEqual([-1]);
@@ -70,7 +70,7 @@ describe('tuneISF', () => {
 
     it('leaves ISF unchanged when fewer than 10 data points', () => {
         const data = Array.from({ length: 5 }, () =>
-            makeDatum({ deviation: '5', BGI: -2, avgDelta: '-1' }),
+            makeDatum({ deviation: 5, BGI: -2, avgDelta: -1 }),
         );
         const result = tuneISF(data, 40, 40, DEFAULT_BOUNDS, undefined);
         expect(result.fullNewISF).toBe(40);
@@ -83,7 +83,7 @@ describe('tuneISF', () => {
         // All ratios = 1 + 5/-2 = -1.5 → p50ratios = -1.5
         // fullNewISF = 40 * -1.5 = -60 → but rounds: -60
         const data = Array.from({ length: 12 }, () =>
-            makeDatum({ deviation: '5', BGI: -2, avgDelta: '-1' }),
+            makeDatum({ deviation: 5, BGI: -2, avgDelta: -1 }),
         );
         const result = tuneISF(data, 40, 40, DEFAULT_BOUNDS, undefined);
         // fullNewISF < 0 so adjustedISF = currentISF = 40
@@ -96,7 +96,7 @@ describe('tuneISF', () => {
         // fullNewISF = 40 * 0.5 = 20
         // adjustedISF = 1.0 * 20 = 20
         const data = Array.from({ length: 12 }, () =>
-            makeDatum({ deviation: '2', BGI: -4, avgDelta: '-1' }),
+            makeDatum({ deviation: 2, BGI: -4, avgDelta: -1 }),
         );
         const result = tuneISF(data, 40, 40, DEFAULT_BOUNDS, undefined);
         // minISF = 40/1.2 = 33.333, maxISF = 40/0.7 = 57.143
@@ -109,7 +109,7 @@ describe('tuneISF', () => {
         // ratio = 1 + 2/-4 = 0.5, fullNewISF = 40 * 0.5 = 20
         // adjustmentFraction = 0.5: adjustedISF = 0.5*20 + 0.5*40 = 30
         const data = Array.from({ length: 12 }, () =>
-            makeDatum({ deviation: '2', BGI: -4, avgDelta: '-1' }),
+            makeDatum({ deviation: 2, BGI: -4, avgDelta: -1 }),
         );
         const result = tuneISF(data, 40, 40, DEFAULT_BOUNDS, 0.5);
         // adjustedISF = 30 < minISF(33.333) → capped
@@ -122,7 +122,7 @@ describe('tuneISF', () => {
         // ratio close to 2 → fullNewISF ~ 80 → adjustedISF ~ 80
         // maxISF = 40/0.7 = 57.143 → capped
         const data = Array.from({ length: 12 }, () =>
-            makeDatum({ deviation: '-3', BGI: -3, avgDelta: '-1' }),
+            makeDatum({ deviation: -3, BGI: -3, avgDelta: -1 }),
         );
         // ratio = 1 + (-3)/(-3) = 2, fullNewISF = 40*2 = 80
         const result = tuneISF(data, 40, 40, DEFAULT_BOUNDS, undefined);
@@ -135,7 +135,7 @@ describe('tuneISF', () => {
         // ratio close to 0 → fullNewISF ~ 0 → adjustedISF ~ 0
         // minISF = 40/1.2 = 33.333 → capped
         const data = Array.from({ length: 12 }, () =>
-            makeDatum({ deviation: '4', BGI: -4, avgDelta: '-1' }),
+            makeDatum({ deviation: 4, BGI: -4, avgDelta: -1 }),
         );
         // ratio = 1 + 4/(-4) = 0, fullNewISF = 40*0 = 0
         const result = tuneISF(data, 40, 40, DEFAULT_BOUNDS, undefined);
@@ -158,7 +158,7 @@ describe('tuneISF', () => {
     it('returns NaN for newISF and adjustedISF when pumpISF is undefined', () => {
         // Line 64: pumpISF === undefined → early return with NaN values
         const data = Array.from({ length: 12 }, () =>
-            makeDatum({ deviation: '2', BGI: -4, avgDelta: '-1' }),
+            makeDatum({ deviation: 2, BGI: -4, avgDelta: -1 }),
         );
         const result = tuneISF(data, 40, undefined, DEFAULT_BOUNDS, undefined);
         expect(Number.isNaN(result.newISF)).toBe(true);
@@ -174,7 +174,7 @@ describe('tuneISF', () => {
         // Line 81: if (fullNewISF < 0) { adjustedISF = currentISF; }
         // ratio = 1 + 5/(-2) = -1.5 → fullNewISF = 40 * -1.5 = -60
         const data = Array.from({ length: 12 }, () =>
-            makeDatum({ deviation: '5', BGI: -2, avgDelta: '-1' }),
+            makeDatum({ deviation: 5, BGI: -2, avgDelta: -1 }),
         );
         const result = tuneISF(data, 40, 40, DEFAULT_BOUNDS, undefined);
         // fullNewISF = -60 < 0 → adjustedISF = currentISF = 40

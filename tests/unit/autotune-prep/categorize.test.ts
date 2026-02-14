@@ -74,46 +74,46 @@ describe('trimOldTreatments', () => {
 // ---------------------------------------------------------------------------
 
 describe('mergeUAMData', () => {
-    function makeDatum(deviation: string) {
+    function makeDatum(deviation: number) {
         return {
             glucose: 100,
             date: Date.now(),
             dateString: '2025-01-15T12:00:00.000Z',
-            avgDelta: '0.00',
+            avgDelta: 0,
             BGI: 0,
             deviation,
         } as Parameters<typeof mergeUAMData>[1][number];
     }
 
     it('merges UAM into basal when categorize_uam_as_basal is true', () => {
-        const UAM = [makeDatum('1.00'), makeDatum('2.00')];
+        const UAM = [makeDatum(1), makeDatum(2)];
         const result = mergeUAMData(true, [], [], [], UAM);
         expect(result.basalGlucoseData).toHaveLength(2);
     });
 
     it('merges UAM into basal when CSF > 12 (1h of carb absorption)', () => {
-        const CSF = Array.from({ length: 13 }, (_, i) => makeDatum(String(i)));
-        const UAM = [makeDatum('1.00'), makeDatum('2.00')];
+        const CSF = Array.from({ length: 13 }, (_, i) => makeDatum(i));
+        const UAM = [makeDatum(1), makeDatum(2)];
         const result = mergeUAMData(false, CSF, [], [], UAM);
         expect(result.basalGlucoseData).toHaveLength(2);
     });
 
     it('adds UAM to basal and trims 50% when 2*basalLength < UAMLength', () => {
-        const basal = [makeDatum('1.00')]; // 1 basal
-        const UAM = [makeDatum('3.00'), makeDatum('4.00'), makeDatum('5.00')]; // 3 UAM
+        const basal = [makeDatum(1)]; // 1 basal
+        const UAM = [makeDatum(3), makeDatum(4), makeDatum(5)]; // 3 UAM
         // 2*1 < 3, so merge + trim 50%
         const result = mergeUAMData(false, [], [], basal, UAM);
         // 4 total, keep lowest 50% = 2
         expect(result.basalGlucoseData).toHaveLength(2);
         // sorted by deviation ascending, kept lowest 50%
-        expect(parseFloat(result.basalGlucoseData[0].deviation)).toBeLessThanOrEqual(
-            parseFloat(result.basalGlucoseData[1].deviation)
+        expect(result.basalGlucoseData[0].deviation).toBeLessThanOrEqual(
+            result.basalGlucoseData[1].deviation
         );
     });
 
     it('adds UAM to ISF and trims 50% when 2*ISFLength < UAMLength and ISF < 10', () => {
-        const ISF = [makeDatum('1.00')]; // 1 ISF
-        const UAM = [makeDatum('3.00'), makeDatum('4.00'), makeDatum('5.00')]; // 3 UAM
+        const ISF = [makeDatum(1)]; // 1 ISF
+        const UAM = [makeDatum(3), makeDatum(4), makeDatum(5)]; // 3 UAM
         // 2*1 < 3 && 1 < 10
         const result = mergeUAMData(false, [], ISF, [], UAM);
         expect(result.ISFGlucoseData).toHaveLength(2);
@@ -121,9 +121,9 @@ describe('mergeUAMData', () => {
 
     it('moves CSF to ISF when too many deviations categorized as meals', () => {
         // 4*basalLength + ISFLength < CSFLength && ISFLength < 10
-        const CSF = Array.from({ length: 20 }, (_, i) => makeDatum(String(i)));
-        const ISF = [makeDatum('1.00')]; // 1 ISF
-        const basal = [makeDatum('1.00')]; // 1 basal
+        const CSF = Array.from({ length: 20 }, (_, i) => makeDatum(i));
+        const ISF = [makeDatum(1)]; // 1 ISF
+        const basal = [makeDatum(1)]; // 1 basal
         // 4*1 + 1 = 5 < 20 && 1 < 10
         const result = mergeUAMData(false, CSF, ISF, basal, []);
         expect(result.CSFGlucoseData).toHaveLength(0);
@@ -131,10 +131,10 @@ describe('mergeUAMData', () => {
     });
 
     it('returns arrays unchanged when no redistribution needed', () => {
-        const CSF = [makeDatum('1.00')];
-        const ISF = Array.from({ length: 15 }, (_, i) => makeDatum(String(i)));
-        const basal = Array.from({ length: 15 }, (_, i) => makeDatum(String(i)));
-        const UAM = [makeDatum('1.00')];
+        const CSF = [makeDatum(1)];
+        const ISF = Array.from({ length: 15 }, (_, i) => makeDatum(i));
+        const basal = Array.from({ length: 15 }, (_, i) => makeDatum(i));
+        const UAM = [makeDatum(1)];
         const result = mergeUAMData(false, CSF, ISF, basal, UAM);
         expect(result.CSFGlucoseData).toHaveLength(1);
         expect(result.ISFGlucoseData).toHaveLength(15);

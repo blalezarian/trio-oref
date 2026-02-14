@@ -139,13 +139,13 @@ export function collectISFStatistics(
     const ratios: number[] = [];
 
     for (const datum of isfGlucose) {
-        const deviation = parseFloat(datum.deviation);
+        const deviation = datum.deviation;
         deviations.push(deviation);
 
         const bgi = parseFloat(String(datum.BGI));
         BGIs.push(bgi);
 
-        const avgDelta = parseFloat(datum.avgDelta);
+        const avgDelta = datum.avgDelta;
         avgDeltas.push(avgDelta);
 
         const ratio = 1 + deviation / bgi;

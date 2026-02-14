@@ -59,9 +59,9 @@ export interface AutotuneGlucoseDatum {
     date?: number;
     displayTime?: string;
     dateString?: string;
-    deviation: string;
+    deviation: number;
     BGI: number;
-    avgDelta: string;
+    avgDelta: number;
     mealAbsorption?: MealAbsorptionPhase;
     mealCarbs?: number;
 }
