@@ -220,22 +220,14 @@ export function calculateTempTargetSensitivityRatio(
 ): number {
     // w/ target 100, temp target 110 = .89, 120 = 0.8, 140 = 0.67, 160 = .57, and 200 = .44
     // e.g.: Sensitivity ratio set to 0.8 based on temp target of 120; Adjusting basal from 1.65 to 1.35; ISF from 58.9 to 73.6
-    //sensitivityRatio = 2/(2+(target_bg-normalTarget)/40);
     const c = halfBasalTarget - normalTarget;
-    // getting multiplication less or equal to 0 means that we have a really low target with a really low halfBasalTarget
-    // with low TT and lowTTlowersSensitivity we need autosens_max as a value
-    // we use multiplication instead of the division to avoid "division by zero error"
-    let sensitivityRatio: number;
-    if (c * (c + target_bg-normalTarget) <= 0.0) {
-      sensitivityRatio = autosens_max;
-    }
-    else {
-      sensitivityRatio = c/(c+target_bg-normalTarget);
-    }
+    // getting multiplication <= 0 means very low target with very low halfBasalTarget
+    // use multiplication instead of division to avoid "division by zero error"
+    const rawRatio = c * (c + target_bg - normalTarget) <= 0.0
+        ? autosens_max
+        : c / (c + target_bg - normalTarget);
     // limit sensitivityRatio to profile.autosens_max (1.2x by default)
-    sensitivityRatio = Math.min(sensitivityRatio, autosens_max);
-    sensitivityRatio = round(sensitivityRatio,2);
-    return sensitivityRatio;
+    return round(Math.min(rawRatio, autosens_max), 2);
 }
 
 /** Adjusts basal rate by sensitivity ratio (non-dynamic ISF path). */
@@ -364,19 +356,17 @@ export function adjustISFBySensitivity(
     adjustedSens: number;
     isfreason: string;
 } {
-    let isfreason = "";
-    const profile_sens = round(sensitivity, 1);
-    let adjustedSens = sensitivity;
-    if (autosens_data !== undefined && autosens_data) {
-        adjustedSens = sensitivity / sensitivityRatio;
-        adjustedSens = round(adjustedSens, 1);
-        if (adjustedSens !== sensitivity) {
-            console.log(`ISF from ${convert_bg(sensitivity, profile)} to ${convert_bg(adjustedSens, profile)}`);
-        } else {
-            console.log(`ISF unchanged: ${convert_bg(adjustedSens, profile)}`);
-        }
-        isfreason += `Autosens ratio: ${round(sensitivityRatio, 2)}, ISF: ${convert_bg(sensitivity, profile)}\u2192${convert_bg(adjustedSens, profile)}`;
-
+    if (!autosens_data) {
+        return { adjustedSens: sensitivity, isfreason: '' };
     }
+
+    const adjustedSens = round(sensitivity / sensitivityRatio, 1);
+    if (adjustedSens !== sensitivity) {
+        console.log(`ISF from ${convert_bg(sensitivity, profile)} to ${convert_bg(adjustedSens, profile)}`);
+    } else {
+        console.log(`ISF unchanged: ${convert_bg(adjustedSens, profile)}`);
+    }
+    const isfreason = `Autosens ratio: ${round(sensitivityRatio, 2)}, ISF: ${convert_bg(sensitivity, profile)}\u2192${convert_bg(adjustedSens, profile)}`;
+
     return { adjustedSens, isfreason };
 }
