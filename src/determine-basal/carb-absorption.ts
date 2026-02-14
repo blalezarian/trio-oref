@@ -35,12 +35,9 @@ export function calculateCarbAbsorption(
     profile: Profile,
     systemTime: Date
 ): CarbAbsorptionResult {
-    // carb impact and duration are 0 unless changed below
-    let carbImpact = 0;
-    let carbImpactDuration = 0;
     // calculate current carb absorption rate, and how long to absorb all carbs
     // CI = current carb impact on BG in mg/dL/5m
-    carbImpact = round((minDelta - bgImpact),1);
+    let carbImpact = round((minDelta - bgImpact), 1);
     const uamCarbImpact = round((minDelta - bgImpact),1);
     // ISF (mg/dL/U) / CR (g/U) = CSF (mg/dL/g)
 
@@ -79,7 +76,7 @@ export function calculateCarbAbsorption(
     //5m data points = g * (1U/10g) * (40mg/dL/1U) / (mg/dL/5m)
     // duration (in 5m data points) = COB (g) * CSF (mg/dL/g) / carbImpact (mg/dL/5m)
     // limitLog carbImpactDuration to remainingCATime hours: the reset goes to remainingCI
-    carbImpactDuration = calculateCarbImpactDuration(carbImpact, remainingCATime, meal_data.mealCOB, carbSensFactor);
+    const carbImpactDuration = calculateCarbImpactDuration(carbImpact, remainingCATime, meal_data.mealCOB, carbSensFactor);
 
     // duration (hours) = duration (5m) * 5 / 60 * 2 (to account for linear decay)
     console.log(`Carb Impact:${carbImpact}mg/dL per 5m; CI Duration:${round(carbImpactDuration * PRED_INTERVAL_MINUTES / MINUTES_PER_HOUR * LINEAR_DECAY_FACTOR, 1)}hours; remaining CI (${remainingCATime / LINEAR_DECAY_FACTOR}h peak):${round(remainingCIpeak, 1)}mg/dL per 5m`);
