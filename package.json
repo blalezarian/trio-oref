@@ -6,6 +6,7 @@
     "test": "vitest run",
     "test:char": "vitest run tests/characterization",
     "test:unit": "vitest run tests/unit",
+    "test:integration": "vitest run tests/integration",
     "test:legacy": "vitest run tests/legacy",
     "test:char:watch": "vitest",
     "test:char:update": "vitest run --update",
