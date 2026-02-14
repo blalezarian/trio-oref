@@ -38,7 +38,7 @@ import {
 } from './constants';
 
 import { round, convertBG, calculateExpectedDelta, validateIOBAndTemps, calculateDeviation } from './helpers';
-import { enable_smb } from './smb-eligibility';
+import { enableSMB as checkSMBEnabled } from './smb-eligibility';
 import { calculateDynamicISF } from './dynamic-isf';
 import { validateCGMData } from './cgm-validation';
 import { configureSensitivityAndTargets } from './sensitivity-targets';
@@ -169,7 +169,7 @@ export function determine_basal(
     if (trio_custom_variables.smbIsOff) {
         console.log("SMBs are always off.");
     } else {
-        enableSMB = enable_smb(
+        enableSMB = checkSMBEnabled(
             profile,
             microBolusAllowed,
             meal_data,

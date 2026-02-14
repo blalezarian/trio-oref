@@ -596,7 +596,7 @@ describe('determine-basal branch coverage tests', () => {
   });
 
   // Line 66: startTime == endTime && currentHour == startTime — SMB scheduling
-  // Note: enable_smb is called only when microBolusAllowed && enableSMB criteria pass
+  // Note: enableSMB is called only when microBolusAllowed && enableSMB criteria pass
   // We need smbIsScheduledOff=true, startTime==endTime, and currentHour==startTime
   it('SMB scheduling: startTime == endTime == currentHour disables SMB', () => {
     const localHour = new Date(FIXED_DATE).getHours();

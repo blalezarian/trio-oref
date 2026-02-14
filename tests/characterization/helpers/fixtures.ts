@@ -1674,7 +1674,7 @@ export function generateAllFixtures(): FixtureSpec[] {
 
     // =====================================================================
     // CATEGORY: SMB scheduling — lines 57-68 (smbIsScheduledOff paths)
-    // NOTE: enable_smb uses time.getHours() which returns LOCAL hour.
+    // NOTE: enableSMB uses time.getHours() which returns LOCAL hour.
     //       FIXED_LOCAL_HOUR is computed dynamically for timezone portability.
     // =====================================================================
     // Lines 57-59: startTime < endTime, current hour is in [start, end)
