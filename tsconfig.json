@@ -8,12 +8,7 @@
     "noEmit": true,
     "resolveJsonModule": true,
     "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "baseUrl": ".",
-    "paths": {
-      "@lib/*": ["src/*"],
-      "@tests/*": ["tests/*"]
-    }
+    "forceConsistentCasingInFileNames": true
   },
   "include": [
     "src/**/*.ts",
