@@ -16,6 +16,15 @@
 /** Insulin absorption curve model used across all modules */
 export type InsulinCurve = 'bilinear' | 'rapid-acting' | 'ultra-rapid';
 
+/** ISF (Insulin Sensitivity Factor) profile with scheduled sensitivities */
+export interface ISFProfile {
+    sensitivities: Array<{
+        offset: number;
+        sensitivity: number;
+        endOffset: number;
+    }>;
+}
+
 /** Single entry in a basal rate schedule (shared across IOB, autotune, autotune-prep) */
 export interface BasalProfileEntry {
     i: number;

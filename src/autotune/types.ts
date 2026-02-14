@@ -1,4 +1,4 @@
-import type { InsulinCurve, MealAbsorptionPhase, BasalProfileEntry } from '../types/index';
+import type { InsulinCurve, MealAbsorptionPhase, BasalProfileEntry, ISFProfile } from '../types/index';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -10,15 +10,8 @@ export interface AutotuneBasalProfileEntry extends BasalProfileEntry {
     untuned?: number;
 }
 
-// --- ISF profile ---
-
-export interface AutotuneISFProfile {
-    sensitivities: Array<{
-        offset: number;
-        sensitivity: number;
-        endOffset: number;
-    }>;
-}
+/** @deprecated Use ISFProfile from types/index.ts */
+export type AutotuneISFProfile = ISFProfile;
 
 // --- Previous autotune profile (output of prior run) ---
 
