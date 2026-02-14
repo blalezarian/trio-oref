@@ -26,12 +26,12 @@ module.exports = {
   entry: {
     iob: './src/iob/index.ts',
     meal: './src/meal/index.ts',
-    "determineBasal": './src/determine-basal/index.ts',
+    "determineBasal": './src/determineBasal/index.ts',
     "glucoseGetLast": './src/glucose/index.ts',
-    "basalSetTemp": './src/set-temp-basal/index.ts',
+    "basalSetTemp": './src/setTempBasal/index.ts',
     autosens: './src/autosens/index.ts',
     profile: './src/profile/index.ts',
-    "autotunePrep": './src/autotune-prep/index.ts',
+    "autotunePrep": './src/autotunePrep/index.ts',
     "autotuneCore": './src/autotune/index.ts'
   },
   output: {
