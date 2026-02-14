@@ -4,7 +4,7 @@ import { bucketGlucoseWithInterpolation } from './bucketGlucose';
 import { analyzeAbsorption } from './deviationLoop';
 import type { GlucoseEntry, PumpHistoryEvent, ISODateString, EpochMillis } from '../types/index';
 import type { IobProfile, HistoryBasalProfileEntry, IobInputs } from '../iob/types';
-import type { CarbAbsorptionResult } from './deviationLoop';
+import type { DeviationAbsorptionResult } from './deviationLoop';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -27,7 +27,7 @@ interface CarbAbsorptionInputs {
 // ---------------------------------------------------------------------------
 
 /** Orchestrate COB detection: normalize glucose, bucket, and analyze absorption */
-export function detectCarbAbsorption(inputs: CarbAbsorptionInputs): CarbAbsorptionResult {
+export function detectCarbAbsorption(inputs: CarbAbsorptionInputs): DeviationAbsorptionResult {
     const profile = inputs.iob_inputs.profile;
     const glucoseData = normalizeGlucoseData(inputs.glucose_data as GlucoseEntry[]);
     const iobInputs = inputs.iob_inputs;

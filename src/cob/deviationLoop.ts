@@ -16,7 +16,7 @@ import { resolveGlucoseTime } from '../utils/time';
 // Types
 // ---------------------------------------------------------------------------
 
-export interface CarbAbsorptionResult {
+export interface DeviationAbsorptionResult {
     carbsAbsorbed: number;
     currentDeviation: number | undefined;
     maxDeviation: number;
@@ -50,7 +50,7 @@ export function analyzeAbsorption(
     treatments: IobTreatment[],
     mealTime: Date,
     carbImpactTime: Date,
-): CarbAbsorptionResult {
+): DeviationAbsorptionResult {
     let carbsAbsorbed = 0;
     let currentDeviation: number | undefined;
     let slopeFromMaxDeviation = 0;

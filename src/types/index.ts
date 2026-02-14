@@ -758,21 +758,6 @@ export interface DetermineBasalFixture {
 // IOB Module inputs/outputs (for sub-module fixtures)
 // ---------------------------------------------------------------------------
 
-/** Inputs to iob/index.js generate() */
-export interface IOBInputs {
-  clock: ISODateString;
-  history: unknown[];
-  profile: {
-    dia: number;
-    curve: InsulinCurve;
-    useCustomPeakTime?: boolean;
-    insulinPeakTime?: number;
-    current_basal?: number;
-    suspend_zeros_iob?: boolean;
-  };
-  autosens?: AutosensData;
-}
-
 /** Inputs to meal/index.js generate() */
 export interface MealInputs {
   clock: ISODateString;
