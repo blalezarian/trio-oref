@@ -3,6 +3,8 @@ import {
     DEFAULT_MAX_DAILY_SAFETY_MULTIPLIER,
     DEFAULT_CURRENT_BASAL_SAFETY_MULTIPLIER,
     MAX_TEMP_BASAL_DURATION_MINUTES,
+    RATE_TOLERANCE_LOW,
+    RATE_TOLERANCE_HIGH,
 } from '../shared/constants';
 
 // ---------------------------------------------------------------------------
@@ -11,10 +13,6 @@ import {
 
 /** Duration tolerance (minutes) when comparing current temp to suggested */
 const TEMP_DURATION_TOLERANCE_MINUTES = 10;
-/** Upper rate tolerance factor for current temp comparison */
-const RATE_TOLERANCE_HIGH = 1.2;
-/** Lower rate tolerance factor for current temp comparison */
-const RATE_TOLERANCE_LOW = 0.8;
 
 // ---------------------------------------------------------------------------
 // Types

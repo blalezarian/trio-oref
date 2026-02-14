@@ -1,13 +1,13 @@
 import {
     MINUTES_PER_HOUR,
     TEMP_BASAL_DURATION_MINUTES,
+    RATE_TOLERANCE_LOW,
 } from '../../shared/constants';
 
 import { roundBasal } from '../../utils/rounding';
 
 import {
     TEMP_SHORT_DURATION_MINUTES,
-    RATE_TOLERANCE_LOW,
     BASAL_SHORTFALL_FRACTION,
     LOW_TEMP_CORRECTION_FACTOR,
     LOW_BG_SAFETY_THRESHOLD,

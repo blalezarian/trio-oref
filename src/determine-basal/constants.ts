@@ -45,8 +45,6 @@ export const TEMP_END_GAP_MINUTES = 5;
 export const TEMP_ACTIVE_DURATION_MINUTES = 15;
 /** Short temp duration threshold (minutes) */
 export const TEMP_SHORT_DURATION_MINUTES = 5;
-/** Low rate tolerance factor for current temp comparison */
-export const RATE_TOLERANCE_LOW = 0.8;
 /** Fraction of basal below which scheduled insulin is considered a shortfall */
 export const BASAL_SHORTFALL_FRACTION = 0.3;
 /** Factor applied to insulinReq when current temp delivers too much */

@@ -95,6 +95,13 @@ export const DEFAULT_SMB_INTERVAL_MINUTES = 3;
 /** Default maxSMBBasalMinutes */
 export const DEFAULT_MAX_SMB_BASAL_MINUTES = 30;
 
+// === Temp Basal Rate Tolerance ===
+
+/** Lower rate tolerance factor for current temp comparison */
+export const RATE_TOLERANCE_LOW = 0.8;
+/** Upper rate tolerance factor for current temp comparison */
+export const RATE_TOLERANCE_HIGH = 1.2;
+
 // === Suspend / Max DIA Window ===
 
 /** Maximum DIA hours for suspend IOB calculation */
