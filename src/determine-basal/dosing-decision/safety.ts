@@ -130,12 +130,15 @@ export function checkTopOfHourCancel(ctx: DosingContext): PhaseOutcome {
     } = ctx.inputs;
     const { result } = ctx;
 
-    if (profile.skip_neutral_temps && result.deliverAt!.getMinutes() >= TOP_OF_HOUR_WINDOW_MINUTES) {
+    const deliverAtMinutes = result.deliverAt?.getMinutes() ?? 0;
+
+    if (profile.skip_neutral_temps && deliverAtMinutes >= TOP_OF_HOUR_WINDOW_MINUTES) {
+        const minutesBeforeHour = MINUTES_PER_HOUR - deliverAtMinutes;
         if (!ctx.enableSMB) {
-            result.reason += `; Canceling temp at ${MINUTES_PER_HOUR - result.deliverAt!.getMinutes()}min before turn of the hour to avoid beeping of MDT. SMB are disabled anyways.`;
+            result.reason += `; Canceling temp at ${minutesBeforeHour}min before turn of the hour to avoid beeping of MDT. SMB are disabled anyways.`;
             return { done: true, result: tempBasalFunctions.setTempBasal(0, 0, profile, result, currenttemp) };
         } else {
-            console.log(`${MINUTES_PER_HOUR - result.deliverAt!.getMinutes()}min before turn of the hour, but SMB's are enabled - not skipping neutral temps.`);
+            console.log(`${minutesBeforeHour}min before turn of the hour, but SMB's are enabled - not skipping neutral temps.`);
         }
     }
 

@@ -494,14 +494,14 @@ function categorizeBGDatums(opts: CategorizeOpts): CategorizeResult {
  *  Called after the main loop has assigned glucose, date, dateString, avgDelta, BGI, deviation. */
 function toGlucoseDatum(entry: CategorizeGlucoseEntry): CategorizeGlucoseDatum {
     return {
-        glucose: entry.glucose!,
+        glucose: entry.glucose ?? 0,
         ...(entry.sgv !== undefined && { sgv: entry.sgv }),
-        date: entry.date!,
-        dateString: entry.dateString!,
+        date: entry.date ?? 0,
+        dateString: entry.dateString ?? '',
         ...(entry.displayTime !== undefined && { displayTime: entry.displayTime }),
-        avgDelta: entry.avgDelta!,
-        BGI: entry.BGI!,
-        deviation: entry.deviation!,
+        avgDelta: entry.avgDelta ?? 0,
+        BGI: entry.BGI ?? 0,
+        deviation: entry.deviation ?? 0,
         ...(entry.mealAbsorption !== undefined && { mealAbsorption: entry.mealAbsorption }),
         ...(entry.mealCarbs !== undefined && { mealCarbs: entry.mealCarbs }),
         ...(entry.uamAbsorption !== undefined && { uamAbsorption: entry.uamAbsorption }),
