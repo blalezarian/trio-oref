@@ -20,16 +20,16 @@ interface CarbsInputs {
 }
 
 function carbRatioLookup(inputs: CarbsInputs, now: Date = new Date()): number | undefined {
-    const carbratioData = inputs.carbratio;
-    if (!carbratioData?.schedule) {
+    const carbRatioData = inputs.carbratio;
+    if (!carbRatioData?.schedule) {
         return;
     }
-    if (carbratioData.units !== "grams" && carbratioData.units !== "exchanges") {
-        console.log(`Error: Unsupported carb_ratio units ${carbratioData.units}`);
+    if (carbRatioData.units !== "grams" && carbRatioData.units !== "exchanges") {
+        console.log(`Error: Unsupported carb_ratio units ${carbRatioData.units}`);
         return;
     }
 
-    const schedule = carbratioData.schedule;
+    const schedule = carbRatioData.schedule;
     let carbRatio = schedule[schedule.length - 1];
 
     for (let entryIdx = 0; entryIdx < schedule.length - 1; entryIdx++) {
@@ -45,7 +45,7 @@ function carbRatioLookup(inputs: CarbsInputs, now: Date = new Date()): number | 
         return;
     }
 
-    if (carbratioData.units === "exchanges") {
+    if (carbRatioData.units === "exchanges") {
         carbRatio.ratio = GRAMS_PER_EXCHANGE / carbRatio.ratio;
     }
     return carbRatio.ratio;
