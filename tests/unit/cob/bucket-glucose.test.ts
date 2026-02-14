@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { bucketGlucoseWithInterpolation, interpolateMissingPoints } from '../../../src/cob/bucket-glucose';
-import { resolveGlucoseDeltas } from '../../../src/cob/deviation-loop';
+import { bucketGlucoseWithInterpolation, interpolateMissingPoints } from '../../../src/cob/bucketGlucose';
+import { resolveGlucoseDeltas } from '../../../src/cob/deviationLoop';
 import type { GlucoseEntry, BucketedGlucose } from '../../../src/types/index';
 
 const FIXED_TIME = '2025-01-15T12:00:00.000Z';

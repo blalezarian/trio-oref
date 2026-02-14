@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { analyzeAbsorption, resolveGlucoseDeltas } from '../../../src/cob/deviation-loop';
+import { analyzeAbsorption, resolveGlucoseDeltas } from '../../../src/cob/deviationLoop';
 import { resetISFCache } from '../../../src/profile/isf';
 import type { BucketedGlucose } from '../../../src/types/index';
 import type { IobProfile, HistoryBasalProfileEntry } from '../../../src/iob/types';

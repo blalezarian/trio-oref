@@ -1,10 +1,10 @@
 import { calcTempTreatments as findInsulin } from '../iob/extractTreatments';
 import { normalizeGlucoseData } from '../utils/glucoseMath';
-import { bucketGlucoseWithInterpolation } from './bucket-glucose';
-import { analyzeAbsorption } from './deviation-loop';
+import { bucketGlucoseWithInterpolation } from './bucketGlucose';
+import { analyzeAbsorption } from './deviationLoop';
 import type { GlucoseEntry, PumpHistoryEvent, ISODateString, EpochMillis } from '../types/index';
 import type { IobProfile, HistoryBasalProfileEntry, IobInputs } from '../iob/types';
-import type { CarbAbsorptionResult } from './deviation-loop';
+import type { CarbAbsorptionResult } from './deviationLoop';
 
 // ---------------------------------------------------------------------------
 // Types
