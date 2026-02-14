@@ -75,50 +75,26 @@ export function determine_basal(
         return { reason: '', error: 'Error: could not get current basal rate' } as DetermineBasalResult;
     }
 
-    let profileTarget = profile.min_bg;
     const overrideTarget = trio_custom_variables.overrideTarget;
-    if (overrideTarget != 0 && overrideTarget != OVERRIDE_TARGET_SENTINEL && trio_custom_variables.useOverride && !profile.temptargetSet) {
-        profileTarget = overrideTarget;
-    }
-    const smbIsOff = trio_custom_variables.smbIsOff;
-    const isfAndCr = trio_custom_variables.isfAndCr;
-    const isf = trio_custom_variables.isf;
-    const cr_ = trio_custom_variables.cr;
+    const profileTarget = resolveProfileTarget(profile.min_bg, overrideTarget, trio_custom_variables.useOverride, profile.temptargetSet);
+    const { overrideFactor, sensitivity, carbRatio } = resolveOverrides(profile, trio_custom_variables);
+
     // tdd past 24 hour
     let tdd = trio_custom_variables.currentTDD;
+    let dynISFenabled = preferences.useNewFormula;
 
-    let dynISFenabled = preferences.useNewFormula
-
-    let insulinForManualBolus = 0;
+    const insulinForManualBolus = 0;
     const manualBolusErrorString = 0;
+    const systemTime = currentTime ? new Date(currentTime) : new Date();
 
-    let systemTime = new Date();
-    if (currentTime) {
-        systemTime = new Date(currentTime);
-    }
-
-    const weightedAverage = trio_custom_variables.weightedAverage;
-    let overrideFactor = 1;
-    let sensitivity = profile.sens;
-    let carbRatio = profile.carb_ratio;
-    if (trio_custom_variables.useOverride) {
-        overrideFactor = trio_custom_variables.overridePercentage / 100;
-        if (isfAndCr) {
-            sensitivity /= overrideFactor;
-            carbRatio /= overrideFactor;
-        } else {
-            if (cr_) { carbRatio /= overrideFactor; }
-            if (isf) { sensitivity /= overrideFactor; }
-        }
-    }
-    const weightPercentage = profile.weightPercentage;
-    const average_total_data = trio_custom_variables.average_total_data;
+    const weightPercentage = Number(profile.weightPercentage);
+    const { weightedAverage, average_total_data } = trio_custom_variables;
 
     const tdd_before = tdd;
     const dynResult = calculateDynamicISF(
         glucose_status, profile, preferences, autosens_data,
         sensitivity, profileTarget, dynISFenabled, tdd,
-        weightedAverage, average_total_data, Number(weightPercentage), middleWare
+        weightedAverage, average_total_data, weightPercentage, middleWare
     );
     dynISFenabled = dynResult.dynISFenabled;
     tdd = dynResult.tdd;
@@ -135,7 +111,7 @@ export function determine_basal(
         glucose_status, profile, autosens_data, profileTarget, overrideTarget,
         bg, dynISFenabled, newRatio, tdd24h_14d_Ratio, overrideFactor,
         profile_current_basal, tdd_before, weightedAverage, average_total_data,
-        Number(weightPercentage), sensitivity, carbRatio, cgmValidation.basal, cgmValidation.reason
+        weightPercentage, sensitivity, carbRatio, cgmValidation.basal, cgmValidation.reason
     );
     if ('earlyReturn' in sensTargets) return sensTargets.earlyReturn;
     const { max_iob, target_bg, min_bg, max_bg, high_bg, sensitivityRatio, adjustedSens, isfreason, targetLog } = sensTargets;
@@ -190,9 +166,8 @@ export function determine_basal(
     let enableSMB = false;
 
     // If SMB is always off, don't bother checking if we should enable SMBs
-    if (smbIsOff) {
+    if (trio_custom_variables.smbIsOff) {
         console.log("SMBs are always off.");
-        enableSMB = false;
     } else {
         enableSMB = enable_smb(
             profile,
@@ -244,4 +219,45 @@ export function determine_basal(
         isfreason, targetLog, tddReason,
     });
 
+}
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+/** Resolves the effective profile target, applying override if active and no temp target is set. */
+export function resolveProfileTarget(
+    minBG: number,
+    overrideTarget: number,
+    useOverride: boolean,
+    temptargetSet: boolean | undefined,
+): number {
+    if (overrideTarget != 0 && overrideTarget != OVERRIDE_TARGET_SENTINEL && useOverride && !temptargetSet) {
+        return overrideTarget;
+    }
+    return minBG;
+}
+
+/** Resolves override factor, sensitivity, and carb ratio based on trio_custom_variables overrides. */
+export function resolveOverrides(
+    profile: Profile,
+    trio_custom_variables: TrioCustomVariables,
+): { overrideFactor: number; sensitivity: number; carbRatio: number } {
+    if (!trio_custom_variables.useOverride) {
+        return { overrideFactor: 1, sensitivity: profile.sens, carbRatio: profile.carb_ratio };
+    }
+
+    const overrideFactor = trio_custom_variables.overridePercentage / 100;
+    let sensitivity = profile.sens;
+    let carbRatio = profile.carb_ratio;
+
+    if (trio_custom_variables.isfAndCr) {
+        sensitivity /= overrideFactor;
+        carbRatio /= overrideFactor;
+    } else {
+        if (trio_custom_variables.cr) { carbRatio /= overrideFactor; }
+        if (trio_custom_variables.isf) { sensitivity /= overrideFactor; }
+    }
+
+    return { overrideFactor, sensitivity, carbRatio };
 }
