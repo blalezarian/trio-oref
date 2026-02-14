@@ -11,7 +11,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { generate } from '../../../src/autotune-prep/index';
+import { generate } from '../../../src/autotunePrep/index';
 
 // ---------------------------------------------------------------------------
 // Constants & helpers

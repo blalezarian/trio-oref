@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { trimOldTreatments, mergeUAMData } from '../../../src/autotune-prep/categorize';
+import { trimOldTreatments, mergeUAMData } from '../../../src/autotunePrep/categorize';
 
 beforeEach(() => {
     vi.spyOn(console, 'log').mockImplementation(() => {});

@@ -13,7 +13,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { categorizeBGDatums } from '../../../src/autotune-prep/categorize';
+import { categorizeBGDatums } from '../../../src/autotunePrep/categorize';
 
 // ---------------------------------------------------------------------------
 // Constants & helpers
