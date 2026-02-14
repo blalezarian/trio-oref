@@ -19,11 +19,9 @@ export const MMOL_TO_MGDL_FACTOR = 18;
 
 // === Time Constants ===
 
-export const MS_PER_SECOND = 1000;
 export const MS_PER_MINUTE = 60_000;
 export const MS_PER_HOUR = 3_600_000;
 export const MS_PER_5_MIN = 300_000;
-export const SECONDS_PER_MINUTE = 60;
 export const MINUTES_PER_HOUR = 60;
 export const MINUTES_PER_DAY = 1440;
 export const HOURS_PER_DAY = 24;
@@ -42,20 +40,6 @@ export const DEFAULT_MAX_DAILY_SAFETY_MULTIPLIER = 3;
 /** Default current_basal_safety_multiplier: max temp = N * current_basal */
 export const DEFAULT_CURRENT_BASAL_SAFETY_MULTIPLIER = 4;
 
-// === CGM Noise Thresholds ===
-
-export const NOISE_CLEAN_THRESHOLD = 0.35;
-export const NOISE_LIGHT_THRESHOLD = 0.5;
-export const NOISE_MEDIUM_THRESHOLD = 0.7;
-/** |deltaSGV| exceeding this indicates Heavy noise */
-export const MAX_DELTA_FOR_NOISE = 30;
-/** Glucose below this in noise context is considered invalid */
-export const NOISE_MIN_VALID_GLUCOSE = 30;
-/** MAXRECORDS for sensor noise calculation window */
-export const NOISE_MAX_RECORDS = 8;
-/** MINRECORDS required for sensor noise calculation */
-export const NOISE_MIN_RECORDS = 4;
-
 // === Insulin Curve Defaults ===
 
 /** Default rapid-acting peak time (minutes) */
@@ -68,9 +52,6 @@ export const MIN_DIA_HOURS = 3;
 export const MIN_LONG_DIA_HOURS = 5;
 /** Maximum DIA for autotune in hours */
 export const MAX_DIA_HOURS = 12;
-/** Default DIA in hours */
-export const DEFAULT_DIA_HOURS = 3;
-
 // === Autotune / Autosens Adjustment ===
 
 /** Default autosens/autotune maximum ratio */
@@ -143,14 +124,6 @@ export const BASAL_SCALE_MEDTRONIC = 40;
 
 /** Logarithmic formula denominator */
 export const DYNAMIC_ISF_LOG_DENOMINATOR = 1800;
-/** Chris Wilson formula denominator */
-export const DYNAMIC_ISF_CHRIS_DENOMINATOR = 277700;
-
-// === Trend Calculation ===
-
-/** Maximum minutes for trend history window */
-export const TREND_MAX_MINUTES = 16;
-
 // === Carb Ratio Bounds ===
 
 /** Minimum valid carb ratio (g/U) */

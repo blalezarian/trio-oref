@@ -43,4 +43,3 @@ export function iobCalc(
     return iobCalcExponential(treatment, minsAgo, dia, peak, profile);
 }
 
-export { iobCalc as calculate };
