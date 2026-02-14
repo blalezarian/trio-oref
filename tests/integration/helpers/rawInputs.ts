@@ -14,6 +14,7 @@ import type {
     AutosensData,
     TrioCustomVariables,
     Preferences,
+    DetermineBasalResult,
 } from '../../../src/types/index';
 import type { ProfileInputs } from '../../../src/profile/types';
 
@@ -142,13 +143,35 @@ interface CarbEvent {
     carbs: number;
 }
 
+interface SuspendResumeEvent {
+    /** Minutes before FIXED_TIME the suspend occurred */
+    suspendMinutesAgo: number;
+    /** Minutes before FIXED_TIME the resume occurred */
+    resumeMinutesAgo: number;
+}
+
+interface NightscoutBolusEvent {
+    /** Minutes before FIXED_TIME this bolus occurred */
+    minutesAgo: number;
+    /** Insulin amount in Units */
+    insulin: number;
+    /** Nightscout event type */
+    eventType: 'Meal Bolus' | 'Correction Bolus' | 'Snack Bolus' | 'Bolus Wizard';
+    /** Carbs in grams (optional, for meal boluses) */
+    carbs?: number;
+}
+
 interface PumpHistorySpec {
-    /** Temp basal events to include */
+    /** Temp basal events to include (Medtronic format) */
     tempBasals?: TempBasalEvent[];
-    /** Bolus events to include */
+    /** Bolus events to include (Medtronic format) */
     boluses?: BolusEvent[];
-    /** Carb entries to include */
+    /** Carb entries to include (Medtronic format) */
     carbEntries?: CarbEvent[];
+    /** Pump suspend/resume pairs */
+    suspendResumes?: SuspendResumeEvent[];
+    /** Nightscout Care Portal bolus events */
+    nightscoutBoluses?: NightscoutBolusEvent[];
 }
 
 /**
@@ -192,6 +215,29 @@ export function buildPumpHistory(spec: PumpHistorySpec): PumpHistoryEvent[] {
             _type: 'JournalEntryMealMarker',
             carb_input: carb.carbs,
             timestamp,
+        });
+    }
+
+    for (const sr of spec.suspendResumes ?? []) {
+        const suspendTime = new Date(FIXED_DATE - sr.suspendMinutesAgo * MS_PER_MINUTE).toISOString();
+        const resumeTime = new Date(FIXED_DATE - sr.resumeMinutesAgo * MS_PER_MINUTE).toISOString();
+        events.push({
+            _type: 'PumpSuspend',
+            timestamp: suspendTime,
+        });
+        events.push({
+            _type: 'PumpResume',
+            timestamp: resumeTime,
+        });
+    }
+
+    for (const ns of spec.nightscoutBoluses ?? []) {
+        const created_at = new Date(FIXED_DATE - ns.minutesAgo * MS_PER_MINUTE).toISOString();
+        events.push({
+            eventType: ns.eventType,
+            created_at,
+            insulin: ns.insulin,
+            carbs: ns.carbs,
         });
     }
 
@@ -346,4 +392,6 @@ export interface RawPipelineInputs {
     trioCustomVariables?: Partial<TrioCustomVariables>;
     /** Preferences overrides */
     preferences?: Partial<Preferences>;
+    /** Optional middleware function to modify determine-basal result */
+    middleWare?: (arg: DetermineBasalResult) => DetermineBasalResult;
 }

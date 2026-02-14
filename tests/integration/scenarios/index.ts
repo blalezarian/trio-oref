@@ -20,6 +20,13 @@ import { bgTransitionScenarios } from './bgTransitions';
 import { stackedMealScenarios } from './stackedMeals';
 import { sensitiveProfileScenarios } from './sensitiveProfile';
 import { profileSettingsScenarios } from './profileSettings';
+import { insulinCurveScenarios } from './insulinCurves';
+import { multiScheduleScenarios } from './multiSchedule';
+import { pumpSuspendScenarios } from './pumpSuspend';
+import { nightscoutEventScenarios } from './nightscoutEvents';
+import { mmolUnitScenarios } from './mmolUnits';
+import { middlewareScenarios } from './middleware';
+import { safetyBoundsScenarios } from './safetyBounds';
 import type { IntegrationScenario } from './types';
 
 export const allScenarios: IntegrationScenario[] = [
@@ -41,6 +48,13 @@ export const allScenarios: IntegrationScenario[] = [
     ...stackedMealScenarios,
     ...sensitiveProfileScenarios,
     ...profileSettingsScenarios,
+    ...insulinCurveScenarios,
+    ...multiScheduleScenarios,
+    ...pumpSuspendScenarios,
+    ...nightscoutEventScenarios,
+    ...mmolUnitScenarios,
+    ...middlewareScenarios,
+    ...safetyBoundsScenarios,
 ];
 
 export type { IntegrationScenario } from './types';

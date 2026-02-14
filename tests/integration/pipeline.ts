@@ -166,7 +166,7 @@ export function runFullPipeline(rawInputs: RawPipelineInputs): PipelineResult {
         preferences,
         rawInputs.profileInputs.basals,
         trioCustomVariables,
-        undefined,
+        rawInputs.middleWare,
     );
 
     return {
