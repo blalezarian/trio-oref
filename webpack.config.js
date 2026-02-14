@@ -1,15 +1,10 @@
 const path = require('path');
-const TerserPlugin = require("terser-webpack-plugin");
 const CopyRenameWebpackPlugin = require("copy-rename-webpack-plugin");
-
 
 module.exports = {
   mode: 'production',
   resolve: {
-    extensions: ['.ts', '.js'],
-    extensionAlias: {
-      '.js': ['.ts', '.js'],
-    },
+    extensions: ['.ts'],
   },
   module: {
     rules: [
@@ -39,10 +34,6 @@ module.exports = {
     filename: '[name].js',
     libraryTarget: 'var',
     library: 'trio_[name]'
-  },
-  optimization: {
-    minimize: true,
-    minimizer: [new TerserPlugin()],
   },
   plugins: [
     new CopyRenameWebpackPlugin({
