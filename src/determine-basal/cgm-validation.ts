@@ -29,7 +29,7 @@ import { round, convertBG } from './helpers';
 
 /** Validates CGM data and returns either an early-return basalResult (for error conditions) or validated CGM values. */
 export function validateCGMData(
-    glucose_status: GlucoseStatus,
+    glucoseStatus: GlucoseStatus,
     profile: Profile,
     systemTime: Date,
     overrideFactor: number,
@@ -49,20 +49,20 @@ export function validateCGMData(
 
     logOverrideStatus(useOverride, overrideFactor, overrideDuration);
 
-    const bgTime = new Date(Number(glucose_status.date));
+    const bgTime = new Date(Number(glucoseStatus.date));
     const minAgo = round( (systemTime.getTime() - bgTime.getTime()) / MS_PER_MINUTE ,1);
 
-    const bg = glucose_status.glucose;
-    const noise = glucose_status.noise;
+    const bg = glucoseStatus.glucose;
+    const noise = glucoseStatus.noise;
 
     // Prep various delta variables.
-    const tick = formatTick(glucose_status.delta);
-    const minDelta = Math.min(glucose_status.delta, glucose_status.short_avgdelta);
-    const minAvgDelta = Math.min(glucose_status.short_avgdelta, glucose_status.long_avgdelta);
-    const maxDelta = Math.max(glucose_status.delta, glucose_status.short_avgdelta, glucose_status.long_avgdelta);
+    const tick = formatTick(glucoseStatus.delta);
+    const minDelta = Math.min(glucoseStatus.delta, glucoseStatus.short_avgdelta);
+    const minAvgDelta = Math.min(glucoseStatus.short_avgdelta, glucoseStatus.long_avgdelta);
+    const maxDelta = Math.max(glucoseStatus.delta, glucoseStatus.short_avgdelta, glucoseStatus.long_avgdelta);
 
     // Classify CGM error conditions and set reason strings
-    classifyCGMErrorReason(basalResult, glucose_status, profile, bg, noise, minAgo, systemTime, bgTime);
+    classifyCGMErrorReason(basalResult, glucoseStatus, profile, bg, noise, minAgo, systemTime, bgTime);
 
     // Handle error conditions: cancel high temps, shorten zero temps, or do nothing
     if (isCGMError(bg, noise, minAgo)) {
@@ -96,7 +96,7 @@ function formatTick(delta: number): number | string {
 /** Sets basalResult.reason for various CGM error/stale/unchanged conditions. */
 function classifyCGMErrorReason(
     basalResult: DetermineBasalResult,
-    glucose_status: GlucoseStatus,
+    glucoseStatus: GlucoseStatus,
     profile: Profile,
     bg: number,
     noise: number | undefined,
@@ -109,20 +109,20 @@ function classifyCGMErrorReason(
     if (bg <= BG_ERROR_CEILING || bg === XDRIP_ERROR_CODE || Number(noise) >= CGM_NOISE_LEVEL_MEDIUM) {
         basalResult.reason = "CGM is calibrating, in ??? state, or noise is high";
     }
-    if (bg > BG_UNCHANGED_FLOOR && glucose_status.delta == 0 && glucose_status.short_avgdelta > -DELTA_UNCHANGED_THRESHOLD && glucose_status.short_avgdelta < DELTA_UNCHANGED_THRESHOLD && glucose_status.long_avgdelta > -DELTA_UNCHANGED_THRESHOLD && glucose_status.long_avgdelta < DELTA_UNCHANGED_THRESHOLD) {
-        if (glucose_status.device == "fakecgm") {
-            console.log(`CGM data is unchanged (${convertBG(bg, profile)}+${convertBG(glucose_status.delta, profile)}) for 5m w/ ${convertBG(glucose_status.short_avgdelta, profile)} mg/dL ~15m change & ${convertBG(glucose_status.long_avgdelta, profile)} mg/dL ~45m change`);
-            console.log(`Simulator mode detected (${glucose_status.device}): continuing anyway`);
+    if (bg > BG_UNCHANGED_FLOOR && glucoseStatus.delta == 0 && glucoseStatus.short_avgdelta > -DELTA_UNCHANGED_THRESHOLD && glucoseStatus.short_avgdelta < DELTA_UNCHANGED_THRESHOLD && glucoseStatus.long_avgdelta > -DELTA_UNCHANGED_THRESHOLD && glucoseStatus.long_avgdelta < DELTA_UNCHANGED_THRESHOLD) {
+        if (glucoseStatus.device == "fakecgm") {
+            console.log(`CGM data is unchanged (${convertBG(bg, profile)}+${convertBG(glucoseStatus.delta, profile)}) for 5m w/ ${convertBG(glucoseStatus.short_avgdelta, profile)} mg/dL ~15m change & ${convertBG(glucoseStatus.long_avgdelta, profile)} mg/dL ~45m change`);
+            console.log(`Simulator mode detected (${glucoseStatus.device}): continuing anyway`);
         }
     }
 
     if (minAgo > MAX_BG_DATA_AGE_MINUTES || minAgo < -MAX_BG_FUTURE_MINUTES) {
         basalResult.reason = `If current system time ${systemTime} is correct, then BG data is too old. The last BG data was read ${minAgo}m ago at ${bgTime}`;
-    } else if ( glucose_status.short_avgdelta === 0 && glucose_status.long_avgdelta === 0 ) {
-        if ( glucose_status.last_cal && glucose_status.last_cal < RECENT_CAL_THRESHOLD ) {
+    } else if ( glucoseStatus.short_avgdelta === 0 && glucoseStatus.long_avgdelta === 0 ) {
+        if ( glucoseStatus.last_cal && glucoseStatus.last_cal < RECENT_CAL_THRESHOLD ) {
             basalResult.reason = "CGM was just calibrated";
         } else {
-            basalResult.reason = `CGM data is unchanged (${convertBG(bg, profile)}+${convertBG(glucose_status.delta, profile)}) for 5m w/ ${convertBG(glucose_status.short_avgdelta, profile)} mg/dL ~15m change & ${convertBG(glucose_status.long_avgdelta, profile)} mg/dL ~45m change`;
+            basalResult.reason = `CGM data is unchanged (${convertBG(bg, profile)}+${convertBG(glucoseStatus.delta, profile)}) for 5m w/ ${convertBG(glucoseStatus.short_avgdelta, profile)} mg/dL ~15m change & ${convertBG(glucoseStatus.long_avgdelta, profile)} mg/dL ~45m change`;
         }
     }
 }
