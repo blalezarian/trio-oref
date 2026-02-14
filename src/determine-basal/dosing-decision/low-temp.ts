@@ -18,7 +18,7 @@ import {
     BOLUS_ERR_MIN_PRED_BELOW_MIN,
 } from '../constants';
 
-import { round, convert_bg } from '../helpers';
+import { round, convertBG } from '../helpers';
 
 import type { DetermineBasalResult } from '../../types/index';
 import type { DosingContext, PhaseOutcome } from './types';
@@ -34,7 +34,7 @@ export function handleLowBG(ctx: DosingContext): PhaseOutcome {
     const { result } = ctx;
 
     if (eventualBG < min_bg) { // if eventual BG is below target:
-        result.reason += `Eventual BG ${convert_bg(eventualBG, ctx.inputs.profile)} < ${convert_bg(min_bg, ctx.inputs.profile)}`;
+        result.reason += `Eventual BG ${convertBG(eventualBG, ctx.inputs.profile)} < ${convertBG(min_bg, ctx.inputs.profile)}`;
         // if 5m or 30m avg BG is rising faster than expected delta
         if (minDelta > expectedDelta && minDelta > 0 && !ctx.carbsReq) {
             return handleLowBGRisingFast(ctx);
@@ -71,9 +71,9 @@ function handleLowBGRisingFast(ctx: DosingContext): PhaseOutcome {
         return { done: true, result: tempBasalFunctions.setTempBasal(0, TEMP_BASAL_DURATION_MINUTES, profile, result, currenttemp) };
     }
     if (glucose_status.delta > minDelta) {
-        result.reason += `, but Delta ${convert_bg(Number(tick), profile)} > expectedDelta ${convert_bg(expectedDelta, profile)}`;
+        result.reason += `, but Delta ${convertBG(Number(tick), profile)} > expectedDelta ${convertBG(expectedDelta, profile)}`;
     } else {
-        result.reason += `, but Min. Delta ${minDelta.toFixed(2)} > Exp. Delta ${convert_bg(expectedDelta, profile)}`;
+        result.reason += `, but Min. Delta ${minDelta.toFixed(2)} > Exp. Delta ${convertBG(expectedDelta, profile)}`;
     }
     return keepOrSetBasalTemp(ctx);
 }
@@ -188,9 +188,9 @@ export function handleFallingDelta(ctx: DosingContext): PhaseOutcome {
         // if in SMB mode, don't cancel SMB zero temp
         if (!(microBolusAllowed && ctx.enableSMB)) {
             if (glucose_status.delta < minDelta) {
-                result.reason += `Eventual BG ${convert_bg(eventualBG, profile)} > ${convert_bg(min_bg, profile)} but Delta ${convert_bg(Number(tick), profile)} < Exp. Delta ${convert_bg(expectedDelta, profile)}`;
+                result.reason += `Eventual BG ${convertBG(eventualBG, profile)} > ${convertBG(min_bg, profile)} but Delta ${convertBG(Number(tick), profile)} < Exp. Delta ${convertBG(expectedDelta, profile)}`;
             } else {
-                result.reason += `Eventual BG ${convert_bg(eventualBG, profile)} > ${convert_bg(min_bg, profile)} but Min. Delta ${minDelta.toFixed(2)} < Exp. Delta ${convert_bg(expectedDelta, profile)}`;
+                result.reason += `Eventual BG ${convertBG(eventualBG, profile)} > ${convertBG(min_bg, profile)} but Min. Delta ${minDelta.toFixed(2)} < Exp. Delta ${convertBG(expectedDelta, profile)}`;
             }
             return keepOrSetBasalTemp(ctx);
         }
@@ -257,7 +257,7 @@ export function handleInRange(ctx: DosingContext): PhaseOutcome {
 
         // if in SMB mode, don't cancel SMB zero temp
         if (!(microBolusAllowed && ctx.enableSMB)) {
-            result.reason += `${convert_bg(eventualBG, profile)}-${convert_bg(minPredBG, profile)} in range: no temp required`;
+            result.reason += `${convertBG(eventualBG, profile)}-${convertBG(minPredBG, profile)} in range: no temp required`;
             return keepOrSetBasalTemp(ctx);
         }
     }

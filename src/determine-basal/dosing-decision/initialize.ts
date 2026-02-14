@@ -11,7 +11,7 @@ import {
     LOW_BG_SAFETY_THRESHOLD,
 } from '../constants';
 
-import { round, convert_bg } from '../helpers';
+import { round, convertBG } from '../helpers';
 
 import type { DosingContext, PhaseOutcome } from './types';
 
@@ -43,18 +43,18 @@ export function initializeTelemetry(ctx: DosingContext): PhaseOutcome {
 
     result.COB = meal_data.mealCOB;
     result.IOB = iob_data.iob;
-    result.BGI = convert_bg(bgImpact, profile);
-    result.deviation = convert_bg(deviation, profile);
-    result.ISF = convert_bg(adjustedSens, profile);
+    result.BGI = convertBG(bgImpact, profile);
+    result.deviation = convertBG(deviation, profile);
+    result.ISF = convertBG(adjustedSens, profile);
     result.CR = round(carbRatio, 1);
-    result.target_bg = convert_bg(target_bg, profile);
+    result.target_bg = convertBG(target_bg, profile);
     result.current_target = round(target_bg, 0);
-    result.reason = `${isfreason}, COB: ${result.COB}, Dev: ${result.deviation}, BGI: ${result.BGI}, CR: ${result.CR}, Target: ${targetLog}, minPredBG ${convert_bg(minPredBG, profile)}, minGuardBG ${convert_bg(minGuardBG, profile)}, IOBpredBG ${convert_bg(lastIOBpredBG, profile)}`;
+    result.reason = `${isfreason}, COB: ${result.COB}, Dev: ${result.deviation}, BGI: ${result.BGI}, CR: ${result.CR}, Target: ${targetLog}, minPredBG ${convertBG(minPredBG, profile)}, minGuardBG ${convertBG(minGuardBG, profile)}, IOBpredBG ${convertBG(lastIOBpredBG, profile)}`;
     if (lastCOBpredBG > 0) {
-        result.reason += `, COBpredBG ${convert_bg(lastCOBpredBG, profile)}`;
+        result.reason += `, COBpredBG ${convertBG(lastCOBpredBG, profile)}`;
     }
     if (lastUAMpredBG > 0) {
-        result.reason += `, UAMpredBG ${convert_bg(lastUAMpredBG, profile)}`;
+        result.reason += `, UAMpredBG ${convertBG(lastUAMpredBG, profile)}`;
     }
     result.reason += tddReason;
 
@@ -117,9 +117,9 @@ export function calculateCarbsRequired(ctx: DosingContext): PhaseOutcome {
     } = ctx.inputs;
     const { result } = ctx;
 
-    console.log(`BG projected to remain above ${convert_bg(min_bg, profile)} for ${ctx.minutesAboveMinBG}minutes`);
+    console.log(`BG projected to remain above ${convertBG(min_bg, profile)} for ${ctx.minutesAboveMinBG}minutes`);
     if (ctx.minutesAboveThreshold < PRED_HORIZON_MAX_MINUTES || ctx.minutesAboveMinBG < MINUTES_ABOVE_MIN_BG_THRESHOLD) {
-        console.log(`BG projected to remain above ${convert_bg(threshold, profile)} for ${ctx.minutesAboveThreshold}minutes`);
+        console.log(`BG projected to remain above ${convertBG(threshold, profile)} for ${ctx.minutesAboveThreshold}minutes`);
     }
 
     const { zeroTempEffect, carbsReq } = calculateZeroTempEffectAndCarbsReq(

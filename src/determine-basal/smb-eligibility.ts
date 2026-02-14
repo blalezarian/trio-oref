@@ -1,6 +1,6 @@
 import { EXERCISE_NORMAL_TARGET } from '../shared/constants';
 
-import { convert_bg } from './helpers';
+import { convertBG } from './helpers';
 
 import type {
     Profile,
@@ -64,7 +64,7 @@ export function enable_smb(
     }
 
     if (profile.enableSMB_with_temptarget === true && profile.temptargetSet && target_bg < EXERCISE_NORMAL_TARGET) {
-        logBWWarningIfFound(meal_data, `SMB enabled for temptarget of ${convert_bg(target_bg, profile)}`);
+        logBWWarningIfFound(meal_data, `SMB enabled for temptarget of ${convertBG(target_bg, profile)}`);
         return true;
     }
 

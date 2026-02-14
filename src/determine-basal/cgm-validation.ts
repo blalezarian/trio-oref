@@ -25,7 +25,7 @@ import {
 
 import type { CGMValidationResult } from './types';
 
-import { round, convert_bg } from './helpers';
+import { round, convertBG } from './helpers';
 
 /** Validates CGM data and returns either an early-return basalResult (for error conditions) or validated CGM values. */
 export function validateCGMData(
@@ -111,7 +111,7 @@ function classifyCGMErrorReason(
     }
     if (bg > BG_UNCHANGED_FLOOR && glucose_status.delta == 0 && glucose_status.short_avgdelta > -DELTA_UNCHANGED_THRESHOLD && glucose_status.short_avgdelta < DELTA_UNCHANGED_THRESHOLD && glucose_status.long_avgdelta > -DELTA_UNCHANGED_THRESHOLD && glucose_status.long_avgdelta < DELTA_UNCHANGED_THRESHOLD) {
         if (glucose_status.device == "fakecgm") {
-            console.log(`CGM data is unchanged (${convert_bg(bg, profile)}+${convert_bg(glucose_status.delta, profile)}) for 5m w/ ${convert_bg(glucose_status.short_avgdelta, profile)} mg/dL ~15m change & ${convert_bg(glucose_status.long_avgdelta, profile)} mg/dL ~45m change`);
+            console.log(`CGM data is unchanged (${convertBG(bg, profile)}+${convertBG(glucose_status.delta, profile)}) for 5m w/ ${convertBG(glucose_status.short_avgdelta, profile)} mg/dL ~15m change & ${convertBG(glucose_status.long_avgdelta, profile)} mg/dL ~45m change`);
             console.log(`Simulator mode detected (${glucose_status.device}): continuing anyway`);
         }
     }
@@ -122,7 +122,7 @@ function classifyCGMErrorReason(
         if ( glucose_status.last_cal && glucose_status.last_cal < RECENT_CAL_THRESHOLD ) {
             basalResult.reason = "CGM was just calibrated";
         } else {
-            basalResult.reason = `CGM data is unchanged (${convert_bg(bg, profile)}+${convert_bg(glucose_status.delta, profile)}) for 5m w/ ${convert_bg(glucose_status.short_avgdelta, profile)} mg/dL ~15m change & ${convert_bg(glucose_status.long_avgdelta, profile)} mg/dL ~45m change`;
+            basalResult.reason = `CGM data is unchanged (${convertBG(bg, profile)}+${convertBG(glucose_status.delta, profile)}) for 5m w/ ${convertBG(glucose_status.short_avgdelta, profile)} mg/dL ~15m change & ${convertBG(glucose_status.long_avgdelta, profile)} mg/dL ~45m change`;
         }
     }
 }

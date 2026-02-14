@@ -12,7 +12,7 @@ import {
     BOLUS_ERR_LGS_GUARD_BELOW_THRESHOLD,
 } from '../constants';
 
-import { round, convert_bg } from '../helpers';
+import { round, convertBG } from '../helpers';
 
 import type { DosingContext, PhaseOutcome } from './types';
 import { calculateZeroTempDuration } from './helpers';
@@ -34,7 +34,7 @@ export function enforceSMBSafetyGuards(ctx: DosingContext): PhaseOutcome {
     const { result } = ctx;
 
     if (ctx.enableSMB && minGuardBG < threshold) {
-        console.log(`minGuardBG ${convert_bg(minGuardBG, profile)} projected below ${convert_bg(threshold, profile)} - disabling SMB`);
+        console.log(`minGuardBG ${convertBG(minGuardBG, profile)} projected below ${convertBG(threshold, profile)} - disabling SMB`);
         result.manualBolusErrorString = BOLUS_ERR_GUARD_BELOW_THRESHOLD;
         result.minGuardBG = minGuardBG;
         result.insulinForManualBolus = round((Number(result.eventualBG) - Number(result.target_bg)) / adjustedSens, 2);
@@ -48,8 +48,8 @@ export function enforceSMBSafetyGuards(ctx: DosingContext): PhaseOutcome {
         ? Math.min(profile.maxDelta_bg_threshold, MAX_DELTA_BG_THRESHOLD_CAP)
         : DEFAULT_MAX_DELTA_BG_THRESHOLD;
     if (maxDelta > maxDelta_bg_threshold * bg) {
-        console.log(`maxDelta ${convert_bg(maxDelta, profile)} > ${100 * maxDelta_bg_threshold}% of BG ${convert_bg(bg, profile)} - disabling SMB`);
-        result.reason += `maxDelta ${convert_bg(maxDelta, profile)} > ${100 * maxDelta_bg_threshold}% of BG ${convert_bg(bg, profile)} - SMB disabled!, `;
+        console.log(`maxDelta ${convertBG(maxDelta, profile)} > ${100 * maxDelta_bg_threshold}% of BG ${convertBG(bg, profile)} - disabling SMB`);
+        result.reason += `maxDelta ${convertBG(maxDelta, profile)} > ${100 * maxDelta_bg_threshold}% of BG ${convertBG(bg, profile)} - SMB disabled!, `;
         ctx.enableSMB = false;
     }
 
@@ -82,13 +82,13 @@ export function checkPredictiveLGS(ctx: DosingContext): PhaseOutcome {
     // don't low glucose suspend if IOB is already super negative and BG is rising faster than predicted
     if (isNegativeIOBRising(ctx)) {
         result.reason += `IOB ${iob_data.iob} < ${round(-profile.current_basal * overrideFactor * IOB_NEG_CHECK_MINUTES / MINUTES_PER_HOUR, 2)}`;
-        result.reason += ` and minDelta ${convert_bg(minDelta, profile)} > expectedDelta ${convert_bg(expectedDelta, profile)}; `;
+        result.reason += ` and minDelta ${convertBG(minDelta, profile)} > expectedDelta ${convertBG(expectedDelta, profile)}; `;
         return { done: false };
     }
 
     // predictive low glucose suspend mode: BG is / is projected to be < threshold
     if (bg < threshold || minGuardBG < threshold) {
-        result.reason += `minGuardBG ${convert_bg(minGuardBG, profile)}<${convert_bg(threshold, profile)}`;
+        result.reason += `minGuardBG ${convertBG(minGuardBG, profile)}<${convertBG(threshold, profile)}`;
         if (minGuardBG < threshold) {
             result.manualBolusErrorString = BOLUS_ERR_LGS_GUARD_BELOW_THRESHOLD;
             result.minGuardBG = minGuardBG;

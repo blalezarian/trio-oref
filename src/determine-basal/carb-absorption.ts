@@ -21,7 +21,7 @@ import {
 
 import type { CarbAbsorptionResult } from './types';
 
-import { round, convert_bg } from './helpers';
+import { round, convertBG } from './helpers';
 
 /** Calculates carb impact, absorption rate, and remaining carb time for BG prediction. */
 export function calculateCarbAbsorption(
@@ -45,7 +45,7 @@ export function calculateCarbAbsorption(
     // autotuned CR is still in effect even when basals and ISF are being adjusted by TT or autosens
     // this avoids overdosing insulin for large meals when low temp targets are active
     const carbSensFactor = adjustedSens / carbRatio;
-    console.log(`profile.sens:${convert_bg(sensitivity, profile)}, sens:${convert_bg(adjustedSens, profile)}, CSF:${round(carbSensFactor, 1)}`);
+    console.log(`profile.sens:${convertBG(sensitivity, profile)}, sens:${convertBG(adjustedSens, profile)}, CSF:${round(carbSensFactor, 1)}`);
 
     const maxCarbAbsorptionRate = DEFAULT_MAX_CARB_ABSORPTION_RATE; // g/h; maximum rate to assume carbs will absorb if no CI observed
     // limitLog Carb Impact to maxCarbAbsorptionRate * carbSensFactor in mg/dL per 5m

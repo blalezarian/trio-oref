@@ -18,7 +18,7 @@ import {
     SECONDS_PER_MINUTE,
 } from '../constants';
 
-import { round, convert_bg } from '../helpers';
+import { round, convertBG } from '../helpers';
 
 import type { DosingContext, PhaseOutcome } from './types';
 import {
@@ -47,7 +47,7 @@ export function checkIOBLimit(ctx: DosingContext): PhaseOutcome {
     // eventual BG is at/above target
     // if iob is over max, just cancel any temps
     if (eventualBG >= max_bg) {
-        result.reason += `Eventual BG ${convert_bg(eventualBG, profile)} >= ${convert_bg(max_bg, profile)}, `;
+        result.reason += `Eventual BG ${convertBG(eventualBG, profile)} >= ${convertBG(max_bg, profile)}, `;
         if (eventualBG > max_bg) {
             result.insulinForManualBolus = round((eventualBG - target_bg) / adjustedSens, 2);
         }

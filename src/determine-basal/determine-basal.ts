@@ -37,7 +37,7 @@ import {
     DEFAULT_TRIO_CUSTOM_VARIABLES,
 } from './constants';
 
-import { round, convert_bg, calculate_expected_delta, validateIOBAndTemps, calculateDeviation } from './helpers';
+import { round, convertBG, calculateExpectedDelta, validateIOBAndTemps, calculateDeviation } from './helpers';
 import { enable_smb } from './smb-eligibility';
 import { calculateDynamicISF } from './dynamic-isf';
 import { validateCGMData } from './cgm-validation';
@@ -139,7 +139,7 @@ export function determine_basal(
         result.error = `Error: could not calculate eventualBG. Sensitivity: ${adjustedSens} Deviation: ${deviation}`;
         return result;
     }
-    const expectedDelta = calculate_expected_delta(target_bg, eventualBG, bgImpact);
+    const expectedDelta = calculateExpectedDelta(target_bg, eventualBG, bgImpact);
 
     // Initialize result (requestedTemp) object. Has to be done after eventualBG is calculated.
     result = {
@@ -160,7 +160,7 @@ export function determine_basal(
         expectedDelta,
         minGuardBG: undefined,
         minPredBG: undefined,
-        threshold: convert_bg(threshold, profile),
+        threshold: convertBG(threshold, profile),
     } as DetermineBasalResult;
 
     let enableSMB = false;

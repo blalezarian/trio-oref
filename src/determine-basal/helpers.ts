@@ -32,19 +32,19 @@ export function round(value: number, digits?: number): number {
  * adjusted by the rate at which BG would need to rise / fall to get eventualBG
  * to target over 2 hours.
  */
-export function calculate_expected_delta(
-    target_bg: number,
-    eventual_bg: number,
+export function calculateExpectedDelta(
+    targetBG: number,
+    eventualBG: number,
     bgi: number,
 ): number {
     // (hours * mins_per_hour) / 5 = how many 5 minute periods in 2h = 24
-    const five_min_blocks = (EXPECTED_DELTA_HOURS * MINUTES_PER_HOUR) / PRED_INTERVAL_MINUTES;
-    const target_delta = target_bg - eventual_bg;
-    return /* expectedDelta */ round(bgi + (target_delta / five_min_blocks), 1);
+    const fiveMinBlocks = (EXPECTED_DELTA_HOURS * MINUTES_PER_HOUR) / PRED_INTERVAL_MINUTES;
+    const targetDelta = targetBG - eventualBG;
+    return /* expectedDelta */ round(bgi + (targetDelta / fiveMinBlocks), 1);
 }
 
 /** Converts a BG value from mg/dL to the profile's output units. */
-export function convert_bg(value: number, profile: Profile): number {
+export function convertBG(value: number, profile: Profile): number {
     if (profile.out_units === "mmol/L") return round(value * MGDL_TO_MMOL, 1);
 
     return Math.round(value);
@@ -55,7 +55,7 @@ export function convert_bg(value: number, profile: Profile): number {
  * Returns early if IOB data is missing/undefined or if a stale temp needs cancellation.
  */
 export function validateIOBAndTemps(
-    iob_data: IOBData[],
+    iobData: IOBData[],
     currenttemp: CurrentTemp,
     profile: Profile,
     systemTime: Date,
@@ -64,12 +64,12 @@ export function validateIOBAndTemps(
     result: DetermineBasalResult,
     deliverAt: Date,
 ): { earlyReturn: DetermineBasalResult } | { iob_data: IOBData; iobArray: IOBData[] } {
-    if (iob_data === undefined) {
+    if (iobData === undefined) {
         result.error ='Error: iob_data undefined. ';
         return { earlyReturn: result };
     }
 
-    const iobArray = iob_data;
+    const iobArray = iobData;
     const iob_datum = iobArray[0];
 
     if (iob_datum.activity === undefined || iob_datum.iob === undefined) {
@@ -103,7 +103,7 @@ export function validateIOBAndTemps(
  */
 export function checkStaleTempBasal(
     currenttemp: CurrentTemp,
-    iob_datum: IOBData,
+    iobDatum: IOBData,
     lastTempAge: number,
     microBolusAllowed: boolean,
     tempBasalFunctions: TempBasalFunctions,
@@ -111,13 +111,13 @@ export function checkStaleTempBasal(
     result: DetermineBasalResult,
 ): DetermineBasalResult | null {
     // Cancel if currenttemp rate doesn't match lastTemp rate from pump history
-    if (microBolusAllowed && currenttemp && iob_datum.lastTemp && currenttemp.rate !== iob_datum.lastTemp.rate && lastTempAge > TEMP_AGE_STALE_MINUTES && currenttemp.duration) {
-        result.reason = `Warning: currenttemp rate ${currenttemp.rate} != lastTemp rate ${iob_datum.lastTemp.rate} from pumphistory; canceling temp`;
+    if (microBolusAllowed && currenttemp && iobDatum.lastTemp && currenttemp.rate !== iobDatum.lastTemp.rate && lastTempAge > TEMP_AGE_STALE_MINUTES && currenttemp.duration) {
+        result.reason = `Warning: currenttemp rate ${currenttemp.rate} != lastTemp rate ${iobDatum.lastTemp.rate} from pumphistory; canceling temp`;
         return tempBasalFunctions.setTempBasal(0, 0, profile, result, currenttemp);
     }
     // Cancel if lastTemp from pump history ended too long ago
-    if (currenttemp && iob_datum.lastTemp && currenttemp.duration > 0) {
-        const lastTempEnded = lastTempAge - iob_datum.lastTemp.duration;
+    if (currenttemp && iobDatum.lastTemp && currenttemp.duration > 0) {
+        const lastTempEnded = lastTempAge - iobDatum.lastTemp.duration;
         if (lastTempEnded > TEMP_END_GAP_MINUTES && lastTempAge > TEMP_AGE_STALE_MINUTES) {
             result.reason = `Warning: currenttemp running but lastTemp from pumphistory ended ${lastTempEnded}m ago; canceling temp`;
             return tempBasalFunctions.setTempBasal(0, 0, profile, result, currenttemp);
@@ -132,12 +132,12 @@ export function checkStaleTempBasal(
  */
 export function calculateDeviation(
     bg: number,
-    iob_data: IOBData,
+    iobData: IOBData,
     adjustedSens: number,
     sensitivity: number,
     minDelta: number,
     minAvgDelta: number,
-    long_avgdelta: number,
+    longAvgDelta: number,
     bgImpact: number,
 ): { deviation: number; naive_eventualBG: number; eventualBG: number } {
     // project deviations for 30 minutes
@@ -145,17 +145,17 @@ export function calculateDeviation(
     // don't overreact to a big negative delta: use minAvgDelta if deviation is negative
     if (deviation < 0) {
         deviation = round( (TEMP_BASAL_DURATION_MINUTES / PRED_INTERVAL_MINUTES) * ( minAvgDelta - bgImpact ) );
-        // and if deviation is still negative, use long_avgdelta
+        // and if deviation is still negative, use longAvgDelta
         if (deviation < 0) {
-            deviation = round( (TEMP_BASAL_DURATION_MINUTES / PRED_INTERVAL_MINUTES) * ( long_avgdelta - bgImpact ) );
+            deviation = round( (TEMP_BASAL_DURATION_MINUTES / PRED_INTERVAL_MINUTES) * ( longAvgDelta - bgImpact ) );
         }
     }
 
     // calculate the naive (bolus calculator math) eventual BG based on net IOB and sensitivity
     // if IOB is negative, be more conservative and use the lower of adjustedSens, profile.sens
-    const naive_eventualBG = iob_data.iob > 0
-        ? round(bg - (iob_data.iob * adjustedSens))
-        : round(bg - (iob_data.iob * Math.min(adjustedSens, sensitivity)));
+    const naive_eventualBG = iobData.iob > 0
+        ? round(bg - (iobData.iob * adjustedSens))
+        : round(bg - (iobData.iob * Math.min(adjustedSens, sensitivity)));
     // and adjust it for the deviation above
     const eventualBG = naive_eventualBG + deviation;
 

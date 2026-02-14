@@ -174,7 +174,7 @@ describe('initializeTelemetry', () => {
 
         initializeTelemetry(ctx);
 
-        // convert_bg with mg/dL profile just rounds to integer
+        // convertBG with mg/dL profile just rounds to integer
         expect(ctx.result.COB).toBe(20);
         expect(ctx.result.IOB).toBe(1.5);
         expect(ctx.result.BGI).toBe(-3);

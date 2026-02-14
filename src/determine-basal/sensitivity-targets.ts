@@ -27,7 +27,7 @@ import {
 
 import type { SensitivityAndTargetsResult } from './types';
 
-import { round, convert_bg } from './helpers';
+import { round, convertBG } from './helpers';
 
 // ---------------------------------------------------------------------------
 // Main function
@@ -85,14 +85,14 @@ export function configureSensitivityAndTargets(
     // Raise target for noisy / raw CGM data.
     const noisyTargets = adjustTargetsForNoisyCGM(Number(min_bg), Number(target_bg), Number(max_bg), Number(glucose_status.noise), profile);
     if (noisyTargets.adjusted) {
-        console.log(`Raising target_bg for noisy / raw CGM data, from ${convert_bg(Number(targetAdjustment.new_target_bg), profile)} to ${convert_bg(noisyTargets.target_bg, profile)}; `);
+        console.log(`Raising target_bg for noisy / raw CGM data, from ${convertBG(Number(targetAdjustment.new_target_bg), profile)} to ${convertBG(noisyTargets.target_bg, profile)}; `);
         min_bg = noisyTargets.min_bg;
         target_bg = noisyTargets.target_bg;
         max_bg = noisyTargets.max_bg;
     }
 
     const thresholdFinal = calculateLowGlucoseThreshold(Number(min_bg), Number(profile.threshold_setting));
-    console.log(`Threshold set to ${convert_bg(thresholdFinal, profile)}`);
+    console.log(`Threshold set to ${convertBG(thresholdFinal, profile)}`);
 
     // Adjust ISF based on sensitivityRatio
     const { adjustedSens, isfreason } = adjustISFBySensitivity(sensitivity, Number(sensitivityRatio), profile, autosens_data);
@@ -159,7 +159,7 @@ function resolveSensitivityRatio(
         // Override Profile.Target
         if (overrideTarget !== 0 && overrideTarget !== OVERRIDE_TARGET_SENTINEL && overrideTarget !== profile.min_bg && !profile.temptargetSet) {
             target_bg = overrideTarget;
-            console.log(`Current Override Profile Target: ${convert_bg(overrideTarget, profile)} ${profile.out_units}`);
+            console.log(`Current Override Profile Target: ${convertBG(overrideTarget, profile)} ${profile.out_units}`);
         }
         console.log(`Autosens ratio: ${sensitivityRatio}; `);
     }
@@ -199,12 +199,12 @@ function formatTargetLog(
     profile: Profile,
 ): number | string {
     if (target_bg == profileTarget) {
-        return convert_bg(target_bg, profile);
+        return convertBG(target_bg, profile);
     }
     if (overrideTarget !== 0 && overrideTarget !== OVERRIDE_TARGET_SENTINEL && overrideTarget !== target_bg) {
-        return `${convert_bg(profileTarget, profile)}\u2192${convert_bg(overrideTarget, profile)}\u2192${convert_bg(target_bg, profile)}`;
+        return `${convertBG(profileTarget, profile)}\u2192${convertBG(overrideTarget, profile)}\u2192${convertBG(target_bg, profile)}`;
     }
-    return `${convert_bg(profileTarget, profile)}\u2192${convert_bg(target_bg, profile)}`;
+    return `${convertBG(profileTarget, profile)}\u2192${convertBG(target_bg, profile)}`;
 }
 
 // ---------------------------------------------------------------------------
@@ -299,9 +299,9 @@ export function adjustTargetByAutosens(
             // don't allow target_bg below 80
             new_target_bg = Math.max(MIN_BG_TARGET, new_target_bg);
             if (target_bg === new_target_bg) {
-                console.log(`target_bg unchanged: ${convert_bg(Number(new_target_bg), profile)}; `);
+                console.log(`target_bg unchanged: ${convertBG(Number(new_target_bg), profile)}; `);
             } else {
-                console.log(`target_bg from ${convert_bg(Number(new_target_bg), profile)} to ${convert_bg(Number(new_target_bg), profile)}; `);
+                console.log(`target_bg from ${convertBG(Number(new_target_bg), profile)} to ${convertBG(Number(new_target_bg), profile)}; `);
             }
             target_bg = new_target_bg;
         }
@@ -362,11 +362,11 @@ export function adjustISFBySensitivity(
 
     const adjustedSens = round(sensitivity / sensitivityRatio, 1);
     if (adjustedSens !== sensitivity) {
-        console.log(`ISF from ${convert_bg(sensitivity, profile)} to ${convert_bg(adjustedSens, profile)}`);
+        console.log(`ISF from ${convertBG(sensitivity, profile)} to ${convertBG(adjustedSens, profile)}`);
     } else {
-        console.log(`ISF unchanged: ${convert_bg(adjustedSens, profile)}`);
+        console.log(`ISF unchanged: ${convertBG(adjustedSens, profile)}`);
     }
-    const isfreason = `Autosens ratio: ${round(sensitivityRatio, 2)}, ISF: ${convert_bg(sensitivity, profile)}\u2192${convert_bg(adjustedSens, profile)}`;
+    const isfreason = `Autosens ratio: ${round(sensitivityRatio, 2)}, ISF: ${convertBG(sensitivity, profile)}\u2192${convertBG(adjustedSens, profile)}`;
 
     return { adjustedSens, isfreason };
 }
