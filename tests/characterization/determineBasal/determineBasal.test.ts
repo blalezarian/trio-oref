@@ -113,7 +113,7 @@ describe('determine-basal characterization tests', () => {
             preferences,
             basalprofile,
             trioCustomVariables,
-            middleWare as ((arg: DetermineBasalResult) => DetermineBasalResult) | undefined,
+            middleWare as string | undefined,
           );
 
           const normalized = normalizeOutput(output);

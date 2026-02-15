@@ -87,6 +87,16 @@ export function enableSMB(
 /**
  * Check whether the current hour falls within an SMB-disabled schedule window.
  * The window is [start, end) — start is inclusive, end is exclusive.
+ *
+ * ORIGINAL JS BUG FIX: The original code used `let currentHour = new Date(time.getHours())`
+ * which creates a Date object (milliseconds since epoch) instead of a plain hour number.
+ * The `>=` and `<` comparisons on lines 57/60 accidentally work because they use JS's
+ * "number" hint (Date coerces to valueOf). But the `==` comparison on line 66
+ * (`currentHour == startTime`) uses the "default" hint, which coerces Date to a string
+ * ("Wed Dec 31 1969..."), so `"Wed Dec 31..." == 4` is always `false`. This meant the
+ * `startTime == endTime` schedule check silently failed, leaving SMB enabled when it
+ * should have been disabled. The TS version passes `time.getHours()` (a plain number)
+ * directly, so all comparisons work correctly.
  */
 export function isTimeInSMBDisabledWindow(
     currentHour: number,

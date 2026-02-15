@@ -62,6 +62,32 @@ function makeIobArray(
   return arr;
 }
 
+/**
+ * Build a full 48-entry iobArray from IOBData overrides.
+ * Matches production behavior where Swift always sends a multi-element array.
+ * Copies lastTemp, lastBolusTime onto element [0] so determine-basal sees them.
+ */
+function buildIobArray(
+  iobOverrides?: Parameters<typeof defaultIOBData>[0],
+  baseTime?: number,
+): Record<string, unknown>[] {
+  const defaults = defaultIOBData(iobOverrides);
+  const arr = makeIobArray(
+    defaults.iob,
+    defaults.activity,
+    5,
+    baseTime,
+  );
+  // Copy lastTemp and lastBolusTime onto element [0] — determine-basal reads these
+  if (defaults.lastTemp) {
+    (arr[0] as Record<string, unknown>).lastTemp = defaults.lastTemp;
+  }
+  if (defaults.lastBolusTime !== undefined) {
+    (arr[0] as Record<string, unknown>).lastBolusTime = defaults.lastBolusTime;
+  }
+  return arr;
+}
+
 /** Build a fixture from selective overrides on defaults */
 function fixture(
   name: string,
@@ -77,7 +103,7 @@ function fixture(
     preferences?: Parameters<typeof defaultPreferences>[0];
     microBolusAllowed?: boolean;
     currentTime?: string;
-    middleWare?: ((arg: DetermineBasalResult) => DetermineBasalResult) | string;
+    middleWare?: string;
     reservoirData?: number;
     // When set, iobData is passed as a raw array (for full iobArray coverage)
     rawIobData?: unknown;
@@ -91,7 +117,7 @@ function fixture(
       currenttemp: defaultCurrentTemp(overrides.currenttemp),
       iobData: overrides.rawIobData != null
         ? overrides.rawIobData as any
-        : defaultIOBData(overrides.iobData),
+        : buildIobArray(overrides.iobData, FIXED_DATE),
       mealData: defaultMealData(overrides.mealData),
       profile: defaultProfile(overrides.profile),
       autosensData: defaultAutosensData(overrides.autosensData),

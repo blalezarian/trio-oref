@@ -67,7 +67,7 @@ export function validateIOBAndTemps(
     const iobArray = iobData;
     const iob_datum = iobArray[0];
 
-    if (iob_datum.activity === undefined || iob_datum.iob === undefined) {
+    if (iob_datum === undefined || iob_datum.activity === undefined || iob_datum.iob === undefined) {
         result.error ='Error: iob_data missing some property. ';
         return { earlyReturn: result };
     }

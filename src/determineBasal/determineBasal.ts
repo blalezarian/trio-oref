@@ -58,12 +58,12 @@ export function determineBasal(
     tempBasalFunctions: TempBasalFunctions,
     microBolusAllowed: boolean,
     reservoirData: number | undefined,
-    currentTime: Date | ISODateString | undefined,
+    currentTime: Date | ISODateString = new Date(),
     _pumpHistory: unknown[],
     preferences: Preferences,
     _basalProfile: BasalEntry[] | undefined,
     trioCustomVariables?: TrioCustomVariables,
-    middleWare?: (arg: DetermineBasalResult) => DetermineBasalResult
+    middleWare?: string
 ): DetermineBasalResult {
 
     if (!trioCustomVariables) {
@@ -72,6 +72,13 @@ export function determineBasal(
     if (!preferences) {
         preferences = {} as Preferences;
     }
+    // ORIGINAL JS BUG FIX: The original code has this same guard at line 381, but the
+    // function reads `profile.min_bg` at line 143 — before the guard — so when profile
+    // is truly undefined, it crashes with `TypeError: Cannot read properties of undefined
+    // (reading 'min_bg')` and never reaches the guard. The guard only protected against
+    // `profile.current_basal === undefined` (profile exists but incomplete). The TS version
+    // moves the guard before any property access, so both cases return a graceful error.
+    // In production, Swift always passes a valid profile, so this is purely defensive.
     if (profile === undefined || profile.current_basal === undefined) {
         return { reason: '', error: 'Error: could not get current basal rate' } as DetermineBasalResult;
     }
@@ -86,7 +93,7 @@ export function determineBasal(
 
     const insulinForManualBolus = 0;
     const manualBolusErrorString = 0;
-    const systemTime = currentTime ? new Date(currentTime) : new Date();
+    const systemTime = new Date(currentTime);
 
     const weightPercentage = Number(profile.weightPercentage);
     const { weightedAverage, average_total_data } = trioCustomVariables;

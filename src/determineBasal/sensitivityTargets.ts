@@ -143,6 +143,13 @@ function resolveSensitivityRatio(
     const normalTarget = EXERCISE_NORMAL_TARGET;
     const halfBasalTarget = Number(profile.half_basal_exercise_target);
 
+    // ORIGINAL JS BUG FIX: The original code has `var sensitivityRatio;` commented out
+    // (line 499: `//    var sensitivityRatio;`). Without a var/let declaration, any
+    // assignment to sensitivityRatio creates an implicit global variable in sloppy mode.
+    // This means the value leaks between sequential calls — if a previous invocation set
+    // sensitivityRatio = 1 (via autosens_data.ratio), that value persists into the next
+    // call even when autosens_data is undefined. The TS version uses block-scoped `let`,
+    // so sensitivityRatio correctly starts as undefined on every invocation.
     let sensitivityRatio: number | undefined;
 
     // Temp target sensitivity adjustment

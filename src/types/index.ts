@@ -488,7 +488,8 @@ export interface DetermineBasalInputs {
   preferences: Preferences;
   basalprofile?: BasalEntry[];
   trioCustomVariables: TrioCustomVariables;
-  middleWare?: ((arg: DetermineBasalResult) => DetermineBasalResult) | string;
+  /** Reason string returned by the middleware plugin (e.g. "Overrode max_iob to 5"), or undefined if no middleware loaded. */
+  middleWare?: string;
 }
 
 // ---------------------------------------------------------------------------

@@ -392,6 +392,6 @@ export interface RawPipelineInputs {
     trioCustomVariables?: Partial<TrioCustomVariables>;
     /** Preferences overrides */
     preferences?: Partial<Preferences>;
-    /** Optional middleware function to modify determine-basal result */
-    middleWare?: (arg: DetermineBasalResult) => DetermineBasalResult;
+    /** Optional middleware reason string (the return value of the middleware plugin) */
+    middleWare?: string;
 }

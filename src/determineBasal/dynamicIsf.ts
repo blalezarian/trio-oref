@@ -40,7 +40,7 @@ export function calculateDynamicISF(
     weightedAverage: number,
     averageTotalData: number,
     weightPercentage: number,
-    middleWare: ((arg: DetermineBasalResult) => DetermineBasalResult) | undefined
+    middleWare: string | undefined
 ): DynamicISFResult {
     // In case the autosens.min/max limits are reversed:
     const minLimitChris = Math.min(profile.autosens_min, profile.autosens_max);
@@ -95,9 +95,17 @@ export function calculateDynamicISF(
     let sigmoidLog = "";
     let newRatio: number | undefined;
 
-    // Guard: TDD=0 means no dosing history (new user, data gap). The logarithmic
-    // and sigmoid formulas divide by TDD, producing NaN/Infinity. Fall back to
-    // static ISF to ensure safe, finite output.
+    // SAFETY GUARD: TDD=0 means no dosing history (new user, pump reset, or data gap).
+    // The original JS has a bug where dynISFenabled stays true but the prediction loops
+    // (IOBpredBG, UAMpredBG) compute `1800 / (tdd * adjustmentFactor * ...)`, which
+    // divides by zero and produces Infinity/NaN that cascades into predBGs, insulinReq,
+    // and the final rate — resulting in "setting NaN U/hr" output.
+    //
+    // Trio loosely mitigates this by not allowing dynamic ISF for the first 7 days, but
+    // that doesn't protect against data gaps or pump resets after day 7.
+    //
+    // This guard disables dynamic ISF entirely when TDD=0, falling back to static ISF
+    // which gives a valid, conservative dosing decision.
     if (dynISFenabled && tdd <= 0) {
         dynISFenabled = false;
         console.log(startLog + "Dynamic Settings disabled (TDD=0)");
@@ -267,7 +275,7 @@ export function buildTDDReasonString(
     afLog: string,
     basalRatioLog: string,
     smb_delivery_ratio: number | undefined,
-    middleWare: ((arg: DetermineBasalResult) => DetermineBasalResult) | undefined,
+    middleWare: string | undefined,
 ): string {
     let tddReason = "";
 
@@ -282,7 +290,13 @@ export function buildTDDReasonString(
         tddReason += `, SMB Ratio: ${Math.min(Number(smb_delivery_ratio), 1)}`;
     }
 
-    // Not confident but something like this in iAPS v3.0.3
+    // Middleware is a user-extensibility hook: power users can inject custom JS that
+    // mutates algorithm inputs before determine-basal runs (e.g. overriding max_iob).
+    // The prepare wrapper (prepare/determine-basal.js) calls the middleware function and
+    // passes its return value — a reason string like "Overrode max_iob to 5" — here as
+    // middleWare. It's "" when no middleware is loaded, or "Nothing changed" when the
+    // middleware ran but made no modifications. The typeof guard prevents appending
+    // "Middleware: undefined" when callers bypass the prepare wrapper.
     if (typeof middleWare === 'string' && middleWare !== "" && middleWare !== "Nothing changed") {
         tddReason += `, Middleware: ${middleWare}`;
     }

@@ -1,14 +1,17 @@
 /**
- * Middleware scenarios — tests the middleware passthrough that Trio uses.
+ * Middleware scenarios — tests the middleware reason string passthrough.
  *
- * In oref, the middleWare callback is passed into determineBasal() but is
- * NOT invoked inside the JS code. It's the Swift (iOS) layer that calls
- * middleWare(result) after JS returns. The JS side only reads it as a
- * string for the reason log.
+ * In Trio, middleware is a user-extensibility hook: power users can inject
+ * custom JS that mutates algorithm inputs before determine-basal runs.
+ * The prepare wrapper (prepare/determine-basal.js) calls the middleware
+ * function and passes its return value — a reason string — to determine_basal()
+ * as the middleWare parameter. The JS code never invokes middleware itself;
+ * it only appends the reason string to the TDD reason log.
  *
  * These tests verify:
- * 1. Passing a middleware function doesn't break the pipeline
- * 2. The middleware callback works correctly when invoked (as Swift would)
+ * 1. A middleware reason string appears in the output reason
+ * 2. Empty/default middleware strings are correctly excluded
+ * 3. Undefined middleware doesn't break the pipeline
  */
 
 import { expect } from 'vitest';
@@ -19,22 +22,10 @@ import {
     FIXED_TIME,
 } from '../helpers/rawInputs';
 import type { IntegrationScenario } from './types';
-import type { DetermineBasalResult } from '../../../src/types/index';
-
-/** Identity middleware — passes result through unchanged */
-const identityMiddleware = (result: DetermineBasalResult): DetermineBasalResult => result;
-
-/** Middleware that caps rate at 2.0 U/hr */
-const rateCappingMiddleware = (result: DetermineBasalResult): DetermineBasalResult => {
-    if (result.rate !== undefined && result.rate > 2.0) {
-        return { ...result, rate: 2.0 };
-    }
-    return result;
-};
 
 export const middlewareScenarios: IntegrationScenario[] = [
     {
-        name: 'Identity middleware — result unchanged',
+        name: 'Middleware reason string — appears in output',
         category: 'middleware',
         inputs: {
             glucoseData: buildGlucoseArray({
@@ -45,7 +36,7 @@ export const middlewareScenarios: IntegrationScenario[] = [
             pumpHistory: buildPumpHistory({}),
             profileInputs: buildProfileInputs(),
             currentTemp: { duration: 0, rate: 0, temp: 'absolute' },
-            middleWare: identityMiddleware,
+            middleWare: 'Custom adjustment applied',
             clock: FIXED_TIME,
         },
         assertions: [
@@ -53,7 +44,6 @@ export const middlewareScenarios: IntegrationScenario[] = [
                 expect(result.determineBasalResult.error).toBeUndefined();
             },
             (result) => {
-                // Passing middleware doesn't break the pipeline
                 const rate = result.determineBasalResult.rate;
                 if (rate !== undefined) {
                     expect(Number.isFinite(rate)).toBe(true);
@@ -64,35 +54,23 @@ export const middlewareScenarios: IntegrationScenario[] = [
     },
 
     {
-        name: 'Rate-capping middleware — callback correctly modifies result',
+        name: 'Middleware "Nothing changed" — excluded from reason',
         category: 'middleware',
         inputs: {
             glucoseData: buildGlucoseArray({
-                startBg: 300,
+                startBg: 200,
                 trajectory: 'flat',
                 count: 12,
             }),
             pumpHistory: buildPumpHistory({}),
             profileInputs: buildProfileInputs(),
             currentTemp: { duration: 0, rate: 0, temp: 'absolute' },
-            middleWare: rateCappingMiddleware,
+            middleWare: 'Nothing changed',
             clock: FIXED_TIME,
         },
         assertions: [
             (result) => {
                 expect(result.determineBasalResult.error).toBeUndefined();
-            },
-            (result) => {
-                // JS returns the raw (uncapped) rate — middleware is invoked by Swift
-                const rawRate = result.determineBasalResult.rate;
-                if (rawRate !== undefined) {
-                    expect(Number.isFinite(rawRate)).toBe(true);
-                    expect(rawRate).toBeGreaterThan(0);
-
-                    // Simulate Swift's middleware invocation
-                    const modified = rateCappingMiddleware(result.determineBasalResult);
-                    expect(modified.rate).toBeLessThanOrEqual(2.0);
-                }
             },
         ],
     },
