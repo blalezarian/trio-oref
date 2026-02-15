@@ -9,7 +9,7 @@
  *   2. Deliberately edit the golden JSON with a reviewed commit
  */
 
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi, beforeAll, afterAll } from 'vitest';
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
 
@@ -555,6 +555,21 @@ describe('golden: profile-targets', () => {
 
 describe('golden: profile', () => {
     const golden = loadGolden('profile');
+
+    // profile.generate() calls getCurrentBasalRate(basals) which uses new Date()
+    // to pick the active basal slot. Pin both the clock and timezone to noon UTC
+    // so the lookup is deterministic and matches the golden generation environment.
+    const originalTZ = process.env.TZ;
+    beforeAll(() => {
+        process.env.TZ = 'UTC';
+        vi.useFakeTimers({ now: new Date('2025-01-15T12:00:00.000Z') });
+    });
+    afterAll(() => {
+        vi.useRealTimers();
+        if (originalTZ === undefined) delete process.env.TZ;
+        else process.env.TZ = originalTZ;
+    });
+
     it('has expected fixture count', () => {
         expect(Object.keys(golden).length).toBe(10);
     });

@@ -39,6 +39,11 @@ const golden: Record<string, unknown> = JSON.parse(readFileSync(goldenPath, 'utf
 // ─── Normalize (must match generation script exactly) ───────────────────────
 function normalizeOutput(output: Record<string, unknown>): Record<string, unknown> {
     const normalized = { ...output };
+    // Strip undefined-valued keys and empty-string reason (TS initializes reason:'', original JS may not)
+    for (const key of Object.keys(normalized)) {
+        if (normalized[key] === undefined) delete normalized[key];
+    }
+    if (normalized.reason === '') delete normalized.reason;
     if (normalized.deliverAt instanceof Date) {
         normalized.deliverAt = '[DELIVER_AT]';
     } else if (typeof normalized.deliverAt === 'string') {
@@ -48,6 +53,10 @@ function normalizeOutput(output: Record<string, unknown>): Record<string, unknow
         const val = normalized[key];
         if (typeof val === 'number' && !Number.isInteger(val)) {
             normalized[key] = Math.round(val * 10000) / 10000;
+        }
+        // Normalize -0 to 0
+        if (typeof val === 'number' && Object.is(val, -0)) {
+            normalized[key] = 0;
         }
     }
     if (normalized.predBGs && typeof normalized.predBGs === 'object') {
@@ -122,7 +131,7 @@ describe('golden: determine-basal', () => {
                         preferences,
                         basalprofile,
                         trioCustomVariables,
-                        middleWare as ((arg: DetermineBasalResult) => DetermineBasalResult) | undefined,
+                        middleWare as string | undefined,
                     );
 
                     expect(normalizeOutput(output)).toEqual(expected);
