@@ -13,7 +13,7 @@
  * 2. Snapshot regression — catches any unexpected output change
  */
 
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi, beforeAll, afterAll } from 'vitest';
 import { allScenarios } from './scenarios/index';
 import { runFullPipeline, normalizeOutput } from './pipeline';
 
@@ -26,6 +26,19 @@ for (const scenario of allScenarios) {
 }
 
 describe('Integration Pipeline', () => {
+    // Pin timezone and clock so schedule lookups (basal, ISF, targets, CR)
+    // resolve deterministically regardless of where/when the test runs.
+    // All scenarios use FIXED_TIME = '2025-01-15T12:00:00.000Z' (noon UTC).
+    const originalTZ = process.env.TZ;
+    beforeAll(() => {
+        process.env.TZ = 'UTC';
+        vi.useFakeTimers({ now: new Date('2025-01-15T12:00:00.000Z') });
+    });
+    afterAll(() => {
+        vi.useRealTimers();
+        if (originalTZ === undefined) delete process.env.TZ;
+        else process.env.TZ = originalTZ;
+    });
     for (const [category, categoryScenarios] of categories) {
         describe(category, () => {
             for (const scenario of categoryScenarios) {
