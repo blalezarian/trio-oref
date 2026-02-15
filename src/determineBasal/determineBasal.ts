@@ -11,8 +11,6 @@
   THE SOFTWARE.
 */
 
-// Define various functions used later on, in the main function determineBasal() below
-
 import {
     PRED_INTERVAL_MINUTES,
 } from '../shared/constants';
@@ -83,63 +81,114 @@ export function determineBasal(
         return { reason: '', error: 'Error: could not get current basal rate' } as DetermineBasalResult;
     }
 
+    // ─── Overrides & profile target ────────────────────────────────────────
     const overrideTarget = trioCustomVariables.overrideTarget;
-    const profileTarget = resolveProfileTarget(profile.min_bg, overrideTarget, trioCustomVariables.useOverride, profile.temptargetSet);
+    const profileTarget = resolveProfileTarget(
+        profile.min_bg,
+        overrideTarget,
+        trioCustomVariables.useOverride,
+        profile.temptargetSet,
+    );
     const { overrideFactor, sensitivity, carbRatio } = resolveOverrides(profile, trioCustomVariables);
 
-    // tdd past 24 hour
-    let tdd = trioCustomVariables.currentTDD;
-    let dynISFenabled = preferences.useNewFormula;
-
-    const insulinForManualBolus = 0;
-    const manualBolusErrorString = 0;
+    // ─── Dynamic ISF ────────────────────────────────────────────────────────
     const systemTime = new Date(currentTime);
-
     const weightPercentage = Number(profile.weightPercentage);
     const { weightedAverage, average_total_data } = trioCustomVariables;
 
+    let tdd = trioCustomVariables.currentTDD;
+    let dynISFenabled = preferences.useNewFormula;
     const tddBefore = tdd;
+
     const dynResult = calculateDynamicISF(
-        glucoseStatus, profile, preferences, autosensData,
-        sensitivity, profileTarget, dynISFenabled, tdd,
-        weightedAverage, average_total_data, weightPercentage, middleWare
+        glucoseStatus,
+        profile,
+        preferences,
+        autosensData,
+        sensitivity,
+        profileTarget,
+        dynISFenabled,
+        tdd,
+        weightedAverage,
+        average_total_data,
+        weightPercentage,
+        middleWare,
     );
     dynISFenabled = dynResult.dynISFenabled;
     tdd = dynResult.tdd;
     const { tddReason, newRatio, insulinFactor, adjustmentFactor, enableSigmoid, tdd24hTo14dRatio } = dynResult;
 
+    // ─── CGM validation ─────────────────────────────────────────────────────
     const cgmValidation = validateCGMData(
-        glucoseStatus, profile, systemTime, overrideFactor,
-        currenttemp, trioCustomVariables.useOverride, trioCustomVariables.duration
+        glucoseStatus,
+        profile,
+        systemTime,
+        overrideFactor,
+        currenttemp,
+        trioCustomVariables.useOverride,
+        trioCustomVariables.duration,
     );
     if ('earlyReturn' in cgmValidation) return cgmValidation.earlyReturn;
     const { bg, tick, minDelta, minAvgDelta, maxDelta, deliverAt, profileCurrentBasal } = cgmValidation;
 
+    // ─── Sensitivity & targets ──────────────────────────────────────────────
     const sensTargets = configureSensitivityAndTargets(
-        glucoseStatus, profile, autosensData, profileTarget, overrideTarget,
-        bg, dynISFenabled, newRatio, tdd24hTo14dRatio, overrideFactor,
-        profileCurrentBasal, tddBefore, weightedAverage, average_total_data,
-        weightPercentage, sensitivity, carbRatio, cgmValidation.basal, cgmValidation.reason
+        glucoseStatus,
+        profile,
+        autosensData,
+        profileTarget,
+        overrideTarget,
+        bg,
+        dynISFenabled,
+        newRatio,
+        tdd24hTo14dRatio,
+        overrideFactor,
+        profileCurrentBasal,
+        tddBefore,
+        weightedAverage,
+        average_total_data,
+        weightPercentage,
+        sensitivity,
+        carbRatio,
+        cgmValidation.basal,
+        cgmValidation.reason,
     );
     if ('earlyReturn' in sensTargets) return sensTargets.earlyReturn;
     const { maxIOB, targetBG, minBG, maxBG, highBG, sensitivityRatio, adjustedSens, isfreason, targetLog } = sensTargets;
     let basal = sensTargets.basal;
     let threshold = sensTargets.threshold;
 
-    let result = {} as DetermineBasalResult;
-    if (cgmValidation.reason) {
-        result.reason = cgmValidation.reason;
-    }
+    // ─── IOB validation ─────────────────────────────────────────────────────
+    let result = { reason: cgmValidation.reason ?? '' } as DetermineBasalResult;
 
-    const iobValidation = validateIOBAndTemps(iobData, currenttemp, profile, systemTime, microBolusAllowed, tempBasalFunctions, result, deliverAt);
+    const iobValidation = validateIOBAndTemps(
+        iobData,
+        currenttemp,
+        profile,
+        systemTime,
+        microBolusAllowed,
+        tempBasalFunctions,
+        result,
+        deliverAt,
+    );
     if ('earlyReturn' in iobValidation) return iobValidation.earlyReturn;
     const iobDatum = iobValidation.iobData;
     const iobArray = iobValidation.iobArray;
 
-    //calculate BG impact: the amount BG "should" be rising or falling based on insulin activity alone
-    const bgImpact = round(( -iobDatum.activity * adjustedSens * PRED_INTERVAL_MINUTES ), 2);
+    // ─── BG impact & deviation ──────────────────────────────────────────────
+    // The amount BG "should" be rising or falling based on insulin activity alone
+    const bgImpact = round(-iobDatum.activity * adjustedSens * PRED_INTERVAL_MINUTES, 2);
 
-    const deviationResult = projectEventualBG(bg, iobDatum, adjustedSens, sensitivity, minDelta, minAvgDelta, glucoseStatus.long_avgdelta, bgImpact);
+    const deviationResult = projectEventualBG(
+        bg,
+        iobDatum,
+        adjustedSens,
+        sensitivity,
+        minDelta,
+        minAvgDelta,
+        glucoseStatus.long_avgdelta,
+        bgImpact,
+    );
     const { deviation, naiveEventualBG } = deviationResult;
     let eventualBG = deviationResult.eventualBG;
 
@@ -149,7 +198,7 @@ export function determineBasal(
     }
     const expectedDelta = calculateExpectedDelta(targetBG, eventualBG, bgImpact);
 
-    // Initialize result (requestedTemp) object. Has to be done after eventualBG is calculated.
+    // ─── Initialize result object ───────────────────────────────────────────
     result = {
         reason: cgmValidation.reason ?? '',
         temp: 'absolute',
@@ -162,8 +211,8 @@ export function determineBasal(
         sensitivityRatio,
         CR: round(carbRatio, 1),
         current_target: targetBG,
-        insulinForManualBolus,
-        manualBolusErrorString,
+        insulinForManualBolus: 0,
+        manualBolusErrorString: 0,
         minDelta,
         expectedDelta,
         minGuardBG: undefined,
@@ -171,9 +220,8 @@ export function determineBasal(
         threshold: convertBG(threshold, profile),
     } as DetermineBasalResult;
 
+    // ─── SMB eligibility ────────────────────────────────────────────────────
     let enableSMB = false;
-
-    // If SMB is always off, don't bother checking if we should enable SMBs
     if (trioCustomVariables.smbIsOff) {
         console.log("SMBs are always off.");
     } else {
@@ -185,24 +233,45 @@ export function determineBasal(
             targetBG,
             highBG,
             trioCustomVariables,
-            systemTime
+            systemTime,
         );
     }
 
-    const enableUAM = (profile.enableUAM);
-
+    // ─── Carb absorption ────────────────────────────────────────────────────
     const carbAbsorption = calculateCarbAbsorption(
-        minDelta, bgImpact, adjustedSens, carbRatio, sensitivity,
-        sensitivityRatio, mealData, profile, systemTime
+        minDelta,
+        bgImpact,
+        adjustedSens,
+        carbRatio,
+        sensitivity,
+        sensitivityRatio,
+        mealData,
+        profile,
+        systemTime,
     );
     const { carbImpact, carbImpactDuration, uamCarbImpact, carbSensFactor, remainingCATime, remainingCIpeak, slopeFromDeviations } = carbAbsorption;
 
+    // ─── BG predictions ─────────────────────────────────────────────────────
     const bgPred = generateBGPredictions(
-        iobArray, eventualBG, bg, adjustedSens,
-        carbImpact, carbImpactDuration, uamCarbImpact,
-        remainingCATime, remainingCIpeak, slopeFromDeviations,
-        dynISFenabled, enableSigmoid, tdd, adjustmentFactor, insulinFactor,
-        enableUAM, targetBG, threshold, mealData
+        iobArray,
+        eventualBG,
+        bg,
+        adjustedSens,
+        carbImpact,
+        carbImpactDuration,
+        uamCarbImpact,
+        remainingCATime,
+        remainingCIpeak,
+        slopeFromDeviations,
+        dynISFenabled,
+        enableSigmoid,
+        tdd,
+        adjustmentFactor,
+        insulinFactor,
+        profile.enableUAM,
+        targetBG,
+        threshold,
+        mealData,
     );
     eventualBG = bgPred.eventualBG;
     result.eventualBG = eventualBG;

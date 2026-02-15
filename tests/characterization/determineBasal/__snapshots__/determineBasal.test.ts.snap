@@ -27879,6 +27879,7 @@ exports[`determine-basal error path tests > returns error when eventualBG is NaN
 {
   "deliverAt": "[DELIVER_AT]",
   "error": "Error: could not calculate eventualBG. Sensitivity: 40 Deviation: NaN",
+  "reason": "",
   "temp": "absolute",
 }
 `;

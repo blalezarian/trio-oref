@@ -11,7 +11,6 @@ import type {
     GlucoseStatus,
     Profile,
     AutosensData,
-    DetermineBasalResult,
     Preferences,
 } from '../types/index';
 
