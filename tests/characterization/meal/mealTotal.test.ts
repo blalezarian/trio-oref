@@ -80,9 +80,9 @@ function makeOpts(
   return {
     treatments,
     profile: makeProfile(overrides.profile || {}),
-    pumpHistory: overrides.pumpHistory || [],
+    pumphistory: overrides.pumpHistory || [],
     glucose: overrides.glucose || defaultGlucose(),
-    basalProfile: BASAL_PROFILE,
+    basalprofile: BASAL_PROFILE,
   };
 }
 

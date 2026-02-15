@@ -5,7 +5,7 @@
  * 1. profile.generate(pumpSettings) → profile
  * 2. glucose.getLastGlucose(glucoseData) → glucoseStatus
  * 3. iob.generate({ profile, history, clock }) → iobData[]
- * 4. meal.generate({ history, carbs, profile, clock, glucose, basalProfile }) → mealData
+ * 4. meal.generate({ history, carbs, profile, clock, glucose, basalprofile }) → mealData
  * 5. determineBasal(glucoseStatus, currentTemp, iobData, profile, ...) → result
  */
 
@@ -114,7 +114,7 @@ export function runFullPipeline(rawInputs: RawPipelineInputs): PipelineResult {
         profile: iobProfile,
         clock,
         glucose: rawInputs.glucoseData,
-        basalProfile: rawInputs.profileInputs.basals,
+        basalprofile: rawInputs.profileInputs.basals,
     }) as MealData;
 
     // 5. Run determine-basal with all assembled inputs

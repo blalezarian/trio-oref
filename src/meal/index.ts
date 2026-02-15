@@ -13,7 +13,7 @@ interface MealGenerateInputs {
     profile: IobProfile;
     clock: string;
     glucose?: GlucoseEntry[];
-    basalProfile: BasalProfileEntry[];
+    basalprofile: BasalProfileEntry[];
 }
 
 // ---------------------------------------------------------------------------
@@ -27,9 +27,9 @@ function generate(inputs: MealGenerateInputs): ReturnType<typeof recentCarbs> {
     const opts = {
         treatments,
         profile: inputs.profile,
-        pumpHistory: inputs.history,
+        pumphistory: inputs.history,
         glucose: inputs.glucose,
-        basalProfile: inputs.basalProfile,
+        basalprofile: inputs.basalprofile,
     };
 
     const clock = new Date(inputs.clock);
