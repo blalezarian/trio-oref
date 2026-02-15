@@ -3,8 +3,8 @@ import { generate as get_iob } from '../iob/index';
 import { isfLookup } from '../profile/isf';
 import { calculateBGImpact, calculateDeviation } from '../utils/glucoseMath';
 import { tempTargetRunning } from './tempTarget';
-import type { GlucoseEntry, CarbTreatment, ISODateString } from '../types/index';
-import type { IobProfile, HistoryBasalProfileEntry, IobInputs, IobTreatment } from '../iob/types';
+import type { GlucoseEntry, CarbTreatment, ISODateString, BasalProfileEntry } from '../types/index';
+import type { IobProfile, IobInputs, IobTreatment } from '../iob/types';
 import type { TempTarget } from '../profile/targets';
 import {
     MIN_BG_TARGET,
@@ -57,7 +57,7 @@ export function analyzeDeviations(
     bucketedData: (GlucoseEntry & { mealCarbs?: number })[],
     meals: CarbTreatment[],
     iobInputs: { profile: IobProfile; history: unknown[]; clock: ISODateString },
-    basalprofile: HistoryBasalProfileEntry[],
+    basalprofile: BasalProfileEntry[],
     profile: IobProfile,
     treatments: IobTreatment[],
     temptargets: TempTarget[] | undefined,

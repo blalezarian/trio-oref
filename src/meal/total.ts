@@ -1,6 +1,6 @@
 import { detectCarbAbsorption as calcMealCOB } from '../cob/index';
-import type { CarbTreatment, GlucoseEntry, PumpHistoryEvent } from '../types/index';
-import type { IobProfile, HistoryBasalProfileEntry } from '../iob/types';
+import type { CarbTreatment, GlucoseEntry, PumpHistoryEvent, BasalProfileEntry } from '../types/index';
+import type { IobProfile } from '../iob/types';
 import { MS_PER_HOUR, DEFAULT_MAX_MEAL_ABSORPTION_HOURS } from '../shared/constants';
 import { round, roundTo2dp, roundTo3dp } from '../utils/rounding';
 
@@ -13,7 +13,7 @@ interface RecentCarbsOpts {
     profile: IobProfile;
     pumpHistory: PumpHistoryEvent[];
     glucose?: GlucoseEntry[];
-    basalProfile: HistoryBasalProfileEntry[];
+    basalProfile: BasalProfileEntry[];
 }
 
 interface COBInputs {
@@ -22,7 +22,7 @@ interface COBInputs {
         profile: IobProfile;
         history: PumpHistoryEvent[];
     };
-    basalprofile: HistoryBasalProfileEntry[];
+    basalprofile: BasalProfileEntry[];
     mealTime: number;
     carbImpactTime?: number;
 }

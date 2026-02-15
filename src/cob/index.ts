@@ -2,8 +2,8 @@ import { calcTempTreatments as findInsulin } from '../iob/extractTreatments';
 import { normalizeGlucoseData } from '../utils/glucoseMath';
 import { bucketGlucoseWithInterpolation } from './bucketGlucose';
 import { analyzeAbsorption } from './deviationLoop';
-import type { GlucoseEntry, PumpHistoryEvent, ISODateString, EpochMillis } from '../types/index';
-import type { IobProfile, HistoryBasalProfileEntry, IobInputs } from '../iob/types';
+import type { GlucoseEntry, PumpHistoryEvent, ISODateString, EpochMillis, BasalProfileEntry } from '../types/index';
+import type { IobProfile, IobInputs } from '../iob/types';
 import type { DeviationAbsorptionResult } from './deviationLoop';
 
 // ---------------------------------------------------------------------------
@@ -17,7 +17,7 @@ interface CarbAbsorptionInputs {
         history: PumpHistoryEvent[];
         clock?: ISODateString;
     };
-    basalprofile: HistoryBasalProfileEntry[];
+    basalprofile: BasalProfileEntry[];
     mealTime: EpochMillis | ISODateString | Date;
     carbImpactTime?: EpochMillis | ISODateString | Date;
 }

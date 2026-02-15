@@ -2,8 +2,8 @@ import { calcTempTreatments as findInsulin } from '../iob/extractTreatments';
 import { findMealInputs as findMeals } from '../meal/history';
 import { normalizeGlucoseData } from '../utils/glucoseMath';
 import { resolveGlucoseTime } from '../utils/time';
-import type { PumpHistoryEvent, GlucoseEntry, CarbTreatment, ISODateString } from '../types/index';
-import type { IobProfile, HistoryBasalProfileEntry, IobInputs, IobTreatment } from '../iob/types';
+import type { PumpHistoryEvent, GlucoseEntry, CarbTreatment, ISODateString, BasalProfileEntry } from '../types/index';
+import type { IobProfile, IobInputs, IobTreatment } from '../iob/types';
 import type { TempTarget } from '../profile/targets';
 import {
     MIN_VALID_GLUCOSE_MGDL,
@@ -24,7 +24,7 @@ export interface AutosensInputs {
         history: PumpHistoryEvent[];
         clock: ISODateString;
     };
-    basalprofile: HistoryBasalProfileEntry[];
+    basalprofile: BasalProfileEntry[];
     carbs: PumpHistoryEvent[];
     temptargets?: TempTarget[];
     retrospective?: boolean;
@@ -37,7 +37,7 @@ export interface PreparedAutosensData {
     bucketed_data: (GlucoseEntry & { mealCarbs?: number })[];
     lastSiteChange: Date;
     iob_inputs: AutosensInputs['iob_inputs'];
-    basalprofile: HistoryBasalProfileEntry[];
+    basalprofile: BasalProfileEntry[];
     profile: IobProfile;
 }
 

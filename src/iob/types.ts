@@ -9,9 +9,6 @@ import type {
     BasalProfileEntry,
 } from '../types/index';
 
-/** @deprecated Use BasalProfileEntry from types/index.ts */
-export type HistoryBasalProfileEntry = BasalProfileEntry;
-
 // ---------------------------------------------------------------------------
 // Profile shapes used across IOB sub-modules
 // ---------------------------------------------------------------------------
@@ -23,7 +20,7 @@ export type HistoryBasalProfileEntry = BasalProfileEntry;
 export interface IobProfile {
     dia: number;
     curve?: InsulinCurve;
-    basalprofile: HistoryBasalProfileEntry[];
+    basalprofile: BasalProfileEntry[];
     current_basal: number;
     max_daily_basal?: number;
     min_bg?: number;

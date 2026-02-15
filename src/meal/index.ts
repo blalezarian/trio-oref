@@ -1,7 +1,7 @@
 import { findMealInputs } from './history';
 import { recentCarbs } from './total';
-import type { PumpHistoryEvent, GlucoseEntry } from '../types/index';
-import type { IobProfile, HistoryBasalProfileEntry } from '../iob/types';
+import type { PumpHistoryEvent, GlucoseEntry, BasalProfileEntry } from '../types/index';
+import type { IobProfile } from '../iob/types';
 
 // ---------------------------------------------------------------------------
 // Types
@@ -13,7 +13,7 @@ interface MealGenerateInputs {
     profile: IobProfile;
     clock: string;
     glucose?: GlucoseEntry[];
-    basalProfile: HistoryBasalProfileEntry[];
+    basalProfile: BasalProfileEntry[];
 }
 
 // ---------------------------------------------------------------------------

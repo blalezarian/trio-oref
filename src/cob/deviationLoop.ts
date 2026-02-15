@@ -2,8 +2,8 @@ import { getCurrentBasalRate } from '../profile/basal';
 import { generate as get_iob } from '../iob/index';
 import { isfLookup } from '../profile/isf';
 import { calculateBGImpact, calculateDeviation } from '../utils/glucoseMath';
-import type { BucketedGlucose, ISODateString } from '../types/index';
-import type { IobProfile, HistoryBasalProfileEntry, IobInputs, IobTreatment } from '../iob/types';
+import type { BucketedGlucose, ISODateString, BasalProfileEntry } from '../types/index';
+import type { IobProfile, IobInputs, IobTreatment } from '../iob/types';
 import {
     MIN_VALID_GLUCOSE_MGDL,
     MS_PER_5_MIN,
@@ -45,7 +45,7 @@ const CURRENT_DEVIATION_DIVISOR = 2;
 export function analyzeAbsorption(
     bucketedData: BucketedGlucose[],
     iobInputs: { profile: IobProfile; history: unknown[]; clock?: ISODateString },
-    basalprofile: HistoryBasalProfileEntry[],
+    basalprofile: BasalProfileEntry[],
     profile: IobProfile,
     treatments: IobTreatment[],
     mealTime: Date,

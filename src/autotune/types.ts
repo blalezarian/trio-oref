@@ -10,14 +10,11 @@ export interface AutotuneBasalProfileEntry extends BasalProfileEntry {
     untuned?: number;
 }
 
-/** @deprecated Use ISFProfile from types/index.ts */
-export type AutotuneISFProfile = ISFProfile;
-
 // --- Previous autotune profile (output of prior run) ---
 
 export interface AutotunePreviousProfile {
     basalprofile: AutotuneBasalProfileEntry[];
-    isfProfile: AutotuneISFProfile;
+    isfProfile: ISFProfile;
     sens?: number;
     carb_ratio: number;
     csf?: number;
@@ -33,7 +30,7 @@ export interface AutotunePreviousProfile {
 
 export interface AutotunePumpProfile {
     basalprofile: AutotuneBasalProfileEntry[];
-    isfProfile?: AutotuneISFProfile;
+    isfProfile?: ISFProfile;
     carb_ratio?: number;
     autosens_min?: number;
     autosens_max?: number;

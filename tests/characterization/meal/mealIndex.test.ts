@@ -10,8 +10,8 @@
 
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { generate as mealGenerate } from '../../../src/meal/index';
-import type { PumpHistoryEvent, GlucoseEntry } from '../../../src/types/index';
-import type { IobProfile, HistoryBasalProfileEntry } from '../../../src/iob/types';
+import type { PumpHistoryEvent, GlucoseEntry, BasalProfileEntry } from '../../../src/types/index';
+import type { IobProfile } from '../../../src/iob/types';
 
 const FIXED_TIME = '2025-01-15T12:00:00.000Z';
 const NOW = new Date(FIXED_TIME).getTime();
@@ -73,7 +73,7 @@ function makeInputs(overrides: {
   carbs?: PumpHistoryEvent[];
   profile?: IobProfile & Record<string, unknown>;
   glucose?: GlucoseEntry[];
-  basalProfile?: HistoryBasalProfileEntry[];
+  basalProfile?: BasalProfileEntry[];
 } = {}) {
   return {
     clock: FIXED_TIME,
