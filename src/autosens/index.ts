@@ -50,3 +50,5 @@ export function detectSensitivity(inputs: AutosensInputs): AutosensResult {
         },
     );
 }
+
+export { detectSensitivity as default };

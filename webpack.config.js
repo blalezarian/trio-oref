@@ -33,7 +33,8 @@ module.exports = {
     path: path.resolve(__dirname, 'dist'),
     filename: '[name].js',
     libraryTarget: 'var',
-    library: 'trio_[name]'
+    library: 'trio_[name]',
+    libraryExport: 'default'
   },
   plugins: [
     new CopyRenameWebpackPlugin({
